@@ -1,5 +1,7 @@
 import argparse
 
+from ._cache import build_cache_parser
+
 
 def build_physical_add_parser(parser):
     """
@@ -77,6 +79,13 @@ def build_physical_parser(parser):
           description="Add Devices to a Pool"
        )
     build_physical_add_parser(subparser_table['add'])
+
+    subparser_table['cache'] = \
+       subparsers.add_parser(
+          'cache',
+          description="Cache Commands for this Pool"
+       )
+    build_cache_parser(subparser_table['cache'])
 
     subparser_table['list'] = \
        subparsers.add_parser(
