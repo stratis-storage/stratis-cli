@@ -32,6 +32,11 @@ def build_logical_list_parser(parser):
     :returns: a completed parser for listing logical information about a pool
     :rtype: ArgumentParser
     """
+    parser.add_argument(
+       'name',
+       action='store',
+       help='pool name'
+    )
     return parser
 
 

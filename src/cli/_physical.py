@@ -34,6 +34,11 @@ def build_physical_list_parser(parser):
     :returns: a completed parser for listing physical information about a pool
     :rtype: ArgumentParser
     """
+    parser.add_argument(
+       'name',
+       action='store',
+       help='pool name'
+    )
     return parser
 
 
