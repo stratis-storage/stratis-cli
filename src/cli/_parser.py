@@ -1,5 +1,6 @@
 import argparse
 
+from ._logical import build_logical_parser
 from ._physical import build_physical_parser
 
 
@@ -72,6 +73,13 @@ def gen_parser():
        subparsers.add_parser('create', description="Create New Stratis Pool")
     build_create_parser(subparser_table['create'])
 
+    subparser_table['logical'] = \
+       subparsers.add_parser(
+          'logical',
+          description="Administer Logical Aspects of Specified Pool"
+       )
+    build_logical_parser(subparser_table['logical'])
+
     subparser_table['physical'] = \
        subparsers.add_parser(
           'physical',
@@ -79,10 +87,5 @@ def gen_parser():
        )
     build_physical_parser(subparser_table['physical'])
 
-    subparser_table['logical'] = \
-       subparsers.add_parser(
-          'logical',
-          description="Administer Logical Aspects of Specified Pool"
-       )
 
     return parser
