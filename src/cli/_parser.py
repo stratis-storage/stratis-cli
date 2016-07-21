@@ -65,13 +65,13 @@ def gen_parser():
 
     subparser_table = dict()
 
-    subparser_table['list'] = \
-       subparsers.add_parser('list', description="List Stratis Pools")
-    build_list_parser(subparser_table['list'])
-
     subparser_table['create'] = \
        subparsers.add_parser('create', description="Create New Stratis Pool")
     build_create_parser(subparser_table['create'])
+
+    subparser_table['list'] = \
+       subparsers.add_parser('list', description="List Stratis Pools")
+    build_list_parser(subparser_table['list'])
 
     subparser_table['logical'] = \
        subparsers.add_parser(
