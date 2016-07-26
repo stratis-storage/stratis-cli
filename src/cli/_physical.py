@@ -42,28 +42,6 @@ def build_physical_list_parser(parser):
     return parser
 
 
-def build_physical_remove_parser(parser):
-    """
-    Generates the parser appropriate for removing physical devices from a pool.
-
-    :param ArgumentParser parser: a parser
-    :returns: a completed parser for removing physical devices from a pool
-    :rtype: ArgumentParser
-    """
-    parser.add_argument(
-       'name',
-       action='store',
-       help='pool name'
-    )
-    parser.add_argument(
-       'device',
-       help='remove device D from this pool',
-       metavar='D',
-       nargs='+'
-    )
-    return parser
-
-
 def build_physical_parser(parser):
     """
     Generates the parser appropriate for administering physical aspects of
@@ -98,12 +76,5 @@ def build_physical_parser(parser):
           description="List Pool Information"
        )
     build_physical_list_parser(subparser_table['list'])
-
-    subparser_table['remove'] = \
-       subparsers.add_parser(
-          'remove',
-          description="Remove Devices from a Pool"
-       )
-    build_physical_remove_parser(subparser_table['remove'])
 
     return parser
