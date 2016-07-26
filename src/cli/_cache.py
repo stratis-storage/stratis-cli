@@ -44,8 +44,8 @@ def build_cache_create_parser(parser):
     )
     parser.add_argument(
        '--redundancy',
-       choices=['single'],
-       default='single',
+       choices=['none'],
+       default='none',
        help='redundancy for cache'
     )
     return parser

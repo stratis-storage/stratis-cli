@@ -43,8 +43,8 @@ def build_create_parser(parser):
     parser.add_argument(
        '--redundancy',
        action='store',
-       choices=['single'],
-       default='single',
+       choices=['none'],
+       default='none',
        help="redundancy selection for this pool"
     )
     return parser
