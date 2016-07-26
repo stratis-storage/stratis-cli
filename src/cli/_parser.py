@@ -59,7 +59,8 @@ def gen_parser():
     """
     parser = argparse.ArgumentParser(description="Stratis Storage Manager")
 
-    subparsers = parser.add_subparsers(title="subcommands")
+    subparsers = \
+       parser.add_subparsers(dest='subparser_name', title='subcommands')
 
     subparser_names = ('cache', 'create', 'dev', 'list', 'vol')
 

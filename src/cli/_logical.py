@@ -100,7 +100,8 @@ def build_logical_parser(parser):
     :rtype: ArgumentParser
     """
 
-    subparsers = parser.add_subparsers(title='subcommands')
+    subparsers = \
+       parser.add_subparsers(dest='subparser_name', title='subcommands')
 
     subparser_table = dict()
 
