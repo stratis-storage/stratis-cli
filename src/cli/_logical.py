@@ -40,7 +40,7 @@ def build_logical_list_parser(parser):
     return parser
 
 
-def build_logical_remove_parser(parser):
+def build_logical_destroy_parser(parser):
     """
     Generates the parser appropriate for removing logical volumes from a pool.
 
@@ -119,12 +119,12 @@ def build_logical_parser(parser):
        )
     build_logical_list_parser(subparser_table['list'])
 
-    subparser_table['remove'] = \
+    subparser_table['destroy'] = \
        subparsers.add_parser(
-          'remove',
-          description="Remove Volumes from a Pool"
+          'destroy',
+          description="Destroy Volumes Belonging to a Pool"
        )
-    build_logical_remove_parser(subparser_table['remove'])
+    build_logical_destroy_parser(subparser_table['destroy'])
 
     subparser_table['snapshot'] = \
        subparsers.add_parser(
