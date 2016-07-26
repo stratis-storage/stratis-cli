@@ -50,6 +50,28 @@ def build_create_parser(parser):
     return parser
 
 
+def build_destroy_parser(parser):
+    """
+    Generates the parser appropriate for destroying a pool.
+
+    :param ArgumentParser parser: a parser
+    :returns: a completed parser for destroying a pool
+    :rtype: ArgumentParser
+    """
+    parser.add_argument(
+       'name',
+       action='store',
+       help='name of pool'
+    )
+    parser.add_argument(
+       '--force',
+       action="store_true",
+       default=False,
+       help="disregard the presence of any data or metadata"
+    )
+    return parser
+
+
 def gen_parser():
     """
     Make the parser.
@@ -69,6 +91,13 @@ def gen_parser():
     subparser_table['create'] = \
        subparsers.add_parser('create', description="Create New Stratis Pool")
     build_create_parser(subparser_table['create'])
+
+    subparser_table['destroy'] = \
+       subparsers.add_parser(
+          'destroy',
+          description="Destroy Existing Stratis Pool"
+    )
+    build_destroy_parser(subparser_table['destroy'])
 
     subparser_table['list'] = \
        subparsers.add_parser('list', description="List Stratis Pools")
