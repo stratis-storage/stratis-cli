@@ -72,6 +72,23 @@ def build_destroy_parser(parser):
     return parser
 
 
+def build_rename_parser(parser):
+    """
+    Generates the parser appropriate for renaming a pool.
+
+    :param ArgumentParser parser: a parser
+    :returns: a completed parser for renaming a pool
+    :rtype: ArgumentParser
+    """
+    parser.add_argument(
+       'current',
+       action='store',
+       help='current name of pool'
+    )
+    parser.add_argument('new', action='store', help='desired name')
+    return parser
+
+
 def gen_parser():
     """
     Make the parser.
@@ -117,5 +134,8 @@ def gen_parser():
        )
     build_physical_parser(subparser_table['physical'])
 
+    subparser_table['rename'] = \
+       subparsers.add_parser('rename', description="Rename a Pool")
+    build_rename_parser(subparser_table['rename'])
 
     return parser
