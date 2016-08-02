@@ -1,5 +1,7 @@
 import argparse
 
+from ._lib import device_from_path
+
 
 def build_cache_add_parser(parser):
     """
@@ -18,7 +20,8 @@ def build_cache_add_parser(parser):
        'device',
        help='add device D to this pool\'s cache',
        metavar='D',
-       nargs='+'
+       nargs='+',
+       type=device_from_path
     )
     return parser
 
@@ -40,7 +43,8 @@ def build_cache_create_parser(parser):
        'device',
        help='make device D a member of this pool\'s cache',
        metavar='D',
-       nargs='+'
+       nargs='+',
+       type=device_from_path
     )
     parser.add_argument(
        '--redundancy',
@@ -85,7 +89,8 @@ def build_cache_remove_parser(parser):
        'device',
        help='remove device D from this pool',
        metavar='D',
-       nargs='+'
+       nargs='+',
+       type=device_from_path
     )
     return parser
 
