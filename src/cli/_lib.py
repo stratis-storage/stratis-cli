@@ -1,3 +1,8 @@
+"""
+Miscellaneous supporting methods.
+"""
+
+
 from os import path
 
 import pyudev

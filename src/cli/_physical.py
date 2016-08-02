@@ -1,4 +1,7 @@
-import argparse
+"""
+Parser for operations having to with devices in the pool.
+"""
+
 
 from ._cache import build_cache_parser
 from ._lib import device_from_path

@@ -1,4 +1,6 @@
-import argparse
+"""
+Parser for logical aspects of CLI.
+"""
 
 
 def build_logical_create_parser(parser):

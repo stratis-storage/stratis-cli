@@ -1,3 +1,8 @@
+"""
+Top level parser for Stratis CLI.
+"""
+
+
 import argparse
 
 from ._lib import device_from_path
@@ -102,8 +107,6 @@ def gen_parser():
 
     subparsers = \
        parser.add_subparsers(dest='subparser_name', title='subcommands')
-
-    subparser_names = ('cache', 'create', 'dev', 'list', 'vol')
 
     subparser_table = dict()
 

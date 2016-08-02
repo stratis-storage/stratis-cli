@@ -1,4 +1,11 @@
+"""
+Error heirarchy for stratis cli.
+"""
+
 class StratisCliError(Exception):
+    """
+    Top-level stratis cli error.
+    """
     pass
 
 
