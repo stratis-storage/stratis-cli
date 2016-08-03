@@ -126,6 +126,14 @@ def build_cache_snapshot_parser(parser):
     return parser
 
 
+_SUBPARSER_TABLE = {
+   'add' : build_cache_add_parser,
+   'create' : build_cache_create_parser,
+   'list' : build_cache_list_parser,
+   'remove' : build_cache_remove_parser
+}
+
+
 def build_cache_parser(parser):
     """
     Generates the parser appropriate for administering cache aspects of
@@ -146,27 +154,27 @@ def build_cache_parser(parser):
           'add',
           description="Add Devices to an Existing Pool Cache"
        )
-    build_cache_add_parser(subparser_table['add'])
+    _SUBPARSER_TABLE['add'](subparser_table['add'])
 
     subparser_table['create'] = \
        subparsers.add_parser(
           'create',
           description="Create a Cache for an Existing Pool"
        )
-    build_cache_create_parser(subparser_table['create'])
+    _SUBPARSER_TABLE['create'](subparser_table['create'])
 
     subparser_table['list'] = \
        subparsers.add_parser(
           'list',
           description="List Information about Cache Devices in Pool"
        )
-    build_cache_list_parser(subparser_table['list'])
+    _SUBPARSER_TABLE['list'](subparser_table['list'])
 
     subparser_table['remove'] = \
        subparsers.add_parser(
           'remove',
           description="Remove Cache Device from a Pool Cache"
        )
-    build_cache_remove_parser(subparser_table['remove'])
+    _SUBPARSER_TABLE['remove'](subparser_table['remove'])
 
     return parser

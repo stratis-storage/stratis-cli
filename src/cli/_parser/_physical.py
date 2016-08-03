@@ -47,6 +47,13 @@ def build_physical_list_parser(parser):
     return parser
 
 
+_SUBPARSER_TABLE = {
+   'add' : build_physical_add_parser,
+   'cache' : build_cache_parser,
+   'list' : build_physical_list_parser
+}
+
+
 def build_physical_parser(parser):
     """
     Generates the parser appropriate for administering physical aspects of
@@ -67,20 +74,20 @@ def build_physical_parser(parser):
           'add',
           description="Add Devices to a Pool"
        )
-    build_physical_add_parser(subparser_table['add'])
+    _SUBPARSER_TABLE['add'](subparser_table['add'])
 
     subparser_table['cache'] = \
        subparsers.add_parser(
           'cache',
           description="Cache Commands for this Pool"
        )
-    build_cache_parser(subparser_table['cache'])
+    _SUBPARSER_TABLE['cache'](subparser_table['cache'])
 
     subparser_table['list'] = \
        subparsers.add_parser(
           'list',
           description="List Pool Information"
        )
-    build_physical_list_parser(subparser_table['list'])
+    _SUBPARSER_TABLE['list'](subparser_table['list'])
 
     return parser

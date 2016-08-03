@@ -96,6 +96,16 @@ def build_rename_parser(parser):
     return parser
 
 
+_SUBPARSER_TABLE = {
+   'create' : build_create_parser,
+   'destroy' : build_destroy_parser,
+   'list' : build_list_parser,
+   'logical' : build_logical_parser,
+   'physical' : build_physical_parser,
+   'rename' : build_rename_parser
+}
+
+
 def gen_parser():
     """
     Make the parser.
@@ -112,35 +122,35 @@ def gen_parser():
 
     subparser_table['create'] = \
        subparsers.add_parser('create', description="Create New Stratis Pool")
-    build_create_parser(subparser_table['create'])
+    _SUBPARSER_TABLE['create'](subparser_table['create'])
 
     subparser_table['destroy'] = \
        subparsers.add_parser(
           'destroy',
           description="Destroy Existing Stratis Pool"
     )
-    build_destroy_parser(subparser_table['destroy'])
+    _SUBPARSER_TABLE['destroy'](subparser_table['destroy'])
 
     subparser_table['list'] = \
        subparsers.add_parser('list', description="List Stratis Pools")
-    build_list_parser(subparser_table['list'])
+    _SUBPARSER_TABLE['list'](subparser_table['list'])
 
     subparser_table['logical'] = \
        subparsers.add_parser(
           'logical',
           description="Administer Logical Aspects of Specified Pool"
        )
-    build_logical_parser(subparser_table['logical'])
+    _SUBPARSER_TABLE['logical'](subparser_table['logical'])
 
     subparser_table['physical'] = \
        subparsers.add_parser(
           'physical',
           description="Administer Physical Aspects of Specified Pool"
        )
-    build_physical_parser(subparser_table['physical'])
+    _SUBPARSER_TABLE['physical'](subparser_table['physical'])
 
     subparser_table['rename'] = \
        subparsers.add_parser('rename', description="Rename a Pool")
-    build_rename_parser(subparser_table['rename'])
+    _SUBPARSER_TABLE['rename'](subparser_table['rename'])
 
     return parser

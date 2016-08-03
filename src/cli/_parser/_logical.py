@@ -92,6 +92,14 @@ def build_logical_snapshot_parser(parser):
     return parser
 
 
+_SUBPARSER_TABLE = {
+   'create' : build_logical_create_parser,
+   'destroy' : build_logical_destroy_parser,
+   'list' : build_logical_list_parser,
+   'snapshot' : build_logical_snapshot_parser,
+}
+
+
 def build_logical_parser(parser):
     """
     Generates the parser appropriate for administering logical aspects of
@@ -112,27 +120,27 @@ def build_logical_parser(parser):
           'create',
           description="Create a Logical Volume from an Existing Pool"
        )
-    build_logical_create_parser(subparser_table['create'])
+    _SUBPARSER_TABLE['create'](subparser_table['create'])
 
     subparser_table['list'] = \
        subparsers.add_parser(
           'list',
           description="List Information about Logical Volumes in Pool"
        )
-    build_logical_list_parser(subparser_table['list'])
+    _SUBPARSER_TABLE['list'](subparser_table['list'])
 
     subparser_table['destroy'] = \
        subparsers.add_parser(
           'destroy',
           description="Destroy Volumes Belonging to a Pool"
        )
-    build_logical_destroy_parser(subparser_table['destroy'])
+    _SUBPARSER_TABLE['destroy'](subparser_table['destroy'])
 
     subparser_table['snapshot'] = \
        subparsers.add_parser(
           'snapshot',
           description="Create a Snapshot of an Existing Logical Volume"
        )
-    build_logical_snapshot_parser(subparser_table['snapshot'])
+    _SUBPARSER_TABLE['snapshot'](subparser_table['snapshot'])
 
     return parser
