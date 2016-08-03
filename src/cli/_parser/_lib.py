@@ -7,7 +7,7 @@ from os import path
 
 import pyudev
 
-from ._errors import StratisCliValueError
+from .._errors import StratisCliValueError
 
 _CONTEXT = pyudev.Context()
 
