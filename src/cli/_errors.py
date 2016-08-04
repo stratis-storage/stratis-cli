@@ -34,3 +34,11 @@ class StratisCliValueError(StratisCliError):
             return fmt_str % (self._value, self._param, self._msg)
         else:
             return self._FMT_STR % (self._value, self._param)
+
+
+class StratisCliValueUnimplementedError(StratisCliValueError):
+    """
+    Raised if a parameter is not intrinsically bad but functionality
+    is unimplemented for this value.
+    """
+    pass
