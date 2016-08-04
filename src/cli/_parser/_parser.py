@@ -5,6 +5,8 @@ Top level parser for Stratis CLI.
 
 import argparse
 
+from .._actions import list_pools
+
 from ._lib import device_from_path
 from ._logical import build_logical_parser
 from ._physical import build_physical_parser
@@ -18,6 +20,7 @@ def build_list_parser(parser):
     :returns: a completed parser for listing pools
     :rtype: ArgumentParser
     """
+    parser.set_defaults(func=list_pools)
     return parser
 
 
