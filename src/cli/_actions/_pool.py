@@ -16,7 +16,13 @@ def create_pool(dbus_thing, namespace):
            "namespace.redundancy"
         )
 
-    return
+    (result, rc, message) = dbus_thing.CreatePool(
+       namespace.name,
+       namespace.device,
+       len(namespace.device)
+    )
+
+    return (rc, message)
 
 def list_pools(dbus_thing, namespace):
     """
@@ -26,11 +32,11 @@ def list_pools(dbus_thing, namespace):
     """
     (result, rc, message) = dbus_thing.ListPools()
     if rc != 0:
-        print(message)
-    else:
-        for item in result:
-            print(item)
-    return
+        return (rc, message)
+
+    for item in result:
+        print(item)
+    return (rc, message)
 
 def destroy_pool(dbus_thing, namespace):
     """
@@ -42,4 +48,8 @@ def destroy_pool(dbus_thing, namespace):
            "namespace.force"
         )
 
-    return
+    (result, rc, message) = dbus_thing.DestroyPool(
+       namespace.name
+    )
+
+    return (rc, message)

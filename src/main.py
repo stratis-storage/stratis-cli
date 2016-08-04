@@ -15,7 +15,9 @@ def main():
        proxy,
        dbus_interface='org.storage.stratis1.Manager'
     )
-    args.func(interface, args)
+    (rc, message) = args.func(interface, args)
+    print(message)
+    return rc
 
 if __name__ == "__main__":
     main()

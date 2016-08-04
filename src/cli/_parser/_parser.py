@@ -5,6 +5,8 @@ Top level parser for Stratis CLI.
 
 import argparse
 
+from .._actions import create_pool
+from .._actions import destroy_pool
 from .._actions import list_pools
 
 from ._lib import device_from_path
@@ -57,6 +59,7 @@ def build_create_parser(parser):
        default='none',
        help="redundancy selection for this pool"
     )
+    parser.set_defaults(func=create_pool)
     return parser
 
 
@@ -79,6 +82,7 @@ def build_destroy_parser(parser):
        default=False,
        help="disregard the presence of any data or metadata"
     )
+    parser.set_defaults(func=destroy_pool)
     return parser
 
 
