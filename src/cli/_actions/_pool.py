@@ -1,3 +1,9 @@
+"""
+Miscellaneous pool-level actions.
+"""
+
+from __future__ import print_function
+
 from .._errors import StratisCliValueUnimplementedError
 
 def create_pool(dbus_thing, namespace):
@@ -16,7 +22,7 @@ def create_pool(dbus_thing, namespace):
            "namespace.redundancy"
         )
 
-    (result, rc, message) = dbus_thing.CreatePool(
+    (_, rc, message) = dbus_thing.CreatePool(
        namespace.name,
        namespace.device,
        len(namespace.device)
@@ -30,6 +36,7 @@ def list_pools(dbus_thing, namespace):
 
     :param Interface dbus_thing: the interface to the stratis manager
     """
+    # pylint: disable=unused-argument
     (result, rc, message) = dbus_thing.ListPools()
     if rc != 0:
         return (rc, message)
@@ -48,7 +55,7 @@ def destroy_pool(dbus_thing, namespace):
            "namespace.force"
         )
 
-    (result, rc, message) = dbus_thing.DestroyPool(
+    (_, rc, message) = dbus_thing.DestroyPool(
        namespace.name
     )
 
