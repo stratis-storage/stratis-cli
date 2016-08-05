@@ -3,6 +3,8 @@ Parser for operations having to with devices in the pool.
 """
 
 
+from .._actions import PhysicalActions
+
 from ._cache import build_cache_parser
 from ._lib import device_from_path
 
@@ -44,6 +46,7 @@ def build_physical_list_parser(parser):
        action='store',
        help='pool name'
     )
+    parser.set_defaults(func=PhysicalActions.list_pool)
     return parser
 
 
