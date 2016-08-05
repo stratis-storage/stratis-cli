@@ -22,11 +22,14 @@ def create_pool(dbus_thing, namespace):
            "namespace.redundancy"
         )
 
-    (_, rc, message) = dbus_thing.CreatePool(
+    (result, rc, message) = dbus_thing.CreatePool(
        namespace.name,
        namespace.device,
        len(namespace.device)
     )
+
+    if rc == 0:
+        print("New pool with object path: %s" % result)
 
     return (rc, message)
 
@@ -55,8 +58,11 @@ def destroy_pool(dbus_thing, namespace):
            "namespace.force"
         )
 
-    (_, rc, message) = dbus_thing.DestroyPool(
+    (result, rc, message) = dbus_thing.DestroyPool(
        namespace.name
     )
+
+    if rc == 0:
+        print("Deleted pool with object path: %s" % result)
 
     return (rc, message)
