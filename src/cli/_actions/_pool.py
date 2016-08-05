@@ -4,6 +4,11 @@ Miscellaneous pool-level actions.
 
 from __future__ import print_function
 
+from .._constants import BUS
+from .._constants import MANAGER_INTERFACE
+from .._constants import SERVICE
+from .._constants import TOP_OBJECT
+
 from .._errors import StratisCliValueUnimplementedError
 
 class PoolActions(object):
@@ -12,7 +17,7 @@ class PoolActions(object):
     """
 
     @staticmethod
-    def create_pool(dbus_thing, namespace):
+    def create_pool(namespace):
         """
         Create a stratis pool.
         """
@@ -28,10 +33,13 @@ class PoolActions(object):
                "namespace.redundancy"
             )
 
-        (result, rc, message) = dbus_thing.CreatePool(
+        proxy = BUS.get_object(SERVICE, TOP_OBJECT)
+
+        (result, rc, message) = proxy.CreatePool(
            namespace.name,
            namespace.device,
-           len(namespace.device)
+           len(namespace.device),
+           dbus_interface=MANAGER_INTERFACE,
         )
 
         if rc == 0:
@@ -40,14 +48,15 @@ class PoolActions(object):
         return (rc, message)
 
     @staticmethod
-    def list_pools(dbus_thing, namespace):
+    def list_pools(namespace):
         """
         List all stratis pools.
-
-        :param Interface dbus_thing: the interface to the stratis manager
         """
         # pylint: disable=unused-argument
-        (result, rc, message) = dbus_thing.ListPools()
+        proxy = BUS.get_object(SERVICE, TOP_OBJECT)
+
+        (result, rc, message) = \
+           proxy.ListPools(dbus_interface=MANAGER_INTERFACE)
         if rc != 0:
             return (rc, message)
 
@@ -56,7 +65,7 @@ class PoolActions(object):
         return (rc, message)
 
     @staticmethod
-    def destroy_pool(dbus_thing, namespace):
+    def destroy_pool(namespace):
         """
         Destroy a stratis pool.
         """
@@ -66,8 +75,11 @@ class PoolActions(object):
                "namespace.force"
             )
 
-        (result, rc, message) = dbus_thing.DestroyPool(
-           namespace.name
+        proxy = BUS.get_object(SERVICE, TOP_OBJECT)
+
+        (result, rc, message) = proxy.DestroyPool(
+           namespace.name,
+           dbus_interface=MANAGER_INTERFACE
         )
 
         if rc == 0:
