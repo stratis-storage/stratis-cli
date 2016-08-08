@@ -5,9 +5,10 @@ Miscellaneous pool-level actions.
 from __future__ import print_function
 
 from .._constants import BUS
-from .._constants import MANAGER_INTERFACE
 from .._constants import SERVICE
 from .._constants import TOP_OBJECT
+
+from .._dbus import Manager
 
 from .._errors import StratisCliValueUnimplementedError
 
@@ -35,11 +36,10 @@ class PoolActions(object):
 
         proxy = BUS.get_object(SERVICE, TOP_OBJECT)
 
-        (result, rc, message) = proxy.CreatePool(
+        (result, rc, message) = Manager(proxy).CreatePool(
            namespace.name,
            namespace.device,
-           len(namespace.device),
-           dbus_interface=MANAGER_INTERFACE,
+           len(namespace.device)
         )
 
         if rc == 0:
@@ -55,8 +55,7 @@ class PoolActions(object):
         # pylint: disable=unused-argument
         proxy = BUS.get_object(SERVICE, TOP_OBJECT)
 
-        (result, rc, message) = \
-           proxy.ListPools(dbus_interface=MANAGER_INTERFACE)
+        (result, rc, message) = Manager(proxy).ListPools()
         if rc != 0:
             return (rc, message)
 
@@ -77,10 +76,7 @@ class PoolActions(object):
 
         proxy = BUS.get_object(SERVICE, TOP_OBJECT)
 
-        (result, rc, message) = proxy.DestroyPool(
-           namespace.name,
-           dbus_interface=MANAGER_INTERFACE
-        )
+        (result, rc, message) = Manager(proxy).DestroyPool(namespace.name)
 
         if rc == 0:
             print("Deleted pool with object path: %s" % result)

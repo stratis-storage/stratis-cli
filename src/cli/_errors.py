@@ -42,3 +42,9 @@ class StratisCliValueUnimplementedError(StratisCliValueError):
     is unimplemented for this value.
     """
     pass
+
+class StratisCliUnimplementedError(StratisCliError):
+    """
+    Raised if a method is temporarily unimplemented.
+    """
+    pass
