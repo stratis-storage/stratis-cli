@@ -2,6 +2,9 @@
 Manager interface.
 """
 
+from ._properties import Properties
+
+
 class Manager(object):
     """
     Manager interface.
@@ -48,3 +51,40 @@ class Manager(object):
         List all pools.
         """
         return self._dbus_object.ListPools(dbus_interface=self._INTERFACE_NAME)
+
+    @property
+    def Version(self):
+        """
+        Stratisd Version getter.
+
+        :rtype: String
+        """
+        return Properties(self._dbus_object).Get(
+           self._INTERFACE_NAME,
+           'Version'
+        )
+
+    @property
+    def LogLevel(self):
+        """
+        Stratisd LogLevel getter.
+
+        :rtype: String
+        """
+        return Properties(self._dbus_object).Get(
+           self._INTERFACE_NAME,
+           'LogLevel'
+        )
+
+    @LogLevel.setter
+    def LogLevel(self, value):
+        """
+        Stratisd LogLevel setter.
+
+        :param str value: the value to set
+        """
+        return Properties(self._dbus_object).Set(
+           self._INTERFACE_NAME,
+           'LogLevel',
+           value
+        )
