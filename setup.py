@@ -16,15 +16,14 @@ setuptools.setup(
     name='cli',
     version=__version__,
     author='Anne Mulhern',
-    author_email='mulhern@cs.wisc.edu',
-    description='conversion of ints and rationals to any base',
+    author_email='amulhern@redhat.com',
+    description='prototype stratis cli',
     long_description=open(README, encoding='utf-8').read(),
     platforms=['Linux'],
     license='GPL 2+',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: GNU General Public License (GPL)',
         'Operating System :: POSIX :: Linux',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2',
@@ -32,11 +31,8 @@ setuptools.setup(
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
         'Topic :: Software Development :: Libraries',
-        'Topic :: Scientific/Engineering :: Mathematics',
         ],
-    install_requires = [
-        'six'
-    ],
+    install_requires = [],
     package_dir={"": "src"},
     packages=setuptools.find_packages("src"),
     )
