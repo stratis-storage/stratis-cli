@@ -32,7 +32,10 @@ setuptools.setup(
         'Programming Language :: Python :: Implementation :: PyPy',
         'Topic :: Software Development :: Libraries',
         ],
-    install_requires = [],
+    install_requires = [
+        'dbus-python',
+        'pyudev'
+    ],
     package_dir={"": "src"},
     packages=setuptools.find_packages("src"),
     )
