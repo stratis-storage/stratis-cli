@@ -29,6 +29,7 @@ def build_physical_add_parser(parser):
        nargs='+',
        type=device_from_path
     )
+    parser.set_defaults(func=PhysicalActions.add_device)
     return parser
 
 

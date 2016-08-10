@@ -4,7 +4,7 @@ Miscellaneous physical actions.
 
 from __future__ import print_function
 
-from .._errors import StratisCliValueUnimplementedError
+from .._errors import StratisCliUnimplementedError
 
 from .._constants import BUS
 from .._constants import SERVICE
@@ -39,3 +39,11 @@ class PhysicalActions(object):
             print(item)
 
         return (rc, message)
+
+    @staticmethod
+    def add_device(namespace):
+        """
+        Add a device to a pool.
+        """
+        # pylint: disable=unused-argument
+        raise StratisCliUnimplementedError('No way to add a device to a pool.')
