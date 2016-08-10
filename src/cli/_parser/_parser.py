@@ -22,14 +22,22 @@ def build_meta_parser(parser):
     :returns: a completed parser for obtaining meta-information
     :rtype: ArgumentParser
     """
+    group = parser.add_mutually_exclusive_group(required=True)
 
-    parser.add_argument(
+    group.add_argument(
        '--stratisd-version',
        action='store_true',
        default=False,
        help='version of stratisd daemon'
     )
-    parser.set_defaults(func=MetaActions.list_stratisd_version)
+    group.add_argument(
+      '--stratisd-log-level',
+      action='store_true',
+      default=False,
+      help='log level of stratis daemon'
+    )
+
+    parser.set_defaults(func=MetaActions.dispatch)
     return parser
 
 

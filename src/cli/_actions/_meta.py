@@ -18,6 +18,16 @@ class MetaActions(object):
     # pylint: disable=too-few-public-methods
 
     @staticmethod
+    def list_stratisd_log_level(namespace):
+        """
+        List the stratisd log level.
+        """
+        # pylint: disable=unused-argument
+        proxy = BUS.get_object(SERVICE, TOP_OBJECT)
+        print(Manager(proxy).LogLevel)
+        return (0, 'ok')
+
+    @staticmethod
     def list_stratisd_version(namespace):
         """
         List the stratisd version.
@@ -26,3 +36,16 @@ class MetaActions(object):
         proxy = BUS.get_object(SERVICE, TOP_OBJECT)
         print(Manager(proxy).Version)
         return (0, 'ok')
+
+    @staticmethod
+    def dispatch(namespace):
+        """
+        Dispatch to the correct function.
+        """
+        if namespace.stratisd_log_level:
+            return MetaActions.list_stratisd_log_level(namespace)
+
+        if namespace.stratisd_version:
+            return MetaActions.list_stratisd_version(namespace)
+
+        assert False
