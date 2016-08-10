@@ -1,5 +1,5 @@
 """
-Miscellaneous pool-level actions.
+Miscellaneous top-level actions.
 """
 
 from __future__ import print_function
@@ -12,9 +12,9 @@ from .._dbus import Manager
 
 from .._errors import StratisCliValueUnimplementedError
 
-class PoolActions(object):
+class TopActions(object):
     """
-    Actions for a pool.
+    Top level actions.
     """
 
     @staticmethod

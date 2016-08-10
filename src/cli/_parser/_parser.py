@@ -5,8 +5,8 @@ Top level parser for Stratis CLI.
 
 import argparse
 
-from .._actions import PoolActions
 from .._actions import MetaActions
+from .._actions import TopActions
 
 from ._lib import device_from_path
 from ._logical import build_logical_parser
@@ -49,7 +49,7 @@ def build_list_parser(parser):
     :returns: a completed parser for listing pools
     :rtype: ArgumentParser
     """
-    parser.set_defaults(func=PoolActions.list_pools)
+    parser.set_defaults(func=TopActions.list_pools)
     return parser
 
 
@@ -86,7 +86,7 @@ def build_create_parser(parser):
        default='none',
        help="redundancy selection for this pool"
     )
-    parser.set_defaults(func=PoolActions.create_pool)
+    parser.set_defaults(func=TopActions.create_pool)
     return parser
 
 
@@ -109,7 +109,7 @@ def build_destroy_parser(parser):
        default=False,
        help="disregard the presence of any data or metadata"
     )
-    parser.set_defaults(func=PoolActions.destroy_pool)
+    parser.set_defaults(func=TopActions.destroy_pool)
     return parser
 
 
