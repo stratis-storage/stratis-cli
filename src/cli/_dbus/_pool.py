@@ -48,7 +48,9 @@ class Pool(object):
         """
         List the volumes belonging to a pool.
         """
-        raise StratisCliUnimplementedError()
+        return self._dbus_object.ListVolumes(
+           dbus_interface=self._INTERFACE_NAME
+        )
 
     def RemoveCache(self):
         """

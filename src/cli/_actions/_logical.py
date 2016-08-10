@@ -34,3 +34,22 @@ class LogicalActions(object):
         raise StratisCliUnimplementedError(
            'Waiting until CreateVolume becomes CreateVolumes'
         )
+
+    @staticmethod
+    def list_volumes(namespace):
+        """
+        List the volumes in a pool.
+        """
+        proxy = BUS.get_object(SERVICE, TOP_OBJECT)
+        (pool_object_path, rc, message) = \
+            Manager(proxy).GetPoolObjectPath(namespace.pool)
+        if rc != 0:
+            return (rc, message)
+
+        pool_object = BUS.get_object(SERVICE, pool_object_path)
+        (result, rc, message) = Pool(pool_object).ListVolumes()
+
+        for item in result:
+            print(item)
+
+        return (rc, message)

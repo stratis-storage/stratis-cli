@@ -38,10 +38,11 @@ def build_logical_list_parser(parser):
     :rtype: ArgumentParser
     """
     parser.add_argument(
-       'name',
+       'pool',
        action='store',
        help='pool name'
     )
+    parser.set_defaults(func=LogicalActions.list_volumes)
     return parser
 
 
