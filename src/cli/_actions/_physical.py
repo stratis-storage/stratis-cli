@@ -6,8 +6,11 @@ from __future__ import print_function
 
 from .._errors import StratisCliValueUnimplementedError
 
-from ._lib import object_from_name
+from .._constants import BUS
+from .._constants import SERVICE
+from .._constants import TOP_OBJECT
 
+from .._dbus import Manager
 from .._dbus import Pool
 
 
@@ -21,8 +24,14 @@ class PhysicalActions(object):
         """
         List devices in a pool.
         """
-        dbus_object = object_from_name(namespace.name)
-        (result, rc, message) = Pool(dbus_object).ListDevs()
+        proxy = BUS.get_object(SERVICE, TOP_OBJECT)
+        (pool_object_path, rc, message) = \
+            Manager(proxy).GetPoolObjectPath(namespace.name)
+        if rc != 0:
+            return (rc, message)
+
+        pool_object = BUS.get_object(SERVICE, pool_object_path)
+        (result, rc, message) = Pool(pool_object).ListDevs()
         if rc != 0:
             return (rc, message)
 
