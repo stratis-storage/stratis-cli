@@ -2,7 +2,7 @@
 Manager interface.
 """
 
-from ._properties import Properties
+from ._dbus import Properties
 
 
 class Manager(object):
