@@ -127,6 +127,7 @@ def build_rename_parser(parser):
        help='current name of pool'
     )
     parser.add_argument('new', action='store', help='desired name')
+    parser.set_defaults(func=TopActions.rename_pool)
     return parser
 
 

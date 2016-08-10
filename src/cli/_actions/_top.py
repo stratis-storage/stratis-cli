@@ -10,6 +10,7 @@ from .._constants import TOP_OBJECT
 
 from .._dbus import Manager
 
+from .._errors import StratisCliUnimplementedError
 from .._errors import StratisCliValueUnimplementedError
 
 class TopActions(object):
@@ -82,3 +83,11 @@ class TopActions(object):
             print("Deleted pool with object path: %s" % result)
 
         return (rc, message)
+
+    @staticmethod
+    def rename_pool(namespace):
+        """
+        Rename a pool.
+        """
+        # pylint: disable=unused-argument
+        raise StratisCliUnimplementedError("No rename facility available.")
