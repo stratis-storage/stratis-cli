@@ -20,18 +20,19 @@ class Manager(object):
         """
         self._dbus_object = dbus_object
 
-    def CreatePool(self, pool_name, devices, num_devices):
+    def CreatePool(self, pool_name, devices, redundancy):
         """
         Create a pool.
 
         :param str pool_name: the pool name
         :param devices: the component devices
         :type devices: sequence of str
+        :param int redundancy: redundancy for this pool
         """
         return self._dbus_object.CreatePool(
            pool_name,
            devices,
-           num_devices,
+           redundancy,
            dbus_interface=self._INTERFACE_NAME,
         )
 

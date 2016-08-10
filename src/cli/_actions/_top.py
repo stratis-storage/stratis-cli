@@ -40,7 +40,7 @@ class TopActions(object):
         (result, rc, message) = Manager(proxy).CreatePool(
            namespace.name,
            namespace.device,
-           len(namespace.device)
+           0
         )
 
         if rc == 0:
