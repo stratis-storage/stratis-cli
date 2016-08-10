@@ -55,7 +55,7 @@ def build_logical_destroy_parser(parser):
     :rtype: ArgumentParser
     """
     parser.add_argument(
-       'name',
+       'pool',
        action='store',
        help='pool name'
     )
@@ -65,6 +65,7 @@ def build_logical_destroy_parser(parser):
        metavar='V',
        nargs='+'
     )
+    parser.set_defaults(func=LogicalActions.destroy_volumes)
     return parser
 
 

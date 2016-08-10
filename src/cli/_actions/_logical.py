@@ -53,3 +53,19 @@ class LogicalActions(object):
             print(item)
 
         return (rc, message)
+
+    @staticmethod
+    def destroy_volumes(namespace):
+        """
+        Destroy volumes in a pool.
+        """
+        proxy = BUS.get_object(SERVICE, TOP_OBJECT)
+        (pool_object_path, rc, message) = \
+            Manager(proxy).GetPoolObjectPath(namespace.pool)
+        if rc != 0:
+            return (rc, message)
+
+        pool_object = BUS.get_object(SERVICE, pool_object_path)
+        raise StratisCliUnimplementedError(
+           'Waiting until DestroyVolume becomes DestroyVolumes'
+        )
