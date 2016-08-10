@@ -2,6 +2,8 @@
 Parser for logical aspects of CLI.
 """
 
+from .._actions import LogicalActions
+
 
 def build_logical_create_parser(parser):
     """
@@ -12,7 +14,7 @@ def build_logical_create_parser(parser):
     :rtype: ArgumentParser
     """
     parser.add_argument(
-       'name',
+       'pool',
        action='store',
        help='pool name'
     )
@@ -22,6 +24,7 @@ def build_logical_create_parser(parser):
        metavar='V',
        nargs='+'
     )
+    parser.set_defaults(func=LogicalActions.create_volumes)
     return parser
 
 
