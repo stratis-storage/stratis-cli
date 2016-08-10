@@ -6,10 +6,31 @@ Top level parser for Stratis CLI.
 import argparse
 
 from .._actions import PoolActions
+from .._actions import MetaActions
 
 from ._lib import device_from_path
 from ._logical import build_logical_parser
 from ._physical import build_physical_parser
+
+
+def build_meta_parser(parser):
+    """
+    Generates the parser appropriate for obtaining information about this
+    program.
+
+    :param ArgumentParser parser: a parser
+    :returns: a completed parser for obtaining meta-information
+    :rtype: ArgumentParser
+    """
+
+    parser.add_argument(
+       '--stratisd-version',
+       action='store_true',
+       default=False,
+       help='version of stratisd daemon'
+    )
+    parser.set_defaults(func=MetaActions.list_stratisd_version)
+    return parser
 
 
 def build_list_parser(parser):
@@ -106,6 +127,7 @@ _SUBPARSER_TABLE = {
    'destroy' : build_destroy_parser,
    'list' : build_list_parser,
    'logical' : build_logical_parser,
+   'meta' : build_meta_parser,
    'physical' : build_physical_parser,
    'rename' : build_rename_parser
 }
@@ -146,6 +168,10 @@ def gen_parser():
           description="Administer Logical Aspects of Specified Pool"
        )
     _SUBPARSER_TABLE['logical'](subparser_table['logical'])
+
+    subparser_table['meta'] = \
+       subparsers.add_parser('meta', description="Information about Stratis")
+    _SUBPARSER_TABLE['meta'](subparser_table['meta'])
 
     subparser_table['physical'] = \
        subparsers.add_parser(
