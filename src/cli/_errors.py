@@ -48,3 +48,9 @@ class StratisCliUnimplementedError(StratisCliError):
     Raised if a method is temporarily unimplemented.
     """
     pass
+
+class StratisCliKnownBugError(StratisCliError):
+    """
+    Raised if a method is unimplemented due to a bug.
+    """
+    pass
