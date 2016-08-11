@@ -79,7 +79,7 @@ def build_logical_snapshot_parser(parser):
     :rtype: ArgumentParser
     """
     parser.add_argument(
-       'name',
+       'pool',
        action='store',
        help='pool name'
     )
@@ -94,6 +94,7 @@ def build_logical_snapshot_parser(parser):
        metavar='S',
        nargs='+'
     )
+    parser.set_defaults(func=LogicalActions.snapshot)
     return parser
 
 

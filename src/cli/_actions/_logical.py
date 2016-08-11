@@ -69,3 +69,19 @@ class LogicalActions(object):
         raise StratisCliUnimplementedError(
            'Waiting until DestroyVolume becomes DestroyVolumes'
         )
+
+    @staticmethod
+    def snapshot(namespace):
+        """
+        Create a snapshot of an existing volume.
+        """
+        proxy = BUS.get_object(SERVICE, TOP_OBJECT)
+        (pool_object_path, rc, message) = \
+            Manager(proxy).GetPoolObjectPath(namespace.pool)
+        if rc != 0:
+            return (rc, message)
+
+        pool_object = BUS.get_object(SERVICE, pool_object_path)
+        raise StratisCliUnimplementedError(
+           "Do not know how to do a snapshot at this time."
+        )
