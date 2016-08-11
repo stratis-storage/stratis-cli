@@ -20,11 +20,14 @@ class Pool(object):
         """
         self._dbus_object = dbus_object
 
-    def AddCache(self):
+    def AddCache(self, devices):
         """
-        Add a cache to the pool.
+        Add a cache constructed from ``devices`` to the pool.
         """
-        raise StratisCliUnimplementedError()
+        return self._dbus_object.AddCache(
+           devices,
+           dbus_interface=self._INTERFACE_NAME
+        )
 
     def CreateVolume(self):
         """
@@ -37,6 +40,14 @@ class Pool(object):
         Destroy a volume.
         """
         raise StratisCliUnimplementedError()
+
+    def ListCache(self):
+        """
+        List information about the pool's cache.
+        """
+        return self._dbus_object.ListCache(
+           dbus_interface=self._INTERFACE_NAME
+        )
 
     def ListDevs(self):
         """

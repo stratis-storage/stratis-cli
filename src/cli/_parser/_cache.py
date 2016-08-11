@@ -3,6 +3,8 @@ Parser for cache operations.
 """
 
 
+from .._actions import CacheActions
+
 from ._lib import device_from_path
 
 
@@ -15,7 +17,7 @@ def build_cache_add_parser(parser):
     :rtype: ArgumentParser
     """
     parser.add_argument(
-       'name',
+       'pool',
        action='store',
        help='pool name'
     )
@@ -26,6 +28,7 @@ def build_cache_add_parser(parser):
        nargs='+',
        type=device_from_path
     )
+    parser.set_defaults(func=CacheActions.add_devices)
     return parser
 
 
@@ -38,7 +41,7 @@ def build_cache_create_parser(parser):
     :rtype: ArgumentParser
     """
     parser.add_argument(
-       'name',
+       'pool',
        action='store',
        help='pool name'
     )
@@ -55,6 +58,7 @@ def build_cache_create_parser(parser):
        default='none',
        help='redundancy for cache'
     )
+    parser.set_defaults(func=CacheActions.create_cache)
     return parser
 
 
@@ -68,10 +72,11 @@ def build_cache_list_parser(parser):
     :rtype: ArgumentParser
     """
     parser.add_argument(
-       'name',
+       'pool',
        action='store',
        help='pool name'
     )
+    parser.set_defaults(func=CacheActions.list_cache)
     return parser
 
 
@@ -84,45 +89,18 @@ def build_cache_remove_parser(parser):
     :rtype: ArgumentParser
     """
     parser.add_argument(
-       'name',
+       'pool',
        action='store',
        help='pool name'
     )
     parser.add_argument(
        'device',
-       help='remove device D from this pool',
+       help="remove device D from this pool's cache",
        metavar='D',
        nargs='+',
        type=device_from_path
     )
-    return parser
-
-
-def build_cache_snapshot_parser(parser):
-    """
-    Generates the parser appropriate for taking snapshots of existing cache
-    volumes.
-
-    :param ArgumentParser parser: a parser
-    :returns: a completed parser for specifying snapshots
-    :rtype: ArgumentParser
-    """
-    parser.add_argument(
-       'name',
-       action='store',
-       help='pool name'
-    )
-    parser.add_argument(
-       'origin',
-       action='store',
-       help='origin volume',
-    )
-    parser.add_argument(
-       'volume',
-       help='snapshot volume S of origin',
-       metavar='S',
-       nargs='+'
-    )
+    parser.set_defaults(func=CacheActions.remove_device)
     return parser
 
 
