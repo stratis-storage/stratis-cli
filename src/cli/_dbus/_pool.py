@@ -2,6 +2,8 @@
 Class for wrapping dbus calls.
 """
 
+from ._dbus import Properties
+
 from .._errors import StratisCliUnimplementedError
 
 
@@ -68,3 +70,15 @@ class Pool(object):
         Remove a cache from a pool.
         """
         raise StratisCliUnimplementedError()
+
+    @property
+    def SPool(self):
+        """
+        Name of the pool.
+
+        :rtype: String
+        """
+        return Properties(self._dbus_object).Get(
+           self._INTERFACE_NAME,
+           'SPool'
+        )
