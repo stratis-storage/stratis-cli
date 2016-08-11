@@ -100,16 +100,3 @@ class Manager(object):
            self._INTERFACE_NAME,
            'LogLevel'
         )
-
-    @LogLevel.setter
-    def LogLevel(self, value):
-        """
-        Stratisd LogLevel setter.
-
-        :param str value: the value to set
-        """
-        return Properties(self._dbus_object).Set(
-           self._INTERFACE_NAME,
-           'LogLevel',
-           value
-        )
