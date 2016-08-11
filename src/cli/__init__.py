@@ -2,4 +2,4 @@
 Top level of CLI.
 """
 from ._errors import StratisCliError
-from ._parser import gen_parser
+from ._main import run

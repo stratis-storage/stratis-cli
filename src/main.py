@@ -1,13 +1,14 @@
 import os
+import sys
 
-from cli import gen_parser
+from cli import run
 
 def main():
-    parser = gen_parser()
-    args = parser.parse_args()
+    execution = run(sys.argv[1:])
+    args = next(execution)
     print(args)
     print(os.linesep)
-    (rc, message) = args.func(args)
+    (rc, message) = next(execution)
     print(message)
     return rc
 
