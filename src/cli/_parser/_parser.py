@@ -149,7 +149,10 @@ def gen_parser():
     :returns: a fully constructed parser for command-line arguments
     :rtype: ArgumentParser
     """
-    parser = argparse.ArgumentParser(description="Stratis Storage Manager")
+    parser = argparse.ArgumentParser(
+       description="Stratis Storage Manager",
+       prog='stratis'
+    )
 
     subparsers = \
        parser.add_subparsers(dest='subparser_name', title='subcommands')
