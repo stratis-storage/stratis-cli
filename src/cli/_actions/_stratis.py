@@ -1,5 +1,5 @@
 """
-Miscellaneous actions about the program.
+Miscellaneous actions about stratis.
 """
 
 from __future__ import print_function
@@ -11,9 +11,9 @@ from .._constants import TOP_OBJECT
 from .._dbus import Manager
 
 
-class MetaActions(object):
+class StratisActions(object):
     """
-    Meta- actions.
+    Stratis actions.
     """
     # pylint: disable=too-few-public-methods
 
@@ -43,9 +43,9 @@ class MetaActions(object):
         Dispatch to the correct function.
         """
         if namespace.stratisd_log_level:
-            return MetaActions.list_stratisd_log_level(namespace)
+            return StratisActions.list_stratisd_log_level(namespace)
 
         if namespace.stratisd_version:
-            return MetaActions.list_stratisd_version(namespace)
+            return StratisActions.list_stratisd_version(namespace)
 
         assert False

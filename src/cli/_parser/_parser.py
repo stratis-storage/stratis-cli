@@ -5,7 +5,7 @@ Top level parser for Stratis CLI.
 
 import argparse
 
-from .._actions import MetaActions
+from .._actions import StratisActions
 from .._actions import TopActions
 
 from ._lib import device_from_path
@@ -13,13 +13,12 @@ from ._logical import build_logical_parser
 from ._physical import build_physical_parser
 
 
-def build_meta_parser(parser):
+def build_stratis_parser(parser):
     """
-    Generates the parser appropriate for obtaining information about this
-    program.
+    Generates the parser appropriate for obtaining information about stratis.
 
     :param ArgumentParser parser: a parser
-    :returns: a completed parser for obtaining meta-information
+    :returns: a completed parser for obtaining information about stratis
     :rtype: ArgumentParser
     """
     group = parser.add_mutually_exclusive_group(required=True)
@@ -37,7 +36,7 @@ def build_meta_parser(parser):
       help='log level of stratis daemon'
     )
 
-    parser.set_defaults(func=MetaActions.dispatch)
+    parser.set_defaults(func=StratisActions.dispatch)
     return parser
 
 
@@ -136,7 +135,7 @@ _SUBPARSER_TABLE = {
    'destroy' : build_destroy_parser,
    'list' : build_list_parser,
    'logical' : build_logical_parser,
-   'meta' : build_meta_parser,
+   'stratis' : build_stratis_parser,
    'physical' : build_physical_parser,
    'rename' : build_rename_parser
 }
@@ -181,9 +180,9 @@ def gen_parser():
        )
     _SUBPARSER_TABLE['logical'](subparser_table['logical'])
 
-    subparser_table['meta'] = \
-       subparsers.add_parser('meta', description="Information about Stratis")
-    _SUBPARSER_TABLE['meta'](subparser_table['meta'])
+    subparser_table['stratis'] = \
+       subparsers.add_parser('stratis', description="Information about Stratis")
+    _SUBPARSER_TABLE['stratis'](subparser_table['stratis'])
 
     subparser_table['physical'] = \
        subparsers.add_parser(
