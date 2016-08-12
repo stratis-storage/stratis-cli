@@ -8,6 +8,8 @@ import argparse
 from .._actions import StratisActions
 from .._actions import TopActions
 
+from .._version import __version__
+
 from ._lib import device_from_path
 from ._logical import build_logical_parser
 from ._physical import build_physical_parser
@@ -151,6 +153,12 @@ def gen_parser():
     parser = argparse.ArgumentParser(
        description="Stratis Storage Manager",
        prog='stratis'
+    )
+
+    parser.add_argument(
+       '--version',
+       action='version',
+       version=__version__
     )
 
     subparsers = \
