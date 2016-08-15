@@ -7,6 +7,7 @@ import sys
 import dbus
 
 from ._constants import SERVICE
+from ._constants import SERVICE_UNKNOWN_ERROR
 
 from ._parser import gen_parser
 
@@ -21,7 +22,7 @@ def run(command_line_args):
         (rc, message) = args.func(args)
     except dbus.exceptions.DBusException as err:
         message = str(err)
-        if message.startswith('org.freedesktop.DBus.Error.ServiceUnknown'):
+        if message.startswith(SERVICE_UNKNOWN_ERROR):
             sys.exit('stratisd dbus service %s not started' % SERVICE)
         raise err
     yield (rc, message)
