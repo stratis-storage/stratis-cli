@@ -58,6 +58,16 @@ class Manager(object):
            dbus_interface=self._INTERFACE_NAME
         )
 
+    def GetErrorCodes(self):
+        """
+        Get stratisd error codes.
+
+        :rtype: Array of String * Int32 * String
+        """
+        return self._dbus_object.GetErrorCodes(
+           dbus_interface=self._INTERFACE_NAME
+        )
+
     def GetVolumeObjectPath(self, pool_name, volume_name):
         """
         Get the object path of volume ``volume_name`` in pool ``pool_name``.
