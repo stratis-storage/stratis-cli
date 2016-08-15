@@ -6,8 +6,6 @@ import os
 import subprocess
 import unittest
 
-from cli import run
-
 from ._constants import _CLI
 from ._constants import _DEVICES
 from ._constants import _STRATISD
@@ -52,8 +50,8 @@ class Destroy1TestCase(unittest.TestCase):
                ['python', _CLI] + \
                self._MENU + \
                [self._POOLNAME]
-            execution = subprocess.check_call(command_line)
-        except subprocess.CalledProcessError as err:
+            subprocess.check_call(command_line)
+        except subprocess.CalledProcessError:
             self.fail("Should not fail because pool is not there.")
 
 
@@ -81,7 +79,7 @@ class Destroy2TestCase(unittest.TestCase):
            ['python', _CLI, 'create'] + \
            [self._POOLNAME] + \
            [d.device_node for d in _device_list(_DEVICES, 1)]
-        execution = subprocess.check_call(command_line)
+        subprocess.check_call(command_line)
 
     def tearDown(self):
         """
@@ -98,6 +96,6 @@ class Destroy2TestCase(unittest.TestCase):
                ['python', _CLI] + \
                self._MENU + \
                [self._POOLNAME]
-            execution = subprocess.check_call(command_line)
-        except subprocess.CalledProcessError as err:
+            subprocess.check_call(command_line)
+        except subprocess.CalledProcessError:
             self.fail("Should not fail because pool is there.")

@@ -6,8 +6,6 @@ import os
 import subprocess
 import unittest
 
-from cli import run
-
 from ._constants import _CLI
 from ._constants import _DEVICES
 from ._constants import _STRATISD
@@ -53,7 +51,7 @@ class CreateTestCase(unittest.TestCase):
                self._MENU + \
                [self._POOLNAME] + \
                [d.device_node for d in _device_list(_DEVICES, 1)]
-            execution = subprocess.check_call(command_line)
+            subprocess.check_call(command_line)
         except subprocess.CalledProcessError as err:
             self.fail("Return code: %s" % err.returncode)
 
@@ -68,9 +66,9 @@ class CreateTestCase(unittest.TestCase):
                ['--force'] + \
                [self._POOLNAME] + \
                [d.device_node for d in _device_list(_DEVICES, 1)]
-            execution = subprocess.check_call(command_line)
+            subprocess.check_call(command_line)
             self.fail("Should have failed on --force set.")
-        except subprocess.CalledProcessError as err:
+        except subprocess.CalledProcessError:
             pass
 
     def testRedundancy(self):
@@ -84,7 +82,7 @@ class CreateTestCase(unittest.TestCase):
                ['--redundancy', 'raid6'] + \
                [self._POOLNAME] + \
                [d.device_node for d in _device_list(_DEVICES, 1)]
-            execution = subprocess.check_call(command_line)
+            subprocess.check_call(command_line)
             self.fail("Should have failed on --redundancy value.")
-        except subprocess.CalledProcessError as err:
+        except subprocess.CalledProcessError:
             pass

@@ -1,3 +1,6 @@
+"""
+General constants for testing.
+"""
 import pyudev
 
 _STRATISD = '/home/mulhern/my-contributions/stratisd'
