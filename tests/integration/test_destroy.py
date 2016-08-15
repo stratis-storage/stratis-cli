@@ -88,10 +88,13 @@ class Destroy2TestCase(unittest.TestCase):
         """
         self._stratisd.terminate()
 
+    @unittest.skip("Too hypothetical.")
     def testDestroy(self):
         """
-        Destroy succeeds when database contains specified pool.
+        Destroy may succeed or fail in this case, depending on the state of
+        the pool.
         """
+        self.fail("Underspecified state.")
         try:
             command_line = \
                ['python', _CLI] + \
@@ -99,4 +102,4 @@ class Destroy2TestCase(unittest.TestCase):
                [self._POOLNAME]
             subprocess.check_call(command_line)
         except subprocess.CalledProcessError:
-            self.fail("Should not fail because pool is there.")
+            pass
