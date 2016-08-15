@@ -3,7 +3,6 @@ Test 'create'.
 """
 
 import os
-import random
 import subprocess
 import unittest
 
@@ -14,18 +13,7 @@ from ._constants import _DEVICES
 from ._constants import _STRATISD
 from ._constants import _STRATISD_EXECUTABLE
 
-
-def _device_list(devices, minimum):
-    """
-    Get a randomly selected list of devices with at least ``minimum`` elements.
-
-    :param devices: list of device objects
-    :type devices: list of pyudev.Device
-    :param int minimum: the minimum number of devices, must be at least 0
-    """
-    limit = random.choice(range(minimum, len(devices)))
-    indices = random.sample(range(len(devices)), limit)
-    return [devices[i] for i in indices]
+from ._misc import _device_list
 
 
 class CreateTestCase(unittest.TestCase):
