@@ -69,16 +69,26 @@ class TopActions(object):
         """
         Destroy a stratis pool.
         """
+        proxy = BUS.get_object(SERVICE, TOP_OBJECT)
+        (pool_object_path, rc, message) = \
+            Manager(proxy).GetPoolObjectPath(namespace.name)
+        if rc != 0:
+            # FIXME: need to check if pool was not found, if so exit success
+            return (rc, message)
+
+        # FIXME: Now, check if pool is burdened with data
+        raise StratisCliUnimplementedError(
+           "Do not know how to check if pool has data."
+        )
+
+        # FIXME: if force and no data can go ahead, otherwise, clean up.
         if namespace.force:
             raise StratisCliValueUnimplementedError(
                namespace.force,
                "namespace.force"
             )
 
-        proxy = BUS.get_object(SERVICE, TOP_OBJECT)
-
         (result, rc, message) = Manager(proxy).DestroyPool(namespace.name)
-
         if rc == 0:
             print("Deleted pool with object path: %s" % result)
 
