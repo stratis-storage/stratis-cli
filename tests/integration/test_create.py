@@ -7,15 +7,13 @@ import random
 import subprocess
 import unittest
 
-import pyudev
-
 from cli import run
 
-_STRATISD = '/home/mulhern/my-contributions/stratisd'
-_STRATISD_EXECUTABLE = 'stratisd'
-_CLI = '/home/mulhern/my-projects/cli/src/main.py'
+from ._constants import _CLI
+from ._constants import _DEVICES
+from ._constants import _STRATISD
+from ._constants import _STRATISD_EXECUTABLE
 
-_DEVICES = list(pyudev.Context().list_devices(subsystem='block'))
 
 def _device_list(devices, minimum):
     """
@@ -70,3 +68,35 @@ class CreateTestCase(unittest.TestCase):
             execution = subprocess.check_call(command_line)
         except subprocess.CalledProcessError as err:
             self.fail("Return code: %s" % err.returncode)
+
+    def testForce(self):
+        """
+        Do not know exactly what to do about force.
+        """
+        try:
+            command_line = \
+               ['python', _CLI] + \
+               self._MENU + \
+               ['--force'] + \
+               [self._POOLNAME] + \
+               [d.device_node for d in _device_list(_DEVICES, 1)]
+            execution = subprocess.check_call(command_line)
+            self.fail("Should have failed on --force set.")
+        except subprocess.CalledProcessError as err:
+            pass
+
+    def testRedundancy(self):
+        """
+        Parser error on all redundancy that is not 'none'.
+        """
+        try:
+            command_line = \
+               ['python', _CLI] + \
+               self._MENU + \
+               ['--redundancy', 'raid6'] + \
+               [self._POOLNAME] + \
+               [d.device_node for d in _device_list(_DEVICES, 1)]
+            execution = subprocess.check_call(command_line)
+            self.fail("Should have failed on --redundancy value.")
+        except subprocess.CalledProcessError as err:
+            pass
