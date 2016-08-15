@@ -7,8 +7,6 @@ import random
 import subprocess
 import unittest
 
-import pyudev
-
 from cli import run
 
 from ._constants import _CLI
