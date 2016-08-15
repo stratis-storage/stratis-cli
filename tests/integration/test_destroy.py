@@ -14,9 +14,12 @@ from ._constants import _STRATISD_EXECUTABLE
 from ._misc import _device_list
 
 
+@unittest.skip("No good way to tell if pool exists.")
 class Destroy1TestCase(unittest.TestCase):
     """
     Test 'destroy' on empty database.
+
+    'destroy' should always succeed on an empty database.
     """
     _MENU = ['destroy']
     _POOLNAME = 'deadpool'
@@ -41,10 +44,9 @@ class Destroy1TestCase(unittest.TestCase):
         """
         self._stratisd.terminate()
 
-    @unittest.skip("Need to be able to tell if pool not there.")
-    def testDestroy(self):
+    def testWithoutForce(self):
         """
-        Destroy should succeed w/ empty database, but does not.
+        Destroy should succeed w/out --force.
         """
         try:
             command_line = \
@@ -55,7 +57,22 @@ class Destroy1TestCase(unittest.TestCase):
         except subprocess.CalledProcessError:
             self.fail("Should not fail because pool is not there.")
 
+    def testWithForce(self):
+        """
+        If pool does not exist and --force is set, command should succeed.
+        """
+        try:
+            command_line = \
+               ['python', _CLI] + \
+               self._MENU + \
+               ['--force'] + \
+               [self._POOLNAME]
+            subprocess.check_call(command_line)
+        except subprocess.CalledProcessError:
+            self.fail("Should not fail because pool is not there.")
 
+
+@unittest.skip("No good way to tell if pool can be destroyed.")
 class Destroy2TestCase(unittest.TestCase):
     """
     Test 'destroy' on database which contains the given pool.
@@ -88,13 +105,10 @@ class Destroy2TestCase(unittest.TestCase):
         """
         self._stratisd.terminate()
 
-    @unittest.skip("Too hypothetical.")
-    def testDestroy(self):
+    def testWithoutForce(self):
         """
-        Destroy may succeed or fail in this case, depending on the state of
-        the pool.
+        Whether or not destroy succeeds depends on the state of the pool.
         """
-        self.fail("Underspecified state.")
         try:
             command_line = \
                ['python', _CLI] + \
@@ -102,4 +116,18 @@ class Destroy2TestCase(unittest.TestCase):
                [self._POOLNAME]
             subprocess.check_call(command_line)
         except subprocess.CalledProcessError:
-            pass
+            self.fail("Should not fail because pool is not there.")
+
+    def testWithForce(self):
+        """
+        Whether or not destroy succeeds depends on the state of the pool.
+        """
+        try:
+            command_line = \
+               ['python', _CLI] + \
+               self._MENU + \
+               ['--force'] + \
+               [self._POOLNAME]
+            subprocess.check_call(command_line)
+        except subprocess.CalledProcessError:
+            self.fail("Should not fail because pool is not there.")
