@@ -12,7 +12,6 @@ from .._dbus import Manager
 
 from .._errors import StratisCliRuntimeError
 from .._errors import StratisCliUnimplementedError
-from .._errors import StratisCliValueUnimplementedError
 
 from .._stratisd_errors import StratisdErrorsGen
 
@@ -25,31 +24,29 @@ class TopActions(object):
     def create_pool(namespace):
         """
         Create a stratis pool.
-        """
-        if namespace.force:
-            raise StratisCliValueUnimplementedError(
-               namespace.force,
-               "namespace.force"
-            )
 
-        if namespace.redundancy != 'none':
-            raise StratisCliValueUnimplementedError(
-               namespace.redundancy,
-               "namespace.redundancy"
-            )
+        :raises StratisCliRuntimeError:
+        """
+        stratisd_errors = StratisdErrorsGen.get_errors()
 
         proxy = BUS.get_object(SERVICE, TOP_OBJECT)
 
-        (result, rc, message) = Manager(proxy).CreatePool(
-           namespace.name,
-           namespace.device,
-           0
+        raise StratisCliUnimplementedError(
+           "Waiting for CreatePool to take force parameter."
         )
 
-        if rc == 0:
-            print("New pool with object path: %s" % result)
+        # pylint: disable=unreachable
+        (_, rc, message) = Manager(proxy).CreatePool(
+           namespace.name,
+           namespace.device,
+           0,
+           namespace.force
+        )
 
-        return (rc, message)
+        if rc != stratisd_errors.STRATIS_OK:
+            raise StratisCliRuntimeError(rc, message)
+
+        return
 
     @staticmethod
     def list_pools(namespace):
