@@ -9,6 +9,7 @@ from .._constants import SERVICE
 from .._constants import TOP_OBJECT
 
 from .._dbus import Manager
+from .._dbus import Pool
 
 from .._errors import StratisCliRuntimeError
 from .._errors import StratisCliUnimplementedError
@@ -88,7 +89,26 @@ class TopActions(object):
         if rc != stratisd_errors.STRATIS_OK:
             raise StratisCliRuntimeError(rc, message)
 
-        # FIXME: Now, check if pool is burdened with data
+        pool_object = BUS.get_object(SERVICE, pool_object_path)
+
+        (volumes, rc, message) = Pool(pool_object).ListVolumes()
+        if rc != stratisd_errors.STRATIS_OK:
+            raise StratisCliRuntimeError(rc, message)
+
+        def my_exit():
+            """
+            Shared exit code.
+            """
+            (_, rc, message) = Manager(proxy).DestroyPool(namespace.name)
+            if rc != stratisd_errors.STRATIS_OK:
+                raise StratisCliRuntimeError(rc, message)
+            return
+
+        # FIXME: Need a better way to check whether pool is in use.
+        if len(volumes) == 0:
+            my_exit()
+            return
+
         raise StratisCliUnimplementedError(
            "Do not know how to check if pool has data."
         )
@@ -101,10 +121,7 @@ class TopActions(object):
                "namespace.force"
             )
 
-        (result, rc, message) = Manager(proxy).DestroyPool(namespace.name)
-
-        if rc != stratisd_errors.STRATIS_OK:
-            raise StratisCliRuntimeError(rc, message)
+        my_exit()
         return
 
     @staticmethod

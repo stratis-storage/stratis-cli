@@ -71,7 +71,6 @@ class Destroy1TestCase(unittest.TestCase):
             self.fail("Should not fail because pool is not there.")
 
 
-@unittest.skip("No good way to tell if pool can be destroyed.")
 class Destroy2TestCase(unittest.TestCase):
     """
     Test 'destroy' on database which contains the given pool.
