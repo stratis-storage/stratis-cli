@@ -10,6 +10,8 @@ from .._constants import TOP_OBJECT
 
 from .._dbus import Manager
 
+from .._errors import StratisCliImpossibleError
+
 
 class StratisActions(object):
     """
@@ -25,7 +27,7 @@ class StratisActions(object):
         # pylint: disable=unused-argument
         proxy = BUS.get_object(SERVICE, TOP_OBJECT)
         print(Manager(proxy).LogLevel)
-        return (0, 'ok')
+        return
 
     @staticmethod
     def list_stratisd_version(namespace):
@@ -35,7 +37,7 @@ class StratisActions(object):
         # pylint: disable=unused-argument
         proxy = BUS.get_object(SERVICE, TOP_OBJECT)
         print(Manager(proxy).Version)
-        return (0, 'ok')
+        return
 
     @staticmethod
     def dispatch(namespace):
@@ -43,9 +45,15 @@ class StratisActions(object):
         Dispatch to the correct function.
         """
         if namespace.stratisd_log_level:
-            return StratisActions.list_stratisd_log_level(namespace)
+            StratisActions.list_stratisd_log_level(namespace)
+            return
 
         if namespace.stratisd_version:
-            return StratisActions.list_stratisd_version(namespace)
+            StratisActions.list_stratisd_version(namespace)
+            return
 
-        assert False
+        raise StratisCliImpossibleError(
+           "Exactly one option should have been selected."
+        )
+        # pylint: disable=unreachable
+        return

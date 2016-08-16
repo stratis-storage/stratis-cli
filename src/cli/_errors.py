@@ -73,3 +73,9 @@ class StratisCliRuntimeError(StratisCliError):
 
     def __str__(self):
         return "%s: %s" % (self.rc, self.message)
+
+class StratisCliImpossibleError(StratisCliError):
+    """
+    Raised when a should be logically impossible situation is encountered.
+    """
+    pass
