@@ -31,11 +31,14 @@ class Pool(object):
            dbus_interface=self._INTERFACE_NAME
         )
 
-    def CreateVolume(self):
+    def CreateVolumes(self, volumes):
         """
-        Create a volume from the pool.
+        Create volumes from the pool.
         """
-        raise StratisCliUnimplementedError()
+        return self._dbus_object.CreateVolumes(
+           volumes,
+           dbus_interface=self._INTERFACE_NAME
+        )
 
     def DestroyVolume(self):
         """

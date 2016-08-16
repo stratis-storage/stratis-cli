@@ -4,6 +4,7 @@ Miscellaneous logical actions.
 
 from __future__ import print_function
 
+from .._errors import StratisCliRuntimeError
 from .._errors import StratisCliUnimplementedError
 
 from .._constants import BUS
@@ -12,6 +13,8 @@ from .._constants import TOP_OBJECT
 
 from .._dbus import Manager
 from .._dbus import Pool
+
+from .._stratisd_errors import StratisdErrorsGen
 
 
 class LogicalActions(object):
@@ -23,17 +26,26 @@ class LogicalActions(object):
     def create_volumes(namespace):
         """
         Create volumes in a pool.
+
+        :raises StratisCliRuntimeError:
         """
+        stratisd_errors = StratisdErrorsGen.get_errors()
+
         proxy = BUS.get_object(SERVICE, TOP_OBJECT)
         (pool_object_path, rc, message) = \
             Manager(proxy).GetPoolObjectPath(namespace.pool)
-        if rc != 0:
-            return (rc, message)
+
+        if rc != stratisd_errors.STRATIS_OK:
+            raise StratisCliRuntimeError(rc, message)
 
         pool_object = BUS.get_object(SERVICE, pool_object_path)
-        raise StratisCliUnimplementedError(
-           'Waiting until CreateVolume becomes CreateVolumes'
-        )
+        (_, rc, message) = \
+            Pool(pool_object).CreateVolumes(namespace.volume)
+
+        if rc != stratisd_errors.STRATIS_OK:
+            raise StratisCliRuntimeError(rc, message)
+
+        return
 
     @staticmethod
     def list_volumes(namespace):
