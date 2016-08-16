@@ -52,17 +52,22 @@ class TopActions(object):
     def list_pools(namespace):
         """
         List all stratis pools.
+
+        :raises StratisCliRuntimeError:
         """
         # pylint: disable=unused-argument
+        stratisd_errors = StratisdErrorsGen.get_errors()
+
         proxy = BUS.get_object(SERVICE, TOP_OBJECT)
 
         (result, rc, message) = Manager(proxy).ListPools()
-        if rc != 0:
-            return (rc, message)
+        if rc != stratisd_errors.STRATIS_OK:
+            raise StratisCliRuntimeError(rc, message)
 
         for item in result:
             print(item)
-        return (rc, message)
+
+        return
 
     @staticmethod
     def destroy_pool(namespace):
