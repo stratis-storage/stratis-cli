@@ -36,14 +36,16 @@ class Manager(object):
            dbus_interface=self._INTERFACE_NAME,
         )
 
-    def DestroyPool(self, pool_name):
+    def DestroyPool(self, pool_name, force):
         """
         Destroy a pool.
 
         :param str pool_name: the name of the pool
+        :param int force: level of forcing
         """
         return self._dbus_object.DestroyPool(
            pool_name,
+           force,
            dbus_interface=self._INTERFACE_NAME
         )
 

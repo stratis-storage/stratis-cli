@@ -9,7 +9,6 @@ from .._constants import SERVICE
 from .._constants import TOP_OBJECT
 
 from .._dbus import Manager
-from .._dbus import Pool
 
 from .._errors import StratisCliRuntimeError
 from .._errors import StratisCliUnimplementedError
@@ -80,8 +79,14 @@ class TopActions(object):
         stratisd_errors = StratisdErrorsGen.get_errors()
 
         proxy = BUS.get_object(SERVICE, TOP_OBJECT)
-        (pool_object_path, rc, message) = \
-            Manager(proxy).GetPoolObjectPath(namespace.name)
+
+        raise StratisCliUnimplementedError(
+           "Waiting for DestroyPool to take force parameter."
+        )
+
+        # pylint: disable=unreachable
+        (_, rc, message) = \
+           Manager(proxy).DestroyPool(namespace.name, namespace.force)
 
         if rc == stratisd_errors.STRATIS_POOL_NOTFOUND:
             return
@@ -89,39 +94,6 @@ class TopActions(object):
         if rc != stratisd_errors.STRATIS_OK:
             raise StratisCliRuntimeError(rc, message)
 
-        pool_object = BUS.get_object(SERVICE, pool_object_path)
-
-        (volumes, rc, message) = Pool(pool_object).ListVolumes()
-        if rc != stratisd_errors.STRATIS_OK:
-            raise StratisCliRuntimeError(rc, message)
-
-        def my_exit():
-            """
-            Shared exit code.
-            """
-            (_, rc, message) = Manager(proxy).DestroyPool(namespace.name)
-            if rc != stratisd_errors.STRATIS_OK:
-                raise StratisCliRuntimeError(rc, message)
-            return
-
-        # FIXME: Need a better way to check whether pool is in use.
-        if len(volumes) == 0:
-            my_exit()
-            return
-
-        raise StratisCliUnimplementedError(
-           "Do not know how to check if pool has data."
-        )
-
-        # FIXME: if force and no data can go ahead, otherwise, clean up.
-        # pylint: disable=unreachable
-        if namespace.force:
-            raise StratisCliValueUnimplementedError(
-               namespace.force,
-               "namespace.force"
-            )
-
-        my_exit()
         return
 
     @staticmethod
