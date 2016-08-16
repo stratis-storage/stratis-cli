@@ -14,7 +14,6 @@ from ._constants import _STRATISD_EXECUTABLE
 from ._misc import _device_list
 
 
-@unittest.skip("No good way to tell if pool exists.")
 class Destroy1TestCase(unittest.TestCase):
     """
     Test 'destroy' on empty database.

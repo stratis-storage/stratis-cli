@@ -10,8 +10,11 @@ from .._constants import TOP_OBJECT
 
 from .._dbus import Manager
 
+from .._errors import StratisCliRuntimeError
 from .._errors import StratisCliUnimplementedError
 from .._errors import StratisCliValueUnimplementedError
+
+from .._stratisd_errors import StratisdErrorsGen
 
 class TopActions(object):
     """
@@ -68,13 +71,22 @@ class TopActions(object):
     def destroy_pool(namespace):
         """
         Destroy a stratis pool.
+
+        If no pool exists, the method succeeds.
+
+        :raises StratisCliRuntimeError:
         """
+        stratisd_errors = StratisdErrorsGen.get_errors()
+
         proxy = BUS.get_object(SERVICE, TOP_OBJECT)
         (pool_object_path, rc, message) = \
             Manager(proxy).GetPoolObjectPath(namespace.name)
-        if rc != 0:
-            # FIXME: need to check if pool was not found, if so exit success
-            return (rc, message)
+
+        if rc == stratisd_errors.STRATIS_POOL_NOTFOUND:
+            return
+
+        if rc != stratisd_errors.STRATIS_OK:
+            raise StratisCliRuntimeError(rc, message)
 
         # FIXME: Now, check if pool is burdened with data
         raise StratisCliUnimplementedError(
@@ -82,6 +94,7 @@ class TopActions(object):
         )
 
         # FIXME: if force and no data can go ahead, otherwise, clean up.
+        # pylint: disable=unreachable
         if namespace.force:
             raise StratisCliValueUnimplementedError(
                namespace.force,
@@ -89,10 +102,10 @@ class TopActions(object):
             )
 
         (result, rc, message) = Manager(proxy).DestroyPool(namespace.name)
-        if rc == 0:
-            print("Deleted pool with object path: %s" % result)
 
-        return (rc, message)
+        if rc != stratisd_errors.STRATIS_OK:
+            raise StratisCliRuntimeError(rc, message)
+        return
 
     @staticmethod
     def rename_pool(namespace):

@@ -8,9 +8,7 @@ def main():
     args = next(execution)
     print(args)
     print(os.linesep)
-    (rc, message) = next(execution)
-    print(message)
-    return rc
+    return next(execution)
 
 if __name__ == "__main__":
     main()

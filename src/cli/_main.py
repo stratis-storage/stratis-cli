@@ -19,10 +19,10 @@ def run(command_line_args):
     args = parser.parse_args(command_line_args)
     yield args
     try:
-        (rc, message) = args.func(args)
+        args.func(args)
     except dbus.exceptions.DBusException as err:
         message = str(err)
         if message.startswith(SERVICE_UNKNOWN_ERROR):
             sys.exit('stratisd dbus service %s not started' % SERVICE)
         raise err
-    yield (rc, message)
+    yield 0

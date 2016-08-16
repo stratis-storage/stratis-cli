@@ -54,3 +54,22 @@ class StratisCliKnownBugError(StratisCliError):
     Raised if a method is unimplemented due to a bug.
     """
     pass
+
+class StratisCliRuntimeError(StratisCliError):
+    """
+    Raised if there was a failure due to a RuntimeError.
+    """
+
+    def __init__(self, rc, message):
+        """ Initializer.
+
+            :param object value: the value
+            :param str param: the parameter
+            :param str msg: an explanatory message
+        """
+        # pylint: disable=super-init-not-called
+        self.rc = rc
+        self.message = message
+
+    def __str__(self):
+        return "%s: %s" % (self.rc, self.message)
