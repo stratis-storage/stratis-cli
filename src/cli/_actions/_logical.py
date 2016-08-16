@@ -77,7 +77,7 @@ class LogicalActions(object):
         if rc != 0:
             return (rc, message)
 
-        pool_object = BUS.get_object(SERVICE, pool_object_path)
+        _ = BUS.get_object(SERVICE, pool_object_path)
         raise StratisCliUnimplementedError(
            'Waiting until DestroyVolume becomes DestroyVolumes'
         )
@@ -93,7 +93,7 @@ class LogicalActions(object):
         if rc != 0:
             return (rc, message)
 
-        pool_object = BUS.get_object(SERVICE, pool_object_path)
+        _ = BUS.get_object(SERVICE, pool_object_path)
         raise StratisCliUnimplementedError(
            "Do not know how to do a snapshot at this time."
         )
