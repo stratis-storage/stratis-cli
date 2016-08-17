@@ -6,14 +6,17 @@ from __future__ import print_function
 
 from .._connection import get_object
 
+from .._constants import REDUNDANCY
 from .._constants import TOP_OBJECT
 
 from .._dbus import Manager
 
 from .._errors import StratisCliRuntimeError
 from .._errors import StratisCliUnimplementedError
+from .._errors import StratisCliValueError
 
 from .._stratisd_constants import StratisdErrorsGen
+from .._stratisd_constants import StratisdRaidGen
 
 class TopActions(object):
     """
@@ -31,6 +34,25 @@ class TopActions(object):
 
         proxy = get_object(TOP_OBJECT)
 
+        try:
+            redundancy = REDUNDANCY.get(namespace.redundancy)
+        except KeyError:
+            raise StratisCliValueError(
+               namespace.redundancy,
+               "namespace.redundancy",
+               "has no corresponding value"
+            )
+
+        stratisd_redundancies = StratisdRaidGen.get_object()
+        try:
+            redundancy_number = getattr(stratisd_redundancies, redundancy)
+        except AttributeError:
+            raise StratisCliValueError(
+               namespace.redundancy,
+               "namespace.redundancy",
+               "has no corresponding value"
+            )
+
         raise StratisCliUnimplementedError(
            "Waiting for CreatePool to take force parameter."
         )
@@ -39,7 +61,7 @@ class TopActions(object):
         (_, rc, message) = Manager(proxy).CreatePool(
            namespace.name,
            namespace.device,
-           0,
+           redundancy_number,
            namespace.force
         )
 
