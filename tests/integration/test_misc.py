@@ -1,16 +1,13 @@
 """
 Test miscellaneous methods.
 """
-
-import os
-import subprocess
 import time
 import unittest
 
 from cli._connection import get_object
 
-from ._constants import _STRATISD
-from ._constants import _STRATISD_EXECUTABLE
+from ._misc import Service
+
 
 class GetObjectTestCase(unittest.TestCase):
     """
@@ -21,21 +18,14 @@ class GetObjectTestCase(unittest.TestCase):
         """
         Start the stratisd daemon with the simulator.
         """
-        env = dict(os.environ)
-        env['LD_LIBRARY_PATH'] = os.path.join(_STRATISD, 'lib')
-
-        bin_path = os.path.join(_STRATISD, 'bin')
-
-        self._stratisd = subprocess.Popen(
-           os.path.join(bin_path, _STRATISD_EXECUTABLE),
-           env=env
-        )
+        self._service = Service()
+        self._service.setUp()
 
     def tearDown(self):
         """
         Stop the stratisd simulator and daemon.
         """
-        self._stratisd.terminate()
+        self._service.tearDown()
 
     def testNonExisting(self):
         """

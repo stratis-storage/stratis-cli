@@ -2,16 +2,14 @@
 Test 'create'.
 """
 
-import os
 import subprocess
 import unittest
 
 from ._constants import _CLI
 from ._constants import _DEVICES
-from ._constants import _STRATISD
-from ._constants import _STRATISD_EXECUTABLE
 
 from ._misc import _device_list
+from ._misc import Service
 
 
 @unittest.skip("waiting for DestroyPool to be fixed")
@@ -28,21 +26,14 @@ class Destroy1TestCase(unittest.TestCase):
         """
         Start the stratisd daemon with the simulator.
         """
-        env = dict(os.environ)
-        env['LD_LIBRARY_PATH'] = os.path.join(_STRATISD, 'lib')
-
-        bin_path = os.path.join(_STRATISD, 'bin')
-
-        self._stratisd = subprocess.Popen(
-           os.path.join(bin_path, _STRATISD_EXECUTABLE),
-           env=env
-        )
+        self._service = Service()
+        self._service.setUp()
 
     def tearDown(self):
         """
         Stop the stratisd simulator and daemon.
         """
-        self._stratisd.terminate()
+        self._service.tearDown()
 
     def testWithoutForce(self):
         """
@@ -84,15 +75,8 @@ class Destroy2TestCase(unittest.TestCase):
         """
         Start the stratisd daemon with the simulator.
         """
-        env = dict(os.environ)
-        env['LD_LIBRARY_PATH'] = os.path.join(_STRATISD, 'lib')
-
-        bin_path = os.path.join(_STRATISD, 'bin')
-
-        self._stratisd = subprocess.Popen(
-           os.path.join(bin_path, _STRATISD_EXECUTABLE),
-           env=env
-        )
+        self._service = Service()
+        self._service.setUp()
         command_line = \
            ['python', _CLI, 'create'] + \
            [self._POOLNAME] + \
@@ -103,7 +87,7 @@ class Destroy2TestCase(unittest.TestCase):
         """
         Stop the stratisd simulator and daemon.
         """
-        self._stratisd.terminate()
+        self._service.tearDown()
 
     def testWithoutForce(self):
         """
@@ -148,15 +132,8 @@ class Destroy3TestCase(unittest.TestCase):
         """
         Start the stratisd daemon with the simulator.
         """
-        env = dict(os.environ)
-        env['LD_LIBRARY_PATH'] = os.path.join(_STRATISD, 'lib')
-
-        bin_path = os.path.join(_STRATISD, 'bin')
-
-        self._stratisd = subprocess.Popen(
-           os.path.join(bin_path, _STRATISD_EXECUTABLE),
-           env=env
-        )
+        self._service = Service()
+        self._service.setUp()
         command_line = \
            ['python', _CLI, 'create'] + \
            [self._POOLNAME] + \
@@ -173,7 +150,7 @@ class Destroy3TestCase(unittest.TestCase):
         """
         Stop the stratisd simulator and daemon.
         """
-        self._stratisd.terminate()
+        self._service.tearDown()
 
     def testWithoutForce(self):
         """
