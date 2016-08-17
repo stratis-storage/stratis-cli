@@ -37,10 +37,10 @@ class StratisTestCase(unittest.TestCase):
             command_line = \
                ['python', _CLI] + \
                self._MENU + \
-               ['--stratisd-version']
+               ['--version']
             subprocess.check_call(command_line)
         except subprocess.CalledProcessError:
-            self.fail("--stratisd-version should always succeed.")
+            self.fail("--version should always succeed.")
 
     def testStratisLogLevel(self):
         """
@@ -50,10 +50,10 @@ class StratisTestCase(unittest.TestCase):
             command_line = \
                ['python', _CLI] + \
                self._MENU + \
-               ['--stratisd-log-level']
+               ['--log-level']
             subprocess.check_call(command_line)
         except subprocess.CalledProcessError:
-            self.fail("--stratisd-log-level should always succeed.")
+            self.fail("--log-level should always succeed.")
 
     def testStratisNoOptions(self):
         """
@@ -76,7 +76,7 @@ class StratisTestCase(unittest.TestCase):
             command_line = \
                ['python', _CLI] + \
                self._MENU + \
-               ['--stratisd-log-level', '--stratisd-version']
+               ['--log-level', '--version']
             subprocess.check_call(command_line)
             self.fail('stratis with more than one option must fail')
         except subprocess.CalledProcessError:

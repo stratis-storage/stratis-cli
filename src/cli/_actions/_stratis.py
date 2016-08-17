@@ -57,15 +57,15 @@ class StratisActions(object):
         """
         Dispatch to the correct function.
         """
-        if namespace.stratisd_log_level:
+        if namespace.log_level:
             StratisActions.list_stratisd_log_level(namespace)
             return
 
-        if namespace.stratisd_redundancy:
+        if namespace.redundancy:
             StratisActions.list_stratisd_redundancy(namespace)
             return
 
-        if namespace.stratisd_version:
+        if namespace.version:
             StratisActions.list_stratisd_version(namespace)
             return
 
