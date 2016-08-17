@@ -54,6 +54,7 @@ class StratisdConstants(object):
         :rtype: type
         :returns: StratisdError class
         """
+        values['FIELDS'] = [x for x in values.keys()]
         return type(classname, (object,), values)
 
     @staticmethod
@@ -117,3 +118,12 @@ class StratisdErrorsGen(StratisdConstantsGen):
 
     _CLASSNAME = 'StratisdErrors'
     _METHODNAME = 'GetErrorCodes'
+
+class StratisdRaidGen(StratisdConstantsGen):
+    """
+    Simple class to provide access to published stratisd raid levels.
+    """
+    # pylint: disable=too-few-public-methods
+
+    _CLASSNAME = 'StratisdRaidLevels'
+    _METHODNAME = 'GetRaidLevels'

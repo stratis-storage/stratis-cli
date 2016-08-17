@@ -26,16 +26,22 @@ def build_stratis_parser(parser):
     group = parser.add_mutually_exclusive_group(required=True)
 
     group.add_argument(
-       '--stratisd-version',
-       action='store_true',
-       default=False,
-       help='version of stratisd daemon'
-    )
-    group.add_argument(
       '--stratisd-log-level',
       action='store_true',
       default=False,
       help='log level of stratis daemon'
+    )
+    group.add_argument(
+      '--stratisd-redundancy',
+      action='store_true',
+      default=False,
+      help='redundancy designations understood by stratisd daemon'
+    )
+    group.add_argument(
+       '--stratisd-version',
+       action='store_true',
+       default=False,
+       help='version of stratisd daemon'
     )
 
     parser.set_defaults(func=StratisActions.dispatch)

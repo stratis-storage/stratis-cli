@@ -12,6 +12,8 @@ from .._dbus import Manager
 
 from .._errors import StratisCliImpossibleError
 
+from .._stratisd_constants import StratisdRaidGen
+
 
 class StratisActions(object):
     """
@@ -27,6 +29,17 @@ class StratisActions(object):
         # pylint: disable=unused-argument
         proxy = get_object(TOP_OBJECT)
         print(Manager(proxy).LogLevel)
+        return
+
+    @staticmethod
+    def list_stratisd_redundancy(namespace):
+        """
+        List the stratisd redundancy designations.
+        """
+        # pylint: disable=unused-argument
+        levels = StratisdRaidGen.get_object()
+        for x in levels.FIELDS:
+            print("%s: %d" % (x, getattr(levels, x)))
         return
 
     @staticmethod
@@ -46,6 +59,10 @@ class StratisActions(object):
         """
         if namespace.stratisd_log_level:
             StratisActions.list_stratisd_log_level(namespace)
+            return
+
+        if namespace.stratisd_redundancy:
+            StratisActions.list_stratisd_redundancy(namespace)
             return
 
         if namespace.stratisd_version:
