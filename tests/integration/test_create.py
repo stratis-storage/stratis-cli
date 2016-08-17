@@ -14,7 +14,7 @@ from ._misc import Service
 
 class CreateTestCase(unittest.TestCase):
     """
-    Test 'create'.
+    Test 'create' parsing.
     """
     _MENU = ['create']
     _POOLNAME = 'deadpool'
@@ -72,7 +72,7 @@ class Create2TestCase(unittest.TestCase):
 
     def testCreate(self):
         """
-        Create expects success.
+        Create expects success unless devices are already occupied.
         """
         try:
             command_line = \
@@ -86,7 +86,7 @@ class Create2TestCase(unittest.TestCase):
 
     def testForce(self):
         """
-        Do not know exactly what to do about force.
+        Create should always succeed with force.
         """
         try:
             command_line = \
@@ -96,6 +96,61 @@ class Create2TestCase(unittest.TestCase):
                [self._POOLNAME] + \
                [d.device_node for d in _device_list(_DEVICES, 1)]
             subprocess.check_call(command_line)
-            self.fail("Should have failed on --force set.")
         except subprocess.CalledProcessError:
-            pass
+            self.fail("Should always succeed when force is set.")
+
+@unittest.skip("Waiting for CreatePool to take force parameter.")
+class Create3TestCase(unittest.TestCase):
+    """
+    Test 'create' on name collision.
+    """
+    _MENU = ['create']
+    _POOLNAME = 'deadpool'
+
+    def setUp(self):
+        """
+        Start the stratisd daemon with the simulator.
+        """
+        self._service = Service()
+        self._service.setUp()
+        command_line = \
+           ['python', _CLI, 'create'] + \
+           [self._POOLNAME] + \
+           [d.device_node for d in _device_list(_DEVICES, 1)]
+        subprocess.check_call(command_line)
+
+    def tearDown(self):
+        """
+        Stop the stratisd simulator and daemon.
+        """
+        self._service.tearDown()
+
+    def testCreate(self):
+        """
+        Create should fail trying to create new pool with same name as previous.
+        """
+        try:
+            command_line = \
+               ['python', _CLI] + \
+               self._MENU + \
+               [self._POOLNAME] + \
+               [d.device_node for d in _device_list(_DEVICES, 1)]
+            subprocess.check_call(command_line)
+        except subprocess.CalledProcessError as err:
+            self.fail("Return code: %s" % err.returncode)
+
+    def testForce(self):
+        """
+        Create should fail trying to create new pool with same name as previous,
+        regardless of --force parameter.
+        """
+        try:
+            command_line = \
+               ['python', _CLI] + \
+               self._MENU + \
+               ['--force'] + \
+               [self._POOLNAME] + \
+               [d.device_node for d in _device_list(_DEVICES, 1)]
+            subprocess.check_call(command_line)
+        except subprocess.CalledProcessError:
+            self.fail("Should always succeed when force is set.")
