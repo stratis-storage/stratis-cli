@@ -51,6 +51,16 @@ class Manager(object):
            dbus_interface=self._INTERFACE_NAME
         )
 
+    def GetErrorCodes(self):
+        """
+        Get stratisd error codes.
+
+        :rtype: Array of String * Int32 * String
+        """
+        return self._dbus_object.GetErrorCodes(
+           dbus_interface=self._INTERFACE_NAME
+        )
+
     def GetPoolObjectPath(self, pool_name):
         """
         Get the object path of a pool.
@@ -62,13 +72,14 @@ class Manager(object):
            dbus_interface=self._INTERFACE_NAME
         )
 
-    def GetErrorCodes(self):
+    def GetRaidLevels(self):
         """
-        Get stratisd error codes.
+        Get all designated RAID levels.
 
+        :returns: list of RAID levels
         :rtype: Array of String * Int32 * String
         """
-        return self._dbus_object.GetErrorCodes(
+        return self._dbus_object.GetRaidLevels(
            dbus_interface=self._INTERFACE_NAME
         )
 
