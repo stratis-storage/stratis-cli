@@ -4,13 +4,13 @@ Miscellaneous actions about stratis.
 
 from __future__ import print_function
 
-from .._constants import BUS
-from .._constants import SERVICE
 from .._constants import TOP_OBJECT
 
 from .._dbus import Manager
 
 from .._errors import StratisCliImpossibleError
+
+from .._misc import get_object
 
 
 class StratisActions(object):
@@ -25,7 +25,7 @@ class StratisActions(object):
         List the stratisd log level.
         """
         # pylint: disable=unused-argument
-        proxy = BUS.get_object(SERVICE, TOP_OBJECT)
+        proxy = get_object(TOP_OBJECT)
         print(Manager(proxy).LogLevel)
         return
 
@@ -35,7 +35,7 @@ class StratisActions(object):
         List the stratisd version.
         """
         # pylint: disable=unused-argument
-        proxy = BUS.get_object(SERVICE, TOP_OBJECT)
+        proxy = get_object(TOP_OBJECT)
         print(Manager(proxy).Version)
         return
 

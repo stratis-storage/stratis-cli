@@ -4,14 +4,14 @@ Miscellaneous top-level actions.
 
 from __future__ import print_function
 
-from .._constants import BUS
-from .._constants import SERVICE
 from .._constants import TOP_OBJECT
 
 from .._dbus import Manager
 
 from .._errors import StratisCliRuntimeError
 from .._errors import StratisCliUnimplementedError
+
+from .._misc import get_object
 
 from .._stratisd_errors import StratisdErrorsGen
 
@@ -29,7 +29,7 @@ class TopActions(object):
         """
         stratisd_errors = StratisdErrorsGen.get_errors()
 
-        proxy = BUS.get_object(SERVICE, TOP_OBJECT)
+        proxy = get_object(TOP_OBJECT)
 
         raise StratisCliUnimplementedError(
            "Waiting for CreatePool to take force parameter."
@@ -58,7 +58,7 @@ class TopActions(object):
         # pylint: disable=unused-argument
         stratisd_errors = StratisdErrorsGen.get_errors()
 
-        proxy = BUS.get_object(SERVICE, TOP_OBJECT)
+        proxy = get_object(TOP_OBJECT)
 
         (result, rc, message) = Manager(proxy).ListPools()
         if rc != stratisd_errors.STRATIS_OK:
@@ -80,7 +80,7 @@ class TopActions(object):
         """
         stratisd_errors = StratisdErrorsGen.get_errors()
 
-        proxy = BUS.get_object(SERVICE, TOP_OBJECT)
+        proxy = get_object(TOP_OBJECT)
 
         raise StratisCliUnimplementedError(
            "Waiting for DestroyPool to take force parameter."

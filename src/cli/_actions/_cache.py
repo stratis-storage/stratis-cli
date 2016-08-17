@@ -7,12 +7,12 @@ from __future__ import print_function
 from .._errors import StratisCliUnimplementedError
 from .._errors import StratisCliValueUnimplementedError
 
-from .._constants import BUS
-from .._constants import SERVICE
 from .._constants import TOP_OBJECT
 
 from .._dbus import Manager
 from .._dbus import Pool
+
+from .._misc import get_object
 
 
 class CacheActions(object):
@@ -43,13 +43,13 @@ class CacheActions(object):
                "unable to handle redundancy"
             )
 
-        proxy = BUS.get_object(SERVICE, TOP_OBJECT)
+        proxy = get_object(TOP_OBJECT)
         (pool_object_path, rc, message) = \
             Manager(proxy).GetPoolObjectPath(namespace.pool)
         if rc != 0:
             return (rc, message)
 
-        pool_object = BUS.get_object(SERVICE, pool_object_path)
+        pool_object = get_object(pool_object_path)
         (result, rc, message) = Pool(pool_object).AddCache(namespace.device)
         if rc != 0:
             return (rc, message)
@@ -62,13 +62,13 @@ class CacheActions(object):
         """
         List information about the cache belonging to a pool.
         """
-        proxy = BUS.get_object(SERVICE, TOP_OBJECT)
+        proxy = get_object(TOP_OBJECT)
         (pool_object_path, rc, message) = \
             Manager(proxy).GetPoolObjectPath(namespace.pool)
         if rc != 0:
             return (rc, message)
 
-        pool_object = BUS.get_object(SERVICE, pool_object_path)
+        pool_object = get_object(pool_object_path)
         (result, rc, message) = Pool(pool_object).ListCache()
         if rc != 0:
             return (rc, message)
@@ -83,11 +83,11 @@ class CacheActions(object):
         """
         Remove a device from the given pool.
         """
-        proxy = BUS.get_object(SERVICE, TOP_OBJECT)
+        proxy = get_object(TOP_OBJECT)
         (pool_object_path, rc, message) = \
             Manager(proxy).GetPoolObjectPath(namespace.pool)
         if rc != 0:
             return (rc, message)
 
-        pool_object = BUS.get_object(SERVICE, pool_object_path)
+        pool_object = get_object(pool_object_path)
         return Pool(pool_object).RemoveCache()

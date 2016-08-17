@@ -6,12 +6,13 @@ import sys
 
 import dbus
 
-from ._constants import BUS
 from ._constants import SERVICE
 from ._constants import SERVICE_UNKNOWN_ERROR
 from ._constants import TOP_OBJECT
 
 from ._dbus import Manager
+
+from ._misc import get_object
 
 
 class StratisdErrorsGen(object):
@@ -78,7 +79,7 @@ class StratisdErrorsGen(object):
         if StratisdErrorsGen._STRATISD_ERRORS is None:
             try:
                 error_codes = \
-                   Manager(BUS.get_object(SERVICE, TOP_OBJECT)).GetErrorCodes()
+                   Manager(get_object(TOP_OBJECT)).GetErrorCodes()
                 StratisdErrorsGen._STRATISD_ERRORS = \
                    StratisdErrorsGen.get_class(error_codes)
             except dbus.exceptions.DBusException as err:

@@ -7,12 +7,12 @@ from __future__ import print_function
 from .._errors import StratisCliRuntimeError
 from .._errors import StratisCliUnimplementedError
 
-from .._constants import BUS
-from .._constants import SERVICE
 from .._constants import TOP_OBJECT
 
 from .._dbus import Manager
 from .._dbus import Pool
+
+from .._misc import get_object
 
 from .._stratisd_errors import StratisdErrorsGen
 
@@ -31,14 +31,14 @@ class LogicalActions(object):
         """
         stratisd_errors = StratisdErrorsGen.get_errors()
 
-        proxy = BUS.get_object(SERVICE, TOP_OBJECT)
+        proxy = get_object(TOP_OBJECT)
         (pool_object_path, rc, message) = \
             Manager(proxy).GetPoolObjectPath(namespace.pool)
 
         if rc != stratisd_errors.STRATIS_OK:
             raise StratisCliRuntimeError(rc, message)
 
-        pool_object = BUS.get_object(SERVICE, pool_object_path)
+        pool_object = get_object(pool_object_path)
         (_, rc, message) = \
             Pool(pool_object).CreateVolumes(namespace.volume)
 
@@ -52,13 +52,13 @@ class LogicalActions(object):
         """
         List the volumes in a pool.
         """
-        proxy = BUS.get_object(SERVICE, TOP_OBJECT)
+        proxy = get_object(TOP_OBJECT)
         (pool_object_path, rc, message) = \
             Manager(proxy).GetPoolObjectPath(namespace.pool)
         if rc != 0:
             return (rc, message)
 
-        pool_object = BUS.get_object(SERVICE, pool_object_path)
+        pool_object = get_object(pool_object_path)
         (result, rc, message) = Pool(pool_object).ListVolumes()
 
         for item in result:
@@ -71,13 +71,13 @@ class LogicalActions(object):
         """
         Destroy volumes in a pool.
         """
-        proxy = BUS.get_object(SERVICE, TOP_OBJECT)
+        proxy = get_object(TOP_OBJECT)
         (pool_object_path, rc, message) = \
             Manager(proxy).GetPoolObjectPath(namespace.pool)
         if rc != 0:
             return (rc, message)
 
-        _ = BUS.get_object(SERVICE, pool_object_path)
+        _ = get_object(pool_object_path)
         raise StratisCliUnimplementedError(
            'Waiting until DestroyVolume becomes DestroyVolumes'
         )
@@ -87,13 +87,13 @@ class LogicalActions(object):
         """
         Create a snapshot of an existing volume.
         """
-        proxy = BUS.get_object(SERVICE, TOP_OBJECT)
+        proxy = get_object(TOP_OBJECT)
         (pool_object_path, rc, message) = \
             Manager(proxy).GetPoolObjectPath(namespace.pool)
         if rc != 0:
             return (rc, message)
 
-        _ = BUS.get_object(SERVICE, pool_object_path)
+        _ = get_object(pool_object_path)
         raise StratisCliUnimplementedError(
            "Do not know how to do a snapshot at this time."
         )
