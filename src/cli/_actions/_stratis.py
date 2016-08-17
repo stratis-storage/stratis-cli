@@ -4,13 +4,13 @@ Miscellaneous actions about stratis.
 
 from __future__ import print_function
 
+from .._connection import get_object
+
 from .._constants import TOP_OBJECT
 
 from .._dbus import Manager
 
 from .._errors import StratisCliImpossibleError
-
-from .._misc import get_object
 
 
 class StratisActions(object):

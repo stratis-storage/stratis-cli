@@ -7,7 +7,7 @@ import subprocess
 import time
 import unittest
 
-from cli._misc import get_object
+from cli._connection import get_object
 
 from ._constants import _STRATISD
 from ._constants import _STRATISD_EXECUTABLE

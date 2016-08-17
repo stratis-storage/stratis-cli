@@ -6,13 +6,14 @@ import sys
 
 import dbus
 
+from ._connection import get_object
+
 from ._constants import SERVICE
 from ._constants import SERVICE_UNKNOWN_ERROR
 from ._constants import TOP_OBJECT
 
 from ._dbus import Manager
 
-from ._misc import get_object
 
 
 class StratisdErrorsGen(object):

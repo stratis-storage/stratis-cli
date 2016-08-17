@@ -7,12 +7,12 @@ from __future__ import print_function
 from .._errors import StratisCliUnimplementedError
 from .._errors import StratisCliValueUnimplementedError
 
+from .._connection import get_object
+
 from .._constants import TOP_OBJECT
 
 from .._dbus import Manager
 from .._dbus import Pool
-
-from .._misc import get_object
 
 
 class CacheActions(object):
