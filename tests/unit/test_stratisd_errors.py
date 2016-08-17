@@ -1,11 +1,11 @@
 """
-Test constructing StratisdError class.
+Test operation of StratisdConstants class and related classes.
 """
 
 
 import unittest
 
-from cli._stratisd_errors import StratisdErrorsGen
+from cli._stratisd_constants import StratisdConstants
 
 class BuildTestCase(unittest.TestCase):
     """
@@ -17,6 +17,6 @@ class BuildTestCase(unittest.TestCase):
         Test that building yields a class w/ the correct properties.
         """
         fields = {'FIELD1' : 2, 'FIELD2': 0}
-        klass = StratisdErrorsGen.build_class(fields)
+        klass = StratisdConstants.build_class('Test', fields)
         for key, item in fields.items():
             self.assertEqual(getattr(klass, key), item)

@@ -13,7 +13,7 @@ from .._dbus import Manager
 from .._errors import StratisCliRuntimeError
 from .._errors import StratisCliUnimplementedError
 
-from .._stratisd_errors import StratisdErrorsGen
+from .._stratisd_constants import StratisdErrorsGen
 
 class TopActions(object):
     """
@@ -27,7 +27,7 @@ class TopActions(object):
 
         :raises StratisCliRuntimeError:
         """
-        stratisd_errors = StratisdErrorsGen.get_errors()
+        stratisd_errors = StratisdErrorsGen.get_object()
 
         proxy = get_object(TOP_OBJECT)
 
@@ -56,7 +56,7 @@ class TopActions(object):
         :raises StratisCliRuntimeError:
         """
         # pylint: disable=unused-argument
-        stratisd_errors = StratisdErrorsGen.get_errors()
+        stratisd_errors = StratisdErrorsGen.get_object()
 
         proxy = get_object(TOP_OBJECT)
 
@@ -78,7 +78,7 @@ class TopActions(object):
 
         :raises StratisCliRuntimeError:
         """
-        stratisd_errors = StratisdErrorsGen.get_errors()
+        stratisd_errors = StratisdErrorsGen.get_object()
 
         proxy = get_object(TOP_OBJECT)
 

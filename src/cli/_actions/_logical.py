@@ -14,7 +14,7 @@ from .._constants import TOP_OBJECT
 from .._dbus import Manager
 from .._dbus import Pool
 
-from .._stratisd_errors import StratisdErrorsGen
+from .._stratisd_constants import StratisdErrorsGen
 
 
 class LogicalActions(object):
@@ -29,7 +29,7 @@ class LogicalActions(object):
 
         :raises StratisCliRuntimeError:
         """
-        stratisd_errors = StratisdErrorsGen.get_errors()
+        stratisd_errors = StratisdErrorsGen.get_object()
 
         proxy = get_object(TOP_OBJECT)
         (pool_object_path, rc, message) = \

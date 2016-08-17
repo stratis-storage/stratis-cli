@@ -1,10 +1,13 @@
 """
-Representing stratisd errors.
+Representing stratisd contants.
 """
 
+import abc
 import sys
 
 import dbus
+
+from six import add_metaclass
 
 from ._connection import get_object
 
@@ -15,13 +18,10 @@ from ._constants import TOP_OBJECT
 from ._dbus import Manager
 
 
-
-class StratisdErrorsGen(object):
+class StratisdConstants(object):
     """
-    Simple class to provide access to published stratisd errors.
+    Simple class to provide access to published stratisd constants.
     """
-
-    _STRATISD_ERRORS = None
 
     @staticmethod
     def parse_error_list(error_list):
@@ -43,50 +43,77 @@ class StratisdErrorsGen(object):
         return (values, descriptions)
 
     @staticmethod
-    def build_class(values):
+    def build_class(classname, values):
         """
         Build a StratisdErrors class with a bunch of class attributes which
         represent the stratisd errors.
 
+        :param str classname: the name of the class to construct
         :param values: the values for the attributes
         :type values: dict of String * Int32
         :rtype: type
         :returns: StratisdError class
         """
-        return type('StratisdErrors', (object,), values)
+        return type(classname, (object,), values)
 
     @staticmethod
-    def get_class(error_list):
+    def get_class(classname, error_list):
         """
         Get a class from ``error_list``.
 
+        :param str classname: the name of the class to construct
         :param error_list: list of errors published by stratisd
         :type error_list: Array of String * `a * String
 
         :returns: the class which supports a mapping from error codes to ints
         :rtype: type
         """
-        (values, _) = StratisdErrorsGen.parse_error_list(error_list)
-        return StratisdErrorsGen.build_class(values)
+        (values, _) = StratisdConstants.parse_error_list(error_list)
+        return StratisdConstants.build_class(classname, values)
 
-    @staticmethod
-    def get_errors():
+
+@add_metaclass(abc.ABCMeta)
+class StratisdConstantsGen(object):
+    """
+    Meta class for generating classes that define constants as class-level
+    attributes.
+    """
+    # pylint: disable=too-few-public-methods
+
+    _VALUES = None
+    _CLASSNAME = abc.abstractproperty(doc="the name of the class to construct")
+    _METHODNAME = abc.abstractproperty(doc="dbus method name")
+
+    @classmethod
+    def get_object(cls):
         """
-        Read the available stratisd errors from the bus.
+        Read the available list from the bus.
 
-        :return: StratisdErrors class with class attributes for stratisd errors
+        :return: class with class attributes for stratisd constants
         :rtype: type
         """
-        if StratisdErrorsGen._STRATISD_ERRORS is None:
+        if cls._VALUES is None:
             try:
-                error_codes = \
-                   Manager(get_object(TOP_OBJECT)).GetErrorCodes()
-                StratisdErrorsGen._STRATISD_ERRORS = \
-                   StratisdErrorsGen.get_class(error_codes)
+                values = \
+                   getattr(Manager(get_object(TOP_OBJECT)), cls._METHODNAME)()
+                cls._VALUES = StratisdConstants.get_class(
+                   cls._CLASSNAME,
+                   values
+                )
             except dbus.exceptions.DBusException as err:
                 message = str(err)
                 if message.startswith(SERVICE_UNKNOWN_ERROR):
                     sys.exit('Service %s unavailable.' % SERVICE)
                 raise err
 
-        return StratisdErrorsGen._STRATISD_ERRORS
+        return cls._VALUES
+
+
+class StratisdErrorsGen(StratisdConstantsGen):
+    """
+    Simple class to provide access to published stratisd errors.
+    """
+    # pylint: disable=too-few-public-methods
+
+    _CLASSNAME = 'StratisdErrors'
+    _METHODNAME = 'GetErrorCodes'
