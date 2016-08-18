@@ -62,7 +62,6 @@ class Destroy1TestCase(unittest.TestCase):
             self.fail("Should not fail because pool is not there.")
 
 
-@unittest.skip("waiting for DestroyPool to be fixed")
 class Destroy2TestCase(unittest.TestCase):
     """
     Test 'destroy' on database which contains the given pool.
@@ -90,7 +89,7 @@ class Destroy2TestCase(unittest.TestCase):
 
     def testWithoutForce(self):
         """
-        Whether or not destroy succeeds depends on the state of the pool.
+        The pool was just created, so must be destroyable w/out force.
         """
         try:
             command_line = \
@@ -99,21 +98,21 @@ class Destroy2TestCase(unittest.TestCase):
                [self._POOLNAME]
             subprocess.check_call(command_line)
         except subprocess.CalledProcessError:
-            self.fail("Should not fail because pool is not there.")
+            self.fail("Should always succeed, pool has no volumes.")
 
     def testWithForce(self):
         """
-        Whether or not destroy succeeds depends on the state of the pool.
+        Since it should succeed w/out force, it should succeed w/ force.
         """
         try:
             command_line = \
                ['python', _CLI] + \
                self._MENU + \
-               ['--force'] + \
+               ['--force', '1'] + \
                [self._POOLNAME]
             subprocess.check_call(command_line)
         except subprocess.CalledProcessError:
-            self.fail("Should not fail because pool is not there.")
+            self.fail("Should always succeed with any force value.")
 
 
 @unittest.skip("waiting for DestroyPool to be fixed")
