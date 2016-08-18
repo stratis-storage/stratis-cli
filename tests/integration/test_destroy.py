@@ -115,7 +115,6 @@ class Destroy2TestCase(unittest.TestCase):
             self.fail("Should always succeed with any force value.")
 
 
-@unittest.skip("waiting for DestroyPool to be fixed")
 class Destroy3TestCase(unittest.TestCase):
     """
     Test 'destroy' on database which contains the given pool and a volume.
@@ -150,9 +149,10 @@ class Destroy3TestCase(unittest.TestCase):
         """
         self._service.tearDown()
 
+    @unittest.skip("Underlying tools do not yet check if destroy is allowed.")
     def testWithoutForce(self):
         """
-        Whether or not destroy succeeds depends on the state of the pool.
+        This should fail with a force value of 0, since it has a volume.
         """
         try:
             command_line = \
@@ -160,19 +160,34 @@ class Destroy3TestCase(unittest.TestCase):
                self._MENU + \
                [self._POOLNAME]
             subprocess.check_call(command_line)
+            self.fail("No force value, and pool has an allocated volume.")
         except subprocess.CalledProcessError:
-            self.fail("Should not fail because pool is not there.")
+            pass
 
-    def testWithForce(self):
+    def testWithForce1(self):
         """
-        Whether or not destroy succeeds depends on the state of the pool.
+        Should succeed w/ force value of 1, since it has volumes but no data.
         """
         try:
             command_line = \
                ['python', _CLI] + \
                self._MENU + \
-               ['--force'] + \
+               ['--force', '1'] + \
                [self._POOLNAME]
             subprocess.check_call(command_line)
         except subprocess.CalledProcessError:
-            self.fail("Should not fail because pool is not there.")
+            self.fail("Should succeed with force value of 1.")
+
+    def testWithForce2(self):
+        """
+        Should succeed w/ force value of 2, since it has volumes but no data.
+        """
+        try:
+            command_line = \
+               ['python', _CLI] + \
+               self._MENU + \
+               ['--force', '2'] + \
+               [self._POOLNAME]
+            subprocess.check_call(command_line)
+        except subprocess.CalledProcessError:
+            self.fail("Should succeed with force value of 1.")
