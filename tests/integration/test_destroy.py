@@ -12,7 +12,6 @@ from ._misc import _device_list
 from ._misc import Service
 
 
-@unittest.skip("waiting for DestroyPool to be fixed")
 class Destroy1TestCase(unittest.TestCase):
     """
     Test 'destroy' on empty database.

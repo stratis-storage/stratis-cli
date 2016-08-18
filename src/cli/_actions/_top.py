@@ -100,17 +100,12 @@ class TopActions(object):
 
         :raises StratisCliRuntimeError:
         """
-        stratisd_errors = StratisdErrorsGen.get_object()
-
         proxy = get_object(TOP_OBJECT)
 
-        raise StratisCliUnimplementedError(
-           "Waiting for DestroyPool to take force parameter."
-        )
-
-        # pylint: disable=unreachable
         (_, rc, message) = \
            Manager(proxy).DestroyPool(namespace.name, namespace.force)
+
+        stratisd_errors = StratisdErrorsGen.get_object()
 
         if rc == stratisd_errors.STRATIS_POOL_NOTFOUND:
             return
