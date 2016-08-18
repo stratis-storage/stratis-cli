@@ -49,7 +49,6 @@ class CreateTestCase(unittest.TestCase):
             pass
 
 
-@unittest.skip("Waiting for CreatePool to take force parameter.")
 class Create2TestCase(unittest.TestCase):
     """
     Test 'create'.
@@ -70,6 +69,7 @@ class Create2TestCase(unittest.TestCase):
         """
         self._service.tearDown()
 
+    @unittest.skip("not really handling this")
     def testCreate(self):
         """
         Create expects success unless devices are already occupied.
@@ -92,14 +92,14 @@ class Create2TestCase(unittest.TestCase):
             command_line = \
                ['python', _CLI] + \
                self._MENU + \
-               ['--force'] + \
+               ['--force', '1'] + \
                [self._POOLNAME] + \
                [d.device_node for d in _device_list(_DEVICES, 1)]
             subprocess.check_call(command_line)
         except subprocess.CalledProcessError:
             self.fail("Should always succeed when force is set.")
 
-@unittest.skip("Waiting for CreatePool to take force parameter.")
+
 class Create3TestCase(unittest.TestCase):
     """
     Test 'create' on name collision.
@@ -136,8 +136,9 @@ class Create3TestCase(unittest.TestCase):
                [self._POOLNAME] + \
                [d.device_node for d in _device_list(_DEVICES, 1)]
             subprocess.check_call(command_line)
-        except subprocess.CalledProcessError as err:
-            self.fail("Return code: %s" % err.returncode)
+            self.fail("Should fail on name collision.")
+        except subprocess.CalledProcessError:
+            pass
 
     def testForce(self):
         """
@@ -148,9 +149,10 @@ class Create3TestCase(unittest.TestCase):
             command_line = \
                ['python', _CLI] + \
                self._MENU + \
-               ['--force'] + \
+               ['--force', '1'] + \
                [self._POOLNAME] + \
                [d.device_node for d in _device_list(_DEVICES, 1)]
             subprocess.check_call(command_line)
+            self.fail("Should fail on name collision, regardless of force.")
         except subprocess.CalledProcessError:
-            self.fail("Should always succeed when force is set.")
+            pass

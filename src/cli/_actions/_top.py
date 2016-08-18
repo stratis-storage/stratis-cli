@@ -53,11 +53,6 @@ class TopActions(object):
                "has no corresponding value"
             )
 
-        raise StratisCliUnimplementedError(
-           "Waiting for CreatePool to take force parameter."
-        )
-
-        # pylint: disable=unreachable
         (_, rc, message) = Manager(proxy).CreatePool(
            namespace.name,
            namespace.device,
