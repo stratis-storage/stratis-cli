@@ -73,11 +73,11 @@ class TopActions(object):
         :raises StratisCliRuntimeError:
         """
         # pylint: disable=unused-argument
-        stratisd_errors = StratisdErrorsGen.get_object()
-
         proxy = get_object(TOP_OBJECT)
 
         (result, rc, message) = Manager(proxy).ListPools()
+
+        stratisd_errors = StratisdErrorsGen.get_object()
         if rc != stratisd_errors.STRATIS_OK:
             raise StratisCliRuntimeError(rc, message)
 
