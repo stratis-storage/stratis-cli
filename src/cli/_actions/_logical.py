@@ -29,12 +29,11 @@ class LogicalActions(object):
 
         :raises StratisCliRuntimeError:
         """
-        stratisd_errors = StratisdErrorsGen.get_object()
-
         proxy = get_object(TOP_OBJECT)
         (pool_object_path, rc, message) = \
             Manager(proxy).GetPoolObjectPath(namespace.pool)
 
+        stratisd_errors = StratisdErrorsGen.get_object()
         if rc != stratisd_errors.STRATIS_OK:
             raise StratisCliRuntimeError(rc, message)
 
