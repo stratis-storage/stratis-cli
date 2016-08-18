@@ -2,10 +2,10 @@
 Test 'rename'.
 """
 
-import subprocess
 import unittest
 
-from ._constants import _CLI
+from cli._main import run
+from cli._errors import StratisCliRuntimeError
 
 from ._misc import Service
 
@@ -36,15 +36,6 @@ class Rename1TestCase(unittest.TestCase):
         """
         This should fail because original name does not exist.
         """
-        try:
-            command_line = \
-               ['python', _CLI] + \
-               self._MENU + \
-               [self._POOLNAME] + \
-               [self._NEW_POOLNAME]
-            subprocess.check_call(command_line)
-            self.fail(
-               "Should have failed because %s does not exist." % self._POOLNAME
-            )
-        except subprocess.CalledProcessError:
-            pass
+        command_line = self._MENU + [self._POOLNAME] + [self._NEW_POOLNAME]
+        with self.assertRaises(StratisCliRuntimeError):
+            any(run(command_line))

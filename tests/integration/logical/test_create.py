@@ -2,10 +2,11 @@
 Test 'create'.
 """
 
-import subprocess
 import unittest
 
-from .._constants import _CLI
+from cli._main import run
+from cli._errors import StratisCliRuntimeError
+
 from .._constants import _DEVICES
 
 from .._misc import _device_list
@@ -37,16 +38,9 @@ class CreateTestCase(unittest.TestCase):
         """
         Creation of the volume must fail since pool is not specified.
         """
-        try:
-            command_line = \
-               ['python', _CLI] + \
-               self._MENU + \
-               [self._POOLNAME] + \
-               self._VOLNAMES
-            subprocess.check_call(command_line)
-            self.fail("Should have failed, since there is no pool.")
-        except subprocess.CalledProcessError:
-            pass
+        command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
+        with self.assertRaises(StratisCliRuntimeError):
+            all(run(command_line))
 
 
 @unittest.skip("Creation of a volume could fail if no room in pool.")
@@ -65,10 +59,9 @@ class Create2TestCase(unittest.TestCase):
         self._service = Service()
         self._service.setUp()
         command_line = \
-           ['python', _CLI, 'create'] + \
-           [self._POOLNAME] + \
+           ['create'] + [self._POOLNAME] + \
            [d.device_node for d in _device_list(_DEVICES, 1)]
-        subprocess.check_call(command_line)
+        all(run(command_line))
 
     def tearDown(self):
         """
@@ -80,12 +73,5 @@ class Create2TestCase(unittest.TestCase):
         """
         Creation of the volume should succeed since pool is available.
         """
-        try:
-            command_line = \
-               ['python', _CLI] + \
-               self._MENU + \
-               [self._POOLNAME] + \
-               self._VOLNAMES
-            subprocess.check_call(command_line)
-        except subprocess.CalledProcessError:
-            self.fail("Should have failed, since there is no pool.")
+        command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
+        all(run(command_line))

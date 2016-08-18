@@ -2,10 +2,9 @@
 Test 'create'.
 """
 
-import subprocess
 import unittest
 
-from ._constants import _CLI
+from cli._main import run
 
 from ._misc import Service
 
@@ -33,51 +32,28 @@ class StratisTestCase(unittest.TestCase):
         """
         Getting version should just succeed.
         """
-        try:
-            command_line = \
-               ['python', _CLI] + \
-               self._MENU + \
-               ['--version']
-            subprocess.check_call(command_line)
-        except subprocess.CalledProcessError:
-            self.fail("--version should always succeed.")
+        command_line = self._MENU + ['--version']
+        all(run(command_line))
 
     def testStratisLogLevel(self):
         """
         Getting log level should just succeed.
         """
-        try:
-            command_line = \
-               ['python', _CLI] + \
-               self._MENU + \
-               ['--log-level']
-            subprocess.check_call(command_line)
-        except subprocess.CalledProcessError:
-            self.fail("--log-level should always succeed.")
+        command_line = self._MENU + ['--log-level']
+        all(run(command_line))
 
     def testStratisNoOptions(self):
         """
         Exactly one option should be set, so this should fail.
         """
-        try:
-            command_line = \
-               ['python', _CLI] + \
-               self._MENU
-            subprocess.check_call(command_line)
-            self.fail('stratis with no option must fail')
-        except subprocess.CalledProcessError:
-            pass
+        command_line = self._MENU
+        with self.assertRaises(SystemExit):
+            all(run(command_line))
 
     def testStratisTwoOptons(self):
         """
         Exactly one option should be set, so this should fail.
         """
-        try:
-            command_line = \
-               ['python', _CLI] + \
-               self._MENU + \
-               ['--log-level', '--version']
-            subprocess.check_call(command_line)
-            self.fail('stratis with more than one option must fail')
-        except subprocess.CalledProcessError:
-            pass
+        command_line = self._MENU + ['--log-level', '--version']
+        with self.assertRaises(SystemExit):
+            all(run(command_line))

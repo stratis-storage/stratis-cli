@@ -2,10 +2,11 @@
 Test 'create'.
 """
 
-import subprocess
 import unittest
 
-from ._constants import _CLI
+from cli._main import run
+from cli._errors import StratisCliRuntimeError
+
 from ._constants import _DEVICES
 
 from ._misc import _device_list
@@ -36,17 +37,13 @@ class CreateTestCase(unittest.TestCase):
         """
         Parser error on all redundancy that is not 'none'.
         """
-        try:
-            command_line = \
-               ['python', _CLI] + \
-               self._MENU + \
-               ['--redundancy', 'raid6'] + \
-               [self._POOLNAME] + \
-               [d.device_node for d in _device_list(_DEVICES, 1)]
-            subprocess.check_call(command_line)
-            self.fail("Should have failed on --redundancy value.")
-        except subprocess.CalledProcessError:
-            pass
+        command_line = \
+           self._MENU + \
+           ['--redundancy', 'raid6'] + \
+           [self._POOLNAME] + \
+           [d.device_node for d in _device_list(_DEVICES, 1)]
+        with self.assertRaises(SystemExit):
+            all(run(command_line))
 
 
 class Create2TestCase(unittest.TestCase):
@@ -74,30 +71,22 @@ class Create2TestCase(unittest.TestCase):
         """
         Create expects success unless devices are already occupied.
         """
-        try:
-            command_line = \
-               ['python', _CLI] + \
-               self._MENU + \
-               [self._POOLNAME] + \
-               [d.device_node for d in _device_list(_DEVICES, 1)]
-            subprocess.check_call(command_line)
-        except subprocess.CalledProcessError as err:
-            self.fail("Return code: %s" % err.returncode)
+        command_line = \
+           self._MENU + \
+           [self._POOLNAME] + \
+           [d.device_node for d in _device_list(_DEVICES, 1)]
+        all(run(command_line))
 
     def testForce(self):
         """
         Create should always succeed with force.
         """
-        try:
-            command_line = \
-               ['python', _CLI] + \
-               self._MENU + \
-               ['--force', '1'] + \
-               [self._POOLNAME] + \
-               [d.device_node for d in _device_list(_DEVICES, 1)]
-            subprocess.check_call(command_line)
-        except subprocess.CalledProcessError:
-            self.fail("Should always succeed when force is set.")
+        command_line = \
+           self._MENU + \
+           ['--force', '1'] + \
+           [self._POOLNAME] + \
+           [d.device_node for d in _device_list(_DEVICES, 1)]
+        all(run(command_line))
 
 
 class Create3TestCase(unittest.TestCase):
@@ -114,10 +103,9 @@ class Create3TestCase(unittest.TestCase):
         self._service = Service()
         self._service.setUp()
         command_line = \
-           ['python', _CLI, 'create'] + \
-           [self._POOLNAME] + \
+           ['create', self._POOLNAME] + \
            [d.device_node for d in _device_list(_DEVICES, 1)]
-        subprocess.check_call(command_line)
+        all(run(command_line))
 
     def tearDown(self):
         """
@@ -129,30 +117,22 @@ class Create3TestCase(unittest.TestCase):
         """
         Create should fail trying to create new pool with same name as previous.
         """
-        try:
-            command_line = \
-               ['python', _CLI] + \
-               self._MENU + \
-               [self._POOLNAME] + \
-               [d.device_node for d in _device_list(_DEVICES, 1)]
-            subprocess.check_call(command_line)
-            self.fail("Should fail on name collision.")
-        except subprocess.CalledProcessError:
-            pass
+        command_line = \
+           self._MENU + \
+           [self._POOLNAME] + \
+           [d.device_node for d in _device_list(_DEVICES, 1)]
+        with self.assertRaises(StratisCliRuntimeError):
+            all(run(command_line))
 
     def testForce(self):
         """
         Create should fail trying to create new pool with same name as previous,
         regardless of --force parameter.
         """
-        try:
-            command_line = \
-               ['python', _CLI] + \
-               self._MENU + \
-               ['--force', '1'] + \
-               [self._POOLNAME] + \
-               [d.device_node for d in _device_list(_DEVICES, 1)]
-            subprocess.check_call(command_line)
-            self.fail("Should fail on name collision, regardless of force.")
-        except subprocess.CalledProcessError:
-            pass
+        command_line = \
+           self._MENU + \
+           ['--force', '1'] + \
+           [self._POOLNAME] + \
+           [d.device_node for d in _device_list(_DEVICES, 1)]
+        with self.assertRaises(StratisCliRuntimeError):
+            all(run(command_line))

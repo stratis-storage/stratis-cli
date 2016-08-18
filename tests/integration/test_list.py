@@ -2,10 +2,10 @@
 Test 'create'.
 """
 
-import subprocess
 import unittest
 
-from ._constants import _CLI
+from cli._main import run
+
 from ._constants import _DEVICES
 
 from ._misc import _device_list
@@ -35,13 +35,8 @@ class ListTestCase(unittest.TestCase):
         """
         List should just succeed.
         """
-        try:
-            command_line = \
-               ['python', _CLI] + \
-               self._MENU
-            subprocess.check_call(command_line)
-        except subprocess.CalledProcessError:
-            self.fail("List should always succeed.")
+        command_line = self._MENU
+        all(run(command_line))
 
 
 class List2TestCase(unittest.TestCase):
@@ -58,10 +53,9 @@ class List2TestCase(unittest.TestCase):
         self._service = Service()
         self._service.setUp()
         command_line = \
-           ['python', _CLI, 'create'] + \
-           [self._POOLNAME] + \
+           ['create'] + [self._POOLNAME] + \
            [d.device_node for d in _device_list(_DEVICES, 1)]
-        subprocess.check_call(command_line)
+        all(run(command_line))
 
     def tearDown(self):
         """
@@ -73,10 +67,5 @@ class List2TestCase(unittest.TestCase):
         """
         List should just succeed.
         """
-        try:
-            command_line = \
-               ['python', _CLI] + \
-               self._MENU
-            subprocess.check_call(command_line)
-        except subprocess.CalledProcessError:
-            self.fail("List should always succeed.")
+        command_line = self._MENU
+        all(run(command_line))
