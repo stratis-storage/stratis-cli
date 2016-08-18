@@ -112,9 +112,11 @@ def build_destroy_parser(parser):
     )
     parser.add_argument(
        '--force',
-       action="store_true",
-       default=False,
-       help="disregard the presence of any data or metadata"
+       action="store",
+       choices=[0, 1, 2],
+       default=0,
+       help="integer indicating how forceful to be",
+       type=int
     )
     parser.set_defaults(func=TopActions.destroy_pool)
     return parser

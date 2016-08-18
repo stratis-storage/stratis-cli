@@ -55,7 +55,7 @@ class Destroy1TestCase(unittest.TestCase):
             command_line = \
                ['python', _CLI] + \
                self._MENU + \
-               ['--force'] + \
+               ['--force', '2'] + \
                [self._POOLNAME]
             subprocess.check_call(command_line)
         except subprocess.CalledProcessError:
