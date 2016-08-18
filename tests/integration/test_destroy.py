@@ -149,7 +149,7 @@ class Destroy3TestCase(unittest.TestCase):
         """
         self._service.tearDown()
 
-    @unittest.skip("Underlying tools do not yet check if destroy is allowed.")
+    @unittest.expectedFailure
     def testWithoutForce(self):
         """
         This should fail with a force value of 0, since it has a volume.
