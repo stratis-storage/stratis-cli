@@ -73,13 +73,18 @@ class LogicalActions(object):
         proxy = get_object(TOP_OBJECT)
         (pool_object_path, rc, message) = \
             Manager(proxy).GetPoolObjectPath(namespace.pool)
-        if rc != 0:
-            return (rc, message)
 
-        _ = get_object(pool_object_path)
-        raise StratisCliUnimplementedError(
-           'Waiting until DestroyVolume becomes DestroyVolumes'
-        )
+        stratisd_errors = StratisdErrorsGen.get_object()
+        if rc != stratisd_errors.STRATIS_OK:
+            raise StratisCliRuntimeError(rc, message)
+
+        pool_object = get_object(pool_object_path)
+        (_, rc, message) = \
+           Pool(pool_object).DestroyVolumes(namespace.volume, namespace.force)
+        if rc != stratisd_errors.STRATIS_OK:
+            raise StratisCliRuntimeError(rc, message)
+
+        return
 
     @staticmethod
     def snapshot(namespace):

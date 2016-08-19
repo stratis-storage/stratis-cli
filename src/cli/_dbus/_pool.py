@@ -40,11 +40,19 @@ class Pool(object):
            dbus_interface=self._INTERFACE_NAME
         )
 
-    def DestroyVolume(self):
+    def DestroyVolumes(self, volumes, force):
         """
-        Destroy a volume.
+        Destroy volumes in the pool.
+
+        :param volumes: list of volume names
+        :type volumes: list of str
+        :param int force: level of forcing
         """
-        raise StratisCliUnimplementedError()
+        return self._dbus_object.DestroyVolumes(
+           volumes,
+           force,
+           dbus_interface=self._INTERFACE_NAME
+        )
 
     def ListCache(self):
         """
