@@ -6,6 +6,7 @@ import unittest
 
 from cli._main import run
 from cli._errors import StratisCliRuntimeError
+from cli._stratisd_constants import StratisdErrorsGen
 
 from .._constants import _DEVICES
 
@@ -39,8 +40,10 @@ class CreateTestCase(unittest.TestCase):
         Creation of the volume must fail since pool is not specified.
         """
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
-        with self.assertRaises(StratisCliRuntimeError):
+        with self.assertRaises(StratisCliRuntimeError) as cm:
             all(run(command_line))
+        expected_error = StratisdErrorsGen.get_object().STRATIS_POOL_NOTFOUND
+        self.assertEqual(cm.exception.rc, expected_error)
 
 
 @unittest.skip("Creation of a volume could fail if no room in pool.")
