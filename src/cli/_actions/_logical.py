@@ -56,16 +56,20 @@ class LogicalActions(object):
         proxy = get_object(TOP_OBJECT)
         (pool_object_path, rc, message) = \
             Manager(proxy).GetPoolObjectPath(namespace.pool)
-        if rc != 0:
-            return (rc, message)
+
+        stratisd_errors = StratisdErrorsGen.get_object()
+        if rc != stratisd_errors.STRATIS_OK:
+            raise StratisCliRuntimeError(rc, message)
 
         pool_object = get_object(pool_object_path)
         (result, rc, message) = Pool(pool_object).ListVolumes()
+        if rc != stratisd_errors.STRATIS_OK:
+            raise StratisCliRuntimeError(rc, message)
 
         for item in result:
             print(item)
 
-        return (rc, message)
+        return
 
     @staticmethod
     def destroy_volumes(namespace):
