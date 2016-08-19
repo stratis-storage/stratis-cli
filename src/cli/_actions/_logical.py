@@ -37,9 +37,11 @@ class LogicalActions(object):
         if rc != stratisd_errors.STRATIS_OK:
             raise StratisCliRuntimeError(rc, message)
 
+        volume_list = [(x, '', '') for x in namespace.volume]
+
         pool_object = get_object(pool_object_path)
         (_, rc, message) = \
-            Pool(pool_object).CreateVolumes(namespace.volume)
+            Pool(pool_object).CreateVolumes(volume_list)
 
         if rc != stratisd_errors.STRATIS_OK:
             raise StratisCliRuntimeError(rc, message)
