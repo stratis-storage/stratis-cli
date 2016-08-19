@@ -78,3 +78,43 @@ class Create2TestCase(unittest.TestCase):
         """
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
         all(run(command_line))
+
+
+class Create3TestCase(unittest.TestCase):
+    """
+    Test creating a volume w/ a pool when volume of same name already exists.
+    A failure should not result if volume has no data.
+    A failure should result if volume has data.
+    A --force option would allow to create a new volume where the old,
+    occupied one was.
+    """
+    _MENU = ['logical', 'create']
+    _POOLNAME = 'deadpool'
+    _VOLNAMES = ['oubliette', 'mnemosyne']
+
+    def setUp(self):
+        """
+        Start the stratisd daemon with the simulator.
+        """
+        self._service = Service()
+        self._service.setUp()
+        command_line = \
+           ['create'] + [self._POOLNAME] + \
+           [d.device_node for d in _device_list(_DEVICES, 1)]
+        all(run(command_line))
+        command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
+        all(run(command_line))
+
+    def tearDown(self):
+        """
+        Stop the stratisd simulator and daemon.
+        """
+        self._service.tearDown()
+
+    def testCreation(self):
+        """
+        Creation of this volume should succeed, because the old volume is
+        unused.
+        """
+        command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
+        all(run(command_line))
