@@ -10,12 +10,13 @@ from .._connection import get_object
 
 from .._constants import TOP_OBJECT
 
-from .._dbus import Manager
 from .._dbus import Pool
 
 from .._errors import StratisCliRuntimeError
 
 from .._stratisd_constants import StratisdErrorsGen
+
+from ._misc import get_pool
 
 
 class PhysicalActions(object):
@@ -29,16 +30,9 @@ class PhysicalActions(object):
         List devices in a pool.
         """
         proxy = get_object(TOP_OBJECT)
-        (pool_object_path, rc, message) = \
-            Manager(proxy).GetPoolObjectPath(namespace.name)
-
-        stratisd_errors = StratisdErrorsGen.get_object()
-        if rc != stratisd_errors.STRATIS_OK:
-            raise StratisCliRuntimeError(rc, message)
-
-        pool_object = get_object(pool_object_path)
+        pool_object = get_pool(proxy, namespace.name)
         (result, rc, message) = Pool(pool_object).ListDevs()
-        if rc != stratisd_errors.STRATIS_OK:
+        if rc != StratisdErrorsGen.get_object().STRATIS_OK:
             raise StratisCliRuntimeError(rc, message)
 
         for item in result:

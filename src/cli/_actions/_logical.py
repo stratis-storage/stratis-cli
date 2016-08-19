@@ -16,6 +16,8 @@ from .._dbus import Pool
 
 from .._stratisd_constants import StratisdErrorsGen
 
+from ._misc import get_pool
+
 
 class LogicalActions(object):
     """
@@ -30,20 +32,13 @@ class LogicalActions(object):
         :raises StratisCliRuntimeError:
         """
         proxy = get_object(TOP_OBJECT)
-        (pool_object_path, rc, message) = \
-            Manager(proxy).GetPoolObjectPath(namespace.pool)
-
-        stratisd_errors = StratisdErrorsGen.get_object()
-        if rc != stratisd_errors.STRATIS_OK:
-            raise StratisCliRuntimeError(rc, message)
+        pool_object = get_pool(proxy, namespace.pool)
 
         volume_list = [(x, '', '') for x in namespace.volume]
-
-        pool_object = get_object(pool_object_path)
         (_, rc, message) = \
             Pool(pool_object).CreateVolumes(volume_list)
 
-        if rc != stratisd_errors.STRATIS_OK:
+        if rc != StratisdErrorsGen().get_object().STRATIS_OK:
             raise StratisCliRuntimeError(rc, message)
 
         return
@@ -54,16 +49,9 @@ class LogicalActions(object):
         List the volumes in a pool.
         """
         proxy = get_object(TOP_OBJECT)
-        (pool_object_path, rc, message) = \
-            Manager(proxy).GetPoolObjectPath(namespace.pool)
-
-        stratisd_errors = StratisdErrorsGen.get_object()
-        if rc != stratisd_errors.STRATIS_OK:
-            raise StratisCliRuntimeError(rc, message)
-
-        pool_object = get_object(pool_object_path)
+        pool_object = get_pool(proxy, namespace.pool)
         (result, rc, message) = Pool(pool_object).ListVolumes()
-        if rc != stratisd_errors.STRATIS_OK:
+        if rc != StratisdErrorsGen().get_object().STRATIS_OK:
             raise StratisCliRuntimeError(rc, message)
 
         for item in result:
@@ -77,17 +65,10 @@ class LogicalActions(object):
         Destroy volumes in a pool.
         """
         proxy = get_object(TOP_OBJECT)
-        (pool_object_path, rc, message) = \
-            Manager(proxy).GetPoolObjectPath(namespace.pool)
-
-        stratisd_errors = StratisdErrorsGen.get_object()
-        if rc != stratisd_errors.STRATIS_OK:
-            raise StratisCliRuntimeError(rc, message)
-
-        pool_object = get_object(pool_object_path)
+        pool_object = get_pool(proxy, namespace.pool)
         (_, rc, message) = \
            Pool(pool_object).DestroyVolumes(namespace.volume, namespace.force)
-        if rc != stratisd_errors.STRATIS_OK:
+        if rc != StratisdErrorsGen().get_object().STRATIS_OK:
             raise StratisCliRuntimeError(rc, message)
 
         return
