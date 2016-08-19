@@ -136,19 +136,19 @@ def build_logical_parser(parser):
        )
     _SUBPARSER_TABLE['create'](subparser_table['create'])
 
-    subparser_table['list'] = \
-       subparsers.add_parser(
-          'list',
-          description="List Information about Logical Volumes in Pool"
-       )
-    _SUBPARSER_TABLE['list'](subparser_table['list'])
-
     subparser_table['destroy'] = \
        subparsers.add_parser(
           'destroy',
           description="Destroy Volumes Belonging to a Pool"
        )
     _SUBPARSER_TABLE['destroy'](subparser_table['destroy'])
+
+    subparser_table['list'] = \
+       subparsers.add_parser(
+          'list',
+          description="List Information about Logical Volumes in Pool"
+       )
+    _SUBPARSER_TABLE['list'](subparser_table['list'])
 
     subparser_table['snapshot'] = \
        subparsers.add_parser(
