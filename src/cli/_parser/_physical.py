@@ -6,7 +6,6 @@ Parser for operations having to with devices in the pool.
 from .._actions import PhysicalActions
 
 from ._cache import build_cache_parser
-from ._lib import device_from_path
 
 
 def build_physical_add_parser(parser):
@@ -26,8 +25,7 @@ def build_physical_add_parser(parser):
        'device',
        help='make device D a member of this pool',
        metavar='D',
-       nargs='+',
-       type=device_from_path
+       nargs='+'
     )
     parser.set_defaults(func=PhysicalActions.add_device)
     return parser

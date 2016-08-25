@@ -10,7 +10,6 @@ from .._actions import TopActions
 
 from .._version import __version__
 
-from ._lib import device_from_path
 from ._logical import build_logical_parser
 from ._physical import build_physical_parser
 
@@ -77,8 +76,7 @@ def build_create_parser(parser):
        'device',
        help='make device D a member of this pool',
        metavar='D',
-       nargs='+',
-       type=device_from_path
+       nargs='+'
     )
     parser.add_argument(
        '--force',
