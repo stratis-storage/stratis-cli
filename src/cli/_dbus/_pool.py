@@ -31,6 +31,15 @@ class Pool(object):
            dbus_interface=self._INTERFACE_NAME
         )
 
+    def AddDevs(self, devices):
+        """
+        Add devices to the pool.
+        """
+        return self._dbus_object.AddDevs(
+           devices,
+           dbus_interface=self._INTERFACE_NAME
+        )
+
     def CreateVolumes(self, volumes):
         """
         Create volumes from the pool.

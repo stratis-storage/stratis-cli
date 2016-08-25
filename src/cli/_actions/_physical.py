@@ -45,5 +45,9 @@ class PhysicalActions(object):
         """
         Add a device to a pool.
         """
-        # pylint: disable=unused-argument
-        raise StratisCliUnimplementedError('No way to add a device to a pool.')
+        proxy = get_object(TOP_OBJECT)
+        pool_object = get_pool(proxy, namespace.name)
+        (result, rc, message) = Pool(pool_object).AddDevs(namespace.device)
+        if rc != StratisdErrorsGen.get_object().STRATIS_OK:
+            raise StratisCliRuntimeError(rc, message)
+        return
