@@ -13,13 +13,30 @@ passing them to the dbus API, and displaying the results returned by stratisd
 when appropriate. It is stateless and does not contain any storage-related
 logic.
 
+Installing
+----------
+
+To install, check out the source, and use the included setup script, as::
+
+   > python setup.py install
+
 Running
 -------
-To run the CLI, check out the source, change to the top directory and enter::
+After installing, running just requires invoking the script, as::
 
-   > python src/main.py --help
+   > stratis --help
 
-You can find the list of dependencies in the Python setup file.
+or::
+
+   > stratis --version
+
+To run without installing, check out the source, change to the top directory
+and enter::
+
+   > ./bin/stratis --help
+
+making sure that your PYTHONPATH environment variable is set to the CLI src
+directory.
 
 If you are not running the Stratis sdbus service most actions will be
 unavailable, but all help menus should work properly.
@@ -28,8 +45,8 @@ Testing
 -------
 There are some unit and integration tests in the tests directory.
 
-These can be run by setting your PYTHONPATH variable to the CLI src directory
-and entering::
+These can be run by setting your PYTHONPATH environment variable to the CLI
+src directory and entering::
 
    > py.test tests
 
@@ -54,7 +71,7 @@ Other are specific to stratis.
 The parser package consists solely of mechanisms for constructing parsers
 using the Python argparse package.
 
-The actions package contains code that mediates between the parser and the 
+The actions package contains code that mediates between the parser and the
 dbus package. It contains functions that are automatically invoked by the
 parser during execution. Each function takes a parser Namespace argument,
 interprets it, and makes the necessary dbus calls.
