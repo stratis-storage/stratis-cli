@@ -4,8 +4,6 @@ Miscellaneous physical actions.
 
 from __future__ import print_function
 
-from .._errors import StratisCliUnimplementedError
-
 from .._connection import get_object
 
 from .._constants import TOP_OBJECT
@@ -47,7 +45,7 @@ class PhysicalActions(object):
         """
         proxy = get_object(TOP_OBJECT)
         pool_object = get_pool(proxy, namespace.name)
-        (result, rc, message) = Pool(pool_object).AddDevs(namespace.device)
+        (_, rc, message) = Pool(pool_object).AddDevs(namespace.device)
         if rc != StratisdErrorsGen.get_object().STRATIS_OK:
             raise StratisCliRuntimeError(rc, message)
         return
