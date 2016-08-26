@@ -1,0 +1,23 @@
+sudo: false
+
+os:
+  - linux
+
+branches:
+  only:
+    - master
+language: python
+
+env:
+  matrix:
+    - TASK=lint
+    - TASK=test
+    - TASK=coverage
+
+script:
+    - make -f Makefile $TASK
+
+python:
+  - "2.7"
+  - "3.4"
+  - "pypy"
