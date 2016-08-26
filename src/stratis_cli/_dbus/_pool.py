@@ -89,6 +89,7 @@ class Pool(object):
         """
         Remove a cache from a pool.
         """
+        # pylint: disable=no-self-use
         raise StratisCliUnimplementedError()
 
     @property
