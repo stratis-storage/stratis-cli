@@ -4,7 +4,7 @@ Test miscellaneous methods.
 import time
 import unittest
 
-from cli._connection import get_object
+from stratis_cli._connection import get_object
 
 from ._misc import Service
 

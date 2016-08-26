@@ -4,7 +4,7 @@ Test 'create'.
 
 import unittest
 
-from cli._main import run
+from stratis_cli._main import run
 
 from ._misc import Service
 

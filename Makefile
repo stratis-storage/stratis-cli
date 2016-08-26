@@ -17,13 +17,13 @@ PYREVERSE_OPTS = --output=pdf
 view:
 	-rm -Rf _pyreverse
 	mkdir _pyreverse
-	PYTHONPATH=src pyreverse ${PYREVERSE_OPTS} --project="cli" src/cli
-	mv classes_cli.pdf _pyreverse
-	mv packages_cli.pdf _pyreverse
+	PYTHONPATH=src pyreverse ${PYREVERSE_OPTS} --project="stratis-cli" src/stratis_cli
+	mv classes_stratis_cli.pdf _pyreverse
+	mv packages_stratis_cli.pdf _pyreverse
 
 .PHONY: archive
 archive:
-	git archive --output=./cli.tar.gz HEAD
+	git archive --output=./stratis_cli.tar.gz HEAD
 
 .PHONY: upload-release
 upload-release:

@@ -9,11 +9,11 @@ def local_file(name):
 
 README = local_file("README.rst")
 
-with open(local_file("src/cli/_version.py")) as o:
+with open(local_file("src/stratis_cli/_version.py")) as o:
         exec(o.read())
 
 setuptools.setup(
-    name='cli',
+    name='stratis-cli',
     version=__version__,
     author='Anne Mulhern',
     author_email='amulhern@redhat.com',

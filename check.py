@@ -5,7 +5,7 @@ import subprocess
 import sys
 
 arg_map = {
-   "src/cli" : [
+   "src/stratis_cli" : [
       "--reports=no",
       "--disable=I",
       "--disable=bad-continuation",

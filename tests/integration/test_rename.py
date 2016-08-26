@@ -4,8 +4,8 @@ Test 'rename'.
 
 import unittest
 
-from cli._main import run
-from cli._errors import StratisCliRuntimeError
+from stratis_cli._main import run
+from stratis_cli._errors import StratisCliRuntimeError
 
 from ._misc import Service
 

@@ -1,7 +1,7 @@
 import os
 import sys
 
-from cli import run
+from stratis_cli import run
 
 def main():
     execution = run(sys.argv[1:])
