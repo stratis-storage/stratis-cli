@@ -50,7 +50,14 @@ src directory and entering::
 
    > py.test tests
 
-at the command prompt.
+at the command prompt. Entering::
+
+   > tox
+
+will cause some tests to be run in the tox virtual environment. Integration
+tests, which requires the CLI to connect with the Stratis daemon, will not
+be run.
+
 
 General Principles
 ------------------
