@@ -113,8 +113,7 @@ def build_logical_snapshot_parser(parser):
     parser.add_argument(
        'volume',
        help='snapshot volume S of origin',
-       metavar='S',
-       nargs='+'
+       metavar='S'
     )
     parser.set_defaults(func=LogicalActions.snapshot)
     return parser

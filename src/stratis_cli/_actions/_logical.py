@@ -19,18 +19,18 @@ Miscellaneous logical actions.
 from __future__ import print_function
 
 from .._errors import StratisCliRuntimeError
-from .._errors import StratisCliUnimplementedError
 
 from .._connection import get_object
 
 from .._constants import TOP_OBJECT
 
-from .._dbus import Manager
 from .._dbus import Pool
+from .._dbus import Volume
 
 from .._stratisd_constants import StratisdErrorsGen
 
 from ._misc import get_pool
+from ._misc import get_volume
 
 
 class LogicalActions(object):
@@ -93,12 +93,10 @@ class LogicalActions(object):
         Create a snapshot of an existing volume.
         """
         proxy = get_object(TOP_OBJECT)
-        (pool_object_path, rc, message) = \
-            Manager(proxy).GetPoolObjectPath(namespace.pool)
-        if rc != 0:
-            return (rc, message)
+        volume_object = get_volume(proxy, namespace.pool, namespace.origin)
+        (_, rc, message) = \
+           Volume(volume_object).CreateSnapshot(namespace.volume)
+        if rc != StratisdErrorsGen().get_object().STRATIS_OK:
+            raise StratisCliRuntimeError(rc, message)
 
-        _ = get_object(pool_object_path)
-        raise StratisCliUnimplementedError(
-           "Do not know how to do a snapshot at this time."
-        )
+        return
