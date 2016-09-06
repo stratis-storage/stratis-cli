@@ -95,15 +95,6 @@ class Destroy2TestCase(unittest.TestCase):
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
         all(run(command_line))
 
-    def testForce(self):
-        """
-        Destruction of the volume must succeed since pool exists and at end
-        volume is gone.
-        """
-        command_line = \
-           self._MENU + [self._POOLNAME] + self._VOLNAMES + ['--force', '1']
-        all(run(command_line))
-
 
 class Destroy3TestCase(unittest.TestCase):
     """
@@ -141,13 +132,4 @@ class Destroy3TestCase(unittest.TestCase):
         volume is gone.
         """
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
-        all(run(command_line))
-
-    def testForce(self):
-        """
-        Destruction of the volume must succeed since pool exists and at end
-        volume is gone.
-        """
-        command_line = \
-           self._MENU + [self._POOLNAME] + self._VOLNAMES + ['--force', '1']
         all(run(command_line))

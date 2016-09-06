@@ -91,17 +91,6 @@ class Create2TestCase(unittest.TestCase):
            [d.device_node for d in _device_list(_DEVICES, 1)]
         all(run(command_line))
 
-    def testForce(self):
-        """
-        Create should always succeed with force.
-        """
-        command_line = \
-           self._MENU + \
-           ['--force', '1'] + \
-           [self._POOLNAME] + \
-           [d.device_node for d in _device_list(_DEVICES, 1)]
-        all(run(command_line))
-
 
 class Create3TestCase(unittest.TestCase):
     """
@@ -133,19 +122,6 @@ class Create3TestCase(unittest.TestCase):
         """
         command_line = \
            self._MENU + \
-           [self._POOLNAME] + \
-           [d.device_node for d in _device_list(_DEVICES, 1)]
-        with self.assertRaises(StratisCliRuntimeError):
-            all(run(command_line))
-
-    def testForce(self):
-        """
-        Create should fail trying to create new pool with same name as previous,
-        regardless of --force parameter.
-        """
-        command_line = \
-           self._MENU + \
-           ['--force', '1'] + \
            [self._POOLNAME] + \
            [d.device_node for d in _device_list(_DEVICES, 1)]
         with self.assertRaises(StratisCliRuntimeError):

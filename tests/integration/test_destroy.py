@@ -49,18 +49,11 @@ class Destroy1TestCase(unittest.TestCase):
         """
         self._service.tearDown()
 
-    def testWithoutForce(self):
+    def testExecution(self):
         """
-        Destroy should succeed w/out --force.
+        Destroy should succeed.
         """
         command_line = self._MENU + [self._POOLNAME]
-        all(run(command_line))
-
-    def testWithForce(self):
-        """
-        If pool does not exist and --force is set, command should succeed.
-        """
-        command_line = self._MENU + ['--force', '2'] + [self._POOLNAME]
         all(run(command_line))
 
 
@@ -89,18 +82,11 @@ class Destroy2TestCase(unittest.TestCase):
         """
         self._service.tearDown()
 
-    def testWithoutForce(self):
+    def testExecution(self):
         """
-        The pool was just created, so must be destroyable w/out force.
+        The pool was just created, so must be destroyable.
         """
         command_line = self._MENU + [self._POOLNAME]
-        all(run(command_line))
-
-    def testWithForce(self):
-        """
-        Since it should succeed w/out force, it should succeed w/ force.
-        """
-        command_line = self._MENU + ['--force', '1'] + [self._POOLNAME]
         all(run(command_line))
 
 
@@ -140,24 +126,10 @@ class Destroy3TestCase(unittest.TestCase):
         self._service.tearDown()
 
     @unittest.expectedFailure
-    def testWithoutForce(self):
+    def testExecution(self):
         """
-        This should fail with a force value of 0, since it has a volume.
+        This should fail since it has a volume.
         """
         command_line = self._MENU + [self._POOLNAME]
         with self.assertRaises(StratisCliRuntimeError):
             all(run(command_line))
-
-    def testWithForce1(self):
-        """
-        Should succeed w/ force value of 1, since it has volumes but no data.
-        """
-        command_line = self._MENU + ['--force', '1'] + [self._POOLNAME]
-        all(run(command_line))
-
-    def testWithForce2(self):
-        """
-        Should succeed w/ force value of 2, since it has volumes but no data.
-        """
-        command_line = self._MENU + ['--force', '2'] + [self._POOLNAME]
-        all(run(command_line))

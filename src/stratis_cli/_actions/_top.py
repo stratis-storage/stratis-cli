@@ -70,8 +70,7 @@ class TopActions(object):
         (_, rc, message) = Manager(proxy).CreatePool(
            namespace.name,
            namespace.device,
-           redundancy_number,
-           namespace.force
+           redundancy_number
         )
 
         if rc != stratisd_errors.STRATIS_OK:
@@ -112,7 +111,7 @@ class TopActions(object):
         proxy = get_object(TOP_OBJECT)
 
         (_, rc, message) = \
-           Manager(proxy).DestroyPool(namespace.name, namespace.force)
+           Manager(proxy).DestroyPool(namespace.name)
 
         stratisd_errors = StratisdErrorsGen.get_object()
 

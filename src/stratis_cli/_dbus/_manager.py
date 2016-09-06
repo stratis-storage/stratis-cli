@@ -34,7 +34,7 @@ class Manager(object):
         """
         self._dbus_object = dbus_object
 
-    def CreatePool(self, pool_name, devices, redundancy, force):
+    def CreatePool(self, pool_name, devices, redundancy):
         """
         Create a pool.
 
@@ -42,26 +42,22 @@ class Manager(object):
         :param devices: the component devices
         :type devices: sequence of str
         :param int redundancy: redundancy for this pool
-        :param int force: redundancy for this pool
         """
         return self._dbus_object.CreatePool(
            pool_name,
            devices,
            redundancy,
-           force,
            dbus_interface=self._INTERFACE_NAME,
         )
 
-    def DestroyPool(self, pool_name, force):
+    def DestroyPool(self, pool_name):
         """
         Destroy a pool.
 
         :param str pool_name: the name of the pool
-        :param int force: level of forcing
         """
         return self._dbus_object.DestroyPool(
            pool_name,
-           force,
            dbus_interface=self._INTERFACE_NAME
         )
 

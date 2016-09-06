@@ -63,17 +63,15 @@ class Pool(object):
            dbus_interface=self._INTERFACE_NAME
         )
 
-    def DestroyVolumes(self, volumes, force):
+    def DestroyVolumes(self, volumes):
         """
         Destroy volumes in the pool.
 
         :param volumes: list of volume names
         :type volumes: list of str
-        :param int force: level of forcing
         """
         return self._dbus_object.DestroyVolumes(
            volumes,
-           force,
            dbus_interface=self._INTERFACE_NAME
         )
 

@@ -93,14 +93,6 @@ def build_create_parser(parser):
        nargs='+'
     )
     parser.add_argument(
-       '--force',
-       action="store",
-       choices=[0, 1],
-       default=0,
-       help="if 1, ignore any existing metadata on devices",
-       type=int
-    )
-    parser.add_argument(
        '--redundancy',
        action='store',
        choices=['none'],
@@ -123,14 +115,6 @@ def build_destroy_parser(parser):
        'name',
        action='store',
        help='name of pool'
-    )
-    parser.add_argument(
-       '--force',
-       action="store",
-       choices=[0, 1, 2],
-       default=0,
-       help="integer indicating how forceful to be",
-       type=int
     )
     parser.set_defaults(func=TopActions.destroy_pool)
     return parser

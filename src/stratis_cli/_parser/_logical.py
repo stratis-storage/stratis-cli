@@ -79,14 +79,6 @@ def build_logical_destroy_parser(parser):
        metavar='V',
        nargs='+'
     )
-    parser.add_argument(
-       '--force',
-       action="store",
-       choices=[0, 1],
-       default=0,
-       help="if 1, ignore any data on the volume",
-       type=int
-    )
     parser.set_defaults(func=LogicalActions.destroy_volumes)
     return parser
 

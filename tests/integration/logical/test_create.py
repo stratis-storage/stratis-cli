@@ -98,10 +98,6 @@ class Create2TestCase(unittest.TestCase):
 class Create3TestCase(unittest.TestCase):
     """
     Test creating a volume w/ a pool when volume of same name already exists.
-    A failure should not result if volume has no data.
-    A failure should result if volume has data.
-    A --force option would allow to create a new volume where the old,
-    occupied one was.
     """
     _MENU = ['logical', 'create']
     _POOLNAME = 'deadpool'
@@ -128,8 +124,11 @@ class Create3TestCase(unittest.TestCase):
 
     def testCreation(self):
         """
-        Creation of this volume should succeed, because the old volume is
-        unused.
+        Creation of this volume should fail, because there is an existing
+        volume of the same name.
         """
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
-        all(run(command_line))
+        with self.assertRaises(StratisCliRuntimeError) as cm:
+            all(run(command_line))
+        expected_error = StratisdErrorsGen.get_object().STRATIS_DUPLICATE_NAME
+        self.assertEqual(cm.exception.rc, expected_error)

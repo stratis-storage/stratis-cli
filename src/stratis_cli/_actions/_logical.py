@@ -81,7 +81,7 @@ class LogicalActions(object):
         proxy = get_object(TOP_OBJECT)
         pool_object = get_pool(proxy, namespace.pool)
         (_, rc, message) = \
-           Pool(pool_object).DestroyVolumes(namespace.volume, namespace.force)
+           Pool(pool_object).DestroyVolumes(namespace.volume)
         if rc != StratisdErrorsGen().get_object().STRATIS_OK:
             raise StratisCliRuntimeError(rc, message)
 
