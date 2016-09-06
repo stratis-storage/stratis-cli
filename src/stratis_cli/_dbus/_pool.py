@@ -36,12 +36,15 @@ class Pool(object):
         """
         self._dbus_object = dbus_object
 
-    def AddCache(self, devices):
+    def AddCache(self, devices, redundancy):
         """
         Add a cache constructed from ``devices`` to the pool.
+
+        :param int redundancy: an integer specifying the redundancy
         """
         return self._dbus_object.AddCache(
            devices,
+           redundancy,
            dbus_interface=self._INTERFACE_NAME
         )
 

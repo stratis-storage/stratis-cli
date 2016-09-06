@@ -18,15 +18,22 @@ Actions on a pool's cache.
 
 from __future__ import print_function
 
+from .._errors import StratisCliRuntimeError
 from .._errors import StratisCliUnimplementedError
-from .._errors import StratisCliValueUnimplementedError
+from .._errors import StratisCliValueError
 
 from .._connection import get_object
 
+from .._constants import REDUNDANCY
 from .._constants import TOP_OBJECT
 
 from .._dbus import Manager
 from .._dbus import Pool
+
+from .._stratisd_constants import StratisdErrorsGen
+from .._stratisd_constants import StratisdRaidGen
+
+from ._misc import get_pool
 
 
 class CacheActions(object):
@@ -50,26 +57,32 @@ class CacheActions(object):
         """
         Create cache for an existing pool.
         """
-        if namespace.redundancy != 'none':
-            raise StratisCliValueUnimplementedError(
+        try:
+            redundancy = REDUNDANCY.get(namespace.redundancy)
+        except KeyError:
+            raise StratisCliValueError(
                namespace.redundancy,
                "namespace.redundancy",
-               "unable to handle redundancy"
+               "has no corresponding value"
             )
 
-        proxy = get_object(TOP_OBJECT)
-        (pool_object_path, rc, message) = \
-            Manager(proxy).GetPoolObjectPath(namespace.pool)
-        if rc != 0:
-            return (rc, message)
+        stratisd_redundancies = StratisdRaidGen.get_object()
+        try:
+            redundancy_number = getattr(stratisd_redundancies, redundancy)
+        except AttributeError:
+            raise StratisCliValueError(
+               namespace.redundancy,
+               "namespace.redundancy",
+               "has no corresponding value"
+            )
 
-        pool_object = get_object(pool_object_path)
-        (result, rc, message) = Pool(pool_object).AddCache(namespace.device)
-        if rc != 0:
-            return (rc, message)
+        pool_object = get_pool(get_object(TOP_OBJECT), namespace.pool)
+        (_, rc, message) = \
+           Pool(pool_object).AddCache(namespace.device, redundancy_number)
+        if rc != StratisdErrorsGen.get_object().STRATIS_OK:
+            raise StratisCliRuntimeError(rc, message)
 
-        print("Object path for pool: %s" % result)
-        return (rc, message)
+        return
 
     @staticmethod
     def list_cache(namespace):
