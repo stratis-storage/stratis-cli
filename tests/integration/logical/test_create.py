@@ -94,7 +94,6 @@ class Create2TestCase(unittest.TestCase):
         all(run(command_line))
 
 
-@unittest.expectedFailure
 class Create3TestCase(unittest.TestCase):
     """
     Test creating a volume w/ a pool when volume of same name already exists.
@@ -130,5 +129,5 @@ class Create3TestCase(unittest.TestCase):
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
         with self.assertRaises(StratisCliRuntimeError) as cm:
             all(run(command_line))
-        expected_error = StratisdErrorsGen.get_object().STRATIS_DUPLICATE_NAME
+        expected_error = StratisdErrorsGen.get_object().STRATIS_LIST_FAILURE
         self.assertEqual(cm.exception.rc, expected_error)
