@@ -21,8 +21,6 @@ import sys
 
 import dbus
 
-from six import add_metaclass
-
 from ._connection import get_object
 
 from ._constants import SERVICE
@@ -87,8 +85,7 @@ class StratisdConstants(object):
         return StratisdConstants.build_class(classname, values)
 
 
-@add_metaclass(abc.ABCMeta)
-class StratisdConstantsGen(object):
+class StratisdConstantsGen(abc.ABC):
     """
     Meta class for generating classes that define constants as class-level
     attributes.
