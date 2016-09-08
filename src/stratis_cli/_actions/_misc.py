@@ -61,3 +61,22 @@ def get_volume(top, pool, name):
         raise StratisCliRuntimeError(rc, message)
 
     return get_object(volume_object_path)
+
+def get_cache(top, pool):
+    """
+    Get cache given ``pool``.
+
+    :param top: the top object
+    :param str pool: the name of the pool
+
+    :returns: the corresponding object
+    :rtype: ProxyObject
+    :raises StratisCliRuntimeError: if failure to get object
+    """
+    (cache_object_path, rc, message) = \
+       Manager(top).GetCacheObjectPath(pool)
+
+    if rc != StratisdErrorsGen.get_object().STRATIS_OK:
+        raise StratisCliRuntimeError(rc, message)
+
+    return get_object(cache_object_path)

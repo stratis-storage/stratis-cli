@@ -61,6 +61,17 @@ class Manager(object):
            dbus_interface=self._INTERFACE_NAME
         )
 
+    def GetCacheObjectPath(self, pool):
+        """
+        Get cache object path.
+
+        :param str pool: the name of the pool
+        """
+        return self._dbus_object.GetCacheObjectPath(
+           pool,
+           dbus_interface=self._INTERFACE_NAME
+        )
+
     def GetErrorCodes(self):
         """
         Get stratisd error codes.
