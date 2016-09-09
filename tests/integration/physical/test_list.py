@@ -53,10 +53,10 @@ class ListTestCase(unittest.TestCase):
         Listing the devices must fail since the pool does not exist.
         """
         command_line = self._MENU + [self._POOLNAME]
-        with self.assertRaises(StratisCliRuntimeError) as cm:
+        with self.assertRaises(StratisCliRuntimeError) as ctxt:
             all(run(command_line))
         expected_error = StratisdErrorsGen.get_object().STRATIS_POOL_NOTFOUND
-        self.assertEqual(cm.exception.rc, expected_error)
+        self.assertEqual(ctxt.exception.rc, expected_error)
 
 
 class List2TestCase(unittest.TestCase):

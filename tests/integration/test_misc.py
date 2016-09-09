@@ -93,10 +93,10 @@ class GetPoolTestCase(unittest.TestCase):
         An exception is raised if the pool does not exist.
         """
         time.sleep(1) # wait until the service is available
-        with self.assertRaises(StratisCliRuntimeError) as cm:
+        with self.assertRaises(StratisCliRuntimeError) as ctxt:
             get_pool(get_object(TOP_OBJECT), 'notapool')
         expected_error = StratisdErrorsGen.get_object().STRATIS_POOL_NOTFOUND
-        self.assertEqual(cm.exception.rc, expected_error)
+        self.assertEqual(ctxt.exception.rc, expected_error)
 
 
 class GetPool1TestCase(unittest.TestCase):
@@ -156,10 +156,10 @@ class GetVolumeTestCase(unittest.TestCase):
         An exception is raised if the pool does not exist.
         """
         time.sleep(1) # wait until the service is available
-        with self.assertRaises(StratisCliRuntimeError) as cm:
+        with self.assertRaises(StratisCliRuntimeError) as ctxt:
             get_volume(get_object(TOP_OBJECT), 'notapool', 'noname')
         expected_error = StratisdErrorsGen.get_object().STRATIS_POOL_NOTFOUND
-        self.assertEqual(cm.exception.rc, expected_error)
+        self.assertEqual(ctxt.exception.rc, expected_error)
 
 
 class GetVolume1TestCase(unittest.TestCase):
@@ -191,10 +191,10 @@ class GetVolume1TestCase(unittest.TestCase):
         An exception is raised if the volume does not exist.
         """
         time.sleep(1) # wait until the service is available
-        with self.assertRaises(StratisCliRuntimeError) as cm:
+        with self.assertRaises(StratisCliRuntimeError) as ctxt:
             get_volume(get_object(TOP_OBJECT), self._POOLNAME, 'noname')
         expected_error = StratisdErrorsGen.get_object().STRATIS_VOLUME_NOTFOUND
-        self.assertEqual(cm.exception.rc, expected_error)
+        self.assertEqual(ctxt.exception.rc, expected_error)
 
 
 class GetVolume2TestCase(unittest.TestCase):
@@ -258,10 +258,10 @@ class GetCacheTestCase(unittest.TestCase):
         An exception is raised if the pool does not exist.
         """
         time.sleep(1) # wait until the service is available
-        with self.assertRaises(StratisCliRuntimeError) as cm:
+        with self.assertRaises(StratisCliRuntimeError) as ctxt:
             get_cache(get_object(TOP_OBJECT), 'notapool')
         expected_error = StratisdErrorsGen.get_object().STRATIS_POOL_NOTFOUND
-        self.assertEqual(cm.exception.rc, expected_error)
+        self.assertEqual(ctxt.exception.rc, expected_error)
 
 
 class GetCache1TestCase(unittest.TestCase):

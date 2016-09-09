@@ -55,10 +55,10 @@ class DestroyTestCase(unittest.TestCase):
         Destruction of the volume must fail since pool is not specified.
         """
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
-        with self.assertRaises(StratisCliRuntimeError) as cm:
+        with self.assertRaises(StratisCliRuntimeError) as ctxt:
             all(run(command_line))
         expected_error = StratisdErrorsGen.get_object().STRATIS_POOL_NOTFOUND
-        self.assertEqual(cm.exception.rc, expected_error)
+        self.assertEqual(ctxt.exception.rc, expected_error)
 
 
 class Destroy2TestCase(unittest.TestCase):

@@ -16,7 +16,6 @@ arg_map = {
    ],
    "tests" : [
       "--reports=no",
-      "--disable=I",
       "--disable=bad-continuation",
       "--disable=duplicate-code",
       "--disable=invalid-name",
@@ -25,10 +24,7 @@ arg_map = {
    ],
    "bin/stratis" : [
       "--reports=no",
-      "--disable=I",
       "--disable=bad-continuation",
-      "--disable=duplicate-code",
-      "--disable=invalid-name",
       "--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}'"
    ],
 }

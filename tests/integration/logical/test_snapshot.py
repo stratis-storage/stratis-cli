@@ -56,10 +56,10 @@ class SnapshotTestCase(unittest.TestCase):
         """
         command_line = \
            self._MENU + [self._POOLNAME] + [self._ORIGIN] + [self._SNAP]
-        with self.assertRaises(StratisCliRuntimeError) as cm:
+        with self.assertRaises(StratisCliRuntimeError) as ctxt:
             all(run(command_line))
         expected_error = StratisdErrorsGen.get_object().STRATIS_POOL_NOTFOUND
-        self.assertEqual(cm.exception.rc, expected_error)
+        self.assertEqual(ctxt.exception.rc, expected_error)
 
 
 class Snapshot1TestCase(unittest.TestCase):
@@ -94,10 +94,10 @@ class Snapshot1TestCase(unittest.TestCase):
         """
         command_line = \
            self._MENU + [self._POOLNAME] + [self._ORIGIN] + [self._SNAP]
-        with self.assertRaises(StratisCliRuntimeError) as cm:
+        with self.assertRaises(StratisCliRuntimeError) as ctxt:
             all(run(command_line))
         expected_error = StratisdErrorsGen.get_object().STRATIS_VOLUME_NOTFOUND
-        self.assertEqual(cm.exception.rc, expected_error)
+        self.assertEqual(ctxt.exception.rc, expected_error)
 
 
 @unittest.skip('not enough information to decide failure or success')
