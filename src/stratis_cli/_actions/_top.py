@@ -18,12 +18,11 @@ Miscellaneous top-level actions.
 
 from __future__ import print_function
 
-from .._connection import get_object
-
 from .._constants import REDUNDANCY
 from .._constants import TOP_OBJECT
 
 from .._dbus import Manager
+from .._dbus import get_object
 
 from .._errors import StratisCliRuntimeError
 from .._errors import StratisCliUnimplementedError

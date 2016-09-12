@@ -22,13 +22,12 @@ from .._errors import StratisCliRuntimeError
 from .._errors import StratisCliUnimplementedError
 from .._errors import StratisCliValueError
 
-from .._connection import get_object
-
 from .._constants import REDUNDANCY
 from .._constants import TOP_OBJECT
 
 from .._dbus import Manager
 from .._dbus import Pool
+from .._dbus import get_object
 
 from .._stratisd_constants import StratisdErrorsGen
 from .._stratisd_constants import StratisdRaidGen

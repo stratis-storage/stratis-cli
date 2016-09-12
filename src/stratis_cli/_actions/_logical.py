@@ -20,12 +20,12 @@ from __future__ import print_function
 
 from .._errors import StratisCliRuntimeError
 
-from .._connection import get_object
-
 from .._constants import TOP_OBJECT
 
 from .._dbus import Pool
 from .._dbus import Volume
+from .._dbus import get_object
+
 
 from .._stratisd_constants import StratisdErrorsGen
 

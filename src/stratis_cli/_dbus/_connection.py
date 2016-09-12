@@ -18,7 +18,7 @@ Miscellaneous helpful methods.
 
 import dbus
 
-from ._constants import SERVICE
+from .._constants import SERVICE
 
 class Bus(object):
     """

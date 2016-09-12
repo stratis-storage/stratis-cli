@@ -24,8 +24,8 @@ from stratis_cli._actions._misc import get_cache
 from stratis_cli._actions._misc import get_pool
 from stratis_cli._actions._misc import get_volume
 
-from stratis_cli._connection import get_object
 from stratis_cli._constants import TOP_OBJECT
+from stratis_cli._dbus import get_object
 from stratis_cli._errors import StratisCliRuntimeError
 from stratis_cli._stratisd_constants import StratisdErrorsGen
 

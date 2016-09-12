@@ -16,9 +16,8 @@
 Miscellaneous shared methods.
 """
 
-from .._connection import get_object
-
 from .._dbus import Manager
+from .._dbus import get_object
 
 from .._errors import StratisCliRuntimeError
 
