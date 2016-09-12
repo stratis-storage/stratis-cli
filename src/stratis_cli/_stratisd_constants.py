@@ -17,12 +17,7 @@ Representing stratisd contants.
 """
 
 import abc
-import sys
 
-import dbus
-
-from ._constants import SERVICE
-from ._constants import SERVICE_UNKNOWN_ERROR
 from ._constants import TOP_OBJECT
 
 from ._dbus import Manager
@@ -104,18 +99,9 @@ class StratisdConstantsGen(abc.ABC):
         :rtype: type
         """
         if cls._VALUES is None:
-            try:
-                values = \
-                   getattr(Manager(get_object(TOP_OBJECT)), cls._METHODNAME)()
-                cls._VALUES = StratisdConstants.get_class(
-                   cls._CLASSNAME,
-                   values
-                )
-            except dbus.exceptions.DBusException as err:
-                message = str(err)
-                if message.startswith(SERVICE_UNKNOWN_ERROR):
-                    sys.exit('Service %s unavailable.' % SERVICE)
-                raise err
+            values = \
+               getattr(Manager(get_object(TOP_OBJECT)), cls._METHODNAME)()
+            cls._VALUES = StratisdConstants.get_class(cls._CLASSNAME, values)
 
         return cls._VALUES
 
