@@ -33,7 +33,6 @@ setuptools.setup(
         'Topic :: Software Development :: Libraries',
         ],
     install_requires = [
-        'dbus-python'
     ],
     package_dir={"": "src"},
     packages=setuptools.find_packages("src"),
