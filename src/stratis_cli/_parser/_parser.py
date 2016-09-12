@@ -139,12 +139,12 @@ def build_rename_parser(parser):
 
 
 _SUBPARSER_TABLE = {
+   'blockdev' : build_physical_parser,
    'create' : build_create_parser,
    'destroy' : build_destroy_parser,
    'list' : build_list_parser,
-   'logical' : build_logical_parser,
+   'filesystem' : build_logical_parser,
    'stratis' : build_stratis_parser,
-   'physical' : build_physical_parser,
    'rename' : build_rename_parser
 }
 
@@ -172,6 +172,13 @@ def gen_parser():
 
     subparser_table = dict()
 
+    subparser_table['blockdev'] = \
+       subparsers.add_parser(
+          'blockdev',
+          description="Administer Blockdev Aspects of Specified Pool"
+       )
+    _SUBPARSER_TABLE['blockdev'](subparser_table['blockdev'])
+
     subparser_table['create'] = \
        subparsers.add_parser('create', description="Create New Stratis Pool")
     _SUBPARSER_TABLE['create'](subparser_table['create'])
@@ -183,27 +190,20 @@ def gen_parser():
     )
     _SUBPARSER_TABLE['destroy'](subparser_table['destroy'])
 
+    subparser_table['filesystem'] = \
+       subparsers.add_parser(
+          'filesystem',
+          description="Administer Filesystems Aspects of Specified Pool"
+       )
+    _SUBPARSER_TABLE['filesystem'](subparser_table['filesystem'])
+
     subparser_table['list'] = \
        subparsers.add_parser('list', description="List Stratis Pools")
     _SUBPARSER_TABLE['list'](subparser_table['list'])
 
-    subparser_table['logical'] = \
-       subparsers.add_parser(
-          'logical',
-          description="Administer Logical Aspects of Specified Pool"
-       )
-    _SUBPARSER_TABLE['logical'](subparser_table['logical'])
-
     subparser_table['stratis'] = \
        subparsers.add_parser('stratis', description="Information about Stratis")
     _SUBPARSER_TABLE['stratis'](subparser_table['stratis'])
-
-    subparser_table['physical'] = \
-       subparsers.add_parser(
-          'physical',
-          description="Administer Physical Aspects of Specified Pool"
-       )
-    _SUBPARSER_TABLE['physical'](subparser_table['physical'])
 
     subparser_table['rename'] = \
        subparsers.add_parser('rename', description="Rename a Pool")

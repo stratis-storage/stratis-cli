@@ -216,7 +216,7 @@ class GetVolume2TestCase(unittest.TestCase):
            [d.device_node for d in _device_list(_DEVICES, 1)]
         all(run(command_line))
         command_line = \
-           ['logical', 'create', self._POOLNAME, self._VOLNAME]
+           ['filesystem', 'create', self._POOLNAME, self._VOLNAME]
         all(run(command_line))
 
     def tearDown(self):

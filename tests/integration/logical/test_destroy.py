@@ -33,7 +33,7 @@ class DestroyTestCase(unittest.TestCase):
     Test destroying a volume when the pool does not exist. In this case,
     an error should be raised, as the request is non-sensical.
     """
-    _MENU = ['logical', 'destroy']
+    _MENU = ['filesystem', 'destroy']
     _POOLNAME = 'deadpool'
     _VOLNAMES = ['oubliette', 'mnemosyne']
 
@@ -66,7 +66,7 @@ class Destroy2TestCase(unittest.TestCase):
     Test destroying a volume when the pool does exist but the volume does not.
     In this case, no error should be raised.
     """
-    _MENU = ['logical', 'destroy']
+    _MENU = ['filesystem', 'destroy']
     _POOLNAME = 'deadpool'
     _VOLNAMES = ['oubliette', 'mnemosyne']
 
@@ -102,7 +102,7 @@ class Destroy3TestCase(unittest.TestCase):
     well. In this case, the volumes should all be destroyed, and no error
     raised as there is no data on the volumes.
     """
-    _MENU = ['logical', 'destroy']
+    _MENU = ['filesystem', 'destroy']
     _POOLNAME = 'deadpool'
     _VOLNAMES = ['oubliette', 'mnemosyne']
 
@@ -117,7 +117,7 @@ class Destroy3TestCase(unittest.TestCase):
            [d.device_node for d in _device_list(_DEVICES, 1)]
         all(run(command_line))
 
-        command_line = ['logical', 'create', self._POOLNAME] + self._VOLNAMES
+        command_line = ['filesystem', 'create', self._POOLNAME] + self._VOLNAMES
         all(run(command_line))
 
     def tearDown(self):

@@ -32,7 +32,7 @@ class SnapshotTestCase(unittest.TestCase):
     """
     Test snapshot of a volume when pool does not exist.
     """
-    _MENU = ['logical', 'snapshot']
+    _MENU = ['filesystem', 'snapshot']
     _POOLNAME = 'deadpool'
     _ORIGIN = 'here'
     _SNAP = 'there'
@@ -66,7 +66,7 @@ class Snapshot1TestCase(unittest.TestCase):
     """
     Test snapshot of a volume when pool exists but volume does not.
     """
-    _MENU = ['logical', 'snapshot']
+    _MENU = ['filesystem', 'snapshot']
     _POOLNAME = 'deadpool'
     _ORIGIN = 'here'
     _SNAP = 'there'
@@ -105,7 +105,7 @@ class Snapshot2TestCase(unittest.TestCase):
     """
     Test snapshot of a volume when pool and volume exists.
     """
-    _MENU = ['logical', 'snapshot']
+    _MENU = ['filesystem', 'snapshot']
     _POOLNAME = 'deadpool'
     _ORIGIN = 'here'
     _SNAP = 'there'
@@ -121,7 +121,7 @@ class Snapshot2TestCase(unittest.TestCase):
            [d.device_node for d in _device_list(_DEVICES, 1)]
         all(run(command_line))
 
-        command_line = ['logical', 'create'] + [self._POOLNAME] + [self._ORIGIN]
+        command_line = ['filesystem', 'create'] + [self._POOLNAME] + [self._ORIGIN]
         all(run(command_line))
 
     def tearDown(self):

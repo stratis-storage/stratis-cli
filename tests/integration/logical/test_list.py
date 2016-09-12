@@ -32,7 +32,7 @@ class ListTestCase(unittest.TestCase):
     """
     Test listing a volume for a non-existant pool.
     """
-    _MENU = ['logical', 'list']
+    _MENU = ['filesystem', 'list']
     _POOLNAME = 'deadpool'
 
     def setUp(self):
@@ -63,7 +63,7 @@ class List2TestCase(unittest.TestCase):
     """
     Test listing volumes in an existing pool with no volumes.
     """
-    _MENU = ['logical', 'list']
+    _MENU = ['filesystem', 'list']
     _POOLNAME = 'deadpool'
 
     def setUp(self):
@@ -95,7 +95,7 @@ class List3TestCase(unittest.TestCase):
     """
     Test listing volumes in an existing pool with some volumes.
     """
-    _MENU = ['logical', 'list']
+    _MENU = ['filesystem', 'list']
     _POOLNAME = 'deadpool'
     _VOLUMES = ['livery', 'liberty', 'library']
 
@@ -110,7 +110,7 @@ class List3TestCase(unittest.TestCase):
            [d.device_node for d in _device_list(_DEVICES, 1)]
         all(run(command_line))
         command_line = \
-           ['logical', 'create', self._POOLNAME] + self._VOLUMES
+           ['filesystem', 'create', self._POOLNAME] + self._VOLUMES
         all(run(command_line))
 
     def tearDown(self):

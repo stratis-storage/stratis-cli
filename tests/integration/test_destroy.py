@@ -114,7 +114,7 @@ class Destroy3TestCase(unittest.TestCase):
         all(run(command_line))
 
         command_line = \
-           ['logical', 'create'] + \
+           ['filesystem', 'create'] + \
            [self._POOLNAME] + \
            [self._VOLNAME]
         all(run(command_line))

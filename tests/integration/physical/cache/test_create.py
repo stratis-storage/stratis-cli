@@ -33,7 +33,7 @@ class CreateTestCase(unittest.TestCase):
     """
     Test 'create' parsing.
     """
-    _MENU = ['physical', 'cache', 'create']
+    _MENU = ['blockdev', 'cache', 'create']
     _POOLNAME = 'deadpool'
 
     def setUp(self):
@@ -67,7 +67,7 @@ class Create2TestCase(unittest.TestCase):
     """
     Test 'create' with a non-existant pool.
     """
-    _MENU = ['physical', 'cache', 'create']
+    _MENU = ['blockdev', 'cache', 'create']
     _POOLNAME = 'deadpool'
 
     def setUp(self):
@@ -103,7 +103,7 @@ class Create3TestCase(unittest.TestCase):
     """
     Test 'create' when pool exists.
     """
-    _MENU = ['physical', 'cache', 'create']
+    _MENU = ['blockdev', 'cache', 'create']
     _POOLNAME = 'deadpool'
     _MY_DEVICES = [d.device_node for d in _device_list(_DEVICES, 2)]
 
@@ -141,7 +141,7 @@ class Create4TestCase(unittest.TestCase):
     """
     Test 'create' when pool exists and already has a cache.
     """
-    _MENU = ['physical', 'cache', 'create']
+    _MENU = ['blockdev', 'cache', 'create']
     _POOLNAME = 'deadpool'
     _MY_DEVICES = [d.device_node for d in _device_list(_DEVICES, 2)]
 
@@ -163,7 +163,7 @@ class Create4TestCase(unittest.TestCase):
         command_line = ['create', self._POOLNAME] + self._pool_devices()
         all(run(command_line))
         command_line = \
-           ['physical', 'cache', 'create', self._POOLNAME] + \
+           ['blockdev', 'cache', 'create', self._POOLNAME] + \
            self._cache_devices()
         all(run(command_line))
 

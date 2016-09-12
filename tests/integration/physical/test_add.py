@@ -32,7 +32,7 @@ class AddTestCase(unittest.TestCase):
     """
     Test adding devices to a non-existant pool.
     """
-    _MENU = ['physical', 'add']
+    _MENU = ['blockdev', 'add']
     _POOLNAME = 'deadpool'
 
 
@@ -68,7 +68,7 @@ class Add2TestCase(unittest.TestCase):
     pool. There are circumstances under which this should fail, and others under
     which this should succeed.
     """
-    _MENU = ['physical', 'add']
+    _MENU = ['blockdev', 'add']
     _POOLNAME = 'deadpool'
     _DEVICES = [d.device_node for d in _device_list(_DEVICES, 1)]
 
@@ -102,7 +102,7 @@ class Add3TestCase(unittest.TestCase):
     Test adding devices to an existing pool, when the devices are not in the
     pool. This should fail if the devices are already occupied.
     """
-    _MENU = ['physical', 'add']
+    _MENU = ['blockdev', 'add']
     _POOLNAME = 'deadpool'
     _DEVICES = [d.device_node for d in _device_list(_DEVICES, 2)]
 
