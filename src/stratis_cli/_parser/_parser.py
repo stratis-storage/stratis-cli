@@ -28,12 +28,12 @@ from ._logical import build_logical_parser
 from ._physical import build_physical_parser
 
 
-def build_stratis_parser(parser):
+def build_stratisd_parser(parser):
     """
-    Generates the parser appropriate for obtaining information about stratis.
+    Generates the parser appropriate for obtaining information about stratisd.
 
     :param ArgumentParser parser: a parser
-    :returns: a completed parser for obtaining information about stratis
+    :returns: a completed parser for obtaining information about stratisd
     :rtype: ArgumentParser
     """
     group = parser.add_mutually_exclusive_group(required=True)
@@ -42,7 +42,7 @@ def build_stratis_parser(parser):
       '--log-level',
       action='store_true',
       default=False,
-      help='log level of stratis daemon'
+      help='log level of stratisd daemon'
     )
     group.add_argument(
       '--redundancy',
@@ -144,7 +144,7 @@ _SUBPARSER_TABLE = {
    'destroy' : build_destroy_parser,
    'list' : build_list_parser,
    'filesystem' : build_logical_parser,
-   'stratis' : build_stratis_parser,
+   'stratisd' : build_stratisd_parser,
    'rename' : build_rename_parser
 }
 
@@ -201,9 +201,12 @@ def gen_parser():
        subparsers.add_parser('list', description="List Stratis Pools")
     _SUBPARSER_TABLE['list'](subparser_table['list'])
 
-    subparser_table['stratis'] = \
-       subparsers.add_parser('stratis', description="Information about Stratis")
-    _SUBPARSER_TABLE['stratis'](subparser_table['stratis'])
+    subparser_table['stratisd'] = \
+       subparsers.add_parser(
+          'stratisd',
+          description="Information about Stratisd"
+    )
+    _SUBPARSER_TABLE['stratisd'](subparser_table['stratisd'])
 
     subparser_table['rename'] = \
        subparsers.add_parser('rename', description="Rename a Pool")

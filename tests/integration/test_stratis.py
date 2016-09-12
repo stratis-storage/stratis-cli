@@ -13,7 +13,7 @@
 # limitations under the License.
 
 """
-Test 'create'.
+Test 'stratisd'.
 """
 
 import unittest
@@ -27,7 +27,7 @@ class StratisTestCase(unittest.TestCase):
     """
     Test meta information about stratisd.
     """
-    _MENU = ['stratis']
+    _MENU = ['stratisd']
 
     def setUp(self):
         """
