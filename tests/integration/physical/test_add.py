@@ -79,7 +79,7 @@ class Add2TestCase(unittest.TestCase):
         self._service = Service()
         self._service.setUp()
         command_line = \
-           ['create'] + [self._POOLNAME] + self._DEVICES
+           ['pool', 'create'] + [self._POOLNAME] + self._DEVICES
         all(run(command_line))
 
     def tearDown(self):
@@ -113,7 +113,7 @@ class Add3TestCase(unittest.TestCase):
         self._service = Service()
         self._service.setUp()
         command_line = \
-           ['create'] + [self._POOLNAME] + self._DEVICES[:1]
+           ['pool', 'create'] + [self._POOLNAME] + self._DEVICES[:1]
         all(run(command_line))
 
     def tearDown(self):

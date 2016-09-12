@@ -65,7 +65,7 @@ class Create2TestCase(unittest.TestCase):
     """
     Test creating a volume w/ a pool.
     """
-    _MENU = ['filesystem', 'create']
+    _MENU = ['filesystem', 'pool', 'create']
     _POOLNAME = 'deadpool'
     _VOLNAMES = ['oubliette', 'mnemosyne']
 
@@ -76,7 +76,7 @@ class Create2TestCase(unittest.TestCase):
         self._service = Service()
         self._service.setUp()
         command_line = \
-           ['create'] + [self._POOLNAME] + \
+           ['pool', 'create'] + [self._POOLNAME] + \
            [d.device_node for d in _device_list(_DEVICES, 1)]
         all(run(command_line))
 
@@ -109,7 +109,7 @@ class Create3TestCase(unittest.TestCase):
         self._service = Service()
         self._service.setUp()
         command_line = \
-           ['create'] + [self._POOLNAME] + \
+           ['pool', 'create'] + [self._POOLNAME] + \
            [d.device_node for d in _device_list(_DEVICES, 1)]
         all(run(command_line))
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES

@@ -77,7 +77,7 @@ class Destroy2TestCase(unittest.TestCase):
         self._service = Service()
         self._service.setUp()
         command_line = \
-           ['create', self._POOLNAME] + \
+           ['pool', 'create', self._POOLNAME] + \
            [d.device_node for d in _device_list(_DEVICES, 1)]
         all(run(command_line))
 
@@ -113,7 +113,7 @@ class Destroy3TestCase(unittest.TestCase):
         self._service = Service()
         self._service.setUp()
         command_line = \
-           ['create', self._POOLNAME] + \
+           ['pool', 'create', self._POOLNAME] + \
            [d.device_node for d in _device_list(_DEVICES, 1)]
         all(run(command_line))
 

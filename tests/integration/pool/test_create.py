@@ -21,19 +21,17 @@ import unittest
 from stratis_cli._main import run
 from stratis_cli._errors import StratisCliRuntimeError
 
-from ._constants import _DEVICES
+from .._constants import _DEVICES
 
-from ._misc import _device_list
-from ._misc import Service
+from .._misc import _device_list
+from .._misc import Service
 
 
-class Destroy1TestCase(unittest.TestCase):
+class CreateTestCase(unittest.TestCase):
     """
-    Test 'destroy' on empty database.
-
-    'destroy' should always succeed on an empty database.
+    Test 'create' parsing.
     """
-    _MENU = ['destroy']
+    _MENU = ['pool', 'create']
     _POOLNAME = 'deadpool'
 
     def setUp(self):
@@ -49,19 +47,56 @@ class Destroy1TestCase(unittest.TestCase):
         """
         self._service.tearDown()
 
-    def testExecution(self):
+    def testRedundancy(self):
         """
-        Destroy should succeed.
+        Parser error on all redundancy that is not 'none'.
         """
-        command_line = self._MENU + [self._POOLNAME]
+        command_line = \
+           self._MENU + \
+           ['--redundancy', 'raid6'] + \
+           [self._POOLNAME] + \
+           [d.device_node for d in _device_list(_DEVICES, 1)]
+        with self.assertRaises(SystemExit):
+            all(run(command_line))
+
+
+class Create2TestCase(unittest.TestCase):
+    """
+    Test 'create'.
+    """
+    _MENU = ['pool', 'create']
+    _POOLNAME = 'deadpool'
+
+    def setUp(self):
+        """
+        Start the stratisd daemon with the simulator.
+        """
+        self._service = Service()
+        self._service.setUp()
+
+    def tearDown(self):
+        """
+        Stop the stratisd simulator and daemon.
+        """
+        self._service.tearDown()
+
+    @unittest.skip("not really handling this")
+    def testCreate(self):
+        """
+        Create expects success unless devices are already occupied.
+        """
+        command_line = \
+           self._MENU + \
+           [self._POOLNAME] + \
+           [d.device_node for d in _device_list(_DEVICES, 1)]
         all(run(command_line))
 
 
-class Destroy2TestCase(unittest.TestCase):
+class Create3TestCase(unittest.TestCase):
     """
-    Test 'destroy' on database which contains the given pool.
+    Test 'create' on name collision.
     """
-    _MENU = ['destroy']
+    _MENU = ['pool', 'create']
     _POOLNAME = 'deadpool'
 
     def setUp(self):
@@ -71,8 +106,7 @@ class Destroy2TestCase(unittest.TestCase):
         self._service = Service()
         self._service.setUp()
         command_line = \
-           ['create'] + \
-           [self._POOLNAME] + \
+           ['pool', 'create', self._POOLNAME] + \
            [d.device_node for d in _device_list(_DEVICES, 1)]
         all(run(command_line))
 
@@ -82,54 +116,13 @@ class Destroy2TestCase(unittest.TestCase):
         """
         self._service.tearDown()
 
-    def testExecution(self):
+    def testCreate(self):
         """
-        The pool was just created, so must be destroyable.
+        Create should fail trying to create new pool with same name as previous.
         """
-        command_line = self._MENU + [self._POOLNAME]
-        all(run(command_line))
-
-
-class Destroy3TestCase(unittest.TestCase):
-    """
-    Test 'destroy' on database which contains the given pool and a volume.
-
-    Verify that the volume is gone when the pool is gone.
-    """
-    _MENU = ['destroy']
-    _POOLNAME = 'deadpool'
-    _VOLNAME = 'vol'
-
-    def setUp(self):
-        """
-        Start the stratisd daemon with the simulator.
-        """
-        self._service = Service()
-        self._service.setUp()
-
         command_line = \
-           ['create'] + \
+           self._MENU + \
            [self._POOLNAME] + \
            [d.device_node for d in _device_list(_DEVICES, 1)]
-        all(run(command_line))
-
-        command_line = \
-           ['filesystem', 'create'] + \
-           [self._POOLNAME] + \
-           [self._VOLNAME]
-        all(run(command_line))
-
-    def tearDown(self):
-        """
-        Stop the stratisd simulator and daemon.
-        """
-        self._service.tearDown()
-
-    @unittest.expectedFailure
-    def testExecution(self):
-        """
-        This should fail since it has a volume.
-        """
-        command_line = self._MENU + [self._POOLNAME]
         with self.assertRaises(StratisCliRuntimeError):
             all(run(command_line))

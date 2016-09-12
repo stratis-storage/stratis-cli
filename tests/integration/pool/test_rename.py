@@ -21,7 +21,7 @@ import unittest
 from stratis_cli._main import run
 from stratis_cli._errors import StratisCliRuntimeError
 
-from ._misc import Service
+from .._misc import Service
 
 
 @unittest.skip("Wating for Rename")

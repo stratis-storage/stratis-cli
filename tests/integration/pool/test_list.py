@@ -13,24 +13,24 @@
 # limitations under the License.
 
 """
-Test 'create'.
+Test 'list'.
 """
 
 import unittest
 
 from stratis_cli._main import run
 
-from ._constants import _DEVICES
+from .._constants import _DEVICES
 
-from ._misc import _device_list
-from ._misc import Service
+from .._misc import _device_list
+from .._misc import Service
 
 
 class ListTestCase(unittest.TestCase):
     """
     Test 'list'.
     """
-    _MENU = ['list']
+    _MENU = ['pool', 'list']
 
     def setUp(self):
         """
@@ -57,7 +57,7 @@ class List2TestCase(unittest.TestCase):
     """
     Test 'list' with something actually to list.
     """
-    _MENU = ['list']
+    _MENU = ['pool', 'list']
     _POOLNAME = 'deadpool'
 
     def setUp(self):
@@ -67,7 +67,7 @@ class List2TestCase(unittest.TestCase):
         self._service = Service()
         self._service.setUp()
         command_line = \
-           ['create'] + [self._POOLNAME] + \
+           ['pool', 'create'] + [self._POOLNAME] + \
            [d.device_node for d in _device_list(_DEVICES, 1)]
         all(run(command_line))
 
