@@ -42,13 +42,16 @@ class Manager(object):
         :param devices: the component devices
         :type devices: sequence of str
         :param int redundancy: redundancy for this pool
+
+        :rtype: str * int * str
         """
-        return self._dbus_object.CreatePool(
+        (result, rc, message) = self._dbus_object.CreatePool(
            pool_name,
            devices,
            redundancy,
-           dbus_interface=self._INTERFACE_NAME,
+           dbus_interface=self._INTERFACE_NAME
         )
+        return (str(result), int(rc), str(message))
 
     def DestroyPool(self, pool_name):
         """
