@@ -133,9 +133,8 @@ class Create3TestCase(unittest.TestCase):
         self.assertEqual(type(rc), int)
         self.assertEqual(type(message), str)
 
-        (pool, rc1, _) = Manager(self._proxy).GetPoolObjectPath(
+        (_, rc1, _) = Manager(self._proxy).GetPoolObjectPath(
            self._POOLNAME
         )
 
-        self.assertEqual(pool, result)
         self.assertEqual(rc1, StratisdErrorsGen.get_object().STRATIS_OK)
