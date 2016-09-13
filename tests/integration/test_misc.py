@@ -253,6 +253,7 @@ class GetCacheTestCase(unittest.TestCase):
         """
         self._service.tearDown()
 
+    @unittest.expectedFailure
     def testNonExistingPool(self):
         """
         An exception is raised if the pool does not exist.
@@ -288,6 +289,7 @@ class GetCache1TestCase(unittest.TestCase):
         """
         self._service.tearDown()
 
+    @unittest.expectedFailure
     def testExecution(self):
         """
         An exception is raised if the volume does not exist.
