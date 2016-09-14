@@ -86,7 +86,6 @@ class StratisdConstantsGen(abc.ABC):
     """
     # pylint: disable=too-few-public-methods
 
-    _VALUES = None
     _CLASSNAME = abc.abstractproperty(doc="the name of the class to construct")
     _METHODNAME = abc.abstractproperty(doc="dbus method name")
 
@@ -98,12 +97,8 @@ class StratisdConstantsGen(abc.ABC):
         :return: class with class attributes for stratisd constants
         :rtype: type
         """
-        if cls._VALUES is None:
-            values = \
-               getattr(Manager(get_object(TOP_OBJECT)), cls._METHODNAME)()
-            cls._VALUES = StratisdConstants.get_class(cls._CLASSNAME, values)
-
-        return cls._VALUES
+        values = getattr(Manager(get_object(TOP_OBJECT)), cls._METHODNAME)()
+        return StratisdConstants.get_class(cls._CLASSNAME, values)
 
 
 class StratisdErrorsGen(StratisdConstantsGen):
