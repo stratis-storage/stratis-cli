@@ -38,6 +38,7 @@ class StratisTestCase(unittest.TestCase):
         """
         self._service = Service()
         self._service.setUp()
+        time.sleep(1)
 
     def tearDown(self):
         """
@@ -49,7 +50,6 @@ class StratisTestCase(unittest.TestCase):
         """
         Getting version should just succeed.
         """
-        time.sleep(1)
         result = Manager(get_object(TOP_OBJECT)).Version
         self.assertEqual(type(result), str)
 
@@ -58,6 +58,12 @@ class StratisTestCase(unittest.TestCase):
         """
         Getting log level should just succeed.
         """
-        time.sleep(1)
         result = Manager(get_object(TOP_OBJECT)).LogLevel
         self.assertEqual(type(result), int)
+
+    def testStratisLogLevel(self):
+        """
+        Getting log level property does get a value.
+        """
+        result = Manager(get_object(TOP_OBJECT)).LogLevel
+        self.assertIsNotNone(result)
