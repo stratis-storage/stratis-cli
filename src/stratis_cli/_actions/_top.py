@@ -109,13 +109,10 @@ class TopActions(object):
         """
         proxy = get_object(TOP_OBJECT)
 
-        (_, rc, message) = \
+        (rc, message) = \
            Manager(proxy).DestroyPool(namespace.name)
 
         stratisd_errors = StratisdErrorsGen.get_object()
-
-        if rc == stratisd_errors.STRATIS_POOL_NOTFOUND:
-            return
 
         if rc != stratisd_errors.STRATIS_OK:
             raise StratisCliRuntimeError(rc, message)

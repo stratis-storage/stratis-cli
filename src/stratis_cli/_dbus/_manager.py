@@ -58,11 +58,14 @@ class Manager(object):
         Destroy a pool.
 
         :param str pool_name: the name of the pool
+
+        :rtype: int * str
         """
-        return self._dbus_object.DestroyPool(
+        (rc, message) = self._dbus_object.DestroyPool(
            pool_name,
            dbus_interface=self._INTERFACE_NAME
         )
+        return (int(rc), str(message))
 
     def GetCacheObjectPath(self, pool):
         """
