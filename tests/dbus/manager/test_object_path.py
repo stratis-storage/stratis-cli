@@ -26,10 +26,10 @@ from stratis_cli._dbus import get_object
 
 from stratis_cli._stratisd_constants import StratisdErrorsGen
 
-from ._constants import _DEVICES
+from .._constants import _DEVICES
 
-from ._misc import _device_list
-from ._misc import Service
+from .._misc import _device_list
+from .._misc import Service
 
 
 class GetObjectTestCase(unittest.TestCase):

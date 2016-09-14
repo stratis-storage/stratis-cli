@@ -24,7 +24,7 @@ from stratis_cli._constants import TOP_OBJECT
 from stratis_cli._dbus import Manager
 from stratis_cli._dbus import get_object
 
-from ._misc import Service
+from .._misc import Service
 
 
 class StratisTestCase(unittest.TestCase):
@@ -61,7 +61,7 @@ class StratisTestCase(unittest.TestCase):
         result = Manager(get_object(TOP_OBJECT)).LogLevel
         self.assertEqual(type(result), int)
 
-    def testStratisLogLevel(self):
+    def testStratisLogLevel1(self):
         """
         Getting log level property does get a value.
         """
