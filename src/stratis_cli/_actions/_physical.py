@@ -25,7 +25,7 @@ from .._dbus import get_object
 
 from .._errors import StratisCliRuntimeError
 
-from .._stratisd_constants import StratisdErrorsGen
+from ._stratisd_constants import StratisdErrorsGen
 
 from ._misc import get_pool
 

@@ -18,10 +18,10 @@ Representing stratisd contants.
 
 import abc
 
-from ._constants import TOP_OBJECT
+from .._constants import TOP_OBJECT
 
-from ._dbus import Manager
-from ._dbus import get_object
+from .._dbus import Manager
+from .._dbus import get_object
 
 
 class StratisdConstants(object):

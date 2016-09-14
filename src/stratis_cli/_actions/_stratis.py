@@ -25,7 +25,7 @@ from .._dbus import get_object
 
 from .._errors import StratisCliImpossibleError
 
-from .._stratisd_constants import StratisdRaidGen
+from ._stratisd_constants import StratisdRaidGen
 
 
 class StratisActions(object):

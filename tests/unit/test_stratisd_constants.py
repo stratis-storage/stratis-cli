@@ -19,7 +19,7 @@ Test operation of StratisdConstants class and related classes.
 
 import unittest
 
-from stratis_cli._stratisd_constants import StratisdConstants
+from stratis_cli._actions._stratisd_constants import StratisdConstants
 
 class BuildTestCase(unittest.TestCase):
     """

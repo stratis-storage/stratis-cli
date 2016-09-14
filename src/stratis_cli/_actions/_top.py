@@ -28,8 +28,8 @@ from .._errors import StratisCliRuntimeError
 from .._errors import StratisCliUnimplementedError
 from .._errors import StratisCliValueError
 
-from .._stratisd_constants import StratisdErrorsGen
-from .._stratisd_constants import StratisdRaidGen
+from ._stratisd_constants import StratisdErrorsGen
+from ._stratisd_constants import StratisdRaidGen
 
 class TopActions(object):
     """

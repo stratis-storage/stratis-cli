@@ -27,7 +27,7 @@ from .._dbus import Volume
 from .._dbus import get_object
 
 
-from .._stratisd_constants import StratisdErrorsGen
+from ._stratisd_constants import StratisdErrorsGen
 
 from ._misc import get_pool
 from ._misc import get_volume

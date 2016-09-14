@@ -27,7 +27,7 @@ from stratis_cli._actions._misc import get_volume
 from stratis_cli._constants import TOP_OBJECT
 from stratis_cli._dbus import get_object
 from stratis_cli._errors import StratisCliRuntimeError
-from stratis_cli._stratisd_constants import StratisdErrorsGen
+from stratis_cli._actions._stratisd_constants import StratisdErrorsGen
 
 from ._constants import _DEVICES
 

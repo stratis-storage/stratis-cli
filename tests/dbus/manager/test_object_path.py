@@ -24,7 +24,7 @@ from stratis_cli._dbus import Manager
 from stratis_cli._dbus import Pool
 from stratis_cli._dbus import get_object
 
-from stratis_cli._stratisd_constants import StratisdErrorsGen
+from stratis_cli._actions._stratisd_constants import StratisdErrorsGen
 
 from .._constants import _DEVICES
 

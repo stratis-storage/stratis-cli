@@ -29,8 +29,8 @@ from .._dbus import Manager
 from .._dbus import Pool
 from .._dbus import get_object
 
-from .._stratisd_constants import StratisdErrorsGen
-from .._stratisd_constants import StratisdRaidGen
+from ._stratisd_constants import StratisdErrorsGen
+from ._stratisd_constants import StratisdRaidGen
 
 from ._misc import get_pool
 
