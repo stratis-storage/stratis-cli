@@ -315,10 +315,9 @@ class GetCacheTestCase(unittest.TestCase):
         self.assertEqual(type(rc), int)
         self.assertEqual(type(message), str)
 
-    @unittest.expectedFailure
     def testNonExistingPool1(self):
         """
-        Now raises a dbus exception because the object path is not valid.
+        Returns an error code, just the wrong one.
         """
         (result, rc, message) = \
            Manager(self._proxy).GetCacheObjectPath('notapool')
@@ -370,14 +369,11 @@ class GetCache1TestCase(unittest.TestCase):
         self.assertEqual(type(rc), int)
         self.assertEqual(type(message), str)
 
-    @unittest.expectedFailure
     def testException1(self):
         """
         An error is returned if the pool does not exist.
 
         Aside from the error value, the results are correct.
-
-        Now raises a dbus exception because result is not an object path.
         """
         (result, rc, message) = \
            Manager(self._proxy).GetCacheObjectPath('notapool')
