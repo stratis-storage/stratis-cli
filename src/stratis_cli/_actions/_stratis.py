@@ -32,7 +32,6 @@ class StratisActions(object):
     """
     Stratis actions.
     """
-    # pylint: disable=too-few-public-methods
 
     @staticmethod
     def list_stratisd_log_level(namespace):
