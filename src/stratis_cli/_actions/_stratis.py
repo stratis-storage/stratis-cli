@@ -85,5 +85,3 @@ class StratisActions(object):
         raise StratisCliImpossibleError(
            "Exactly one option should have been selected."
         )
-        # pylint: disable=unreachable
-        return
