@@ -16,12 +16,14 @@
 Miscellaneous methods to support testing.
 """
 
+import abc
 import os
 import random
 import subprocess
 
 from ._constants import _STRATISD
 from ._constants import _STRATISD_EXECUTABLE
+from ._constants import _STRATISD_RUST
 
 def _device_list(devices, minimum):
     """
@@ -36,15 +38,32 @@ def _device_list(devices, minimum):
     return [devices[i] for i in indices]
 
 
-class Service(object):
+class ServiceABC(abc.ABC):
     """
-    Handle starting and stopping the service.
+    Abstract base class of Service classes.
     """
 
+    @abc.abstractmethod
     def setUp(self):
         """
         Start the stratisd daemon with the simulator.
         """
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def tearDown(self):
+        """
+        Stop the stratisd simulator and daemon.
+        """
+        raise NotImplementedError()
+
+
+class ServiceC(ServiceABC):
+    """
+    Handle starting and stopping the C service.
+    """
+
+    def setUp(self):
         env = dict(os.environ)
         env['LD_LIBRARY_PATH'] = os.path.join(_STRATISD, 'lib')
 
@@ -56,7 +75,21 @@ class Service(object):
         )
 
     def tearDown(self):
-        """
-        Stop the stratisd simulator and daemon.
-        """
         self._stratisd.terminate()
+
+
+class ServiceR(ServiceABC):
+    """
+    Handle starting and stopping the Rust service.
+    """
+
+    def setUp(self):
+        self._stratisd = subprocess.Popen(
+           os.path.join(_STRATISD_RUST, 'target/debug/stratisd')
+        )
+
+    def tearDown(self):
+        self._stratisd.terminate()
+
+
+Service = ServiceC
