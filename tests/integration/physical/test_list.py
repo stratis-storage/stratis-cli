@@ -20,7 +20,7 @@ import unittest
 
 from stratis_cli._main import run
 from stratis_cli._errors import StratisCliRuntimeError
-from stratis_cli._stratisd_constants import StratisdErrorsGen
+from stratis_cli._actions._stratisd_constants import StratisdErrorsGen
 
 from .._constants import _DEVICES
 

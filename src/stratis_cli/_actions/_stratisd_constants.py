@@ -17,17 +17,11 @@ Representing stratisd contants.
 """
 
 import abc
-import sys
 
-import dbus
+from .._constants import TOP_OBJECT
 
-from ._connection import get_object
-
-from ._constants import SERVICE
-from ._constants import SERVICE_UNKNOWN_ERROR
-from ._constants import TOP_OBJECT
-
-from ._dbus import Manager
+from .._dbus import Manager
+from .._dbus import get_object
 
 
 class StratisdConstants(object):
@@ -92,7 +86,6 @@ class StratisdConstantsGen(abc.ABC):
     """
     # pylint: disable=too-few-public-methods
 
-    _VALUES = None
     _CLASSNAME = abc.abstractproperty(doc="the name of the class to construct")
     _METHODNAME = abc.abstractproperty(doc="dbus method name")
 
@@ -104,21 +97,8 @@ class StratisdConstantsGen(abc.ABC):
         :return: class with class attributes for stratisd constants
         :rtype: type
         """
-        if cls._VALUES is None:
-            try:
-                values = \
-                   getattr(Manager(get_object(TOP_OBJECT)), cls._METHODNAME)()
-                cls._VALUES = StratisdConstants.get_class(
-                   cls._CLASSNAME,
-                   values
-                )
-            except dbus.exceptions.DBusException as err:
-                message = str(err)
-                if message.startswith(SERVICE_UNKNOWN_ERROR):
-                    sys.exit('Service %s unavailable.' % SERVICE)
-                raise err
-
-        return cls._VALUES
+        values = getattr(Manager(get_object(TOP_OBJECT)), cls._METHODNAME)()
+        return StratisdConstants.get_class(cls._CLASSNAME, values)
 
 
 class StratisdErrorsGen(StratisdConstantsGen):

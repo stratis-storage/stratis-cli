@@ -18,15 +18,14 @@ Miscellaneous physical actions.
 
 from __future__ import print_function
 
-from .._connection import get_object
-
 from .._constants import TOP_OBJECT
 
 from .._dbus import Pool
+from .._dbus import get_object
 
 from .._errors import StratisCliRuntimeError
 
-from .._stratisd_constants import StratisdErrorsGen
+from ._stratisd_constants import StratisdErrorsGen
 
 from ._misc import get_pool
 

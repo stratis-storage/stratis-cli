@@ -18,22 +18,20 @@ Miscellaneous actions about stratis.
 
 from __future__ import print_function
 
-from .._connection import get_object
-
 from .._constants import TOP_OBJECT
 
 from .._dbus import Manager
+from .._dbus import get_object
 
 from .._errors import StratisCliImpossibleError
 
-from .._stratisd_constants import StratisdRaidGen
+from ._stratisd_constants import StratisdRaidGen
 
 
 class StratisActions(object):
     """
     Stratis actions.
     """
-    # pylint: disable=too-few-public-methods
 
     @staticmethod
     def list_stratisd_log_level(namespace):
@@ -86,5 +84,3 @@ class StratisActions(object):
         raise StratisCliImpossibleError(
            "Exactly one option should have been selected."
         )
-        # pylint: disable=unreachable
-        return

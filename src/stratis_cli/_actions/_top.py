@@ -18,19 +18,18 @@ Miscellaneous top-level actions.
 
 from __future__ import print_function
 
-from .._connection import get_object
-
 from .._constants import REDUNDANCY
 from .._constants import TOP_OBJECT
 
 from .._dbus import Manager
+from .._dbus import get_object
 
 from .._errors import StratisCliRuntimeError
 from .._errors import StratisCliUnimplementedError
 from .._errors import StratisCliValueError
 
-from .._stratisd_constants import StratisdErrorsGen
-from .._stratisd_constants import StratisdRaidGen
+from ._stratisd_constants import StratisdErrorsGen
+from ._stratisd_constants import StratisdRaidGen
 
 class TopActions(object):
     """
@@ -110,13 +109,10 @@ class TopActions(object):
         """
         proxy = get_object(TOP_OBJECT)
 
-        (_, rc, message) = \
+        (rc, message) = \
            Manager(proxy).DestroyPool(namespace.name)
 
         stratisd_errors = StratisdErrorsGen.get_object()
-
-        if rc == stratisd_errors.STRATIS_POOL_NOTFOUND:
-            return
 
         if rc != stratisd_errors.STRATIS_OK:
             raise StratisCliRuntimeError(rc, message)
