@@ -138,8 +138,13 @@ class Manager(object):
     def ListPools(self):
         """
         List all pools.
+
+        :rtype: (list of str) * int * str
         """
-        return self._dbus_object.ListPools(dbus_interface=self._INTERFACE_NAME)
+        (result, rc, message) = \
+           self._dbus_object.ListPools(dbus_interface=self._INTERFACE_NAME)
+
+        return ([str(x) for x in result], int(rc), str(message))
 
     @property
     def Version(self):
