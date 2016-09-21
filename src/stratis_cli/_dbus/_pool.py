@@ -89,6 +89,8 @@ class Pool(object):
     def ListDevs(self):
         """
         List the devices belonging to a pool.
+
+        :rtype: (list of str) * int * str
         """
         return self._dbus_object.ListDevs(dbus_interface=self._INTERFACE_NAME)
 
