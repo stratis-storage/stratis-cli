@@ -16,10 +16,11 @@
 Class for wrapping dbus calls.
 """
 
-from ._dbus import Properties
-
 from .._errors import StratisCliUnimplementedError
 
+from ._dbus import Properties
+
+from ._signature import Decorators
 
 class Pool(object):
     """
@@ -57,9 +58,15 @@ class Pool(object):
            dbus_interface=self._INTERFACE_NAME
         )
 
+    @Decorators.in_decorator('a(sss)')
     def CreateVolumes(self, volumes):
         """
         Create volumes from the pool.
+
+        :param volumes: specifications for volumes
+        :type volumes: list of str * str * str
+
+        :rtype: (list of str * int * str) * int * str
         """
         return self._dbus_object.CreateVolumes(
            volumes,
