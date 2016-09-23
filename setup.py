@@ -33,6 +33,7 @@ setuptools.setup(
         'Topic :: Software Development :: Libraries',
         ],
     install_requires = [
+       'pyparsing'
     ],
     package_dir={"": "src"},
     packages=setuptools.find_packages("src"),
