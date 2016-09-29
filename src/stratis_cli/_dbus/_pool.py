@@ -73,12 +73,15 @@ class Pool(object):
            dbus_interface=self._INTERFACE_NAME
         )
 
+    @Decorators.in_decorator('as')
     def DestroyVolumes(self, volumes):
         """
         Destroy volumes in the pool.
 
         :param volumes: list of volume names
         :type volumes: list of str
+
+        :rtype: (list of str * int * str) * int * str
         """
         return self._dbus_object.DestroyVolumes(
            volumes,
