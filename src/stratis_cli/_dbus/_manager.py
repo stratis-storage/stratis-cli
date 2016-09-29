@@ -16,9 +16,9 @@
 Manager interface.
 """
 
-import dbus
-
 from ._dbus import Properties
+
+from ._signature import Decorators
 
 
 class Manager(object):
@@ -36,6 +36,7 @@ class Manager(object):
         """
         self._dbus_object = dbus_object
 
+    @Decorators.in_decorator('sasi')
     def CreatePool(self, pool_name, devices, redundancy):
         """
         Create a pool.
@@ -47,14 +48,14 @@ class Manager(object):
 
         :rtype: str * int * str
         """
-        (result, rc, message) = self._dbus_object.CreatePool(
-           dbus.String(pool_name),
-           [dbus.String(x) for x in devices],
-           dbus.Int32(redundancy),
+        return self._dbus_object.CreatePool(
+           pool_name,
+           devices,
+           redundancy,
            dbus_interface=self._INTERFACE_NAME
         )
-        return (str(result), int(rc), str(message))
 
+    @Decorators.in_decorator('s')
     def DestroyPool(self, pool_name):
         """
         Destroy a pool.
@@ -63,12 +64,12 @@ class Manager(object):
 
         :rtype: int * str
         """
-        (rc, message) = self._dbus_object.DestroyPool(
-           dbus.String(pool_name),
+        return self._dbus_object.DestroyPool(
+           pool_name,
            dbus_interface=self._INTERFACE_NAME
         )
-        return (int(rc), str(message))
 
+    @Decorators.in_decorator('s')
     def GetCacheObjectPath(self, pool):
         """
         Get cache object path.
@@ -77,11 +78,10 @@ class Manager(object):
 
         :rtype: str * int * str
         """
-        (result, rc, message) = self._dbus_object.GetCacheObjectPath(
-           dbus.String(pool),
+        return self._dbus_object.GetCacheObjectPath(
+           pool,
            dbus_interface=self._INTERFACE_NAME
         )
-        return (str(result), int(rc), str(message))
 
     def GetErrorCodes(self):
         """
@@ -93,6 +93,7 @@ class Manager(object):
            dbus_interface=self._INTERFACE_NAME
         )
 
+    @Decorators.in_decorator("s")
     def GetPoolObjectPath(self, pool_name):
         """
         Get the object path of a pool.
@@ -101,12 +102,10 @@ class Manager(object):
 
         :rtype: str * int * str
         """
-        (result, rc, message) = self._dbus_object.GetPoolObjectPath(
-           dbus.String(pool_name),
+        return self._dbus_object.GetPoolObjectPath(
+           pool_name,
            dbus_interface=self._INTERFACE_NAME
         )
-        return (str(result), int(rc), str(message))
-
 
     def GetRaidLevels(self):
         """
@@ -119,6 +118,7 @@ class Manager(object):
            dbus_interface=self._INTERFACE_NAME
         )
 
+    @Decorators.in_decorator("ss")
     def GetVolumeObjectPath(self, pool_name, volume_name):
         """
         Get the object path of volume ``volume_name`` in pool ``pool_name``.
@@ -128,12 +128,11 @@ class Manager(object):
 
         :rtype: str * int * str
         """
-        (result, rc, message) = self._dbus_object.GetVolumeObjectPath(
-           dbus.String(pool_name),
-           dbus.String(volume_name),
+        return self._dbus_object.GetVolumeObjectPath(
+           pool_name,
+           volume_name,
            dbus_interface=self._INTERFACE_NAME
         )
-        return (str(result), int(rc), str(message))
 
     def ListPools(self):
         """
@@ -141,10 +140,7 @@ class Manager(object):
 
         :rtype: (list of str) * int * str
         """
-        (result, rc, message) = \
-           self._dbus_object.ListPools(dbus_interface=self._INTERFACE_NAME)
-
-        return ([str(x) for x in result], int(rc), str(message))
+        return self._dbus_object.ListPools(dbus_interface=self._INTERFACE_NAME)
 
     @property
     def Version(self):

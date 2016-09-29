@@ -64,8 +64,8 @@ class Destroy1TestCase(unittest.TestCase):
            self._POOLNAME
         )
         self.assertEqual(rc, StratisdErrorsGen.get_object().STRATIS_OK)
-        self.assertEqual(type(rc), int)
-        self.assertEqual(type(message), str)
+        self.assertIsInstance(rc, int)
+        self.assertIsInstance(message, str)
 
         (_, rc1, _) = Manager(self._proxy).GetPoolObjectPath(
            self._POOLNAME
@@ -109,8 +109,8 @@ class Destroy2TestCase(unittest.TestCase):
            self._POOLNAME
         )
         self.assertEqual(rc, StratisdErrorsGen.get_object().STRATIS_OK)
-        self.assertEqual(type(rc), int)
-        self.assertEqual(type(message), str)
+        self.assertIsInstance(rc, int)
+        self.assertIsInstance(message, str)
 
         (_, rc1, _) = Manager(self._proxy).GetPoolObjectPath(
            self._POOLNAME
@@ -161,5 +161,5 @@ class Destroy3TestCase(unittest.TestCase):
            self._POOLNAME
         )
         self.assertNotEqual(rc, StratisdErrorsGen.get_object().STRATIS_OK)
-        self.assertEqual(type(rc), int)
-        self.assertEqual(type(message), str)
+        self.assertIsInstance(rc, int)
+        self.assertIsInstance(message, str)

@@ -16,6 +16,7 @@ arg_map = {
    ],
    "tests" : [
       "--reports=no",
+      "--disable=I",
       "--disable=bad-continuation",
       "--disable=duplicate-code",
       "--disable=invalid-name",

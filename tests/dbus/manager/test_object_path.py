@@ -93,9 +93,9 @@ class GetPoolTestCase(unittest.TestCase):
            Manager(self._proxy).GetPoolObjectPath('notapool')
         expected_rc = StratisdErrorsGen.get_object().STRATIS_POOL_NOTFOUND
         self.assertEqual(rc, expected_rc)
-        self.assertEqual(type(result), str)
-        self.assertEqual(type(rc), int)
-        self.assertEqual(type(message), str)
+        self.assertIsInstance(result, str)
+        self.assertIsInstance(rc, int)
+        self.assertIsInstance(message, str)
 
 
 class GetPool1TestCase(unittest.TestCase):
@@ -132,9 +132,9 @@ class GetPool1TestCase(unittest.TestCase):
            Manager(self._proxy).GetPoolObjectPath(self._POOLNAME)
         self.assertEqual(rc, StratisdErrorsGen.get_object().STRATIS_OK)
         self.assertNotEqual(result, '')
-        self.assertEqual(type(result), str)
-        self.assertEqual(type(rc), int)
-        self.assertEqual(type(message), str)
+        self.assertIsInstance(result, str)
+        self.assertIsInstance(rc, int)
+        self.assertIsInstance(message, str)
 
     def testUnknownName(self):
         """
@@ -144,9 +144,9 @@ class GetPool1TestCase(unittest.TestCase):
            Manager(self._proxy).GetPoolObjectPath('nopool')
         expected_rc = StratisdErrorsGen.get_object().STRATIS_POOL_NOTFOUND
         self.assertEqual(rc, expected_rc)
-        self.assertEqual(type(result), str)
-        self.assertEqual(type(rc), int)
-        self.assertEqual(type(message), str)
+        self.assertIsInstance(result, str)
+        self.assertIsInstance(rc, int)
+        self.assertIsInstance(message, str)
 
 
 class GetVolumeTestCase(unittest.TestCase):
@@ -177,9 +177,9 @@ class GetVolumeTestCase(unittest.TestCase):
            Manager(self._proxy).GetVolumeObjectPath('notapool', 'noname')
         expected_rc = StratisdErrorsGen.get_object().STRATIS_POOL_NOTFOUND
         self.assertEqual(rc, expected_rc)
-        self.assertEqual(type(result), str)
-        self.assertEqual(type(rc), int)
-        self.assertEqual(type(message), str)
+        self.assertIsInstance(result, str)
+        self.assertIsInstance(rc, int)
+        self.assertIsInstance(message, str)
 
 
 class GetVolume1TestCase(unittest.TestCase):
@@ -216,9 +216,9 @@ class GetVolume1TestCase(unittest.TestCase):
            Manager(self._proxy).GetVolumeObjectPath(self._POOLNAME, 'noname')
         expected_rc = StratisdErrorsGen.get_object().STRATIS_VOLUME_NOTFOUND
         self.assertEqual(rc, expected_rc)
-        self.assertEqual(type(result), str)
-        self.assertEqual(type(rc), int)
-        self.assertEqual(type(message), str)
+        self.assertIsInstance(result, str)
+        self.assertIsInstance(rc, int)
+        self.assertIsInstance(message, str)
 
 
 class GetVolume2TestCase(unittest.TestCase):
@@ -262,9 +262,9 @@ class GetVolume2TestCase(unittest.TestCase):
         expected_rc = StratisdErrorsGen.get_object().STRATIS_OK
         self.assertEqual(rc, expected_rc)
         self.assertNotEqual(result, "")
-        self.assertEqual(type(result), str)
-        self.assertEqual(type(rc), int)
-        self.assertEqual(type(message), str)
+        self.assertIsInstance(result, str)
+        self.assertIsInstance(rc, int)
+        self.assertIsInstance(message, str)
 
     def testNonExistingVolume(self):
         """
@@ -276,9 +276,9 @@ class GetVolume2TestCase(unittest.TestCase):
         )
         expected_rc = StratisdErrorsGen.get_object().STRATIS_VOLUME_NOTFOUND
         self.assertEqual(rc, expected_rc)
-        self.assertEqual(type(result), str)
-        self.assertEqual(type(rc), int)
-        self.assertEqual(type(message), str)
+        self.assertIsInstance(result, str)
+        self.assertIsInstance(rc, int)
+        self.assertIsInstance(message, str)
 
 
 class GetCacheTestCase(unittest.TestCase):
@@ -311,9 +311,9 @@ class GetCacheTestCase(unittest.TestCase):
            Manager(self._proxy).GetCacheObjectPath('notapool')
         expected_rc = StratisdErrorsGen.get_object().STRATIS_POOL_NOTFOUND
         self.assertEqual(rc, expected_rc)
-        self.assertEqual(type(result), str)
-        self.assertEqual(type(rc), int)
-        self.assertEqual(type(message), str)
+        self.assertIsInstance(result, str)
+        self.assertIsInstance(rc, int)
+        self.assertIsInstance(message, str)
 
     def testNonExistingPool1(self):
         """
@@ -323,9 +323,9 @@ class GetCacheTestCase(unittest.TestCase):
            Manager(self._proxy).GetCacheObjectPath('notapool')
         ok_rc = StratisdErrorsGen.get_object().STRATIS_OK
         self.assertNotEqual(rc, ok_rc)
-        self.assertEqual(type(result), str)
-        self.assertEqual(type(rc), int)
-        self.assertEqual(type(message), str)
+        self.assertIsInstance(result, str)
+        self.assertIsInstance(rc, int)
+        self.assertIsInstance(message, str)
 
 
 class GetCache1TestCase(unittest.TestCase):
@@ -365,9 +365,9 @@ class GetCache1TestCase(unittest.TestCase):
            Manager(self._proxy).GetCacheObjectPath('notapool')
         expected_rc = StratisdErrorsGen.get_object().STRATIS_POOL_NOTFOUND
         self.assertEqual(rc, expected_rc)
-        self.assertEqual(type(result), str)
-        self.assertEqual(type(rc), int)
-        self.assertEqual(type(message), str)
+        self.assertIsInstance(result, str)
+        self.assertIsInstance(rc, int)
+        self.assertIsInstance(message, str)
 
     def testException1(self):
         """
@@ -379,9 +379,9 @@ class GetCache1TestCase(unittest.TestCase):
            Manager(self._proxy).GetCacheObjectPath('notapool')
         ok_rc = StratisdErrorsGen.get_object().STRATIS_OK
         self.assertNotEqual(rc, ok_rc)
-        self.assertEqual(type(result), str)
-        self.assertEqual(type(rc), int)
-        self.assertEqual(type(message), str)
+        self.assertIsInstance(result, str)
+        self.assertIsInstance(rc, int)
+        self.assertIsInstance(message, str)
 
     @unittest.expectedFailure
     def testExecution(self):
@@ -395,6 +395,6 @@ class GetCache1TestCase(unittest.TestCase):
         expected_rc = StratisdErrorsGen.get_object().STRATIS_OK
         self.assertEqual(rc, expected_rc)
         self.assertNotEqual(result, "")
-        self.assertEqual(type(result), str)
-        self.assertEqual(type(rc), int)
-        self.assertEqual(type(message), str)
+        self.assertIsInstance(result, str)
+        self.assertIsInstance(rc, int)
+        self.assertIsInstance(message, str)
