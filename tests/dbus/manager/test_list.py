@@ -57,9 +57,9 @@ class ListTestCase(unittest.TestCase):
         List should just succeed.
         """
         (result, rc, message) = Manager(self._proxy).ListPools()
-        self.assertEqual(type(result), list)
-        self.assertEqual(type(rc), int)
-        self.assertEqual(type(message), str)
+        self.assertIsInstance(result, list)
+        self.assertIsInstance(rc, int)
+        self.assertIsInstance(message, str)
 
         self.assertEqual(result, [])
         self.assertEqual(rc, StratisdErrorsGen.get_object().STRATIS_OK)
@@ -97,11 +97,11 @@ class List2TestCase(unittest.TestCase):
         """
         (result, rc, message) = Manager(self._proxy).ListPools()
 
-        self.assertEqual(type(result), list)
-        self.assertEqual(type(rc), int)
-        self.assertEqual(type(message), str)
+        self.assertIsInstance(result, list)
+        self.assertIsInstance(rc, int)
+        self.assertIsInstance(message, str)
 
         self.assertEqual(len(result), 1)
 
-        self.assertEqual(type(result[0]), str)
+        self.assertIsInstance(result[0], str)
         self.assertEqual(rc, StratisdErrorsGen.get_object().STRATIS_OK)

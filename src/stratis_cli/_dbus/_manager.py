@@ -48,13 +48,12 @@ class Manager(object):
 
         :rtype: str * int * str
         """
-        (result, rc, message) = self._dbus_object.CreatePool(
+        return self._dbus_object.CreatePool(
            pool_name,
            devices,
            redundancy,
            dbus_interface=self._INTERFACE_NAME
         )
-        return (str(result), int(rc), str(message))
 
     @Decorators.in_decorator('s')
     def DestroyPool(self, pool_name):
@@ -65,11 +64,10 @@ class Manager(object):
 
         :rtype: int * str
         """
-        (rc, message) = self._dbus_object.DestroyPool(
+        return self._dbus_object.DestroyPool(
            pool_name,
            dbus_interface=self._INTERFACE_NAME
         )
-        return (int(rc), str(message))
 
     @Decorators.in_decorator('s')
     def GetCacheObjectPath(self, pool):
@@ -80,11 +78,10 @@ class Manager(object):
 
         :rtype: str * int * str
         """
-        (result, rc, message) = self._dbus_object.GetCacheObjectPath(
+        return self._dbus_object.GetCacheObjectPath(
            pool,
            dbus_interface=self._INTERFACE_NAME
         )
-        return (str(result), int(rc), str(message))
 
     def GetErrorCodes(self):
         """
@@ -105,12 +102,10 @@ class Manager(object):
 
         :rtype: str * int * str
         """
-        (result, rc, message) = self._dbus_object.GetPoolObjectPath(
+        return self._dbus_object.GetPoolObjectPath(
            pool_name,
            dbus_interface=self._INTERFACE_NAME
         )
-        return (str(result), int(rc), str(message))
-
 
     def GetRaidLevels(self):
         """
@@ -133,12 +128,11 @@ class Manager(object):
 
         :rtype: str * int * str
         """
-        (result, rc, message) = self._dbus_object.GetVolumeObjectPath(
+        return self._dbus_object.GetVolumeObjectPath(
            pool_name,
            volume_name,
            dbus_interface=self._INTERFACE_NAME
         )
-        return (str(result), int(rc), str(message))
 
     def ListPools(self):
         """
@@ -146,10 +140,7 @@ class Manager(object):
 
         :rtype: (list of str) * int * str
         """
-        (result, rc, message) = \
-           self._dbus_object.ListPools(dbus_interface=self._INTERFACE_NAME)
-
-        return ([str(x) for x in result], int(rc), str(message))
+        return self._dbus_object.ListPools(dbus_interface=self._INTERFACE_NAME)
 
     @property
     def Version(self):

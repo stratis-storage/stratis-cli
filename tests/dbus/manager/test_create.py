@@ -75,9 +75,9 @@ class Create2TestCase(unittest.TestCase):
            [d.device_node for d in _device_list(_DEVICES, 1)],
            0
         )
-        self.assertEqual(type(result), str)
-        self.assertEqual(type(rc), int)
-        self.assertEqual(type(message), str)
+        self.assertIsInstance(result, str)
+        self.assertIsInstance(rc, int)
+        self.assertIsInstance(message, str)
 
         (pool, rc1, _) = Manager(self._proxy).GetPoolObjectPath(
            self._POOLNAME
@@ -129,9 +129,9 @@ class Create3TestCase(unittest.TestCase):
         )
         expected_rc = StratisdErrorsGen.get_object().STRATIS_ALREADY_EXISTS
         self.assertEqual(rc, expected_rc)
-        self.assertEqual(type(result), str)
-        self.assertEqual(type(rc), int)
-        self.assertEqual(type(message), str)
+        self.assertIsInstance(result, str)
+        self.assertIsInstance(rc, int)
+        self.assertIsInstance(message, str)
 
         (_, rc1, _) = Manager(self._proxy).GetPoolObjectPath(
            self._POOLNAME
