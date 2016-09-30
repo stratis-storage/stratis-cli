@@ -189,7 +189,12 @@ class ParseTestCase(unittest.TestCase):
         """
         Test that parsing is always succesful.
         """
-        base_type_objects = \
-           [x.example() for x in STRATEGY_GENERATOR.parseString(signature)]
-        funcs = [f for (f, _) in self._PARSER.PARSER.parseString(signature)]
+        base_type_objects = [
+           x.example() for x in \
+              STRATEGY_GENERATOR.parseString(signature, parseAll=True)
+        ]
+        funcs = [
+           f for (f, _) in \
+              self._PARSER.PARSER.parseString(signature, parseAll=True)
+        ]
         self.assertIsNotNone([f(x) for (f, x) in zip(funcs, base_type_objects)])

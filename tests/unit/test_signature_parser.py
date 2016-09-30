@@ -65,7 +65,9 @@ class ParseTestCase(unittest.TestCase):
         """
         Test that parsing is always succesful.
         """
-        self.assertIsNotNone(self._PARSER.PARSER.parseString(signature))
+        self.assertIsNotNone(
+           self._PARSER.PARSER.parseString(signature, parseAll=True)
+        )
 
     def testExceptions(self):
         """
