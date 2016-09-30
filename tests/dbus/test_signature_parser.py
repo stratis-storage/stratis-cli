@@ -19,11 +19,12 @@ Test signature parsing.
 import string
 import unittest
 
+from dbus_signature_pyparsing import Parser
+
 from hypothesis import given
 from hypothesis import settings
 from hypothesis import strategies
 
-from stratis_cli._dbus._signature._parsing import SignatureParser
 from stratis_cli._dbus._signature._xformer import ToDbusXformer
 
 # Omits v, variant since xformer does not handle variants.
@@ -77,7 +78,7 @@ OBJECT_PATH_STRATEGY = strategies.one_of(
 )
 
 
-class StrategyGenerator(SignatureParser):
+class StrategyGenerator(Parser):
     """
     Generate a hypothesis strategy for generating objects for a particular
     dbus signature which make use of base Python classes.

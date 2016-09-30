@@ -18,14 +18,14 @@ Transforming Python basic types to Python dbus types.
 
 import dbus
 
+from dbus_signature_pyparsing import Parser
+
 from ..._errors import StratisCliValueError
 
-from ._parsing import SignatureParser
 
-
-class ToDbusXformer(SignatureParser):
+class ToDbusXformer(Parser):
     """
-    Class which extends a SignatureParser to yield a function that yields
+    Class which extends a Parser to yield a function that yields
     a function that transforms a value in base Python types to a correct value
     using dbus-python types.
 
