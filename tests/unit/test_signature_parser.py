@@ -49,7 +49,7 @@ SINGLETON_SIGNATURE_STRATEGY = strategies.recursive(
 
 SIGNATURE_STRATEGY = strategies.builds(
    ''.join,
-   strategies.lists(SINGLETON_SIGNATURE_STRATEGY, min_size=1, max_size=10)
+   strategies.lists(SINGLETON_SIGNATURE_STRATEGY, max_size=10)
 )
 
 class ParseTestCase(unittest.TestCase):
@@ -75,18 +75,18 @@ class ParseTestCase(unittest.TestCase):
         """
         parser = self._PARSER.PARSER
         with self.assertRaises(pyparsing.ParseException):
-            parser.parseString('a')
+            parser.parseString('a', parseAll=True)
         with self.assertRaises(pyparsing.ParseException):
-            parser.parseString('()')
+            parser.parseString('()', parseAll=True)
         with self.assertRaises(pyparsing.ParseException):
-            parser.parseString('{}')
+            parser.parseString('{}', parseAll=True)
         with self.assertRaises(pyparsing.ParseException):
-            parser.parseString('{b}')
+            parser.parseString('{b}', parseAll=True)
         with self.assertRaises(pyparsing.ParseException):
-            parser.parseString('a{b}')
+            parser.parseString('a{b}', parseAll=True)
         with self.assertRaises(pyparsing.ParseException):
-            parser.parseString('a{}')
+            parser.parseString('a{}', parseAll=True)
         with self.assertRaises(pyparsing.ParseException):
-            parser.parseString('a{byy}')
+            parser.parseString('a{byy}', parseAll=True)
         with self.assertRaises(pyparsing.ParseException):
-            parser.parseString('a{ayy}')
+            parser.parseString('a{ayy}', parseAll=True)

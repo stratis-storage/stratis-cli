@@ -19,6 +19,7 @@ pyparsing based module for parsing a dbus method input or output signature.
 from pyparsing import Forward
 from pyparsing import Literal
 from pyparsing import OneOrMore
+from pyparsing import ZeroOrMore
 
 
 class SignatureParser(object):
@@ -86,4 +87,4 @@ class SignatureParser(object):
         self.STRUCT.setName('STRUCT')
 
         self.COMPLETE <<= self.CODE ^ self.ARRAY ^ self.STRUCT
-        self.PARSER = OneOrMore(self.COMPLETE)
+        self.PARSER = ZeroOrMore(self.COMPLETE)
