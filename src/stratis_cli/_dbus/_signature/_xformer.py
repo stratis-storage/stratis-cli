@@ -180,7 +180,10 @@ class Decorators(object):
 
         :param str signature: the input signature of the function
         """
-        xformers = [x for (x, _) in Decorators._PARSER.parseString(signature)]
+        xformers = [
+           x for (x, _) in \
+              Decorators._PARSER.parseString(signature, parseAll=True)
+        ]
 
         def function_func(func):
             """
