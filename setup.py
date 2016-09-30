@@ -20,7 +20,7 @@ setuptools.setup(
     description='prototype stratis cli',
     long_description=open(README, encoding='utf-8').read(),
     platforms=['Linux'],
-    license='GPL 2+',
+    license='Apache 2.0',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
