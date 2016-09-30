@@ -53,7 +53,7 @@ class SignatureParser(object):
 
         self.VARIANT = Literal('v')('VARIANT')
 
-        simple = \
+        self.CODE = \
            self.BYTE ^ \
            self.BOOLEAN ^ \
            self.DOUBLE ^ \
@@ -69,21 +69,21 @@ class SignatureParser(object):
            self.SIGNATURE ^ \
            self.VARIANT
 
-        self.TREE = Forward()
+        self.COMPLETE = Forward()
 
         self.DICT_ENTRY = \
            Literal('{') + \
-           simple + \
-           Forward(self.TREE) + \
+           self.CODE + \
+           Forward(self.COMPLETE) + \
            Literal('}')
         self.DICT_ENTRY.setName('DICT_ENTRY')
 
-        self.ARRAY = Literal('a') + (Forward(self.TREE) ^ self.DICT_ENTRY)
+        self.ARRAY = Literal('a') + (Forward(self.COMPLETE) ^ self.DICT_ENTRY)
         self.ARRAY.setName('ARRAY')
 
         self.STRUCT = \
-           Literal('(') + OneOrMore(Forward(self.TREE)) + Literal(')')
+           Literal('(') + OneOrMore(Forward(self.COMPLETE)) + Literal(')')
         self.STRUCT.setName('STRUCT')
 
-        self.TREE <<= simple ^ self.ARRAY ^ self.STRUCT
-        self.PARSER = OneOrMore(self.TREE)
+        self.COMPLETE <<= self.CODE ^ self.ARRAY ^ self.STRUCT
+        self.PARSER = OneOrMore(self.COMPLETE)
