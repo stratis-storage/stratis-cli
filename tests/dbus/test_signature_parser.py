@@ -25,34 +25,13 @@ from hypothesis import given
 from hypothesis import settings
 from hypothesis import strategies
 
+from hypothesis_extra_dbus_signature import dbus_signatures
+
 from stratis_cli._dbus._signature._xformer import ToDbusXformer
 
 # Omits v, variant since xformer does not handle variants.
 # Omits h, unix fd, because it is unclear what are valid fds for dbus
-SIMPLE_STRATEGY = strategies.sampled_from(
-   ['y', 'b', 'n', 'q', 'i', 'u', 'x', 't', 'd', 's', 'o', 'g']
-)
-
-SINGLETON_SIGNATURE_STRATEGY = strategies.recursive(
-   SIMPLE_STRATEGY,
-   lambda children: \
-      strategies.builds(
-         ''.join,
-         strategies.lists(children, min_size=1)
-      ).flatmap(lambda v: strategies.just('(' + v + ')')) | \
-      children.flatmap(lambda v: strategies.just('a' + v)) | \
-      strategies.builds(
-         lambda x, y: x + y,
-         SIMPLE_STRATEGY,
-         children
-      ).flatmap(lambda v: strategies.just('a' + '{' + v + '}')),
-   max_leaves=20
-)
-
-SIGNATURE_STRATEGY = strategies.builds(
-   ''.join,
-   strategies.lists(SINGLETON_SIGNATURE_STRATEGY, min_size=1, max_size=10)
-)
+SIGNATURE_STRATEGY = dbus_signatures(max_codes=20, blacklist="hv")
 
 OBJECT_PATH_STRATEGY = strategies.one_of(
    strategies.builds(
