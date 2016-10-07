@@ -17,6 +17,7 @@ Transforming Python basic types to Python dbus types.
 """
 
 import dbus
+import functools
 
 from dbus_signature_pyparsing import Parser
 
@@ -190,6 +191,7 @@ class Decorators(object):
             The actual decorator.
             """
 
+            @functools.wraps(func)
             def the_func(self, *args):
                 """
                 The resulting function.
