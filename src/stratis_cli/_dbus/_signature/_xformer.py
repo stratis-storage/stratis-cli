@@ -36,6 +36,33 @@ class ToDbusXformer(Parser):
     """
     # pylint: disable=too-few-public-methods
 
+    def _handleVariant(self):
+        """
+        Generate the correct function for a variant signature.
+
+        :returns: function that returns an appropriate value
+        :rtype: tuple of str * object -> object
+        """
+
+        def the_func(a_tuple):
+            """
+            Function for generating a variant value from a tuple.
+
+            :param a_tuple: the parts of the variant
+            :type a_tuple: str * object
+            :returns: a value of the correct type with correct variant level
+            :rtype: object * int
+            """
+            (signature, an_obj) = a_tuple
+            (func, sig) = self.COMPLETE.parseString(signature)[0]
+            assert sig == signature
+            (xformed, level) = func(an_obj)
+            level = level + 1
+            return (xformed, level)
+
+
+        return (the_func, 'v')
+
     @staticmethod
     def _handleArray(toks):
         """
@@ -130,25 +157,6 @@ class ToDbusXformer(Parser):
 
         return (the_func, '(' + signature + ')')
 
-    @staticmethod
-    def _raiseException(message):
-        """
-        Handy method yielding a function for raising an exception.
-
-        :param str message: the message
-        """
-        def raises(s, loc, toks):
-            """
-            The exception raising method.
-
-            :param str s: the string being parsed
-            :param loc: the location of the matching substring
-            :param toks: the tokens matched
-            """
-            # pylint: disable=unused-argument
-            raise StratisCliValueError(s, "the string being parsed", message)
-
-        return raises
 
     def __init__(self):
         super(ToDbusXformer, self).__init__()
@@ -194,9 +202,7 @@ class ToDbusXformer(Parser):
            lambda: ((lambda v: (dbus.types.Signature(v), 0)), 'g')
         )
 
-        self.VARIANT.setParseAction(
-           ToDbusXformer._raiseException("Unhandled variant signature.")
-        )
+        self.VARIANT.setParseAction(self._handleVariant)
 
         self.ARRAY.setParseAction(ToDbusXformer._handleArray)
 

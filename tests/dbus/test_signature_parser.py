@@ -29,9 +29,8 @@ from hs_dbus_signature import dbus_signatures
 
 from stratis_cli._dbus._signature._xformer import ToDbusXformer
 
-# Omits v, variant since xformer does not handle variants.
 # Omits h, unix fd, because it is unclear what are valid fds for dbus
-SIGNATURE_STRATEGY = dbus_signatures(max_codes=20, blacklist="hv")
+SIGNATURE_STRATEGY = dbus_signatures(max_codes=20, blacklist="h")
 
 OBJECT_PATH_STRATEGY = strategies.one_of(
    strategies.builds(
@@ -63,26 +62,6 @@ class StrategyGenerator(Parser):
     dbus signature which make use of base Python classes.
     """
     # pylint: disable=too-few-public-methods
-
-    @staticmethod
-    def _raiseException(message):
-        """
-        Handy method yielding a function for raising an exception.
-
-        :param str message: the message
-        """
-        def raises(s, loc, toks):
-            """
-            The exception raising method.
-
-            :param str s: the string being parsed
-            :param loc: the location of the matching substring
-            :param toks: the tokens matched
-            """
-            # pylint: disable=unused-argument
-            raise ValueError(s, "the string being parsed", message)
-
-        return raises
 
     @staticmethod
     def _handleArray(toks):
@@ -142,9 +121,27 @@ class StrategyGenerator(Parser):
         self.OBJECT_PATH.setParseAction(lambda: OBJECT_PATH_STRATEGY)
         self.SIGNATURE.setParseAction(lambda: SIGNATURE_STRATEGY)
 
-        self.VARIANT.setParseAction(
-           StrategyGenerator._raiseException("Unhandled variant signature.")
-        )
+        def _handleVariant():
+            """
+            Generate the correct strategy for a variant signature.
+
+            :returns: strategy that generates an object that inhabits a variant
+            :rtype: strategy
+            """
+            signature_strategy = dbus_signatures(
+               max_codes=5,
+               min_complete_types=1,
+               max_complete_types=1,
+               blacklist="h"
+            )
+            return signature_strategy.flatmap(
+               lambda x: strategies.tuples(
+                  strategies.just(x),
+                  self.COMPLETE.parseString(x)[0]
+               )
+            )
+
+        self.VARIANT.setParseAction(_handleVariant)
 
         self.ARRAY.setParseAction(StrategyGenerator._handleArray)
 
