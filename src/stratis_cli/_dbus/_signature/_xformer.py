@@ -43,7 +43,7 @@ class ToDbusXformer(Parser):
 
         :param toks: the list of parsed tokens
         :returns: function that returns an Array or Dictionary value
-        :rtype: (or list dict) -> ((or Array Dictionary) * str)
+        :rtype: ((or list dict) -> ((or Array Dictionary) * int)) * str
         """
 
         if len(toks) == 5 and toks[1] == '{' and toks[4] == '}':
@@ -58,12 +58,20 @@ class ToDbusXformer(Parser):
                 :param a_dict: the dictionary to transform
                 :type a_dict: dict of (`a * `b)
 
-                :returns: a dbus dictionary of transformed values
-                :rtype: Dictionary
+                :returns: a dbus dictionary of transformed values and level
+                :rtype: Dictionary * int
                 """
-                return dbus.types.Dictionary(
-                    [(key_func(x), value_func(y)) for (x, y) in a_dict.items()],
-                    signature
+                elements = \
+                   [(key_func(x), value_func(y)) for (x, y) in a_dict.items()]
+                level = \
+                   0 if elements == [] \
+                   else max(max(x, y) for ((_, x), (_, y)) in elements)
+                return (
+                   dbus.types.Dictionary(
+                      ((x, y) for ((x, _), (y, _)) in elements),
+                      signature
+                   ),
+                   level
                 )
 
             return (the_func, 'a{' + signature + '}')
@@ -78,11 +86,16 @@ class ToDbusXformer(Parser):
 
                 :param a_list: the list to transform
                 :type a_list: list of `a
-                :returns: a dbus Array of transformed values
-                :rtype: Array
+                :returns: a dbus Array of transformed values and variant level
+                :rtype: Array * int
                 """
+                elements = [func(x) for x in a_list]
+                level = 0 if elements == [] else max(x for (_, x) in elements)
 
-                return dbus.types.Array([func(x) for x in a_list], sig)
+                return (
+                   dbus.types.Array((x for (x, _) in elements), sig),
+                   level
+                )
 
             return (the_func, 'a' + sig)
 
@@ -96,7 +109,7 @@ class ToDbusXformer(Parser):
 
         :param toks: the list of parsed tokens
         :returns: function that returns an Array or Dictionary value
-        :rtype: list -> (Struct * str)
+        :rtype: (list -> (Struct * int)) * str
         """
         subtrees = toks[1:-1]
         signature = ''.join(s for (_, s) in subtrees)
@@ -108,10 +121,12 @@ class ToDbusXformer(Parser):
 
             :param a_list: the list to transform
             :type a_list: list of `a
-            :returns: a dbus Struct of transformed values
-            :rtype: Struct
+            :returns: a dbus Struct of transformed values and variant level
+            :rtype: Struct * int
             """
-            return dbus.types.Struct(f(x) for (f, x) in zip(funcs, a_list))
+            elements = [f(x) for (f, x) in zip(funcs, a_list)]
+            level = 0 if elements == [] else max(x for (_, x) in elements)
+            return (dbus.types.Struct(x for (x, _) in elements), level)
 
         return (the_func, '(' + signature + ')')
 
@@ -138,20 +153,46 @@ class ToDbusXformer(Parser):
     def __init__(self):
         super(ToDbusXformer, self).__init__()
 
-        self.BYTE.setParseAction(lambda: (dbus.types.Byte, 'y'))
-        self.BOOLEAN.setParseAction(lambda: (dbus.types.Boolean, 'b'))
-        self.INT16.setParseAction(lambda: (dbus.types.Int16, 'n'))
-        self.UINT16.setParseAction(lambda: (dbus.types.UInt16, 'q'))
-        self.INT32.setParseAction(lambda: (dbus.types.Int32, 'i'))
-        self.UINT32.setParseAction(lambda: (dbus.types.UInt32, 'u'))
-        self.INT64.setParseAction(lambda: (dbus.types.Int64, 'x'))
-        self.UINT64.setParseAction(lambda: (dbus.types.UInt64, 't'))
-        self.DOUBLE.setParseAction(lambda: (dbus.types.Double, 'd'))
-        self.UNIX_FD.setParseAction(lambda: (dbus.types.UnixFd, 'h'))
+        self.BYTE.setParseAction(
+           lambda: ((lambda v: (dbus.types.Byte(v), 0)), 'y')
+        )
+        self.BOOLEAN.setParseAction(
+           lambda: ((lambda v: (dbus.types.Boolean(v), 0)), 'b')
+        )
+        self.INT16.setParseAction(
+           lambda: ((lambda v: (dbus.types.Int16(v), 0)), 'n')
+        )
+        self.UINT16.setParseAction(
+           lambda: ((lambda v: (dbus.types.UInt16(v), 0)), 'q')
+        )
+        self.INT32.setParseAction(
+           lambda: ((lambda v: (dbus.types.Int32(v), 0)), 'i')
+        )
+        self.UINT32.setParseAction(
+           lambda: ((lambda v: (dbus.types.UInt32(v), 0)), 'u')
+        )
+        self.INT64.setParseAction(
+           lambda: ((lambda v: (dbus.types.Int64(v), 0)), 'x')
+        )
+        self.UINT64.setParseAction(
+           lambda: ((lambda v: (dbus.types.UInt64(v), 0)), 't')
+        )
+        self.DOUBLE.setParseAction(
+           lambda: ((lambda v: (dbus.types.Double(v), 0)), 'd')
+        )
+        self.UNIX_FD.setParseAction(
+           lambda: ((lambda v: (dbus.types.UnixFd(v), 0)), 'h')
+        )
 
-        self.STRING.setParseAction(lambda: (dbus.types.String, 's'))
-        self.OBJECT_PATH.setParseAction(lambda: (dbus.types.ObjectPath, 'o'))
-        self.SIGNATURE.setParseAction(lambda: (dbus.types.Signature, 'g'))
+        self.STRING.setParseAction(
+           lambda: ((lambda v: (dbus.types.String(v), 0)), 's')
+        )
+        self.OBJECT_PATH.setParseAction(
+           lambda: ((lambda v: (dbus.types.ObjectPath(v), 0)), 'o')
+        )
+        self.SIGNATURE.setParseAction(
+           lambda: ((lambda v: (dbus.types.Signature(v), 0)), 'g')
+        )
 
         self.VARIANT.setParseAction(
            ToDbusXformer._raiseException("Unhandled variant signature.")
@@ -196,7 +237,8 @@ class Decorators(object):
 
                 Transform each value in args before passing it to func.
                 """
-                xformed_args = [f(x) for (f, x) in zip(xformers, args)]
+                xformed = [f(x) for (f, x) in zip(xformers, args)]
+                xformed_args = [x for (x, _) in xformed]
                 return func(self, *xformed_args)
 
             return the_func
