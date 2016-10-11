@@ -183,6 +183,7 @@ class ToDbusXformer(Parser):
             return (
                dbus.types.Struct(
                   (x for (x, _) in elements),
+                  signature=signature,
                   variant_level=obj_level
                ),
                func_level
