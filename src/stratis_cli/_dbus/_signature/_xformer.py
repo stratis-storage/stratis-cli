@@ -54,7 +54,7 @@ class ToDbusXformer(Parser):
         Generate the correct function for a variant signature.
 
         :returns: function that returns an appropriate value
-        :rtype: tuple of str * object -> object
+        :rtype: ((str * object) or list)-> object
         """
 
         def the_func(a_tuple, variant=False):
@@ -62,7 +62,7 @@ class ToDbusXformer(Parser):
             Function for generating a variant value from a tuple.
 
             :param a_tuple: the parts of the variant
-            :type a_tuple: str * object
+            :type a_tuple: (str * object) or list
             :param bool variant: whether the object is a variant
             :returns: a value of the correct type with correct variant level
             :rtype: object * int
@@ -160,7 +160,7 @@ class ToDbusXformer(Parser):
 
         :param toks: the list of parsed tokens
         :returns: function that returns an Array or Dictionary value
-        :rtype: (list -> (Struct * int)) * str
+        :rtype: ((list or tuple) -> (Struct * int)) * str
         """
         subtrees = toks[1:-1]
         signature = ''.join(s for (_, s) in subtrees)
@@ -171,7 +171,7 @@ class ToDbusXformer(Parser):
             Function for generating a Struct from a list.
 
             :param a_list: the list to transform
-            :type a_list: list of `a
+            :type a_list: list or tuple
             :param bool variant: whether to make this object a variant
             :returns: a dbus Struct of transformed values and variant level
             :rtype: Struct * int
