@@ -25,7 +25,7 @@ from hypothesis import given
 from hypothesis import settings
 from hypothesis import strategies
 
-from hypothesis_extra_dbus_signature import dbus_signatures
+from hs_dbus_signature import dbus_signatures
 
 from stratis_cli._dbus._signature._xformer import ToDbusXformer
 
