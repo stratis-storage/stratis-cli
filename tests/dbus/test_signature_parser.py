@@ -170,8 +170,14 @@ class ParseTestCase(unittest.TestCase):
            x.example() for x in \
               STRATEGY_GENERATOR.parseString(signature, parseAll=True)
         ]
-        funcs = [
-           f for (f, _) in \
-              self._PARSER.PARSER.parseString(signature, parseAll=True)
-        ]
-        self.assertIsNotNone([f(x) for (f, x) in zip(funcs, base_type_objects)])
+        results = self._PARSER.PARSER.parseString(signature, parseAll=True)
+        funcs = [f for (f, _) in results]
+        sigs = [s for (_, s) in results]
+
+        results = [f(x) for (f, x) in zip(funcs, base_type_objects)]
+        values = [v for (v, _) in results]
+        levels = [l for (_, l) in results]
+
+        for sig, level in zip(sigs, levels):
+            if 'v' not in sig:
+                self.assertEqual(level, 0)
