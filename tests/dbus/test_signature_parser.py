@@ -19,6 +19,8 @@ Test signature parsing.
 import string
 import unittest
 
+import dbus
+
 from dbus_signature_pyparsing import Parser
 
 from hypothesis import given
@@ -153,6 +155,57 @@ class StrategyGenerator(Parser):
 STRATEGY_GENERATOR = StrategyGenerator().PARSER
 
 
+def _descending(dbus_object):
+    """
+    Verify levels of variant values always descend by one.
+
+    :param object dbus_object: a dbus object
+    :returns: None if there was a failure of the property, otherwise the level
+    :rtype: int or NoneType
+
+    None is a better choice than False, for 0, a valid variant level, is always
+    interpreted as False.
+    """
+    # pylint: disable=too-many-return-statements
+    if isinstance(dbus_object, dbus.Dictionary):
+        key_levels = [_descending(x) for x in dbus_object.keys()]
+        value_levels = [_descending(x) for x in dbus_object.values()]
+        if any(k is None for k in key_levels) or \
+           any(v is None for v in value_levels):
+            return None
+
+        max_key_level = max(key_levels) if key_levels != [] else 0
+        max_value_level = max(value_levels) if value_levels != [] else 0
+        max_level = max(max_key_level, max_value_level)
+
+        variant_level = dbus_object.variant_level
+        if variant_level == 0:
+            return max_level
+
+        if variant_level != max_level + 1:
+            return None
+        else:
+            return variant_level
+    elif isinstance(dbus_object, (dbus.Array, dbus.Struct)):
+        levels = [_descending(x) for x in dbus_object]
+        if any(l is None for l in levels):
+            return None
+
+        max_level = max(levels) if levels != [] else 0
+
+        variant_level = dbus_object.variant_level
+        if variant_level == 0:
+            return max_level
+
+        if variant_level != max_level + 1:
+            return None
+        else:
+            return variant_level
+    else:
+        variant_level = dbus_object.variant_level
+        return variant_level if variant_level in (0, 1) else None
+
+
 class ParseTestCase(unittest.TestCase):
     """
     Test parsing various signatures.
@@ -178,6 +231,7 @@ class ParseTestCase(unittest.TestCase):
         values = [v for (v, _) in results]
         levels = [l for (_, l) in results]
 
-        for sig, level in zip(sigs, levels):
+        for sig, (level, value) in zip(sigs, zip(levels, values)):
             if 'v' not in sig:
                 self.assertEqual(level, 0)
+            self.assertTrue(_descending(value) != None)
