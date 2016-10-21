@@ -37,7 +37,7 @@ setuptools.setup(
         'Topic :: Systems Administration'
         ],
     install_requires = [
-       'dbus-signature-pyparsing'
+       'into-dbus-python'
     ],
     package_dir={"": "src"},
     packages=setuptools.find_packages("src"),
