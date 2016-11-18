@@ -18,16 +18,17 @@ Miscellaneous physical actions.
 
 from __future__ import print_function
 
-from .._constants import TOP_OBJECT
+from stratisd_client_dbus import Pool
+from stratisd_client_dbus import StratisdErrorsGen
+from stratisd_client_dbus import get_object
 
-from .._dbus import Pool
-from .._dbus import get_object
+from .._constants import TOP_OBJECT
 
 from .._errors import StratisCliRuntimeError
 
-from ._stratisd_constants import StratisdErrorsGen
-
 from ._misc import get_pool
+
+_PN = Pool.MethodNames
 
 
 class PhysicalActions(object):
@@ -42,8 +43,8 @@ class PhysicalActions(object):
         """
         proxy = get_object(TOP_OBJECT)
         pool_object = get_pool(proxy, namespace.name)
-        (result, rc, message) = Pool(pool_object).ListDevs()
-        if rc != StratisdErrorsGen.get_object().STRATIS_OK:
+        (result, rc, message) = Pool.callMethod(pool_object, _PN.ListDevs)
+        if rc != StratisdErrorsGen.get_object().OK:
             raise StratisCliRuntimeError(rc, message)
 
         for item in result:
@@ -58,7 +59,8 @@ class PhysicalActions(object):
         """
         proxy = get_object(TOP_OBJECT)
         pool_object = get_pool(proxy, namespace.name)
-        (_, rc, message) = Pool(pool_object).AddDevs(namespace.device)
-        if rc != StratisdErrorsGen.get_object().STRATIS_OK:
+        (_, rc, message) = \
+           Pool.callMethod(pool_object, _PN.AddDevs, namespace.device)
+        if rc != StratisdErrorsGen.get_object().OK:
             raise StratisCliRuntimeError(rc, message)
         return

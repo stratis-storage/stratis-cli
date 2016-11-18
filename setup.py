@@ -37,7 +37,7 @@ setuptools.setup(
         'Topic :: Systems Administration'
         ],
     install_requires = [
-       'into-dbus-python'
+       'stratisd-client-dbus'
     ],
     package_dir={"": "src"},
     packages=setuptools.find_packages("src"),

@@ -16,11 +16,13 @@
 Test 'snapshot'.
 """
 
+import time
 import unittest
+
+from stratisd_client_dbus import StratisdErrorsGen
 
 from stratis_cli._main import run
 from stratis_cli._errors import StratisCliRuntimeError
-from stratis_cli._actions._stratisd_constants import StratisdErrorsGen
 
 from .._constants import _DEVICES
 
@@ -28,6 +30,7 @@ from .._misc import _device_list
 from .._misc import Service
 
 
+@unittest.skip("unimplemented")
 class SnapshotTestCase(unittest.TestCase):
     """
     Test snapshot of a volume when pool does not exist.
@@ -43,6 +46,7 @@ class SnapshotTestCase(unittest.TestCase):
         """
         self._service = Service()
         self._service.setUp()
+        time.sleep(1)
 
     def tearDown(self):
         """
@@ -58,10 +62,11 @@ class SnapshotTestCase(unittest.TestCase):
            self._MENU + [self._POOLNAME] + [self._ORIGIN] + [self._SNAP]
         with self.assertRaises(StratisCliRuntimeError) as ctxt:
             all(run(command_line))
-        expected_error = StratisdErrorsGen.get_object().STRATIS_POOL_NOTFOUND
+        expected_error = StratisdErrorsGen.get_object().POOL_NOTFOUND
         self.assertEqual(ctxt.exception.rc, expected_error)
 
 
+@unittest.skip("unimplemented")
 class Snapshot1TestCase(unittest.TestCase):
     """
     Test snapshot of a volume when pool exists but volume does not.
@@ -77,6 +82,7 @@ class Snapshot1TestCase(unittest.TestCase):
         """
         self._service = Service()
         self._service.setUp()
+        time.sleep(1)
         command_line = \
            ['pool', 'create'] + [self._POOLNAME] + \
            [d.device_node for d in _device_list(_DEVICES, 1)]
@@ -96,11 +102,11 @@ class Snapshot1TestCase(unittest.TestCase):
            self._MENU + [self._POOLNAME] + [self._ORIGIN] + [self._SNAP]
         with self.assertRaises(StratisCliRuntimeError) as ctxt:
             all(run(command_line))
-        expected_error = StratisdErrorsGen.get_object().STRATIS_VOLUME_NOTFOUND
+        expected_error = StratisdErrorsGen.get_object().VOLUME_NOTFOUND
         self.assertEqual(ctxt.exception.rc, expected_error)
 
 
-@unittest.skip('not enough information to decide failure or success')
+@unittest.skip('unimplemented')
 class Snapshot2TestCase(unittest.TestCase):
     """
     Test snapshot of a volume when pool and volume exists.
@@ -116,6 +122,7 @@ class Snapshot2TestCase(unittest.TestCase):
         """
         self._service = Service()
         self._service.setUp()
+        time.sleep(1)
         command_line = \
            ['pool', 'create'] + [self._POOLNAME] + \
            [d.device_node for d in _device_list(_DEVICES, 1)]

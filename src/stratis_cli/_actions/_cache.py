@@ -18,6 +18,12 @@ Actions on a pool's cache.
 
 from __future__ import print_function
 
+from stratisd_client_dbus import Manager
+from stratisd_client_dbus import Pool
+from stratisd_client_dbus import StratisdErrorsGen
+from stratisd_client_dbus import StratisdRaidGen
+from stratisd_client_dbus import get_object
+
 from .._errors import StratisCliRuntimeError
 from .._errors import StratisCliUnimplementedError
 from .._errors import StratisCliValueError
@@ -25,15 +31,10 @@ from .._errors import StratisCliValueError
 from .._constants import REDUNDANCY
 from .._constants import TOP_OBJECT
 
-from .._dbus import Manager
-from .._dbus import Pool
-from .._dbus import get_object
-
-from ._stratisd_constants import StratisdErrorsGen
-from ._stratisd_constants import StratisdRaidGen
-
 from ._misc import get_pool
 
+_MN = Manager.MethodNames
+_PN = Pool.MethodNames
 
 class CacheActions(object):
     """
@@ -76,9 +77,13 @@ class CacheActions(object):
             )
 
         pool_object = get_pool(get_object(TOP_OBJECT), namespace.pool)
-        (_, rc, message) = \
-           Pool(pool_object).AddCache(namespace.device, redundancy_number)
-        if rc != StratisdErrorsGen.get_object().STRATIS_OK:
+        (_, rc, message) = Pool.callMethod(
+           pool_object,
+           _PN.AddCacheDevs,
+           namespace.device,
+           redundancy_number
+        )
+        if rc != StratisdErrorsGen.get_object().OK:
             raise StratisCliRuntimeError(rc, message)
 
         return
@@ -90,12 +95,12 @@ class CacheActions(object):
         """
         proxy = get_object(TOP_OBJECT)
         (pool_object_path, rc, message) = \
-            Manager(proxy).GetPoolObjectPath(namespace.pool)
+            Manager.callMethod(proxy, _MN.GetPoolObjectPath, namespace.pool)
         if rc != 0:
             return (rc, message)
 
         pool_object = get_object(pool_object_path)
-        (result, rc, message) = Pool(pool_object).ListCache()
+        (result, rc, message) = Pool.callMethod(pool_object, _PN.ListCacheDevs)
         if rc != 0:
             return (rc, message)
 
@@ -111,9 +116,9 @@ class CacheActions(object):
         """
         proxy = get_object(TOP_OBJECT)
         (pool_object_path, rc, message) = \
-            Manager(proxy).GetPoolObjectPath(namespace.pool)
+            Manager.callMethod(proxy, _MN.GetPoolObjectPath, namespace.pool)
         if rc != 0:
             return (rc, message)
 
         pool_object = get_object(pool_object_path)
-        return Pool(pool_object).RemoveCache()
+        return Pool.callMethod(pool_object, _PN.RemoveCacheDevs)

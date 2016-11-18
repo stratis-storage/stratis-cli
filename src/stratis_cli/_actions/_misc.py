@@ -16,12 +16,14 @@
 Miscellaneous shared methods.
 """
 
-from .._dbus import Manager
-from .._dbus import get_object
+from stratisd_client_dbus import Manager
+from stratisd_client_dbus import StratisdErrorsGen
+from stratisd_client_dbus import get_object
 
 from .._errors import StratisCliRuntimeError
 
-from ._stratisd_constants import StratisdErrorsGen
+
+_MN = Manager.MethodNames
 
 def get_pool(top, name):
     """
@@ -34,9 +36,9 @@ def get_pool(top, name):
     :raises StratisCliRuntimeError: if failure to get object
     """
     (pool_object_path, rc, message) = \
-        Manager(top).GetPoolObjectPath(name)
+        Manager.callMethod(top, _MN.GetPoolObjectPath, name)
 
-    if rc != StratisdErrorsGen.get_object().STRATIS_OK:
+    if rc != StratisdErrorsGen.get_object().OK:
         raise StratisCliRuntimeError(rc, message)
 
     return get_object(pool_object_path)
@@ -54,9 +56,9 @@ def get_volume(top, pool, name):
     :raises StratisCliRuntimeError: if failure to get object
     """
     (volume_object_path, rc, message) = \
-       Manager(top).GetVolumeObjectPath(pool, name)
+       Manager.callMethod(top, _MN.GetFilesystemObjectPath, pool, name)
 
-    if rc != StratisdErrorsGen.get_object().STRATIS_OK:
+    if rc != StratisdErrorsGen.get_object().OK:
         raise StratisCliRuntimeError(rc, message)
 
     return get_object(volume_object_path)
@@ -73,9 +75,9 @@ def get_cache(top, pool):
     :raises StratisCliRuntimeError: if failure to get object
     """
     (cache_object_path, rc, message) = \
-       Manager(top).GetCacheObjectPath(pool)
+       Manager.callMethod(top, _MN.GetCacheObjectPath, pool)
 
-    if rc != StratisdErrorsGen.get_object().STRATIS_OK:
+    if rc != StratisdErrorsGen.get_object().OK:
         raise StratisCliRuntimeError(rc, message)
 
     return get_object(cache_object_path)

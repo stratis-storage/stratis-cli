@@ -18,18 +18,19 @@ Miscellaneous top-level actions.
 
 from __future__ import print_function
 
+from stratisd_client_dbus import Manager
+from stratisd_client_dbus import StratisdErrorsGen
+from stratisd_client_dbus import StratisdRaidGen
+from stratisd_client_dbus import get_object
+
 from .._constants import REDUNDANCY
 from .._constants import TOP_OBJECT
-
-from .._dbus import Manager
-from .._dbus import get_object
 
 from .._errors import StratisCliRuntimeError
 from .._errors import StratisCliUnimplementedError
 from .._errors import StratisCliValueError
 
-from ._stratisd_constants import StratisdErrorsGen
-from ._stratisd_constants import StratisdRaidGen
+_MN = Manager.MethodNames
 
 class TopActions(object):
     """
@@ -47,32 +48,16 @@ class TopActions(object):
 
         proxy = get_object(TOP_OBJECT)
 
-        try:
-            redundancy = REDUNDANCY.get(namespace.redundancy)
-        except KeyError:
-            raise StratisCliValueError(
-               namespace.redundancy,
-               "namespace.redundancy",
-               "has no corresponding value"
-            )
 
-        stratisd_redundancies = StratisdRaidGen.get_object()
-        try:
-            redundancy_number = getattr(stratisd_redundancies, redundancy)
-        except AttributeError:
-            raise StratisCliValueError(
-               namespace.redundancy,
-               "namespace.redundancy",
-               "has no corresponding value"
-            )
-
-        (_, rc, message) = Manager(proxy).CreatePool(
+        (_, rc, message) = Manager.callMethod(
+           proxy,
+           _MN.CreatePool,
            namespace.name,
-           namespace.device,
-           redundancy_number
+           0,
+           namespace.device
         )
 
-        if rc != stratisd_errors.STRATIS_OK:
+        if rc != stratisd_errors.OK:
             raise StratisCliRuntimeError(rc, message)
 
         return
@@ -87,10 +72,10 @@ class TopActions(object):
         # pylint: disable=unused-argument
         proxy = get_object(TOP_OBJECT)
 
-        (result, rc, message) = Manager(proxy).ListPools()
+        (result, rc, message) = Manager.callMethod(proxy, _MN.ListPools)
 
         stratisd_errors = StratisdErrorsGen.get_object()
-        if rc != stratisd_errors.STRATIS_OK:
+        if rc != stratisd_errors.OK:
             raise StratisCliRuntimeError(rc, message)
 
         for item in result:
@@ -110,11 +95,11 @@ class TopActions(object):
         proxy = get_object(TOP_OBJECT)
 
         (rc, message) = \
-           Manager(proxy).DestroyPool(namespace.name)
+           Manager.callMethod(proxy, _MN.DestroyPool, namespace.name)
 
         stratisd_errors = StratisdErrorsGen.get_object()
 
-        if rc != stratisd_errors.STRATIS_OK:
+        if rc != stratisd_errors.OK:
             raise StratisCliRuntimeError(rc, message)
 
         return

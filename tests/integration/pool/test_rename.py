@@ -16,6 +16,7 @@
 Test 'rename'.
 """
 
+import time
 import unittest
 
 from stratis_cli._main import run
@@ -39,6 +40,7 @@ class Rename1TestCase(unittest.TestCase):
         """
         self._service = Service()
         self._service.setUp()
+        time.sleep(1)
 
     def tearDown(self):
         """

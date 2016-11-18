@@ -18,30 +18,19 @@ Miscellaneous actions about stratis.
 
 from __future__ import print_function
 
-from .._constants import TOP_OBJECT
-
-from .._dbus import Manager
-from .._dbus import get_object
+from stratisd_client_dbus import Manager
+from stratisd_client_dbus import StratisdRaidGen
 
 from .._errors import StratisCliImpossibleError
+from .._errors import StratisCliUnimplementedError
 
-from ._stratisd_constants import StratisdRaidGen
+_MN = Manager.MethodNames
 
 
 class StratisActions(object):
     """
     Stratis actions.
     """
-
-    @staticmethod
-    def list_stratisd_log_level(namespace):
-        """
-        List the stratisd log level.
-        """
-        # pylint: disable=unused-argument
-        proxy = get_object(TOP_OBJECT)
-        print(Manager(proxy).LogLevel)
-        return
 
     @staticmethod
     def list_stratisd_redundancy(namespace):
@@ -60,19 +49,13 @@ class StratisActions(object):
         List the stratisd version.
         """
         # pylint: disable=unused-argument
-        proxy = get_object(TOP_OBJECT)
-        print(Manager(proxy).Version)
-        return
+        raise StratisCliUnimplementedError()
 
     @staticmethod
     def dispatch(namespace):
         """
         Dispatch to the correct function.
         """
-        if namespace.log_level:
-            StratisActions.list_stratisd_log_level(namespace)
-            return
-
         if namespace.redundancy:
             StratisActions.list_stratisd_redundancy(namespace)
             return
