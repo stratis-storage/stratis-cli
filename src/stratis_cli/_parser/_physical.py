@@ -41,6 +41,12 @@ def build_physical_add_parser(parser):
        metavar='D',
        nargs='+'
     )
+    parser.add_argument(
+       '--force',
+       action='store_true',
+       default=False,
+       help="overwrite existing metadata on specified devices"
+    )
     parser.set_defaults(func=PhysicalActions.add_device)
     return parser
 

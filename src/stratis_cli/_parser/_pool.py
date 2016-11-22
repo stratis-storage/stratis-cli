@@ -39,6 +39,12 @@ def build_create_parser(parser):
        nargs='+'
     )
     parser.add_argument(
+       '--force',
+       action='store_true',
+       default=False,
+       help="overwrite existing metadata on specified devices"
+    )
+    parser.add_argument(
        '--redundancy',
        action='store',
        choices=['none'],

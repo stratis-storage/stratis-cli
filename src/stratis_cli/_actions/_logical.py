@@ -31,9 +31,6 @@ from .._constants import TOP_OBJECT
 from ._misc import get_pool
 from ._misc import get_volume
 
-_PN = Pool.MethodNames
-_FN = Filesystem.MethodNames
-
 
 class LogicalActions(object):
     """
@@ -52,7 +49,7 @@ class LogicalActions(object):
 
         volume_list = [(x, '', 0) for x in namespace.volume]
         (_, rc, message) = \
-            Pool.callMethod(pool_object, _PN.CreateFilesystems, volume_list)
+           Pool.CreateFilesystems(pool_object, specs=volume_list)
 
         if rc != StratisdErrorsGen().get_object().OK:
             raise StratisCliRuntimeError(rc, message)
@@ -66,7 +63,7 @@ class LogicalActions(object):
         """
         proxy = get_object(TOP_OBJECT)
         pool_object = get_pool(proxy, namespace.pool)
-        (result, rc, message) = Pool.callMethod(pool_object, _PN.ListFilesystems)
+        (result, rc, message) = Pool.ListFilesystems(pool_object)
         if rc != StratisdErrorsGen().get_object().OK:
             raise StratisCliRuntimeError(rc, message)
 
@@ -85,7 +82,7 @@ class LogicalActions(object):
         proxy = get_object(TOP_OBJECT)
         pool_object = get_pool(proxy, namespace.pool)
         (_, rc, message) = \
-           Pool.callMethod(pool_object, _PN.DestroyFilesystems, namespace.volume)
+           Pool.DestroyFilesystems(pool_object, names=namespace.volume)
         if rc != StratisdErrorsGen().get_object().OK:
             raise StratisCliRuntimeError(rc, message)
 
@@ -98,11 +95,8 @@ class LogicalActions(object):
         """
         proxy = get_object(TOP_OBJECT)
         volume_object = get_volume(proxy, namespace.pool, namespace.origin)
-        (_, rc, message) = Filesystem.callMethod(
-           volume_object,
-           _FN.CreateSnapshot,
-           namespace.volume
-        )
+        (_, rc, message) = \
+           Filesystem.CreateSnapshot(volume_object, names=namespace.volume)
         if rc != StratisdErrorsGen().get_object().OK:
             raise StratisCliRuntimeError(rc, message)
 

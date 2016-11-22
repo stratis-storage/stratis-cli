@@ -18,13 +18,10 @@ Miscellaneous actions about stratis.
 
 from __future__ import print_function
 
-from stratisd_client_dbus import Manager
 from stratisd_client_dbus import StratisdRaidGen
 
 from .._errors import StratisCliImpossibleError
 from .._errors import StratisCliUnimplementedError
-
-_MN = Manager.MethodNames
 
 
 class StratisActions(object):

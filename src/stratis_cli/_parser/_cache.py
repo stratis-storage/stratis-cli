@@ -39,6 +39,12 @@ def build_cache_add_parser(parser):
        metavar='D',
        nargs='+'
     )
+    parser.add_argument(
+       '--force',
+       action='store_true',
+       default=False,
+       help="overwrite existing metadata on specified devices"
+    )
     parser.set_defaults(func=CacheActions.add_devices)
     return parser
 

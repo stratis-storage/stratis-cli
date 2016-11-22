@@ -28,8 +28,6 @@ from .._errors import StratisCliRuntimeError
 
 from ._misc import get_pool
 
-_PN = Pool.MethodNames
-
 
 class PhysicalActions(object):
     """
@@ -43,7 +41,7 @@ class PhysicalActions(object):
         """
         proxy = get_object(TOP_OBJECT)
         pool_object = get_pool(proxy, namespace.name)
-        (result, rc, message) = Pool.callMethod(pool_object, _PN.ListDevs)
+        (result, rc, message) = Pool.ListDevs(pool_object)
         if rc != StratisdErrorsGen.get_object().OK:
             raise StratisCliRuntimeError(rc, message)
 
@@ -59,8 +57,11 @@ class PhysicalActions(object):
         """
         proxy = get_object(TOP_OBJECT)
         pool_object = get_pool(proxy, namespace.name)
-        (_, rc, message) = \
-           Pool.callMethod(pool_object, _PN.AddDevs, namespace.device)
+        (_, rc, message) = Pool.AddDevs(
+           pool_object,
+           force=namespace.force,
+           devices=namespace.device
+        )
         if rc != StratisdErrorsGen.get_object().OK:
             raise StratisCliRuntimeError(rc, message)
         return
