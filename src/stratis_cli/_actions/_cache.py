@@ -20,15 +20,11 @@ from __future__ import print_function
 
 from stratisd_client_dbus import Manager
 from stratisd_client_dbus import Pool
-from stratisd_client_dbus import StratisdErrorsGen
 from stratisd_client_dbus import get_object
 
-from .._errors import StratisCliRuntimeError
 from .._errors import StratisCliUnimplementedError
 
 from .._constants import TOP_OBJECT
-
-from ._misc import get_pool
 
 
 class CacheActions(object):
@@ -45,22 +41,6 @@ class CacheActions(object):
         raise StratisCliUnimplementedError(
            'Not sure how to add a device to an already existing cache.'
         )
-
-
-    @staticmethod
-    def create_cache(namespace):
-        """
-        Create cache for an existing pool.
-        """
-        pool_object = get_pool(get_object(TOP_OBJECT), namespace.pool)
-        (_, rc, message) = Pool.AddCacheDevs(
-           pool_object,
-           devices=namespace.device
-        )
-        if rc != StratisdErrorsGen.get_object().OK:
-            raise StratisCliRuntimeError(rc, message)
-
-        return
 
     @staticmethod
     def list_cache(namespace):
