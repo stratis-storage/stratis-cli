@@ -68,12 +68,6 @@ def build_cache_create_parser(parser):
        metavar='D',
        nargs='+'
     )
-    parser.add_argument(
-       '--redundancy',
-       choices=['none'],
-       default='none',
-       help='redundancy for cache'
-    )
     parser.set_defaults(func=CacheActions.create_cache)
     return parser
 
