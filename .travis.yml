@@ -1,21 +1,18 @@
-sudo: false
+os: linux
+dist: trusty
 
-os:
-  - linux
+before_install:
+    - sudo apt-get -qq update
+    - sudo apt-get install -y libdbus-glib-1-dev
+
+language: python
+python: "3.4"
 
 branches:
-  only:
-    - master
-language: python
+    only: master
 
 env:
-  matrix:
-    - TASK=lint
-    - TASK=test
-    - TASK=coverage
+    matrix:
+        - TASK=lint
 
-script:
-    - make -f Makefile $TASK
-
-python:
-  - "3.4"
+script: make -f Makefile $TASK
