@@ -39,38 +39,14 @@ def build_cache_add_parser(parser):
        metavar='D',
        nargs='+'
     )
+    parser.add_argument(
+       '--force',
+       action='store_true',
+       default=False,
+       help="overwrite existing metadata on specified devices"
+    )
     parser.set_defaults(func=CacheActions.add_devices)
     return parser
-
-
-def build_cache_create_parser(parser):
-    """
-    Generates the parser appropriate for creating a cache for this pool.
-
-    :param ArgumentParser parser: a parser
-    :returns: a completed parser for creating a cache for this pool.
-    :rtype: ArgumentParser
-    """
-    parser.add_argument(
-       'pool',
-       action='store',
-       help='pool name'
-    )
-    parser.add_argument(
-       'device',
-       help='make device D a member of this pool\'s cache',
-       metavar='D',
-       nargs='+'
-    )
-    parser.add_argument(
-       '--redundancy',
-       choices=['none'],
-       default='none',
-       help='redundancy for cache'
-    )
-    parser.set_defaults(func=CacheActions.create_cache)
-    return parser
-
 
 def build_cache_list_parser(parser):
     """
@@ -115,7 +91,6 @@ def build_cache_remove_parser(parser):
 
 _SUBPARSER_TABLE = {
    'add' : build_cache_add_parser,
-   'create' : build_cache_create_parser,
    'list' : build_cache_list_parser,
    'remove' : build_cache_remove_parser
 }
@@ -142,13 +117,6 @@ def build_cache_parser(parser):
           description="Add Devices to an Existing Pool Cache"
        )
     _SUBPARSER_TABLE['add'](subparser_table['add'])
-
-    subparser_table['create'] = \
-       subparsers.add_parser(
-          'create',
-          description="Create a Cache for an Existing Pool"
-       )
-    _SUBPARSER_TABLE['create'](subparser_table['create'])
 
     subparser_table['list'] = \
        subparsers.add_parser(

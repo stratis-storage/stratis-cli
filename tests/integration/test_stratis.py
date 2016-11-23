@@ -16,6 +16,7 @@
 Test 'stratisd'.
 """
 
+import time
 import unittest
 
 from stratis_cli._main import run
@@ -35,6 +36,7 @@ class StratisTestCase(unittest.TestCase):
         """
         self._service = Service()
         self._service.setUp()
+        time.sleep(1)
 
     def tearDown(self):
         """
@@ -42,18 +44,12 @@ class StratisTestCase(unittest.TestCase):
         """
         self._service.tearDown()
 
+    @unittest.skip("unimplemented")
     def testStratisVersion(self):
         """
         Getting version should just succeed.
         """
         command_line = self._MENU + ['--version']
-        all(run(command_line))
-
-    def testStratisLogLevel(self):
-        """
-        Getting log level should just succeed.
-        """
-        command_line = self._MENU + ['--log-level']
         all(run(command_line))
 
     def testStratisNoOptions(self):

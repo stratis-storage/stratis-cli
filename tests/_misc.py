@@ -50,12 +50,13 @@ class ServiceABC(abc.ABC):
         """
         raise NotImplementedError()
 
-    @abc.abstractmethod
     def tearDown(self):
         """
         Stop the stratisd simulator and daemon.
         """
-        raise NotImplementedError()
+        # pylint: disable=no-member
+        self._stratisd.terminate()
+        self._stratisd.wait()
 
 
 class ServiceC(ServiceABC):
@@ -74,9 +75,6 @@ class ServiceC(ServiceABC):
            env=env
         )
 
-    def tearDown(self):
-        self._stratisd.terminate()
-
 
 class ServiceR(ServiceABC):
     """
@@ -85,11 +83,8 @@ class ServiceR(ServiceABC):
 
     def setUp(self):
         self._stratisd = subprocess.Popen(
-           os.path.join(_STRATISD_RUST, 'target/debug/stratisd')
+           [os.path.join(_STRATISD_RUST, 'target/debug/stratisd'), '--sim']
         )
 
-    def tearDown(self):
-        self._stratisd.terminate()
 
-
-Service = ServiceC
+Service = ServiceR

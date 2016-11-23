@@ -16,11 +16,13 @@
 Test 'destroy'.
 """
 
+import time
 import unittest
+
+from stratisd_client_dbus import StratisdErrorsGen
 
 from stratis_cli._main import run
 from stratis_cli._errors import StratisCliRuntimeError
-from stratis_cli._actions._stratisd_constants import StratisdErrorsGen
 
 from .._constants import _DEVICES
 
@@ -43,6 +45,7 @@ class DestroyTestCase(unittest.TestCase):
         """
         self._service = Service()
         self._service.setUp()
+        time.sleep(1)
 
     def tearDown(self):
         """
@@ -57,7 +60,7 @@ class DestroyTestCase(unittest.TestCase):
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
         with self.assertRaises(StratisCliRuntimeError) as ctxt:
             all(run(command_line))
-        expected_error = StratisdErrorsGen.get_object().STRATIS_POOL_NOTFOUND
+        expected_error = StratisdErrorsGen.get_object().POOL_NOTFOUND
         self.assertEqual(ctxt.exception.rc, expected_error)
 
 
@@ -76,6 +79,7 @@ class Destroy2TestCase(unittest.TestCase):
         """
         self._service = Service()
         self._service.setUp()
+        time.sleep(1)
         command_line = \
            ['pool', 'create', self._POOLNAME] + \
            [d.device_node for d in _device_list(_DEVICES, 1)]
@@ -87,6 +91,7 @@ class Destroy2TestCase(unittest.TestCase):
         """
         self._service.tearDown()
 
+    @unittest.expectedFailure
     def testDestroy(self):
         """
         Destruction of the volume must succeed since pool exists and at end
@@ -112,6 +117,7 @@ class Destroy3TestCase(unittest.TestCase):
         """
         self._service = Service()
         self._service.setUp()
+        time.sleep(1)
         command_line = \
            ['pool', 'create', self._POOLNAME] + \
            [d.device_node for d in _device_list(_DEVICES, 1)]

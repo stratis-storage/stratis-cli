@@ -16,6 +16,7 @@
 Test 'destroy'.
 """
 
+import time
 import unittest
 
 from stratis_cli._main import run
@@ -42,6 +43,7 @@ class Destroy1TestCase(unittest.TestCase):
         """
         self._service = Service()
         self._service.setUp()
+        time.sleep(1)
 
     def tearDown(self):
         """
@@ -70,6 +72,7 @@ class Destroy2TestCase(unittest.TestCase):
         """
         self._service = Service()
         self._service.setUp()
+        time.sleep(1)
         command_line = \
            ['pool', 'create'] + \
            [self._POOLNAME] + \
@@ -106,6 +109,7 @@ class Destroy3TestCase(unittest.TestCase):
         """
         self._service = Service()
         self._service.setUp()
+        time.sleep(1)
 
         command_line = \
            ['pool', 'create'] + \
@@ -125,7 +129,6 @@ class Destroy3TestCase(unittest.TestCase):
         """
         self._service.tearDown()
 
-    @unittest.expectedFailure
     def testExecution(self):
         """
         This should fail since it has a volume.

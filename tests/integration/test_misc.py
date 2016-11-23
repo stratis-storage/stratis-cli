@@ -18,6 +18,9 @@ Test miscellaneous methods.
 import time
 import unittest
 
+from stratisd_client_dbus import StratisdErrorsGen
+from stratisd_client_dbus import get_object
+
 from stratis_cli import run
 
 from stratis_cli._actions._misc import get_cache
@@ -25,9 +28,7 @@ from stratis_cli._actions._misc import get_pool
 from stratis_cli._actions._misc import get_volume
 
 from stratis_cli._constants import TOP_OBJECT
-from stratis_cli._dbus import get_object
 from stratis_cli._errors import StratisCliRuntimeError
-from stratis_cli._actions._stratisd_constants import StratisdErrorsGen
 
 from ._constants import _DEVICES
 
@@ -48,6 +49,7 @@ class GetPoolTestCase(unittest.TestCase):
         """
         self._service = Service()
         self._service.setUp()
+        time.sleep(1)
 
     def tearDown(self):
         """
@@ -59,10 +61,9 @@ class GetPoolTestCase(unittest.TestCase):
         """
         An exception is raised if the pool does not exist.
         """
-        time.sleep(1) # wait until the service is available
         with self.assertRaises(StratisCliRuntimeError) as ctxt:
             get_pool(get_object(TOP_OBJECT), 'notapool')
-        expected_error = StratisdErrorsGen.get_object().STRATIS_POOL_NOTFOUND
+        expected_error = StratisdErrorsGen.get_object().POOL_NOTFOUND
         self.assertEqual(ctxt.exception.rc, expected_error)
 
 
@@ -79,6 +80,7 @@ class GetPool1TestCase(unittest.TestCase):
         """
         self._service = Service()
         self._service.setUp()
+        time.sleep(1)
         command_line = \
            ['pool', 'create', self._POOLNAME] + \
            [d.device_node for d in _device_list(_DEVICES, 1)]
@@ -94,7 +96,6 @@ class GetPool1TestCase(unittest.TestCase):
         """
         An exception is raised if the volume does not exist.
         """
-        time.sleep(1) # wait until the service is available
         self.assertIsNotNone(get_pool(get_object(TOP_OBJECT), self._POOLNAME))
 
 
@@ -111,6 +112,7 @@ class GetVolumeTestCase(unittest.TestCase):
         """
         self._service = Service()
         self._service.setUp()
+        time.sleep(1)
 
     def tearDown(self):
         """
@@ -122,10 +124,9 @@ class GetVolumeTestCase(unittest.TestCase):
         """
         An exception is raised if the pool does not exist.
         """
-        time.sleep(1) # wait until the service is available
         with self.assertRaises(StratisCliRuntimeError) as ctxt:
             get_volume(get_object(TOP_OBJECT), 'notapool', 'noname')
-        expected_error = StratisdErrorsGen.get_object().STRATIS_POOL_NOTFOUND
+        expected_error = StratisdErrorsGen.get_object().FILESYSTEM_NOTFOUND
         self.assertEqual(ctxt.exception.rc, expected_error)
 
 
@@ -142,6 +143,7 @@ class GetVolume1TestCase(unittest.TestCase):
         """
         self._service = Service()
         self._service.setUp()
+        time.sleep(1)
         command_line = \
            ['pool', 'create', self._POOLNAME] + \
            [d.device_node for d in _device_list(_DEVICES, 1)]
@@ -157,10 +159,9 @@ class GetVolume1TestCase(unittest.TestCase):
         """
         An exception is raised if the volume does not exist.
         """
-        time.sleep(1) # wait until the service is available
         with self.assertRaises(StratisCliRuntimeError) as ctxt:
             get_volume(get_object(TOP_OBJECT), self._POOLNAME, 'noname')
-        expected_error = StratisdErrorsGen.get_object().STRATIS_VOLUME_NOTFOUND
+        expected_error = StratisdErrorsGen.get_object().FILESYSTEM_NOTFOUND
         self.assertEqual(ctxt.exception.rc, expected_error)
 
 
@@ -178,6 +179,7 @@ class GetVolume2TestCase(unittest.TestCase):
         """
         self._service = Service()
         self._service.setUp()
+        time.sleep(1)
         command_line = \
            ['pool', 'create', self._POOLNAME] + \
            [d.device_node for d in _device_list(_DEVICES, 1)]
@@ -196,7 +198,6 @@ class GetVolume2TestCase(unittest.TestCase):
         """
         The volume should be discovered.
         """
-        time.sleep(1) # wait until the service is available
         get_volume(get_object(TOP_OBJECT), self._POOLNAME, self._VOLNAME)
 
 
@@ -213,6 +214,7 @@ class GetCacheTestCase(unittest.TestCase):
         """
         self._service = Service()
         self._service.setUp()
+        time.sleep(1)
 
     def tearDown(self):
         """
@@ -225,10 +227,9 @@ class GetCacheTestCase(unittest.TestCase):
         """
         An exception is raised if the pool does not exist.
         """
-        time.sleep(1) # wait until the service is available
         with self.assertRaises(StratisCliRuntimeError) as ctxt:
             get_cache(get_object(TOP_OBJECT), 'notapool')
-        expected_error = StratisdErrorsGen.get_object().STRATIS_POOL_NOTFOUND
+        expected_error = StratisdErrorsGen.get_object().POOL_NOTFOUND
         self.assertEqual(ctxt.exception.rc, expected_error)
 
 
@@ -245,6 +246,7 @@ class GetCache1TestCase(unittest.TestCase):
         """
         self._service = Service()
         self._service.setUp()
+        time.sleep(1)
         command_line = \
            ['pool', 'create', self._POOLNAME] + \
            [d.device_node for d in _device_list(_DEVICES, 1)]
@@ -256,10 +258,9 @@ class GetCache1TestCase(unittest.TestCase):
         """
         self._service.tearDown()
 
-    @unittest.expectedFailure
+    @unittest.skip("unimplemented")
     def testExecution(self):
         """
         An exception is raised if the volume does not exist.
         """
-        time.sleep(1) # wait until the service is available
         self.assertIsNotNone(get_cache(get_object(TOP_OBJECT), self._POOLNAME))

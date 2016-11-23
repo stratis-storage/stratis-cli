@@ -39,12 +39,6 @@ def build_stratisd_parser(parser):
     group = parser.add_mutually_exclusive_group(required=True)
 
     group.add_argument(
-      '--log-level',
-      action='store_true',
-      default=False,
-      help='log level of stratisd daemon'
-    )
-    group.add_argument(
       '--redundancy',
       action='store_true',
       default=False,
