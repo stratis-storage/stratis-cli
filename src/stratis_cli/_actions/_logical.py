@@ -47,7 +47,7 @@ class LogicalActions(object):
         proxy = get_object(TOP_OBJECT)
         pool_object = get_pool(proxy, namespace.pool)
 
-        volume_list = [(x, '', 0) for x in namespace.volume]
+        volume_list = [(x, '', None) for x in namespace.volume]
         (_, rc, message) = \
            Pool.CreateFilesystems(pool_object, specs=volume_list)
 
