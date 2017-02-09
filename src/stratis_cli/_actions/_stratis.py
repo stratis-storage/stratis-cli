@@ -18,10 +18,13 @@ Miscellaneous actions about stratis.
 
 from __future__ import print_function
 
+from stratisd_client_dbus import Manager
 from stratisd_client_dbus import StratisdRaidGen
+from stratisd_client_dbus import get_object
+
+from .._constants import TOP_OBJECT
 
 from .._errors import StratisCliImpossibleError
-from .._errors import StratisCliUnimplementedError
 
 
 class StratisActions(object):
@@ -46,7 +49,7 @@ class StratisActions(object):
         List the stratisd version.
         """
         # pylint: disable=unused-argument
-        raise StratisCliUnimplementedError()
+        print("%s" % Manager.Properties.Version(get_object(TOP_OBJECT)))
 
     @staticmethod
     def dispatch(namespace):
