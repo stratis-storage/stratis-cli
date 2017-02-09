@@ -36,7 +36,7 @@ class StratisActions(object):
         """
         # pylint: disable=unused-argument
         levels = StratisdRaidGen.get_object()
-        for x in levels.FIELDS:
+        for x in levels.fields():
             print("%s: %d" % (x, getattr(levels, x)))
         return
 
