@@ -24,11 +24,12 @@ from stratisd_client_dbus import StratisdErrorsGen
 from stratisd_client_dbus import get_object
 
 from .._errors import StratisCliRuntimeError
+from .._errors import StratisCliValueError
 
 from .._constants import TOP_OBJECT
 
 
-from ._misc import get_pool
+from ._misc import get_pool_object_by_name
 from ._misc import get_volume
 
 
@@ -45,7 +46,13 @@ class LogicalActions(object):
         :raises StratisCliRuntimeError:
         """
         proxy = get_object(TOP_OBJECT)
-        pool_object = get_pool(proxy, namespace.pool)
+        (pool_object, _) = get_pool_object_by_name(proxy, namespace.pool)
+        if pool_object is None:
+            raise StratisCliValueError(
+               namespace.pool,
+               "pool",
+               "no pool with the given name"
+            )
 
         volume_list = [(x, '', None) for x in namespace.volume]
         (_, rc, message) = \
@@ -62,7 +69,13 @@ class LogicalActions(object):
         List the volumes in a pool.
         """
         proxy = get_object(TOP_OBJECT)
-        pool_object = get_pool(proxy, namespace.pool)
+        (pool_object, _) = get_pool_object_by_name(proxy, namespace.pool)
+        if pool_object is None:
+            raise StratisCliValueError(
+               namespace.pool,
+               "pool",
+               "no pool with the given name"
+            )
         (result, rc, message) = Pool.ListFilesystems(pool_object)
         if rc != StratisdErrorsGen().get_object().OK:
             raise StratisCliRuntimeError(rc, message)
@@ -80,7 +93,13 @@ class LogicalActions(object):
         :raises StratisCliRuntimeError:
         """
         proxy = get_object(TOP_OBJECT)
-        pool_object = get_pool(proxy, namespace.pool)
+        (pool_object, _) = get_pool_object_by_name(proxy, namespace.pool)
+        if pool_object is None:
+            raise StratisCliValueError(
+               namespace.pool,
+               "pool",
+               "no pool with the given name"
+            )
         (_, rc, message) = \
            Pool.DestroyFilesystems(pool_object, names=namespace.volume)
         if rc != StratisdErrorsGen().get_object().OK:

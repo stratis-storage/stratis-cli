@@ -19,13 +19,17 @@ Miscellaneous top-level actions.
 from __future__ import print_function
 
 from stratisd_client_dbus import Manager
+from stratisd_client_dbus import Pool
 from stratisd_client_dbus import StratisdErrorsGen
 from stratisd_client_dbus import get_object
 
 from .._constants import TOP_OBJECT
 
 from .._errors import StratisCliRuntimeError
-from .._errors import StratisCliUnimplementedError
+from .._errors import StratisCliValueError
+
+from ._misc import get_pool_object_by_name
+from ._misc import pools
 
 
 class TopActions(object):
@@ -67,15 +71,8 @@ class TopActions(object):
         """
         # pylint: disable=unused-argument
         proxy = get_object(TOP_OBJECT)
-
-        (result, rc, message) = Manager.ListPools(proxy)
-
-        stratisd_errors = StratisdErrorsGen.get_object()
-        if rc != stratisd_errors.OK:
-            raise StratisCliRuntimeError(rc, message)
-
-        for item in result:
-            print(item)
+        for _, info in pools(proxy):
+            print(info.name())
 
         return
 
@@ -90,7 +87,7 @@ class TopActions(object):
         """
         proxy = get_object(TOP_OBJECT)
 
-        (rc, message) = Manager.DestroyPool(proxy, name=namespace.name)
+        (_, rc, message) = Manager.DestroyPool(proxy, name=namespace.name)
 
         stratisd_errors = StratisdErrorsGen.get_object()
 
@@ -104,5 +101,18 @@ class TopActions(object):
         """
         Rename a pool.
         """
-        # pylint: disable=unused-argument
-        raise StratisCliUnimplementedError("No rename facility available.")
+        proxy = get_object(TOP_OBJECT)
+        (pool, _) = get_pool_object_by_name(proxy, namespace.current)
+        if pool is None:
+            raise StratisCliValueError(
+               namespace.current,
+               "current",
+               "no pool with the given name"
+            )
+        (_, rc, message) = Pool.SetName(pool, new_name=namespace.new)
+
+        stratisd_errors = StratisdErrorsGen.get_object()
+        if rc != stratisd_errors.OK:
+            raise StratisCliRuntimeError(rc, message)
+
+        return
