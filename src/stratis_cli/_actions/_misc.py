@@ -18,27 +18,42 @@ Miscellaneous shared methods.
 
 from stratisd_client_dbus import Manager
 from stratisd_client_dbus import StratisdErrorsGen
+from stratisd_client_dbus import get_managed_objects
 from stratisd_client_dbus import get_object
 
 from .._errors import StratisCliRuntimeError
 
-
-def get_pool(top, name):
+def get_pool_path_by_name(top, name):
     """
-    Get pool.
+    Get pool object path and table info by name.
 
     :param top: the top object
     :param str name: the name of the pool
-    :returns: an object corresponding to ``name``
-    :rtype: ProxyObject
-    :raises StratisCliRuntimeError: if failure to get object
+    :returns: an object path corresponding to ``name`` or None if there is none
+    :rtype: ((ObjectPath * GMOPool) or NoneType) * dict
     """
-    (pool_object_path, rc, message) = Manager.GetPoolObjectPath(top, name=name)
+    objects = get_managed_objects(top)
+    result = objects.get_pool_by_name(name)
+    if result is None:
+        return (None, objects)
+    else:
+        (pool, table) = result
+        return ((pool, GMOPool(table)), objects)
 
-    if rc != StratisdErrorsGen.get_object().OK:
-        raise StratisCliRuntimeError(rc, message)
+def get_pool_object_by_name(top, name):
+    """
+    Get pool object by its name.
 
-    return get_object(pool_object_path)
+    :param top: the top object
+    :param str name: the name of the pool
+    :returns: an object corresponding to ``name`` or None if there is none
+    :rtype: (ProxyObject or NoneType) * dict
+    """
+    (result, objects) = get_pool_path_by_name(top, name)
+    if result is None:
+        return (None, objects)
+    (pool, _) = result
+    return (get_object(pool), objects)
 
 def get_volume(top, pool, name):
     """
