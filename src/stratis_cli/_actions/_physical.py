@@ -25,8 +25,9 @@ from stratisd_client_dbus import get_object
 from .._constants import TOP_OBJECT
 
 from .._errors import StratisCliRuntimeError
+from .._errors import StratisCliValueError
 
-from ._misc import get_pool
+from ._misc import get_pool_object_by_name
 
 
 class PhysicalActions(object):
@@ -40,7 +41,13 @@ class PhysicalActions(object):
         List devices in a pool.
         """
         proxy = get_object(TOP_OBJECT)
-        pool_object = get_pool(proxy, namespace.name)
+        (pool_object, _) = get_pool_object_by_name(proxy, namespace.name)
+        if pool_object is None:
+            raise StratisCliValueError(
+               namespace.name,
+               "name",
+               "no pool with the given name"
+            )
         (result, rc, message) = Pool.ListDevs(pool_object)
         if rc != StratisdErrorsGen.get_object().OK:
             raise StratisCliRuntimeError(rc, message)
@@ -56,12 +63,21 @@ class PhysicalActions(object):
         Add a device to a pool.
         """
         proxy = get_object(TOP_OBJECT)
-        pool_object = get_pool(proxy, namespace.name)
+        (pool_object, _) = get_pool_object_by_name(proxy, namespace.name)
+        if pool_object is None:
+            raise StratisCliValueError(
+               namespace.name,
+               "name",
+               "no pool with the given name"
+            )
         (_, rc, message) = Pool.AddDevs(
            pool_object,
            force=namespace.force,
            devices=namespace.device
         )
-        if rc != StratisdErrorsGen.get_object().OK:
+
+        stratisd_errors = StratisdErrorsGen.get_object()
+        if rc != stratisd_errors.OK:
             raise StratisCliRuntimeError(rc, message)
+
         return
