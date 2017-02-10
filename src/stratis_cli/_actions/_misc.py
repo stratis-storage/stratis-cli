@@ -17,11 +17,24 @@ Miscellaneous shared methods.
 """
 
 from stratisd_client_dbus import Manager
+from stratisd_client_dbus import GMOPool
 from stratisd_client_dbus import StratisdErrorsGen
 from stratisd_client_dbus import get_managed_objects
 from stratisd_client_dbus import get_object
 
 from .._errors import StratisCliRuntimeError
+
+def pools(top):
+    """
+    Get pool object path and table info for all pools.
+
+    :param top: the top object
+    :returns: an iterator of pool information
+    :rtype: iterator of ObjectPath * GMOPool
+    """
+    objects = get_managed_objects(top)
+    for x, y in objects.pools():
+        yield x, GMOPool(y)
 
 def get_pool_path_by_name(top, name):
     """
