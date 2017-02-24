@@ -23,7 +23,10 @@ def run(command_line_args):
     Run according to the arguments passed.
     """
     parser = gen_parser()
-    args = parser.parse_args(command_line_args)
-    yield args
-    args.func(args)
+    result = parser.parse_args(command_line_args)
+    yield result
+    if result.subparser_name is None:
+        parser.print_help()
+    else:
+        result.func(result)
     yield 0
