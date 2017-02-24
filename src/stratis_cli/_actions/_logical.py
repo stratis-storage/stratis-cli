@@ -47,9 +47,8 @@ class LogicalActions(object):
         proxy = get_object(TOP_OBJECT)
         pool_object = get_pool(proxy, namespace.pool)
 
-        volume_list = [(x, '', None) for x in namespace.volume]
         (_, rc, message) = \
-           Pool.CreateFilesystems(pool_object, specs=volume_list)
+           Pool.CreateFilesystems(pool_object, specs=namespace.volume)
 
         if rc != StratisdErrorsGen().get_object().OK:
             raise StratisCliRuntimeError(rc, message)
