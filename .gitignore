@@ -61,3 +61,6 @@ target/
 doc/cli
 doc/tests
 doc/_build
+
+# vi
+*.swp
