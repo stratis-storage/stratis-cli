@@ -44,13 +44,19 @@ class StratisTestCase(unittest.TestCase):
         """
         self._service.tearDown()
 
-    @unittest.skip("unimplemented")
     def testStratisVersion(self):
         """
         Getting version should just succeed.
         """
         command_line = self._MENU + ['--version']
-        all(run(command_line))
+        run(command_line)
+
+    def testStratisRedundancy(self):
+        """
+        Getting version should just succeed.
+        """
+        command_line = self._MENU + ['--redundancy']
+        run(command_line)
 
     def testStratisNoOptions(self):
         """
@@ -58,12 +64,12 @@ class StratisTestCase(unittest.TestCase):
         """
         command_line = self._MENU
         with self.assertRaises(SystemExit):
-            all(run(command_line))
+            run(command_line)
 
-    def testStratisTwoOptons(self):
+    def testStratisTwoOptions(self):
         """
         Exactly one option should be set, so this should fail.
         """
-        command_line = self._MENU + ['--log-level', '--version']
+        command_line = self._MENU + ['--redundancy', '--version']
         with self.assertRaises(SystemExit):
-            all(run(command_line))
+            run(command_line)

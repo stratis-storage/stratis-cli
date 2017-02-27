@@ -59,7 +59,7 @@ class CreateTestCase(unittest.TestCase):
            [self._POOLNAME] + \
            [d.device_node for d in _device_list(_DEVICES, 1)]
         with self.assertRaises(SystemExit):
-            all(run(command_line))
+            run(command_line)
 
 
 class Create2TestCase(unittest.TestCase):
@@ -92,7 +92,7 @@ class Create2TestCase(unittest.TestCase):
            self._MENU + \
            [self._POOLNAME] + \
            [d.device_node for d in _device_list(_DEVICES, 1)]
-        all(run(command_line))
+        run(command_line)
 
 
 class Create3TestCase(unittest.TestCase):
@@ -112,7 +112,7 @@ class Create3TestCase(unittest.TestCase):
         command_line = \
            ['pool', 'create', self._POOLNAME] + \
            [d.device_node for d in _device_list(_DEVICES, 1)]
-        all(run(command_line))
+        run(command_line)
 
     def tearDown(self):
         """
@@ -129,4 +129,4 @@ class Create3TestCase(unittest.TestCase):
            [self._POOLNAME] + \
            [d.device_node for d in _device_list(_DEVICES, 1)]
         with self.assertRaises(StratisCliRuntimeError):
-            all(run(command_line))
+            run(command_line)

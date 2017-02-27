@@ -19,13 +19,16 @@ Miscellaneous top-level actions.
 from __future__ import print_function
 
 from stratisd_client_dbus import Manager
+from stratisd_client_dbus import Pool
 from stratisd_client_dbus import StratisdErrorsGen
+from stratisd_client_dbus import get_managed_objects
 from stratisd_client_dbus import get_object
 
 from .._constants import TOP_OBJECT
 
 from .._errors import StratisCliRuntimeError
-from .._errors import StratisCliUnimplementedError
+
+from ._misc import GetObjectPath
 
 
 class TopActions(object):
@@ -43,7 +46,6 @@ class TopActions(object):
         stratisd_errors = StratisdErrorsGen.get_object()
 
         proxy = get_object(TOP_OBJECT)
-
 
         (_, rc, message) = Manager.CreatePool(
            proxy,
@@ -68,14 +70,8 @@ class TopActions(object):
         # pylint: disable=unused-argument
         proxy = get_object(TOP_OBJECT)
 
-        (result, rc, message) = Manager.ListPools(proxy)
-
-        stratisd_errors = StratisdErrorsGen.get_object()
-        if rc != stratisd_errors.OK:
-            raise StratisCliRuntimeError(rc, message)
-
-        for item in result:
-            print(item)
+        for object_path, _ in get_managed_objects(proxy).pools():
+            print(object_path)
 
         return
 
@@ -89,12 +85,13 @@ class TopActions(object):
         :raises StratisCliRuntimeError:
         """
         proxy = get_object(TOP_OBJECT)
+        pool_object_path = \
+           GetObjectPath.get_pool(proxy, spec={'Name': namespace.name})
 
-        (rc, message) = Manager.DestroyPool(proxy, name=namespace.name)
+        (_, rc, message) = \
+           Manager.DestroyPool(proxy, pool_object_path=pool_object_path)
 
-        stratisd_errors = StratisdErrorsGen.get_object()
-
-        if rc != stratisd_errors.OK:
+        if rc != StratisdErrorsGen.get_object().OK:
             raise StratisCliRuntimeError(rc, message)
 
         return
@@ -104,5 +101,16 @@ class TopActions(object):
         """
         Rename a pool.
         """
-        # pylint: disable=unused-argument
-        raise StratisCliUnimplementedError("No rename facility available.")
+        proxy = get_object(TOP_OBJECT)
+
+        pool_object = get_object(
+           GetObjectPath.get_pool(proxy, spec={'Name': namespace.current})
+        )
+
+        (_, rc, message) = Pool.SetName(pool_object, new_name=namespace.new)
+
+        stratisd_errors = StratisdErrorsGen.get_object()
+        if rc != stratisd_errors.OK:
+            raise StratisCliRuntimeError(rc, message)
+
+        return

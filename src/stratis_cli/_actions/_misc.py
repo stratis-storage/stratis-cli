@@ -16,68 +16,49 @@
 Miscellaneous shared methods.
 """
 
-from stratisd_client_dbus import Manager
-from stratisd_client_dbus import StratisdErrorsGen
-from stratisd_client_dbus import get_object
+from stratisd_client_dbus import get_managed_objects
 
-from .._errors import StratisCliRuntimeError
+from .._errors import StratisCliValueError
 
 
-def get_pool(top, name):
+class GetObjectPath(object):
     """
-    Get pool.
+    Implements getting the DBus object path for various stratisd entities.
 
-    :param top: the top object
-    :param str name: the name of the pool
-    :returns: an object corresponding to ``name``
-    :rtype: ProxyObject
-    :raises StratisCliRuntimeError: if failure to get object
+    Raises a StratisCliValueError if no object path for specification.
     """
-    (pool_object_path, rc, message) = Manager.GetPoolObjectPath(top, name=name)
 
-    if rc != StratisdErrorsGen.get_object().OK:
-        raise StratisCliRuntimeError(rc, message)
+    @staticmethod
+    def _get_object_path(top, name, spec=None):
+        things = getattr(get_managed_objects(top), name)(spec)
+        next_thing = next(things, None)
+        if next_thing is None:
+            raise StratisCliValueError(spec, "spec")
 
-    return get_object(pool_object_path)
+        return next_thing[0]
 
-def get_volume(top, pool, name):
-    """
-    Get volume given ``name`` and ``pool``.
+    @staticmethod
+    def get_pool(top, spec=None):
+        """
+        Get pool.
 
-    :param top: the top object
-    :param str pool: the object path of the pool
-    :param str name: the name of the volume
+        :param top: the top object
+        :param spec: what properties to use to locate the pool
+        :returns: an appropriate pool object path
+        :rtype: str
+        :raises StratisCliValueError: if failure to get object path for spec
+        """
+        return GetObjectPath._get_object_path(top, 'pools', spec)
 
-    :returns: the corresponding object
-    :rtype: ProxyObject
-    :raises StratisCliRuntimeError: if failure to get object
-    """
-    (volume_object_path, rc, message) = Manager.GetFilesystemObjectPath(
-       top,
-       pool_name=pool,
-       filesystem_name=name
-    )
+    @staticmethod
+    def get_filesystem(top, spec=None):
+        """
+        Get filesystem.
 
-    if rc != StratisdErrorsGen.get_object().OK:
-        raise StratisCliRuntimeError(rc, message)
-
-    return get_object(volume_object_path)
-
-def get_cache(top, pool):
-    """
-    Get cache given ``pool``.
-
-    :param top: the top object
-    :param str pool: the name of the pool
-
-    :returns: the corresponding object
-    :rtype: ProxyObject
-    :raises StratisCliRuntimeError: if failure to get object
-    """
-    (cache_object_path, rc, message) = \
-       Manager.GetCacheObjectPath(top, name=pool)
-
-    if rc != StratisdErrorsGen.get_object().OK:
-        raise StratisCliRuntimeError(rc, message)
-
-    return get_object(cache_object_path)
+        :param top: the top object
+        :param spec: what properties to use to locate the filesystem
+        :returns: an appropriate filesystem object path
+        :rtype: str
+        :raises StratisCliValueError: if failure to get object path for spec
+        """
+        return GetObjectPath._get_object_path(top, 'filesystems', spec)

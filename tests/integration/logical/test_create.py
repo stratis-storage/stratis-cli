@@ -23,6 +23,7 @@ from stratisd_client_dbus import StratisdErrorsGen
 
 from stratis_cli._main import run
 from stratis_cli._errors import StratisCliRuntimeError
+from stratis_cli._errors import StratisCliValueError
 
 from .._constants import _DEVICES
 
@@ -57,10 +58,8 @@ class CreateTestCase(unittest.TestCase):
         Creation of the volume must fail since pool is not specified.
         """
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
-        with self.assertRaises(StratisCliRuntimeError) as ctxt:
-            all(run(command_line))
-        expected_error = StratisdErrorsGen.get_object().POOL_NOTFOUND
-        self.assertEqual(ctxt.exception.rc, expected_error)
+        with self.assertRaises(StratisCliValueError):
+            run(command_line)
 
 
 @unittest.skip("Creation of a volume could fail if no room in pool.")
@@ -82,7 +81,7 @@ class Create2TestCase(unittest.TestCase):
         command_line = \
            ['pool', 'create'] + [self._POOLNAME] + \
            [d.device_node for d in _device_list(_DEVICES, 1)]
-        all(run(command_line))
+        run(command_line)
 
     def tearDown(self):
         """
@@ -95,7 +94,7 @@ class Create2TestCase(unittest.TestCase):
         Creation of the volume should succeed since pool is available.
         """
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
-        all(run(command_line))
+        run(command_line)
 
 
 class Create3TestCase(unittest.TestCase):
@@ -116,9 +115,9 @@ class Create3TestCase(unittest.TestCase):
         command_line = \
            ['pool', 'create'] + [self._POOLNAME] + \
            [d.device_node for d in _device_list(_DEVICES, 1)]
-        all(run(command_line))
+        run(command_line)
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
-        all(run(command_line))
+        run(command_line)
 
     def tearDown(self):
         """
@@ -133,6 +132,6 @@ class Create3TestCase(unittest.TestCase):
         """
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
         with self.assertRaises(StratisCliRuntimeError) as ctxt:
-            all(run(command_line))
-        expected_error = StratisdErrorsGen.get_object().LIST_FAILURE
+            run(command_line)
+        expected_error = StratisdErrorsGen.get_object().ALREADY_EXISTS
         self.assertEqual(ctxt.exception.rc, expected_error)

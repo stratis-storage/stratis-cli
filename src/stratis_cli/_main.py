@@ -24,9 +24,8 @@ def run(command_line_args):
     """
     parser = gen_parser()
     result = parser.parse_args(command_line_args)
-    yield result
     if result.subparser_name is None:
         parser.print_help()
     else:
         result.func(result)
-    yield 0
+    return 0

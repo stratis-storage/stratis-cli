@@ -19,10 +19,8 @@ Test 'create'.
 import time
 import unittest
 
-from stratisd_client_dbus import StratisdErrorsGen
-
 from stratis_cli._main import run
-from stratis_cli._errors import StratisCliRuntimeError
+from stratis_cli._errors import StratisCliValueError
 
 from .._constants import _DEVICES
 
@@ -30,6 +28,7 @@ from .._misc import _device_list
 from .._misc import Service
 
 
+@unittest.skip("Not currently listing devices in DBus API.")
 class ListTestCase(unittest.TestCase):
     """
     Test listing devices for a non-existant pool.
@@ -56,12 +55,11 @@ class ListTestCase(unittest.TestCase):
         Listing the devices must fail since the pool does not exist.
         """
         command_line = self._MENU + [self._POOLNAME]
-        with self.assertRaises(StratisCliRuntimeError) as ctxt:
-            all(run(command_line))
-        expected_error = StratisdErrorsGen.get_object().POOL_NOTFOUND
-        self.assertEqual(ctxt.exception.rc, expected_error)
+        with self.assertRaises(StratisCliValueError):
+            run(command_line)
 
 
+@unittest.skip("Not currently listing devices in DBus API.")
 class List2TestCase(unittest.TestCase):
     """
     Test listing devices in an existing pool.
@@ -79,7 +77,7 @@ class List2TestCase(unittest.TestCase):
         command_line = \
            ['pool', 'create'] + [self._POOLNAME] + \
            [d.device_node for d in _device_list(_DEVICES, 1)]
-        all(run(command_line))
+        run(command_line)
 
     def tearDown(self):
         """
@@ -92,4 +90,4 @@ class List2TestCase(unittest.TestCase):
         Listing the devices should succeed.
         """
         command_line = self._MENU + [self._POOLNAME]
-        all(run(command_line))
+        run(command_line)
