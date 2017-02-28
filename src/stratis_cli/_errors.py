@@ -23,6 +23,28 @@ class StratisCliError(Exception):
     pass
 
 
+class StratisCliDbusLookupError(StratisCliError):
+    """
+    Error raised when an object path is not found for a given specification.
+    """
+
+    def __init__(self, interface, spec):
+        """
+        Initializer.
+
+        :param str interface: the specified interface, or some part thereof
+        :param spec: the narrowing spec, based on interface properties
+        :type spec: a dict of str * object
+        """
+        # pylint: disable=super-init-not-called
+        self._interface = interface
+        self._spec = spec
+
+    def __str__(self): # pragma: no cover
+        return "No object path found for interface %s and spec %s" % \
+           (self._interface, self._spec)
+
+
 class StratisCliValueError(StratisCliError):
     """ Raised when a parameter has an unacceptable value.
 

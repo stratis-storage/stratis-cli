@@ -21,15 +21,14 @@ from __future__ import print_function
 from stratisd_client_dbus import Filesystem
 from stratisd_client_dbus import Pool
 from stratisd_client_dbus import StratisdErrorsGen
+from stratisd_client_dbus import get_managed_objects
 from stratisd_client_dbus import get_object
 
 from .._errors import StratisCliRuntimeError
 
 from .._constants import TOP_OBJECT
 
-
-from ._misc import get_pool
-from ._misc import get_volume
+from ._misc import GetObjectPath
 
 
 class LogicalActions(object):
@@ -45,11 +44,12 @@ class LogicalActions(object):
         :raises StratisCliRuntimeError:
         """
         proxy = get_object(TOP_OBJECT)
-        pool_object = get_pool(proxy, namespace.pool)
+        pool_object = get_object(
+           GetObjectPath.get_pool(proxy, spec={'Name': namespace.pool})
+        )
 
-        volume_list = [(x, '', None) for x in namespace.volume]
         (_, rc, message) = \
-           Pool.CreateFilesystems(pool_object, specs=volume_list)
+           Pool.CreateFilesystems(pool_object, specs=namespace.volume)
 
         if rc != StratisdErrorsGen().get_object().OK:
             raise StratisCliRuntimeError(rc, message)
@@ -62,13 +62,14 @@ class LogicalActions(object):
         List the volumes in a pool.
         """
         proxy = get_object(TOP_OBJECT)
-        pool_object = get_pool(proxy, namespace.pool)
-        (result, rc, message) = Pool.ListFilesystems(pool_object)
-        if rc != StratisdErrorsGen().get_object().OK:
-            raise StratisCliRuntimeError(rc, message)
 
-        for item in result:
-            print(item)
+        pool_object_path = \
+           GetObjectPath.get_pool(proxy, spec={'Name': namespace.pool})
+
+        for object_path, _ in get_managed_objects(proxy).filesystems(
+                   props={'Pool': pool_object_path}
+           ):
+            print(object_path)
 
         return
 
@@ -80,9 +81,22 @@ class LogicalActions(object):
         :raises StratisCliRuntimeError:
         """
         proxy = get_object(TOP_OBJECT)
-        pool_object = get_pool(proxy, namespace.pool)
+        pool_object_path = \
+           GetObjectPath.get_pool(proxy, spec={'Name': namespace.pool})
+
+        fs_object_paths = [
+           op for name in namespace.volume for (op, _) in \
+           get_managed_objects(proxy).filesystems(
+              props={'Name': name, 'Pool': pool_object_path}
+           )
+        ]
+
         (_, rc, message) = \
-           Pool.DestroyFilesystems(pool_object, names=namespace.volume)
+           Pool.DestroyFilesystems(
+              get_object(pool_object_path),
+              filesystems=fs_object_paths
+           )
+
         if rc != StratisdErrorsGen().get_object().OK:
             raise StratisCliRuntimeError(rc, message)
 
@@ -94,7 +108,16 @@ class LogicalActions(object):
         Create a snapshot of an existing volume.
         """
         proxy = get_object(TOP_OBJECT)
-        volume_object = get_volume(proxy, namespace.pool, namespace.origin)
+        pool_object_path = \
+           GetObjectPath.get_pool(proxy, spec={'Name': namespace.pool})
+
+        volume_object = get_object(
+           GetObjectPath.get_filesystem(
+              proxy,
+              spec={'Name': namespace.origin, 'Pool': pool_object_path}
+           )
+        )
+
         (_, rc, message) = \
            Filesystem.CreateSnapshot(volume_object, names=namespace.volume)
         if rc != StratisdErrorsGen().get_object().OK:

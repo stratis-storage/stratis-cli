@@ -49,10 +49,10 @@ class ListTestCase(unittest.TestCase):
 
     def testList(self):
         """
-        List should just succeed.
+        List should just succeed, even though there is nothing to list.
         """
         command_line = self._MENU
-        all(run(command_line))
+        run(command_line)
 
 
 class List2TestCase(unittest.TestCase):
@@ -72,7 +72,7 @@ class List2TestCase(unittest.TestCase):
         command_line = \
            ['pool', 'create'] + [self._POOLNAME] + \
            [d.device_node for d in _device_list(_DEVICES, 1)]
-        all(run(command_line))
+        run(command_line)
 
     def tearDown(self):
         """
@@ -85,4 +85,4 @@ class List2TestCase(unittest.TestCase):
         List should just succeed.
         """
         command_line = self._MENU
-        all(run(command_line))
+        run(command_line)

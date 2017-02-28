@@ -18,17 +18,14 @@ Test miscellaneous methods.
 import time
 import unittest
 
-from stratisd_client_dbus import StratisdErrorsGen
 from stratisd_client_dbus import get_object
 
 from stratis_cli import run
 
-from stratis_cli._actions._misc import get_cache
-from stratis_cli._actions._misc import get_pool
-from stratis_cli._actions._misc import get_volume
+from stratis_cli._actions._misc import GetObjectPath
 
 from stratis_cli._constants import TOP_OBJECT
-from stratis_cli._errors import StratisCliRuntimeError
+from stratis_cli._errors import StratisCliDbusLookupError
 
 from ._constants import _DEVICES
 
@@ -61,16 +58,13 @@ class GetPoolTestCase(unittest.TestCase):
         """
         An exception is raised if the pool does not exist.
         """
-        with self.assertRaises(StratisCliRuntimeError) as ctxt:
-            get_pool(get_object(TOP_OBJECT), 'notapool')
-        expected_error = StratisdErrorsGen.get_object().POOL_NOTFOUND
-        self.assertEqual(ctxt.exception.rc, expected_error)
+        with self.assertRaises(StratisCliDbusLookupError):
+            GetObjectPath.get_pool(get_object(TOP_OBJECT), {'Name': 'notapool'})
 
 
 class GetPool1TestCase(unittest.TestCase):
     """
     Test get_pool method when there is a pool.
-    It should succeed.
     """
     _POOLNAME = 'deadpool'
 
@@ -84,7 +78,7 @@ class GetPool1TestCase(unittest.TestCase):
         command_line = \
            ['pool', 'create', self._POOLNAME] + \
            [d.device_node for d in _device_list(_DEVICES, 1)]
-        all(run(command_line))
+        run(command_line)
 
     def tearDown(self):
         """
@@ -92,48 +86,28 @@ class GetPool1TestCase(unittest.TestCase):
         """
         self._service.tearDown()
 
-    def testNonExistingVolume(self):
+    def testExistingPool(self):
         """
-        An exception is raised if the volume does not exist.
+        The pool should be gotten.
         """
-        self.assertIsNotNone(get_pool(get_object(TOP_OBJECT), self._POOLNAME))
-
-
-class GetVolumeTestCase(unittest.TestCase):
-    """
-    Test get_volume method when there is no pool.
-
-    It should raise an exception.
-    """
-
-    def setUp(self):
-        """
-        Start the stratisd daemon with the simulator.
-        """
-        self._service = Service()
-        self._service.setUp()
-        time.sleep(1)
-
-    def tearDown(self):
-        """
-        Stop the stratisd simulator and daemon.
-        """
-        self._service.tearDown()
+        self.assertIsNotNone(
+           GetObjectPath.get_pool(
+              get_object(TOP_OBJECT),
+              spec={'Name': self._POOLNAME}
+           )
+        )
 
     def testNonExistingPool(self):
         """
         An exception is raised if the pool does not exist.
         """
-        with self.assertRaises(StratisCliRuntimeError) as ctxt:
-            get_volume(get_object(TOP_OBJECT), 'notapool', 'noname')
-        expected_error = StratisdErrorsGen.get_object().FILESYSTEM_NOTFOUND
-        self.assertEqual(ctxt.exception.rc, expected_error)
+        with self.assertRaises(StratisCliDbusLookupError):
+            GetObjectPath.get_pool(get_object(TOP_OBJECT), {'Name': 'notapool'})
 
 
 class GetVolume1TestCase(unittest.TestCase):
     """
-    Test get_volume method when there is a pool but no volume.
-    It should raise an exception.
+    Test get_filesystem method when there is a pool but no volume.
     """
     _POOLNAME = 'deadpool'
 
@@ -147,7 +121,7 @@ class GetVolume1TestCase(unittest.TestCase):
         command_line = \
            ['pool', 'create', self._POOLNAME] + \
            [d.device_node for d in _device_list(_DEVICES, 1)]
-        all(run(command_line))
+        run(command_line)
 
     def tearDown(self):
         """
@@ -159,16 +133,20 @@ class GetVolume1TestCase(unittest.TestCase):
         """
         An exception is raised if the volume does not exist.
         """
-        with self.assertRaises(StratisCliRuntimeError) as ctxt:
-            get_volume(get_object(TOP_OBJECT), self._POOLNAME, 'noname')
-        expected_error = StratisdErrorsGen.get_object().FILESYSTEM_NOTFOUND
-        self.assertEqual(ctxt.exception.rc, expected_error)
+        proxy = get_object(TOP_OBJECT)
+        pool_object_path = \
+           GetObjectPath.get_pool(proxy, spec={'Name': self._POOLNAME})
+
+        with self.assertRaises(StratisCliDbusLookupError):
+            GetObjectPath.get_filesystem(
+               proxy,
+               {'Name': 'noname', 'Pool': pool_object_path}
+            )
 
 
 class GetVolume2TestCase(unittest.TestCase):
     """
-    Test get_volume method when there is a pool and the volume is there.
-    It should succeed.
+    Test get_filesystem method when there is a pool and the volume is there.
     """
     _POOLNAME = 'deadpool'
     _VOLNAME = 'vol'
@@ -183,10 +161,10 @@ class GetVolume2TestCase(unittest.TestCase):
         command_line = \
            ['pool', 'create', self._POOLNAME] + \
            [d.device_node for d in _device_list(_DEVICES, 1)]
-        all(run(command_line))
+        run(command_line)
         command_line = \
            ['filesystem', 'create', self._POOLNAME, self._VOLNAME]
-        all(run(command_line))
+        run(command_line)
 
     def tearDown(self):
         """
@@ -198,69 +176,27 @@ class GetVolume2TestCase(unittest.TestCase):
         """
         The volume should be discovered.
         """
-        get_volume(get_object(TOP_OBJECT), self._POOLNAME, self._VOLNAME)
+        proxy = get_object(TOP_OBJECT)
+        pool_object_path = \
+           GetObjectPath.get_pool(proxy, spec={'Name': self._POOLNAME})
 
+        self.assertIsNotNone(
+            GetObjectPath.get_filesystem(
+               proxy,
+               {'Name': self._VOLNAME, 'Pool': pool_object_path}
+            )
+        )
 
-class GetCacheTestCase(unittest.TestCase):
-    """
-    Test get_cache method when there is no pool.
-
-    It should raise an exception.
-    """
-
-    def setUp(self):
-        """
-        Start the stratisd daemon with the simulator.
-        """
-        self._service = Service()
-        self._service.setUp()
-        time.sleep(1)
-
-    def tearDown(self):
-        """
-        Stop the stratisd simulator and daemon.
-        """
-        self._service.tearDown()
-
-    @unittest.expectedFailure
-    def testNonExistingPool(self):
-        """
-        An exception is raised if the pool does not exist.
-        """
-        with self.assertRaises(StratisCliRuntimeError) as ctxt:
-            get_cache(get_object(TOP_OBJECT), 'notapool')
-        expected_error = StratisdErrorsGen.get_object().POOL_NOTFOUND
-        self.assertEqual(ctxt.exception.rc, expected_error)
-
-
-class GetCache1TestCase(unittest.TestCase):
-    """
-    Test get_cache method when there is a pool.
-    It should succeed because the pool is created automatically.
-    """
-    _POOLNAME = 'deadpool'
-
-    def setUp(self):
-        """
-        Start the stratisd daemon with the simulator.
-        """
-        self._service = Service()
-        self._service.setUp()
-        time.sleep(1)
-        command_line = \
-           ['pool', 'create', self._POOLNAME] + \
-           [d.device_node for d in _device_list(_DEVICES, 1)]
-        all(run(command_line))
-
-    def tearDown(self):
-        """
-        Stop the stratisd simulator and daemon.
-        """
-        self._service.tearDown()
-
-    @unittest.skip("unimplemented")
-    def testExecution(self):
+    def testNonExistingVolume(self):
         """
         An exception is raised if the volume does not exist.
         """
-        self.assertIsNotNone(get_cache(get_object(TOP_OBJECT), self._POOLNAME))
+        proxy = get_object(TOP_OBJECT)
+        pool_object_path = \
+           GetObjectPath.get_pool(proxy, spec={'Name': self._POOLNAME})
+
+        with self.assertRaises(StratisCliDbusLookupError):
+            GetObjectPath.get_filesystem(
+               proxy,
+               {'Name': 'noname', 'Pool': pool_object_path}
+            )

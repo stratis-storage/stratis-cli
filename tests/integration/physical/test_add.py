@@ -19,10 +19,8 @@ Test 'create'.
 import time
 import unittest
 
-from stratisd_client_dbus import StratisdErrorsGen
-
 from stratis_cli._main import run
-from stratis_cli._errors import StratisCliRuntimeError
+from stratis_cli._errors import StratisCliDbusLookupError
 
 from .._constants import _DEVICES
 
@@ -58,10 +56,8 @@ class AddTestCase(unittest.TestCase):
         """
         command_line = self._MENU + [self._POOLNAME] + \
            [d.device_node for d in _device_list(_DEVICES, 1)]
-        with self.assertRaises(StratisCliRuntimeError) as ctxt:
-            all(run(command_line))
-        expected_error = StratisdErrorsGen.get_object().POOL_NOTFOUND
-        self.assertEqual(ctxt.exception.rc, expected_error)
+        with self.assertRaises(StratisCliDbusLookupError):
+            run(command_line)
 
 
 @unittest.skip("Can't test this because not modeling ownership of devs.")
@@ -84,7 +80,7 @@ class Add2TestCase(unittest.TestCase):
         time.sleep(1)
         command_line = \
            ['pool', 'create'] + [self._POOLNAME] + self._DEVICES
-        all(run(command_line))
+        run(command_line)
 
     def tearDown(self):
         """
@@ -98,7 +94,7 @@ class Add2TestCase(unittest.TestCase):
         unused by pool, but should fail otherwise.
         """
         command_line = self._MENU + [self._POOLNAME] + self._DEVICES
-        all(run(command_line))
+        run(command_line)
 
 @unittest.skip('Not able to track if devices are in use.')
 class Add3TestCase(unittest.TestCase):
@@ -119,7 +115,7 @@ class Add3TestCase(unittest.TestCase):
         time.sleep(1)
         command_line = \
            ['pool', 'create'] + [self._POOLNAME] + self._DEVICES[:1]
-        all(run(command_line))
+        run(command_line)
 
     def tearDown(self):
         """
@@ -133,4 +129,4 @@ class Add3TestCase(unittest.TestCase):
         unused by others, but should fail otherwise.
         """
         command_line = self._MENU + [self._POOLNAME] + self._DEVICES[1:]
-        all(run(command_line))
+        run(command_line)

@@ -19,8 +19,11 @@ Test 'destroy'.
 import time
 import unittest
 
+from stratisd_client_dbus import StratisdErrorsGen
+
 from stratis_cli._main import run
 from stratis_cli._errors import StratisCliRuntimeError
+from stratis_cli._errors import StratisCliDbusLookupError
 
 from .._constants import _DEVICES
 
@@ -32,7 +35,7 @@ class Destroy1TestCase(unittest.TestCase):
     """
     Test 'destroy' on empty database.
 
-    'destroy' should always succeed on an empty database.
+    'destroy' should always fail if pool is missing.
     """
     _MENU = ['pool', 'destroy']
     _POOLNAME = 'deadpool'
@@ -53,10 +56,11 @@ class Destroy1TestCase(unittest.TestCase):
 
     def testExecution(self):
         """
-        Destroy should succeed.
+        Destroy should fail because there is no object path for the pool.
         """
         command_line = self._MENU + [self._POOLNAME]
-        all(run(command_line))
+        with self.assertRaises(StratisCliDbusLookupError):
+            run(command_line)
 
 
 class Destroy2TestCase(unittest.TestCase):
@@ -77,7 +81,7 @@ class Destroy2TestCase(unittest.TestCase):
            ['pool', 'create'] + \
            [self._POOLNAME] + \
            [d.device_node for d in _device_list(_DEVICES, 1)]
-        all(run(command_line))
+        run(command_line)
 
     def tearDown(self):
         """
@@ -90,14 +94,12 @@ class Destroy2TestCase(unittest.TestCase):
         The pool was just created, so must be destroyable.
         """
         command_line = self._MENU + [self._POOLNAME]
-        all(run(command_line))
+        run(command_line)
 
 
 class Destroy3TestCase(unittest.TestCase):
     """
-    Test 'destroy' on database which contains the given pool and a volume.
-
-    Verify that the volume is gone when the pool is gone.
+    Test 'destroy' on database which contains the given pool with a volume.
     """
     _MENU = ['pool', 'destroy']
     _POOLNAME = 'deadpool'
@@ -115,13 +117,13 @@ class Destroy3TestCase(unittest.TestCase):
            ['pool', 'create'] + \
            [self._POOLNAME] + \
            [d.device_node for d in _device_list(_DEVICES, 1)]
-        all(run(command_line))
+        run(command_line)
 
         command_line = \
            ['filesystem', 'create'] + \
            [self._POOLNAME] + \
            [self._VOLNAME]
-        all(run(command_line))
+        run(command_line)
 
     def tearDown(self):
         """
@@ -131,8 +133,19 @@ class Destroy3TestCase(unittest.TestCase):
 
     def testExecution(self):
         """
-        This should fail since it has a volume.
+        This should fail since it has a filesystem.
         """
         command_line = self._MENU + [self._POOLNAME]
-        with self.assertRaises(StratisCliRuntimeError):
-            all(run(command_line))
+        with self.assertRaises(StratisCliRuntimeError) as ctxt:
+            run(command_line)
+        expected_error = StratisdErrorsGen.get_object().BUSY
+        self.assertEqual(ctxt.exception.rc, expected_error)
+
+    def testWithFilesystemRemoved(self):
+        """
+        This should succeed since the filesystem is removed first.
+        """
+        command_line = ['filesystem', 'destroy', self._POOLNAME, self._VOLNAME]
+        run(command_line)
+        command_line = self._MENU + [self._POOLNAME]
+        run(command_line)

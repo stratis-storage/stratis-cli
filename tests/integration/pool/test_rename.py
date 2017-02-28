@@ -20,17 +20,19 @@ import time
 import unittest
 
 from stratis_cli._main import run
-from stratis_cli._errors import StratisCliRuntimeError
+from stratis_cli._errors import StratisCliDbusLookupError
+
+from .._constants import _DEVICES
 
 from .._misc import Service
+from .._misc import _device_list
 
 
-@unittest.skip("Wating for Rename")
 class Rename1TestCase(unittest.TestCase):
     """
     Test 'rename' when pool is non-existant.
     """
-    _MENU = ['rename']
+    _MENU = ['pool', 'rename']
     _POOLNAME = 'deadpool'
     _NEW_POOLNAME = 'livepool'
 
@@ -52,6 +54,63 @@ class Rename1TestCase(unittest.TestCase):
         """
         This should fail because original name does not exist.
         """
-        command_line = self._MENU + [self._POOLNAME] + [self._NEW_POOLNAME]
-        with self.assertRaises(StratisCliRuntimeError):
-            any(run(command_line))
+        command_line = self._MENU + [self._POOLNAME, self._NEW_POOLNAME]
+        with self.assertRaises(StratisCliDbusLookupError):
+            run(command_line)
+
+    def testSameName(self):
+        """
+        Renaming to itself will fail because the pool does not exist.
+        """
+        command_line = self._MENU + [self._POOLNAME, self._POOLNAME]
+        with self.assertRaises(StratisCliDbusLookupError):
+            run(command_line)
+
+
+class Rename2TestCase(unittest.TestCase):
+    """
+    Test 'rename' when pool exists.
+    """
+    _MENU = ['pool', 'rename']
+    _POOLNAME = 'deadpool'
+    _NEW_POOLNAME = 'livepool'
+
+    def setUp(self):
+        """
+        Start the stratisd daemon with the simulator.
+        """
+        self._service = Service()
+        self._service.setUp()
+        time.sleep(1)
+        command_line = \
+           ['pool', 'create'] + [self._POOLNAME] + \
+           [d.device_node for d in _device_list(_DEVICES, 1)]
+        run(command_line)
+
+    def tearDown(self):
+        """
+        Stop the stratisd simulator and daemon.
+        """
+        self._service.tearDown()
+
+    def testRename(self):
+        """
+        This should succeed because pool exists.
+        """
+        command_line = self._MENU + [self._POOLNAME, self._NEW_POOLNAME]
+        run(command_line)
+
+    def testSameName(self):
+        """
+        This should succeed, because renaming to self makes sense.
+        """
+        command_line = self._MENU + [self._POOLNAME, self._POOLNAME]
+        run(command_line)
+
+    def testNonExistentPool(self):
+        """
+        This should fail, because this pool is not there.
+        """
+        command_line = self._MENU + ["nopool", self._POOLNAME]
+        with self.assertRaises(StratisCliDbusLookupError):
+            run(command_line)

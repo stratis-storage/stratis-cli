@@ -61,7 +61,7 @@ class SnapshotTestCase(unittest.TestCase):
         command_line = \
            self._MENU + [self._POOLNAME] + [self._ORIGIN] + [self._SNAP]
         with self.assertRaises(StratisCliRuntimeError) as ctxt:
-            all(run(command_line))
+            run(command_line)
         expected_error = StratisdErrorsGen.get_object().POOL_NOTFOUND
         self.assertEqual(ctxt.exception.rc, expected_error)
 
@@ -86,7 +86,7 @@ class Snapshot1TestCase(unittest.TestCase):
         command_line = \
            ['pool', 'create'] + [self._POOLNAME] + \
            [d.device_node for d in _device_list(_DEVICES, 1)]
-        all(run(command_line))
+        run(command_line)
 
     def tearDown(self):
         """
@@ -101,7 +101,7 @@ class Snapshot1TestCase(unittest.TestCase):
         command_line = \
            self._MENU + [self._POOLNAME] + [self._ORIGIN] + [self._SNAP]
         with self.assertRaises(StratisCliRuntimeError) as ctxt:
-            all(run(command_line))
+            run(command_line)
         expected_error = StratisdErrorsGen.get_object().VOLUME_NOTFOUND
         self.assertEqual(ctxt.exception.rc, expected_error)
 
@@ -126,10 +126,10 @@ class Snapshot2TestCase(unittest.TestCase):
         command_line = \
            ['pool', 'create'] + [self._POOLNAME] + \
            [d.device_node for d in _device_list(_DEVICES, 1)]
-        all(run(command_line))
+        run(command_line)
 
         command_line = ['filesystem', 'create'] + [self._POOLNAME] + [self._ORIGIN]
-        all(run(command_line))
+        run(command_line)
 
     def tearDown(self):
         """
@@ -144,4 +144,4 @@ class Snapshot2TestCase(unittest.TestCase):
         """
         command_line = \
            self._MENU + [self._POOLNAME] + [self._ORIGIN] + [self._SNAP]
-        all(run(command_line))
+        run(command_line)

@@ -19,10 +19,8 @@ Test 'create'.
 import time
 import unittest
 
-from stratisd_client_dbus import StratisdErrorsGen
-
 from stratis_cli._main import run
-from stratis_cli._errors import StratisCliRuntimeError
+from stratis_cli._errors import StratisCliDbusLookupError
 
 from .._constants import _DEVICES
 
@@ -56,10 +54,8 @@ class ListTestCase(unittest.TestCase):
         Listing the volume must fail since the pool does not exist.
         """
         command_line = self._MENU + [self._POOLNAME]
-        with self.assertRaises(StratisCliRuntimeError) as ctxt:
-            all(run(command_line))
-        expected_error = StratisdErrorsGen.get_object().POOL_NOTFOUND
-        self.assertEqual(ctxt.exception.rc, expected_error)
+        with self.assertRaises(StratisCliDbusLookupError):
+            run(command_line)
 
 
 class List2TestCase(unittest.TestCase):
@@ -79,7 +75,7 @@ class List2TestCase(unittest.TestCase):
         command_line = \
            ['pool', 'create'] + [self._POOLNAME] + \
            [d.device_node for d in _device_list(_DEVICES, 1)]
-        all(run(command_line))
+        run(command_line)
 
     def tearDown(self):
         """
@@ -92,7 +88,7 @@ class List2TestCase(unittest.TestCase):
         Listing the volumes in an empty pool should succeed.
         """
         command_line = self._MENU + [self._POOLNAME]
-        all(run(command_line))
+        run(command_line)
 
 
 class List3TestCase(unittest.TestCase):
@@ -113,10 +109,10 @@ class List3TestCase(unittest.TestCase):
         command_line = \
            ['pool', 'create', self._POOLNAME] + \
            [d.device_node for d in _device_list(_DEVICES, 1)]
-        all(run(command_line))
+        run(command_line)
         command_line = \
            ['filesystem', 'create', self._POOLNAME] + self._VOLUMES
-        all(run(command_line))
+        run(command_line)
 
     def tearDown(self):
         """
@@ -129,4 +125,4 @@ class List3TestCase(unittest.TestCase):
         Listing the volumes in a non-empty pool should succeed.
         """
         command_line = self._MENU + [self._POOLNAME]
-        all(run(command_line))
+        run(command_line)

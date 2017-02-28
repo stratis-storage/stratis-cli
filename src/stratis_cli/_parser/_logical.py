@@ -137,7 +137,7 @@ def build_logical_parser(parser):
     subparser_table['create'] = \
        subparsers.add_parser(
           'create',
-          description="Create a Logical Volume from an Existing Pool"
+          description="Create a Filesystem from an Existing Pool"
        )
     _SUBPARSER_TABLE['create'](subparser_table['create'])
 

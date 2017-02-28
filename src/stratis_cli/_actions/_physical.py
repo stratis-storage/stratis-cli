@@ -25,8 +25,9 @@ from stratisd_client_dbus import get_object
 from .._constants import TOP_OBJECT
 
 from .._errors import StratisCliRuntimeError
+from .._errors import StratisCliUnimplementedError
 
-from ._misc import get_pool
+from ._misc import GetObjectPath
 
 
 class PhysicalActions(object):
@@ -39,16 +40,8 @@ class PhysicalActions(object):
         """
         List devices in a pool.
         """
-        proxy = get_object(TOP_OBJECT)
-        pool_object = get_pool(proxy, namespace.name)
-        (result, rc, message) = Pool.ListDevs(pool_object)
-        if rc != StratisdErrorsGen.get_object().OK:
-            raise StratisCliRuntimeError(rc, message)
-
-        for item in result:
-            print(item)
-
-        return
+        # pylint: disable=unused-argument
+        raise StratisCliUnimplementedError("No ability to list pools.")
 
     @staticmethod
     def add_device(namespace):
@@ -56,7 +49,10 @@ class PhysicalActions(object):
         Add a device to a pool.
         """
         proxy = get_object(TOP_OBJECT)
-        pool_object = get_pool(proxy, namespace.name)
+        pool_object = get_object(
+           GetObjectPath.get_pool(proxy, spec={'Name': namespace.name})
+        )
+
         (_, rc, message) = Pool.AddDevs(
            pool_object,
            force=namespace.force,
