@@ -81,6 +81,12 @@ def gen_parser():
        version=__version__
     )
 
+    parser.add_argument(
+       '--propagate',
+       action='store_true',
+       help='allow exceptions to propagate'
+    )
+
     subparsers = \
        parser.add_subparsers(dest='subparser_name', title='subcommands')
 
