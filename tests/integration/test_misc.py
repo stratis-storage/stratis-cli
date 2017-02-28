@@ -25,7 +25,7 @@ from stratis_cli import run
 from stratis_cli._actions._misc import GetObjectPath
 
 from stratis_cli._constants import TOP_OBJECT
-from stratis_cli._errors import StratisCliValueError
+from stratis_cli._errors import StratisCliDbusLookupError
 
 from ._constants import _DEVICES
 
@@ -58,7 +58,7 @@ class GetPoolTestCase(unittest.TestCase):
         """
         An exception is raised if the pool does not exist.
         """
-        with self.assertRaises(StratisCliValueError):
+        with self.assertRaises(StratisCliDbusLookupError):
             GetObjectPath.get_pool(get_object(TOP_OBJECT), {'Name': 'notapool'})
 
 
@@ -101,7 +101,7 @@ class GetPool1TestCase(unittest.TestCase):
         """
         An exception is raised if the pool does not exist.
         """
-        with self.assertRaises(StratisCliValueError):
+        with self.assertRaises(StratisCliDbusLookupError):
             GetObjectPath.get_pool(get_object(TOP_OBJECT), {'Name': 'notapool'})
 
 
@@ -137,7 +137,7 @@ class GetVolume1TestCase(unittest.TestCase):
         pool_object_path = \
            GetObjectPath.get_pool(proxy, spec={'Name': self._POOLNAME})
 
-        with self.assertRaises(StratisCliValueError):
+        with self.assertRaises(StratisCliDbusLookupError):
             GetObjectPath.get_filesystem(
                proxy,
                {'Name': 'noname', 'Pool': pool_object_path}
@@ -195,7 +195,7 @@ class GetVolume2TestCase(unittest.TestCase):
         pool_object_path = \
            GetObjectPath.get_pool(proxy, spec={'Name': self._POOLNAME})
 
-        with self.assertRaises(StratisCliValueError):
+        with self.assertRaises(StratisCliDbusLookupError):
             GetObjectPath.get_filesystem(
                proxy,
                {'Name': 'noname', 'Pool': pool_object_path}

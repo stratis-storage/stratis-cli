@@ -20,7 +20,7 @@ import time
 import unittest
 
 from stratis_cli._main import run
-from stratis_cli._errors import StratisCliValueError
+from stratis_cli._errors import StratisCliDbusLookupError
 
 from .._constants import _DEVICES
 
@@ -56,7 +56,7 @@ class DestroyTestCase(unittest.TestCase):
         Destruction of the volume must fail since pool is not specified.
         """
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
-        with self.assertRaises(StratisCliValueError):
+        with self.assertRaises(StratisCliDbusLookupError):
             run(command_line)
 
 

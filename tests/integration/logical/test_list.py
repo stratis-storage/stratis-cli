@@ -20,7 +20,7 @@ import time
 import unittest
 
 from stratis_cli._main import run
-from stratis_cli._errors import StratisCliValueError
+from stratis_cli._errors import StratisCliDbusLookupError
 
 from .._constants import _DEVICES
 
@@ -54,7 +54,7 @@ class ListTestCase(unittest.TestCase):
         Listing the volume must fail since the pool does not exist.
         """
         command_line = self._MENU + [self._POOLNAME]
-        with self.assertRaises(StratisCliValueError):
+        with self.assertRaises(StratisCliDbusLookupError):
             run(command_line)
 
 

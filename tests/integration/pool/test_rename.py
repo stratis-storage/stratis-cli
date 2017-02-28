@@ -20,7 +20,7 @@ import time
 import unittest
 
 from stratis_cli._main import run
-from stratis_cli._errors import StratisCliValueError
+from stratis_cli._errors import StratisCliDbusLookupError
 
 from .._constants import _DEVICES
 
@@ -55,7 +55,7 @@ class Rename1TestCase(unittest.TestCase):
         This should fail because original name does not exist.
         """
         command_line = self._MENU + [self._POOLNAME, self._NEW_POOLNAME]
-        with self.assertRaises(StratisCliValueError):
+        with self.assertRaises(StratisCliDbusLookupError):
             run(command_line)
 
     def testSameName(self):
@@ -63,7 +63,7 @@ class Rename1TestCase(unittest.TestCase):
         Renaming to itself will fail because the pool does not exist.
         """
         command_line = self._MENU + [self._POOLNAME, self._POOLNAME]
-        with self.assertRaises(StratisCliValueError):
+        with self.assertRaises(StratisCliDbusLookupError):
             run(command_line)
 
 
@@ -112,5 +112,5 @@ class Rename2TestCase(unittest.TestCase):
         This should fail, because this pool is not there.
         """
         command_line = self._MENU + ["nopool", self._POOLNAME]
-        with self.assertRaises(StratisCliValueError):
+        with self.assertRaises(StratisCliDbusLookupError):
             run(command_line)

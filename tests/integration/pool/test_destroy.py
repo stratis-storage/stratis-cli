@@ -23,7 +23,7 @@ from stratisd_client_dbus import StratisdErrorsGen
 
 from stratis_cli._main import run
 from stratis_cli._errors import StratisCliRuntimeError
-from stratis_cli._errors import StratisCliValueError
+from stratis_cli._errors import StratisCliDbusLookupError
 
 from .._constants import _DEVICES
 
@@ -59,7 +59,7 @@ class Destroy1TestCase(unittest.TestCase):
         Destroy should fail because there is no object path for the pool.
         """
         command_line = self._MENU + [self._POOLNAME]
-        with self.assertRaises(StratisCliValueError):
+        with self.assertRaises(StratisCliDbusLookupError):
             run(command_line)
 
 

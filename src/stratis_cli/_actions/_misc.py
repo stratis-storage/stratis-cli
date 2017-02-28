@@ -18,14 +18,14 @@ Miscellaneous shared methods.
 
 from stratisd_client_dbus import get_managed_objects
 
-from .._errors import StratisCliValueError
+from .._errors import StratisCliDbusLookupError
 
 
 class GetObjectPath(object):
     """
     Implements getting the DBus object path for various stratisd entities.
 
-    Raises a StratisCliValueError if no object path for specification.
+    Raises a StratisCliDbusLookupError if no object path for specification.
     """
 
     @staticmethod
@@ -33,7 +33,7 @@ class GetObjectPath(object):
         things = getattr(get_managed_objects(top), name)(spec)
         next_thing = next(things, None)
         if next_thing is None:
-            raise StratisCliValueError(spec, "spec")
+            raise StratisCliDbusLookupError(name, spec)
 
         return next_thing[0]
 
@@ -46,7 +46,7 @@ class GetObjectPath(object):
         :param spec: what properties to use to locate the pool
         :returns: an appropriate pool object path
         :rtype: str
-        :raises StratisCliValueError: if failure to get object path for spec
+        :raises StratisCliDbusLookupError:
         """
         return GetObjectPath._get_object_path(top, 'pools', spec)
 
@@ -59,6 +59,6 @@ class GetObjectPath(object):
         :param spec: what properties to use to locate the filesystem
         :returns: an appropriate filesystem object path
         :rtype: str
-        :raises StratisCliValueError: if failure to get object path for spec
+        :raises StratisCliDbusLookupError:
         """
         return GetObjectPath._get_object_path(top, 'filesystems', spec)
