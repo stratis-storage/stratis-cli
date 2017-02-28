@@ -33,5 +33,7 @@ def run(command_line_args):
         try:
             result.func(result)
         except dbus.exceptions.DBusException as err:
+            if result.propagate:
+                raise
             sys.exit(err.get_dbus_message())
     return 0
