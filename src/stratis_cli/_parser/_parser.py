@@ -94,14 +94,14 @@ def gen_parser():
     subparser_table['blockdev'] = \
        subparsers.add_parser(
           'blockdev',
-          description="Administer Blockdev Aspects of Specified Pool"
+          description="Commands related to block devices that make up the pool"
        )
     _SUBPARSER_TABLE['blockdev'](subparser_table['blockdev'])
 
     subparser_table['filesystem'] = \
        subparsers.add_parser(
           'filesystem',
-          description="Administer Filesystems Aspects of Specified Pool"
+          description="Commands related to filesystems allocated from a pool"
        )
     _SUBPARSER_TABLE['filesystem'](subparser_table['filesystem'])
 
