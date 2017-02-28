@@ -15,6 +15,9 @@
 """
 Highest level runner.
 """
+import sys
+
+import dbus
 
 from ._parser import gen_parser
 
@@ -27,5 +30,8 @@ def run(command_line_args):
     if result.subparser_name is None:
         parser.print_help()
     else:
-        result.func(result)
+        try:
+            result.func(result)
+        except dbus.exceptions.DBusException as err:
+            sys.exit(err.get_dbus_message())
     return 0
