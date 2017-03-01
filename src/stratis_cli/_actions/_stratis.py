@@ -24,8 +24,6 @@ from stratisd_client_dbus import get_object
 
 from .._constants import TOP_OBJECT
 
-from .._errors import StratisCliImpossibleError
-
 
 class StratisActions(object):
     """
@@ -50,20 +48,3 @@ class StratisActions(object):
         """
         # pylint: disable=unused-argument
         print("%s" % Manager.Properties.Version(get_object(TOP_OBJECT)))
-
-    @staticmethod
-    def dispatch(namespace):
-        """
-        Dispatch to the correct function.
-        """
-        if namespace.redundancy:
-            StratisActions.list_stratisd_redundancy(namespace)
-            return
-
-        if namespace.version:
-            StratisActions.list_stratisd_version(namespace)
-            return
-
-        raise StratisCliImpossibleError(
-           "Exactly one option should have been selected."
-        )

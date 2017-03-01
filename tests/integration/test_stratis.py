@@ -48,28 +48,28 @@ class StratisTestCase(unittest.TestCase):
         """
         Getting version should just succeed.
         """
-        command_line = self._MENU + ['--version']
+        command_line = self._MENU + ['version']
         run(command_line)
 
     def testStratisRedundancy(self):
         """
-        Getting version should just succeed.
+        Getting redundancy should just succeed.
         """
-        command_line = self._MENU + ['--redundancy']
+        command_line = self._MENU + ['redundancy']
         run(command_line)
 
     def testStratisNoOptions(self):
         """
-        Exactly one option should be set, so this should fail.
+        Exactly one option should be set, this should succeed, but print help.
         """
         command_line = self._MENU
-        with self.assertRaises(SystemExit):
-            run(command_line)
+        run(command_line)
 
     def testStratisTwoOptions(self):
         """
-        Exactly one option should be set, so this should fail.
+        Exactly one option should be set, so this should fail,
+        but only because redundancy accepts no arguments.
         """
-        command_line = self._MENU + ['--redundancy', '--version']
+        command_line = self._MENU + ['redundancy', 'version']
         with self.assertRaises(SystemExit):
             run(command_line)

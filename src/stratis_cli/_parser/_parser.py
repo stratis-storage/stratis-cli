@@ -36,22 +36,21 @@ def build_stratisd_parser(parser):
     :returns: a completed parser for obtaining information about stratisd
     :rtype: ArgumentParser
     """
-    group = parser.add_mutually_exclusive_group(required=True)
+    subparsers = \
+       parser.add_subparsers(dest='subparser_name', title='subcommands')
 
-    group.add_argument(
-      '--redundancy',
-      action='store_true',
-      default=False,
-      help='redundancy designations understood by stratisd daemon'
+    redundancy_parser = subparsers.add_parser(
+       'redundancy',
+       description="redundancy designations understood by stratisd daemon"
     )
-    group.add_argument(
-       '--version',
-       action='store_true',
-       default=False,
-       help='version of stratisd daemon'
-    )
+    redundancy_parser.set_defaults(func=StratisActions.list_stratisd_redundancy)
 
-    parser.set_defaults(func=StratisActions.dispatch)
+    version_parser = subparsers.add_parser(
+       'version',
+       description="version of stratisd daemon"
+    )
+    version_parser.set_defaults(func=StratisActions.list_stratisd_version)
+
     return parser
 
 
