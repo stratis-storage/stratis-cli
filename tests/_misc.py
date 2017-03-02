@@ -20,12 +20,15 @@ import abc
 import os
 import string
 import subprocess
+import sys
 
 from hypothesis import strategies
 
-from ._constants import _STRATISD
-from ._constants import _STRATISD_EXECUTABLE
-from ._constants import _STRATISD_RUST
+try:
+    _STRATISD = os.environ['STRATISD']
+except KeyError:
+    message = "STRATISD environment variable must be set to absolute path of stratisd executable"
+    sys.exit(message)
 
 
 def _device_list(minimum):
@@ -63,33 +66,16 @@ class ServiceABC(abc.ABC):
         self._stratisd.terminate()
         self._stratisd.wait()
 
-
-class ServiceC(ServiceABC):
-    """
-    Handle starting and stopping the C service.
-    """
-
-    def setUp(self):
-        env = dict(os.environ)
-        env['LD_LIBRARY_PATH'] = os.path.join(_STRATISD, 'lib')
-
-        bin_path = os.path.join(_STRATISD, 'bin')
-
-        self._stratisd = subprocess.Popen(
-           os.path.join(bin_path, _STRATISD_EXECUTABLE),
-           env=env
-        )
-
-
 class ServiceR(ServiceABC):
     """
     Handle starting and stopping the Rust service.
     """
 
     def setUp(self):
-        self._stratisd = subprocess.Popen(
-           [os.path.join(_STRATISD_RUST, 'target/debug/stratisd'), '--sim']
-        )
+        try:
+            self._stratisd = subprocess.Popen([_STRATISD, '--sim'])
+        except FileNotFoundError as err:
+            sys.exit("stratisd executable not found: %s" % err)
 
 
 Service = ServiceR
