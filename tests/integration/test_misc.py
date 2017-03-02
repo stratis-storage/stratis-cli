@@ -27,11 +27,11 @@ from stratis_cli._actions._misc import GetObjectPath
 from stratis_cli._constants import TOP_OBJECT
 from stratis_cli._errors import StratisCliDbusLookupError
 
-from ._constants import _DEVICES
-
 from ._misc import _device_list
 from ._misc import Service
 
+
+_DEVICE_STRATEGY = _device_list(1)
 
 class GetPoolTestCase(unittest.TestCase):
     """
@@ -77,7 +77,7 @@ class GetPool1TestCase(unittest.TestCase):
         time.sleep(1)
         command_line = \
            ['pool', 'create', self._POOLNAME] + \
-           [d.device_node for d in _device_list(_DEVICES, 1)]
+           _DEVICE_STRATEGY.example()
         run(command_line)
 
     def tearDown(self):
@@ -120,7 +120,7 @@ class GetVolume1TestCase(unittest.TestCase):
         time.sleep(1)
         command_line = \
            ['pool', 'create', self._POOLNAME] + \
-           [d.device_node for d in _device_list(_DEVICES, 1)]
+           _DEVICE_STRATEGY.example()
         run(command_line)
 
     def tearDown(self):
@@ -160,7 +160,7 @@ class GetVolume2TestCase(unittest.TestCase):
         time.sleep(1)
         command_line = \
            ['pool', 'create', self._POOLNAME] + \
-           [d.device_node for d in _device_list(_DEVICES, 1)]
+           _DEVICE_STRATEGY.example()
         run(command_line)
         command_line = \
            ['filesystem', 'create', self._POOLNAME, self._VOLNAME]

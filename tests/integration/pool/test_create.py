@@ -22,10 +22,10 @@ import unittest
 from stratis_cli._main import run
 from stratis_cli._errors import StratisCliRuntimeError
 
-from .._constants import _DEVICES
-
 from .._misc import _device_list
 from .._misc import Service
+
+_DEVICE_STRATEGY = _device_list(1)
 
 
 class CreateTestCase(unittest.TestCase):
@@ -57,7 +57,7 @@ class CreateTestCase(unittest.TestCase):
            self._MENU + \
            ['--redundancy', 'raid6'] + \
            [self._POOLNAME] + \
-           [d.device_node for d in _device_list(_DEVICES, 1)]
+           _DEVICE_STRATEGY.example()
         with self.assertRaises(SystemExit):
             run(command_line)
 
@@ -91,7 +91,7 @@ class Create2TestCase(unittest.TestCase):
         command_line = \
            self._MENU + \
            [self._POOLNAME] + \
-           [d.device_node for d in _device_list(_DEVICES, 1)]
+           _DEVICE_STRATEGY.example()
         run(command_line)
 
 
@@ -111,7 +111,7 @@ class Create3TestCase(unittest.TestCase):
         time.sleep(1)
         command_line = \
            ['pool', 'create', self._POOLNAME] + \
-           [d.device_node for d in _device_list(_DEVICES, 1)]
+           _DEVICE_STRATEGY.example()
         run(command_line)
 
     def tearDown(self):
@@ -127,6 +127,6 @@ class Create3TestCase(unittest.TestCase):
         command_line = \
            self._MENU + \
            [self._POOLNAME] + \
-           [d.device_node for d in _device_list(_DEVICES, 1)]
+           _DEVICE_STRATEGY.example()
         with self.assertRaises(StratisCliRuntimeError):
             run(command_line)

@@ -24,10 +24,10 @@ from stratisd_client_dbus import StratisdErrorsGen
 from stratis_cli._main import run
 from stratis_cli._errors import StratisCliRuntimeError
 
-from .._constants import _DEVICES
-
 from .._misc import _device_list
 from .._misc import Service
+
+_DEVICE_STRATEGY = _device_list(1)
 
 
 @unittest.skip("unimplemented")
@@ -85,7 +85,7 @@ class Snapshot1TestCase(unittest.TestCase):
         time.sleep(1)
         command_line = \
            ['pool', 'create'] + [self._POOLNAME] + \
-           [d.device_node for d in _device_list(_DEVICES, 1)]
+           _DEVICE_STRATEGY.example()
         run(command_line)
 
     def tearDown(self):
@@ -125,7 +125,7 @@ class Snapshot2TestCase(unittest.TestCase):
         time.sleep(1)
         command_line = \
            ['pool', 'create'] + [self._POOLNAME] + \
-           [d.device_node for d in _device_list(_DEVICES, 1)]
+           _DEVICE_STRATEGY.example()
         run(command_line)
 
         command_line = ['filesystem', 'create'] + [self._POOLNAME] + [self._ORIGIN]

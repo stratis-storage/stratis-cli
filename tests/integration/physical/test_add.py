@@ -22,10 +22,10 @@ import unittest
 from stratis_cli._main import run
 from stratis_cli._errors import StratisCliDbusLookupError
 
-from .._constants import _DEVICES
-
 from .._misc import _device_list
 from .._misc import Service
+
+_DEVICE_STRATEGY = _device_list(1)
 
 
 class AddTestCase(unittest.TestCase):
@@ -55,7 +55,7 @@ class AddTestCase(unittest.TestCase):
         Adding the devices must fail since the pool does not exist.
         """
         command_line = self._MENU + [self._POOLNAME] + \
-           [d.device_node for d in _device_list(_DEVICES, 1)]
+           _DEVICE_STRATEGY.example()
         with self.assertRaises(StratisCliDbusLookupError):
             run(command_line)
 
@@ -69,7 +69,7 @@ class Add2TestCase(unittest.TestCase):
     """
     _MENU = ['blockdev', 'add']
     _POOLNAME = 'deadpool'
-    _DEVICES = [d.device_node for d in _device_list(_DEVICES, 1)]
+    _DEVICES = _DEVICE_STRATEGY.example()
 
     def setUp(self):
         """
@@ -104,7 +104,7 @@ class Add3TestCase(unittest.TestCase):
     """
     _MENU = ['blockdev', 'add']
     _POOLNAME = 'deadpool'
-    _DEVICES = [d.device_node for d in _device_list(_DEVICES, 2)]
+    _DEVICES = _device_list(2).example()
 
     def setUp(self):
         """

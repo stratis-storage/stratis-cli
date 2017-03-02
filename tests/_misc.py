@@ -18,24 +18,32 @@ Miscellaneous methods to support testing.
 
 import abc
 import os
-import random
+import string
 import subprocess
+import sys
 
-from ._constants import _STRATISD
-from ._constants import _STRATISD_EXECUTABLE
-from ._constants import _STRATISD_RUST
+from hypothesis import strategies
 
-def _device_list(devices, minimum):
+try:
+    _STRATISD = os.environ['STRATISD']
+except KeyError:
+    message = "STRATISD environment variable must be set to absolute path of stratisd executable"
+    sys.exit(message)
+
+
+def _device_list(minimum):
     """
-    Get a randomly selected list of devices with at least ``minimum`` elements.
+    Get a device generating strategy.
 
-    :param devices: list of device objects
-    :type devices: list of pyudev.Device
     :param int minimum: the minimum number of devices, must be at least 0
     """
-    limit = random.choice(range(minimum, len(devices)))
-    indices = random.sample(range(len(devices)), limit)
-    return [devices[i] for i in indices]
+    return strategies.lists(
+       strategies.text(
+          alphabet=string.ascii_letters + "/",
+          min_size=1
+       ),
+       min_size=minimum
+    )
 
 
 class ServiceABC(abc.ABC):
@@ -58,33 +66,16 @@ class ServiceABC(abc.ABC):
         self._stratisd.terminate()
         self._stratisd.wait()
 
-
-class ServiceC(ServiceABC):
-    """
-    Handle starting and stopping the C service.
-    """
-
-    def setUp(self):
-        env = dict(os.environ)
-        env['LD_LIBRARY_PATH'] = os.path.join(_STRATISD, 'lib')
-
-        bin_path = os.path.join(_STRATISD, 'bin')
-
-        self._stratisd = subprocess.Popen(
-           os.path.join(bin_path, _STRATISD_EXECUTABLE),
-           env=env
-        )
-
-
 class ServiceR(ServiceABC):
     """
     Handle starting and stopping the Rust service.
     """
 
     def setUp(self):
-        self._stratisd = subprocess.Popen(
-           [os.path.join(_STRATISD_RUST, 'target/debug/stratisd'), '--sim']
-        )
+        try:
+            self._stratisd = subprocess.Popen([_STRATISD, '--sim'])
+        except FileNotFoundError as err:
+            sys.exit("stratisd executable not found: %s" % err)
 
 
 Service = ServiceR

@@ -22,10 +22,10 @@ import unittest
 from stratis_cli._main import run
 from stratis_cli._errors import StratisCliDbusLookupError
 
-from .._constants import _DEVICES
-
 from .._misc import Service
 from .._misc import _device_list
+
+_DEVICE_STRATEGY = _device_list(1)
 
 
 class Rename1TestCase(unittest.TestCase):
@@ -84,7 +84,7 @@ class Rename2TestCase(unittest.TestCase):
         time.sleep(1)
         command_line = \
            ['pool', 'create'] + [self._POOLNAME] + \
-           [d.device_node for d in _device_list(_DEVICES, 1)]
+           _DEVICE_STRATEGY.example()
         run(command_line)
 
     def tearDown(self):
