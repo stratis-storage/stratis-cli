@@ -18,24 +18,29 @@ Miscellaneous methods to support testing.
 
 import abc
 import os
-import random
+import string
 import subprocess
+
+from hypothesis import strategies
 
 from ._constants import _STRATISD
 from ._constants import _STRATISD_EXECUTABLE
 from ._constants import _STRATISD_RUST
 
-def _device_list(devices, minimum):
-    """
-    Get a randomly selected list of devices with at least ``minimum`` elements.
 
-    :param devices: list of device objects
-    :type devices: list of pyudev.Device
+def _device_list(minimum):
+    """
+    Get a device generating strategy.
+
     :param int minimum: the minimum number of devices, must be at least 0
     """
-    limit = random.choice(range(minimum, len(devices)))
-    indices = random.sample(range(len(devices)), limit)
-    return [devices[i] for i in indices]
+    return strategies.lists(
+       strategies.text(
+          alphabet=string.ascii_letters + "/",
+          min_size=1
+       ),
+       min_size=minimum
+    )
 
 
 class ServiceABC(abc.ABC):
