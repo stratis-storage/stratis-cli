@@ -19,10 +19,10 @@ Test 'create'.
 import time
 import unittest
 
-from stratis_cli._main import run
 from stratis_cli._errors import StratisCliDbusLookupError
 
 from .._misc import _device_list
+from .._misc import RUNNER
 from .._misc import Service
 
 _DEVICE_STRATEGY = _device_list(1)
@@ -56,7 +56,7 @@ class ListTestCase(unittest.TestCase):
         """
         command_line = self._MENU + [self._POOLNAME]
         with self.assertRaises(StratisCliDbusLookupError):
-            run(command_line)
+            RUNNER(command_line)
 
 
 @unittest.skip("Not currently listing devices in DBus API.")
@@ -77,7 +77,7 @@ class List2TestCase(unittest.TestCase):
         command_line = \
            ['pool', 'create'] + [self._POOLNAME] + \
            _DEVICE_STRATEGY.example()
-        run(command_line)
+        RUNNER(command_line)
 
     def tearDown(self):
         """
@@ -90,4 +90,4 @@ class List2TestCase(unittest.TestCase):
         Listing the devices should succeed.
         """
         command_line = self._MENU + [self._POOLNAME]
-        run(command_line)
+        RUNNER(command_line)

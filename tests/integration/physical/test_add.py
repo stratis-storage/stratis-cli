@@ -19,10 +19,10 @@ Test 'create'.
 import time
 import unittest
 
-from stratis_cli._main import run
 from stratis_cli._errors import StratisCliDbusLookupError
 
 from .._misc import _device_list
+from .._misc import RUNNER
 from .._misc import Service
 
 _DEVICE_STRATEGY = _device_list(1)
@@ -57,7 +57,7 @@ class AddTestCase(unittest.TestCase):
         command_line = self._MENU + [self._POOLNAME] + \
            _DEVICE_STRATEGY.example()
         with self.assertRaises(StratisCliDbusLookupError):
-            run(command_line)
+            RUNNER(command_line)
 
 
 @unittest.skip("Can't test this because not modeling ownership of devs.")
@@ -80,7 +80,7 @@ class Add2TestCase(unittest.TestCase):
         time.sleep(1)
         command_line = \
            ['pool', 'create'] + [self._POOLNAME] + self._DEVICES
-        run(command_line)
+        RUNNER(command_line)
 
     def tearDown(self):
         """
@@ -94,7 +94,7 @@ class Add2TestCase(unittest.TestCase):
         unused by pool, but should fail otherwise.
         """
         command_line = self._MENU + [self._POOLNAME] + self._DEVICES
-        run(command_line)
+        RUNNER(command_line)
 
 @unittest.skip('Not able to track if devices are in use.')
 class Add3TestCase(unittest.TestCase):
@@ -115,7 +115,7 @@ class Add3TestCase(unittest.TestCase):
         time.sleep(1)
         command_line = \
            ['pool', 'create'] + [self._POOLNAME] + self._DEVICES[:1]
-        run(command_line)
+        RUNNER(command_line)
 
     def tearDown(self):
         """
@@ -129,4 +129,4 @@ class Add3TestCase(unittest.TestCase):
         unused by others, but should fail otherwise.
         """
         command_line = self._MENU + [self._POOLNAME] + self._DEVICES[1:]
-        run(command_line)
+        RUNNER(command_line)

@@ -21,11 +21,11 @@ import unittest
 
 from stratisd_client_dbus import StratisdErrorsGen
 
-from stratis_cli._main import run
 from stratis_cli._errors import StratisCliRuntimeError
 from stratis_cli._errors import StratisCliDbusLookupError
 
 from .._misc import _device_list
+from .._misc import RUNNER
 from .._misc import Service
 
 _DEVICE_STRATEGY = _device_list(1)
@@ -60,7 +60,7 @@ class Destroy1TestCase(unittest.TestCase):
         """
         command_line = self._MENU + [self._POOLNAME]
         with self.assertRaises(StratisCliDbusLookupError):
-            run(command_line)
+            RUNNER(command_line)
 
 
 class Destroy2TestCase(unittest.TestCase):
@@ -81,7 +81,7 @@ class Destroy2TestCase(unittest.TestCase):
            ['pool', 'create'] + \
            [self._POOLNAME] + \
            _DEVICE_STRATEGY.example()
-        run(command_line)
+        RUNNER(command_line)
 
     def tearDown(self):
         """
@@ -94,7 +94,7 @@ class Destroy2TestCase(unittest.TestCase):
         The pool was just created, so must be destroyable.
         """
         command_line = self._MENU + [self._POOLNAME]
-        run(command_line)
+        RUNNER(command_line)
 
 
 class Destroy3TestCase(unittest.TestCase):
@@ -117,13 +117,13 @@ class Destroy3TestCase(unittest.TestCase):
            ['pool', 'create'] + \
            [self._POOLNAME] + \
            _DEVICE_STRATEGY.example()
-        run(command_line)
+        RUNNER(command_line)
 
         command_line = \
            ['filesystem', 'create'] + \
            [self._POOLNAME] + \
            [self._VOLNAME]
-        run(command_line)
+        RUNNER(command_line)
 
     def tearDown(self):
         """
@@ -137,7 +137,7 @@ class Destroy3TestCase(unittest.TestCase):
         """
         command_line = self._MENU + [self._POOLNAME]
         with self.assertRaises(StratisCliRuntimeError) as ctxt:
-            run(command_line)
+            RUNNER(command_line)
         expected_error = StratisdErrorsGen.get_object().BUSY
         self.assertEqual(ctxt.exception.rc, expected_error)
 
@@ -146,6 +146,6 @@ class Destroy3TestCase(unittest.TestCase):
         This should succeed since the filesystem is removed first.
         """
         command_line = ['filesystem', 'destroy', self._POOLNAME, self._VOLNAME]
-        run(command_line)
+        RUNNER(command_line)
         command_line = self._MENU + [self._POOLNAME]
-        run(command_line)
+        RUNNER(command_line)

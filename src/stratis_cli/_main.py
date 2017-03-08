@@ -21,19 +21,26 @@ import dbus
 
 from ._parser import gen_parser
 
-def run(command_line_args):
+def run():
     """
-    Run according to the arguments passed.
+    Generate a function that parses arguments and executes.
     """
     parser = gen_parser()
-    result = parser.parse_args(command_line_args)
-    if result.subparser_name is None:
-        parser.print_help()
-    else:
-        try:
-            result.func(result)
-        except dbus.exceptions.DBusException as err:
-            if result.propagate:
-                raise
-            sys.exit(err.get_dbus_message())
-    return 0
+
+    def the_func(command_line_args):
+        """
+        Run according to the arguments passed.
+        """
+        result = parser.parse_args(command_line_args)
+        if result.subparser_name is None:
+            parser.print_help()
+        else:
+            try:
+                result.func(result)
+            except dbus.exceptions.DBusException as err:
+                if result.propagate:
+                    raise
+                sys.exit(err.get_dbus_message())
+        return 0
+
+    return the_func

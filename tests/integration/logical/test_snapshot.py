@@ -21,10 +21,10 @@ import unittest
 
 from stratisd_client_dbus import StratisdErrorsGen
 
-from stratis_cli._main import run
 from stratis_cli._errors import StratisCliRuntimeError
 
 from .._misc import _device_list
+from .._misc import RUNNER
 from .._misc import Service
 
 _DEVICE_STRATEGY = _device_list(1)
@@ -61,7 +61,7 @@ class SnapshotTestCase(unittest.TestCase):
         command_line = \
            self._MENU + [self._POOLNAME] + [self._ORIGIN] + [self._SNAP]
         with self.assertRaises(StratisCliRuntimeError) as ctxt:
-            run(command_line)
+            RUNNER(command_line)
         expected_error = StratisdErrorsGen.get_object().POOL_NOTFOUND
         self.assertEqual(ctxt.exception.rc, expected_error)
 
@@ -86,7 +86,7 @@ class Snapshot1TestCase(unittest.TestCase):
         command_line = \
            ['pool', 'create'] + [self._POOLNAME] + \
            _DEVICE_STRATEGY.example()
-        run(command_line)
+        RUNNER(command_line)
 
     def tearDown(self):
         """
@@ -101,7 +101,7 @@ class Snapshot1TestCase(unittest.TestCase):
         command_line = \
            self._MENU + [self._POOLNAME] + [self._ORIGIN] + [self._SNAP]
         with self.assertRaises(StratisCliRuntimeError) as ctxt:
-            run(command_line)
+            RUNNER(command_line)
         expected_error = StratisdErrorsGen.get_object().VOLUME_NOTFOUND
         self.assertEqual(ctxt.exception.rc, expected_error)
 
@@ -126,10 +126,10 @@ class Snapshot2TestCase(unittest.TestCase):
         command_line = \
            ['pool', 'create'] + [self._POOLNAME] + \
            _DEVICE_STRATEGY.example()
-        run(command_line)
+        RUNNER(command_line)
 
         command_line = ['filesystem', 'create'] + [self._POOLNAME] + [self._ORIGIN]
-        run(command_line)
+        RUNNER(command_line)
 
     def tearDown(self):
         """
@@ -144,4 +144,4 @@ class Snapshot2TestCase(unittest.TestCase):
         """
         command_line = \
            self._MENU + [self._POOLNAME] + [self._ORIGIN] + [self._SNAP]
-        run(command_line)
+        RUNNER(command_line)

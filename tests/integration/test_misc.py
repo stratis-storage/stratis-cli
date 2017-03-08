@@ -20,14 +20,13 @@ import unittest
 
 from stratisd_client_dbus import get_object
 
-from stratis_cli import run
-
 from stratis_cli._actions._misc import GetObjectPath
 
 from stratis_cli._constants import TOP_OBJECT
 from stratis_cli._errors import StratisCliDbusLookupError
 
 from ._misc import _device_list
+from ._misc import RUNNER
 from ._misc import Service
 
 
@@ -78,7 +77,7 @@ class GetPool1TestCase(unittest.TestCase):
         command_line = \
            ['pool', 'create', self._POOLNAME] + \
            _DEVICE_STRATEGY.example()
-        run(command_line)
+        RUNNER(command_line)
 
     def tearDown(self):
         """
@@ -121,7 +120,7 @@ class GetVolume1TestCase(unittest.TestCase):
         command_line = \
            ['pool', 'create', self._POOLNAME] + \
            _DEVICE_STRATEGY.example()
-        run(command_line)
+        RUNNER(command_line)
 
     def tearDown(self):
         """
@@ -161,10 +160,10 @@ class GetVolume2TestCase(unittest.TestCase):
         command_line = \
            ['pool', 'create', self._POOLNAME] + \
            _DEVICE_STRATEGY.example()
-        run(command_line)
+        RUNNER(command_line)
         command_line = \
            ['filesystem', 'create', self._POOLNAME, self._VOLNAME]
-        run(command_line)
+        RUNNER(command_line)
 
     def tearDown(self):
         """

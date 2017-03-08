@@ -21,11 +21,11 @@ import unittest
 
 from stratisd_client_dbus import StratisdErrorsGen
 
-from stratis_cli._main import run
 from stratis_cli._errors import StratisCliRuntimeError
 from stratis_cli._errors import StratisCliDbusLookupError
 
 from .._misc import _device_list
+from .._misc import RUNNER
 from .._misc import Service
 
 _DEVICE_STRATEGY = _device_list(1)
@@ -59,7 +59,7 @@ class CreateTestCase(unittest.TestCase):
         """
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
         with self.assertRaises(StratisCliDbusLookupError):
-            run(command_line)
+            RUNNER(command_line)
 
 
 @unittest.skip("Creation of a volume could fail if no room in pool.")
@@ -81,7 +81,7 @@ class Create2TestCase(unittest.TestCase):
         command_line = \
            ['pool', 'create'] + [self._POOLNAME] + \
            _DEVICE_STRATEGY.example()
-        run(command_line)
+        RUNNER(command_line)
 
     def tearDown(self):
         """
@@ -94,7 +94,7 @@ class Create2TestCase(unittest.TestCase):
         Creation of the volume should succeed since pool is available.
         """
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
-        run(command_line)
+        RUNNER(command_line)
 
 
 class Create3TestCase(unittest.TestCase):
@@ -115,9 +115,9 @@ class Create3TestCase(unittest.TestCase):
         command_line = \
            ['pool', 'create'] + [self._POOLNAME] + \
            _DEVICE_STRATEGY.example()
-        run(command_line)
+        RUNNER(command_line)
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
-        run(command_line)
+        RUNNER(command_line)
 
     def tearDown(self):
         """
@@ -132,6 +132,6 @@ class Create3TestCase(unittest.TestCase):
         """
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
         with self.assertRaises(StratisCliRuntimeError) as ctxt:
-            run(command_line)
+            RUNNER(command_line)
         expected_error = StratisdErrorsGen.get_object().ALREADY_EXISTS
         self.assertEqual(ctxt.exception.rc, expected_error)
