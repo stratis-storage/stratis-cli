@@ -24,6 +24,8 @@ import sys
 
 from hypothesis import strategies
 
+from stratis_cli import run
+
 try:
     _STRATISD = os.environ['STRATISD']
 except KeyError:
@@ -79,3 +81,5 @@ class ServiceR(ServiceABC):
 
 
 Service = ServiceR
+
+RUNNER = run()

@@ -19,9 +19,9 @@ Test 'list'.
 import time
 import unittest
 
-from stratis_cli._main import run
 
 from .._misc import _device_list
+from .._misc import RUNNER
 from .._misc import Service
 
 _DEVICE_STRATEGY = _device_list(1)
@@ -52,7 +52,7 @@ class ListTestCase(unittest.TestCase):
         List should just succeed, even though there is nothing to list.
         """
         command_line = self._MENU
-        run(command_line)
+        RUNNER(command_line)
 
 
 class List2TestCase(unittest.TestCase):
@@ -72,7 +72,7 @@ class List2TestCase(unittest.TestCase):
         command_line = \
            ['pool', 'create'] + [self._POOLNAME] + \
            _DEVICE_STRATEGY.example()
-        run(command_line)
+        RUNNER(command_line)
 
     def tearDown(self):
         """
@@ -85,4 +85,4 @@ class List2TestCase(unittest.TestCase):
         List should just succeed.
         """
         command_line = self._MENU
-        run(command_line)
+        RUNNER(command_line)

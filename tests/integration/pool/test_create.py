@@ -19,10 +19,10 @@ Test 'create'.
 import time
 import unittest
 
-from stratis_cli._main import run
 from stratis_cli._errors import StratisCliRuntimeError
 
 from .._misc import _device_list
+from .._misc import RUNNER
 from .._misc import Service
 
 _DEVICE_STRATEGY = _device_list(1)
@@ -59,7 +59,7 @@ class CreateTestCase(unittest.TestCase):
            [self._POOLNAME] + \
            _DEVICE_STRATEGY.example()
         with self.assertRaises(SystemExit):
-            run(command_line)
+            RUNNER(command_line)
 
 
 class Create2TestCase(unittest.TestCase):
@@ -92,7 +92,7 @@ class Create2TestCase(unittest.TestCase):
            self._MENU + \
            [self._POOLNAME] + \
            _DEVICE_STRATEGY.example()
-        run(command_line)
+        RUNNER(command_line)
 
 
 class Create3TestCase(unittest.TestCase):
@@ -112,7 +112,7 @@ class Create3TestCase(unittest.TestCase):
         command_line = \
            ['pool', 'create', self._POOLNAME] + \
            _DEVICE_STRATEGY.example()
-        run(command_line)
+        RUNNER(command_line)
 
     def tearDown(self):
         """
@@ -129,4 +129,4 @@ class Create3TestCase(unittest.TestCase):
            [self._POOLNAME] + \
            _DEVICE_STRATEGY.example()
         with self.assertRaises(StratisCliRuntimeError):
-            run(command_line)
+            RUNNER(command_line)

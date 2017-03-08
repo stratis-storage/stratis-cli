@@ -19,8 +19,7 @@ Test 'stratisd'.
 import time
 import unittest
 
-from stratis_cli._main import run
-
+from ._misc import RUNNER
 from ._misc import Service
 
 
@@ -49,21 +48,21 @@ class StratisTestCase(unittest.TestCase):
         Getting version should just succeed.
         """
         command_line = self._MENU + ['version']
-        run(command_line)
+        RUNNER(command_line)
 
     def testStratisRedundancy(self):
         """
         Getting redundancy should just succeed.
         """
         command_line = self._MENU + ['redundancy']
-        run(command_line)
+        RUNNER(command_line)
 
     def testStratisNoOptions(self):
         """
         Exactly one option should be set, this should succeed, but print help.
         """
         command_line = self._MENU
-        run(command_line)
+        RUNNER(command_line)
 
     def testStratisTwoOptions(self):
         """
@@ -72,4 +71,4 @@ class StratisTestCase(unittest.TestCase):
         """
         command_line = self._MENU + ['redundancy', 'version']
         with self.assertRaises(SystemExit):
-            run(command_line)
+            RUNNER(command_line)
