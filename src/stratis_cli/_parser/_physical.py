@@ -31,21 +31,21 @@ def build_physical_add_parser(parser):
     :rtype: ArgumentParser
     """
     parser.add_argument(
-       'name',
+       'pool_name',
        action='store',
-       help='pool name'
+       help='Pool name'
     )
     parser.add_argument(
        'device',
-       help='make device D a member of this pool',
-       metavar='D',
+       help='Block devices to add to the pool',
+       metavar='blockdev',
        nargs='+'
     )
     parser.add_argument(
        '--force',
        action='store_true',
        default=False,
-       help="overwrite existing metadata on specified devices"
+       help="Use devices even if they appear to contain existing data"
     )
     parser.set_defaults(func=PhysicalActions.add_device)
     return parser
@@ -61,9 +61,9 @@ def build_physical_list_parser(parser):
     :rtype: ArgumentParser
     """
     parser.add_argument(
-       'name',
+       'pool_name',
        action='store',
-       help='pool name'
+       help='Pool name'
     )
     parser.set_defaults(func=PhysicalActions.list_pool)
     return parser
@@ -94,7 +94,7 @@ def build_physical_parser(parser):
     subparser_table['add'] = \
        subparsers.add_parser(
           'add',
-          description="Add Devices to a Pool"
+          description="Add one or more blockdevs to an existing pool"
        )
     _SUBPARSER_TABLE['add'](subparser_table['add'])
 

@@ -27,7 +27,7 @@ class StratisTestCase(unittest.TestCase):
     """
     Test meta information about stratisd.
     """
-    _MENU = ['stratisd']
+    _MENU = ['daemon']
 
     def setUp(self):
         """

@@ -28,7 +28,7 @@ from ._physical import build_physical_parser
 from ._pool import build_pool_parser
 
 
-def build_stratisd_parser(parser):
+def build_daemon_parser(parser):
     """
     Generates the parser appropriate for obtaining information about stratisd.
 
@@ -58,7 +58,7 @@ _SUBPARSER_TABLE = {
    'blockdev' : build_physical_parser,
    'filesystem' : build_logical_parser,
    'pool' : build_pool_parser,
-   'stratisd' : build_stratisd_parser
+   'daemon' : build_daemon_parser
 }
 
 
@@ -94,14 +94,14 @@ def gen_parser():
     subparser_table['blockdev'] = \
        subparsers.add_parser(
           'blockdev',
-          description="Administer Blockdev Aspects of Specified Pool"
+          description="Commands related to block devices that make up the pool"
        )
     _SUBPARSER_TABLE['blockdev'](subparser_table['blockdev'])
 
     subparser_table['filesystem'] = \
        subparsers.add_parser(
           'filesystem',
-          description="Administer Filesystems Aspects of Specified Pool"
+          description="Commands related to filesystems allocated from a pool"
        )
     _SUBPARSER_TABLE['filesystem'](subparser_table['filesystem'])
 
@@ -109,11 +109,11 @@ def gen_parser():
        subparsers.add_parser('pool', description="Perform General Pool Actions")
     _SUBPARSER_TABLE['pool'](subparser_table['pool'])
 
-    subparser_table['stratisd'] = \
+    subparser_table['daemon'] = \
        subparsers.add_parser(
-          'stratisd',
-          description="Information about Stratisd"
+          'daemon',
+          description="Stratis daemon information"
     )
-    _SUBPARSER_TABLE['stratisd'](subparser_table['stratisd'])
+    _SUBPARSER_TABLE['daemon'](subparser_table['daemon'])
 
     return parser

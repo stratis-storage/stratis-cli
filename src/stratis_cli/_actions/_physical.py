@@ -50,7 +50,7 @@ class PhysicalActions(object):
         """
         proxy = get_object(TOP_OBJECT)
         pool_object = get_object(
-           GetObjectPath.get_pool(proxy, spec={'Name': namespace.name})
+           GetObjectPath.get_pool(proxy, spec={'Name': namespace.pool_name})
         )
 
         (_, rc, message) = Pool.AddDevs(
