@@ -5,13 +5,17 @@ A CLI for the Stratis Project.
 
 Introduction
 ------------
-The CLI for the Stratis Project is a Python shell which communicates with the
-Stratis daemon, stratisd, via dbus.
+`stratis-cli` is a tool that provides a command-line interface (CLI)
+for interacting with the Stratis daemon,
+`stratisd <https://github.com/stratis-storage/stratisd>`_. ``stratis-cli``
+interacts with ``stratisd`` via
+`D-Bus <https://www.freedesktop.org/wiki/Software/dbus/>`_. It is
+written in Python 3.
 
-As a matter of principle, it concerns itself solely with parsing arguments,
-locating object paths by their properties, passing them to the dbus API, and
-displaying the results returned by stratisd when appropriate. It is stateless
-and contains a minimum of storage-related logic.
+``stratis-cli`` is stateless and contains a minimum of storage-related
+logic. Its code mainly consists of parsing arguments from the command
+line, calling methods that are part of the Stratis D-Bus API, and then
+processing and displaying the results.
 
 Installing
 ----------
@@ -19,6 +23,11 @@ Installing
 To install, check out the source, and use the included setup script, as::
 
    > python setup.py install
+
+You will also need to obtain the following related Stratis repos:
+stratisd-client-dbus, into-dbus-python, dbus-signature-pyparsing.
+
+Finally, ensure you have python3-pyparsing package installed.
 
 Running
 -------
@@ -30,59 +39,49 @@ or::
 
    > stratis --version
 
-To run without installing, check out the source, change to the top directory
-and enter::
+To run without installing, check out the source, change to the top
+directory and set the ``PYTHONPATH`` environment variable to include
+library dependencies. For example (if using bash shell)::
 
-   > ./bin/stratis --help
+   > export PYTHONPATH="src:../stratisd-client-dbus/src:../into-dbus-python/src:../dbus-signature-pyparsing/src"
+   > python3 bin/stratis --help
 
-making sure that your PYTHONPATH environment variable is set to the CLI src
-directory.
-
-If you are not running the Stratis dbus service most actions will be
-unavailable, but all help menus should work properly.
+Since ``stratis`` uses stratisd's API, most operations will fail
+unless you are also running the `Stratis daemon <https://github.com/stratis-storage/stratisd>`_.
 
 You may have to explicitly invoke the Python 3 interpreter if Python 3 is
-not your default Python implementation.
+not your default Python implementation, as shown above.
 
 Testing
 -------
-There are some unit and integration tests in the tests directory.
+There are unit and integration tests in the ``tests`` directory.
 
-These can be run by setting your PYTHONPATH environment variable to the CLI
-src directory, setting the STRATIS environment variable to the absolute path
-of your stratisd executable, and entering::
+Running tests depends on some additional packages: python3-pytest,
+python3-hypothesis.
 
-   > py.test tests
+These can be run by setting the PYTHONPATH environment variable as
+shown above, and also setting the STRATIS environment variable to the
+absolute or relative path to your stratisd executable. For example
+(again using bash shell)::
 
-at the command prompt. Entering::
+  > STRATISD=../stratisd/target/debug/stratisd make dbus-tests
 
-   > tox
+*Note:* Since the tests invoke ``stratisd``, it should not be running
+independently when the tests are run.
 
-will cause some tests to be run in the tox virtual environment. Integration
-tests, which requires the CLI to connect with the Stratis daemon, will not
-be run.
+To run ``tox``, ensure python3-tox and dbus-glib-devel packages are
+installed, and then run::
 
-Note that stratis-cli is a Python 3 program, so it will be necessary for you
-to use the Python 3 variants of pytest and tox that are available on your
-system.
+  > tox
 
+Internal Software Architecture
+------------------------------
+``stratis`` is implemented in two parts:
 
-General Principles
-------------------
-The CLI command-line is intended to have a simple structure to avoid
-ambiguities and constraints in parsing. For that reason, the initial portion
-of the command-line is a list of menu-selectors, each of which selects an
-option from the menu belonging to the previous selector. Once the final
-sub-menu is selected the remaining cli consists of options and arguments, only.
+* The *parser* package handles configuring the command line parser, which uses
+  the Python `argparse <https://docs.python.org/3/library/argparse.html>`_ package.
 
-Architecture
-------------
-The CLI consists of orthogonal sub-packages.
-
-* The parser package consists solely of mechanisms for constructing parsers
-using the Python argparse package.
-
-* The actions package contains code that mediates between the parser and the
-dbus. It contains functions that are automatically invoked by the
-parser during execution. Each function takes a parser Namespace argument,
-interprets it, and makes the necessary dbus calls.
+* The *actions* package receives valid commands from the parser package
+  and executes them, invoking the D-Bus API as needed.  The parser
+  passes command-line arguments given by the user to methods in the
+  actions package using a ``Namespace`` object.
