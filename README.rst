@@ -44,13 +44,10 @@ directory and set the ``PYTHONPATH`` environment variable to include
 library dependencies. For example (if using bash shell)::
 
    > export PYTHONPATH="src:../stratisd-client-dbus/src:../into-dbus-python/src:../dbus-signature-pyparsing/src"
-   > python3 bin/stratis --help
+   > ./bin/stratis --help
 
 Since ``stratis`` uses stratisd's API, most operations will fail
 unless you are also running the `Stratis daemon <https://github.com/stratis-storage/stratisd>`_.
-
-You may have to explicitly invoke the Python 3 interpreter if Python 3 is
-not your default Python implementation, as shown above.
 
 Testing
 -------
