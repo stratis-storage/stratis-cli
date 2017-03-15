@@ -18,8 +18,6 @@ Definition of block device actions to display in the CLI.
 
 from .._actions import PhysicalActions
 
-from ._cache import CACHE_SUBCMDS
-
 PHYSICAL_SUBCMDS = [
     ('add',
      dict(
@@ -44,11 +42,6 @@ PHYSICAL_SUBCMDS = [
               )),
          ],
          func=PhysicalActions.add_device
-     )),
-    ('cache',
-     dict(
-         help="Cache-related subcommands",
-         subcmds=CACHE_SUBCMDS
      )),
     ('list',
      dict(
