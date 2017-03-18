@@ -45,11 +45,11 @@ class LogicalActions(object):
         """
         proxy = get_object(TOP_OBJECT)
         pool_object = get_object(
-           GetObjectPath.get_pool(proxy, spec={'Name': namespace.pool})
+           GetObjectPath.get_pool(proxy, spec={'Name': namespace.pool_name})
         )
 
         (_, rc, message) = \
-           Pool.CreateFilesystems(pool_object, specs=namespace.volume)
+           Pool.CreateFilesystems(pool_object, specs=namespace.fs_name)
 
         if rc != StratisdErrorsGen().get_object().OK:
             raise StratisCliRuntimeError(rc, message)
@@ -64,7 +64,7 @@ class LogicalActions(object):
         proxy = get_object(TOP_OBJECT)
 
         pool_object_path = \
-           GetObjectPath.get_pool(proxy, spec={'Name': namespace.pool})
+           GetObjectPath.get_pool(proxy, spec={'Name': namespace.pool_name})
 
         for object_path, _ in get_managed_objects(proxy).filesystems(
                    props={'Pool': pool_object_path}
@@ -82,10 +82,10 @@ class LogicalActions(object):
         """
         proxy = get_object(TOP_OBJECT)
         pool_object_path = \
-           GetObjectPath.get_pool(proxy, spec={'Name': namespace.pool})
+           GetObjectPath.get_pool(proxy, spec={'Name': namespace.pool_name})
 
         fs_object_paths = [
-           op for name in namespace.volume for (op, _) in \
+           op for name in namespace.fs_name for (op, _) in \
            get_managed_objects(proxy).filesystems(
               props={'Name': name, 'Pool': pool_object_path}
            )
