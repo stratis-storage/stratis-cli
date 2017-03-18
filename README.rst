@@ -82,3 +82,8 @@ Internal Software Architecture
   and executes them, invoking the D-Bus API as needed.  The parser
   passes command-line arguments given by the user to methods in the
   actions package using a ``Namespace`` object.
+
+Python Coding Style
+-------------------
+``stratis`` uses PEP-8 style, with the additional rule that continuation lines
+are indented 3 spaces.
