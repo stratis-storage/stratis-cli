@@ -23,6 +23,7 @@ from stratisd_client_dbus import Pool
 from stratisd_client_dbus import StratisdErrorsGen
 from stratisd_client_dbus import get_managed_objects
 from stratisd_client_dbus import get_object
+from stratisd_client_dbus import GMOFilesystem
 
 from .._errors import StratisCliRuntimeError
 
@@ -66,10 +67,10 @@ class LogicalActions(object):
         pool_object_path = \
            GetObjectPath.get_pool(proxy, spec={'Name': namespace.pool_name})
 
-        for object_path, _ in get_managed_objects(proxy).filesystems(
+        for _, info in get_managed_objects(proxy).filesystems(
                    props={'Pool': pool_object_path}
            ):
-            print(object_path)
+            print(GMOFilesystem(info).Name())
 
         return
 
