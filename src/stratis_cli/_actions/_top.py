@@ -23,6 +23,7 @@ from stratisd_client_dbus import Pool
 from stratisd_client_dbus import StratisdErrorsGen
 from stratisd_client_dbus import get_managed_objects
 from stratisd_client_dbus import get_object
+from stratisd_client_dbus import GMOPool
 
 from .._constants import TOP_OBJECT
 
@@ -70,8 +71,8 @@ class TopActions(object):
         # pylint: disable=unused-argument
         proxy = get_object(TOP_OBJECT)
 
-        for object_path, _ in get_managed_objects(proxy).pools():
-            print(object_path)
+        for _, info in get_managed_objects(proxy).pools():
+            print(GMOPool(info).Name())
 
         return
 
