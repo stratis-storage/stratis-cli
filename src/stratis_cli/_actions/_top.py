@@ -49,10 +49,10 @@ class TopActions(object):
 
         (_, rc, message) = Manager.CreatePool(
            proxy,
-           name=namespace.name,
+           name=namespace.pool_name,
            redundancy=0,
            force=namespace.force,
-           devices=namespace.device
+           devices=namespace.blockdevs
         )
 
         if rc != stratisd_errors.OK:
@@ -86,7 +86,7 @@ class TopActions(object):
         """
         proxy = get_object(TOP_OBJECT)
         pool_object_path = \
-           GetObjectPath.get_pool(proxy, spec={'Name': namespace.name})
+           GetObjectPath.get_pool(proxy, spec={'Name': namespace.pool_name})
 
         (_, rc, message) = \
            Manager.DestroyPool(proxy, pool_object_path=pool_object_path)
