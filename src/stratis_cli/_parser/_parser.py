@@ -27,6 +27,9 @@ from ._logical import LOGICAL_SUBCMDS
 from ._physical import PHYSICAL_SUBCMDS
 from ._pool import POOL_SUBCMDS
 
+# pylint: disable=undefined-variable
+PRINT_HELP = lambda parser: lambda _: parser.print_help()
+
 def add_args(parser, args=None):
     """
     Call subcommand.add_argument() based on args list.
@@ -34,7 +37,6 @@ def add_args(parser, args=None):
     if args is not None:
         for name, arg in args:
             parser.add_argument(name, **arg)
-
 
 def add_subcommand(subparser, cmd):
     """
@@ -45,15 +47,13 @@ def add_subcommand(subparser, cmd):
 
     subcmds = info.get('subcmds')
     if subcmds is not None:
-        subparsers = parser.add_subparsers(dest='subparser_name')
+        subparsers = parser.add_subparsers(title='subcommands')
         for subcmd in subcmds:
             add_subcommand(subparsers, subcmd)
 
     add_args(parser, info.get('args', []))
 
-    f = info.get('func')
-    if f is not None:
-        parser.set_defaults(func=f)
+    parser.set_defaults(func=info.get('func', PRINT_HELP(parser)))
 
 DAEMON_SUBCMDS = [
     ('redundancy',
@@ -120,9 +120,11 @@ def gen_parser():
 
     add_args(parser, GEN_ARGS)
 
-    subparsers = parser.add_subparsers(dest='subparser_name')
+    subparsers = parser.add_subparsers(title='subcommands')
 
     for subcmd in ROOT_SUBCOMMANDS:
         add_subcommand(subparsers, subcmd)
+
+    parser.set_defaults(func=PRINT_HELP(parser))
 
     return parser
