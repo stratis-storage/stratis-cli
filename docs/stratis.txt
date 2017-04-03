@@ -1,0 +1,85 @@
+stratis(8)
+==========
+
+NAME
+----
+stratis - Configure Stratis local storage pools
+
+SYNOPSIS
+--------
+  stratis [GLOBAL OPTIONS] pool <command> [args] [COMMAND OPTIONS]
+  stratis [GLOBAL OPTIONS] filesystem <command> [args] [COMMAND OPTIONS]
+  stratis [GLOBAL OPTIONS] blockdev <command> [args] [COMMAND OPTIONS]
+  stratis [GLOBAL OPTIONS] daemon <redundancy|version>
+
+DESCRIPTION
+-----------
+*stratis* is a command-line tool to create, modify, and destroy Stratis pools,
+and the filesystems allocated from the pool.
+
+Stratis creates a *pool* from one or more block devices (*blockdevs*), and
+then enables multiple *filesystems* to be created from the pool.
+
+GLOBAL OPTIONS
+--------------
+--propagate::
+	Propagate D-Bus errors.
+--version::
+	Show stratis-cli version.
+--help, -h::
+	Show help on command.
+
+COMMANDS
+--------
+pool create [--force] <pool_name> <blockdev> [<blockdev>..]::
+     Create a pool from one or more block devices, with the given pool name.
+pool list::
+     List all pools on the system.
+pool rename <old_pool_name> <new_pool_name>::
+     Rename a pool.
+pool destroy <pool_name>::
+     Destroy a pool and all the filesystems created from it.
+filesystem create <pool_name> <fs_name> [<fs_name>..]::
+	   Create one or more filesystems from the specified pool.
+filesystem list <pool_name>::
+	   List all filesystems that exist in the specified pool.
+filesystem destroy <pool_name> <fs_name> [<fs_name>..]::
+	   Destroy one or more filesystems that exist in the specified pool.
+blockdev add [--force] <pool_name> <blockdev> [<blockdev>..]::
+	 Add one or more blockdevs to an existing pool.
+blockdev list <pool_name>::
+	 List all blockdevs that make up the specified pool.
+daemon redundancy::
+       List the redundancy levels that the Stratis service supports.
+daemon version::
+       Show the Stratis service's version.
+
+EXAMPLES
+--------
+.Creating a Stratis pool
+====
+stratis pool create mypool /dev/sdb /dev/sdc
+====
+.Creating a filesystem from a pool
+====
+stratis filesystem create mypool data1
+====
+
+SEE ALSO
+--------
+*mount*(8), *umount*(8), *fstab*(5)
+
+REPORTING BUGS & DEVELOPMENT
+-----------------------------
+GitHub for issues and development::
+       https://github.com/stratis-storage, against either 'stratis-cli' or
+'stratisd' projects, based on likelihood of issue being with the command-line
+tool or the service daemon.
+Mailing list::
+	stratis-devel@lists.fedorahosted.org for general development discussion
+
+LICENSE
+-------
+stratis-cli is licensed under the *Apache License, Version 2.0*. Software
+distributed under this license is distributed on an "AS IS" BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either expressed or implied.
