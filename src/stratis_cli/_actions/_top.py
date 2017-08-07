@@ -90,7 +90,7 @@ class TopActions(object):
            GetObjectPath.get_pool(proxy, spec={'Name': namespace.pool_name})
 
         (_, rc, message) = \
-           Manager.DestroyPool(proxy, pool_object_path=pool_object_path)
+           Manager.DestroyPool(proxy, pool=pool_object_path)
 
         if rc != StratisdErrorsGen.get_object().OK:
             raise StratisCliRuntimeError(rc, message)
@@ -108,7 +108,7 @@ class TopActions(object):
            GetObjectPath.get_pool(proxy, spec={'Name': namespace.current})
         )
 
-        (_, rc, message) = Pool.SetName(pool_object, new_name=namespace.new)
+        (_, rc, message) = Pool.SetName(pool_object, name=namespace.new)
 
         stratisd_errors = StratisdErrorsGen.get_object()
         if rc != stratisd_errors.OK:
