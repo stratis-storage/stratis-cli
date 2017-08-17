@@ -29,6 +29,25 @@ stratisd-client-dbus, into-dbus-python, dbus-signature-pyparsing.
 
 Finally, ensure you have python3-pyparsing package installed.
 
+Troubleshooting
+---------------
+Error::
+
+> Traceback (most recent call last):
+>   File "/usr/bin/stratis", line 4, in <module>
+>     __import__('pkg_resources').run_script('stratis-cli==0.0.2', 'stratis')
+>   File "/usr/lib/python3.6/site-packages/pkg_resources/__init__.py", line 739, in run_script
+>     self.require(requires)[0].run_script(script_name, ns)
+>   File "/usr/lib/python3.6/site-packages/pkg_resources/__init__.py", line 1501, in run_script
+>     exec(script_code, namespace, namespace)
+>   File "/usr/lib/python3.6/site-packages/stratis_cli-0.0.2-py3.6.egg/EGG-INFO/scripts/stratis", line 23, in <module>
+>   File "/usr/lib/python3.6/site-packages/stratis_cli-0.0.2-py3.6.egg/stratis_cli/__init__.py", line 19, in <module>
+>   File "/usr/lib/python3.6/site-packages/stratis_cli-0.0.2-py3.6.egg/stratis_cli/_main.py", line 20, in <module>
+> ModuleNotFoundError: No module named 'dbus'
+
+
+Solution: Install python3.4 and python34-dbus
+
 Running
 -------
 After installing, running just requires invoking the script, as::
