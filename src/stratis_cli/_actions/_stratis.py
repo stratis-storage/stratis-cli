@@ -18,12 +18,11 @@ Miscellaneous actions about stratis.
 
 from __future__ import print_function
 
-from stratisd_client_dbus import Manager
-
 from .._stratisd_constants import RedundancyCodes
 
 from ._connection import get_object
 from ._constants import TOP_OBJECT
+from ._data import Manager
 
 
 class StratisActions(object):
@@ -47,4 +46,4 @@ class StratisActions(object):
         List the stratisd version.
         """
         # pylint: disable=unused-argument
-        print("%s" % Manager.Properties.Version(get_object(TOP_OBJECT)))
+        print("%s" % Manager.Properties.Version.Get(get_object(TOP_OBJECT)))

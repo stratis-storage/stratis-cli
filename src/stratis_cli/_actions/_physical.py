@@ -18,16 +18,15 @@ Miscellaneous physical actions.
 
 from __future__ import print_function
 
-from stratisd_client_dbus import Pool
-
 from .._errors import StratisCliRuntimeError
 from .._errors import StratisCliUnimplementedError
 from .._stratisd_constants import StratisdErrors
 
 from ._connection import get_object
 from ._constants import TOP_OBJECT
-
-from ._misc import GetObjectPath
+from ._data import ObjectManager
+from ._data import Pool
+from ._data import pools
 
 
 class PhysicalActions(object):
@@ -49,14 +48,16 @@ class PhysicalActions(object):
         Add a device to a pool.
         """
         proxy = get_object(TOP_OBJECT)
-        pool_object = get_object(
-           GetObjectPath.get_pool(proxy, spec={'Name': namespace.pool_name})
+        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
+        (pool_object_path, _) = pools(
+           managed_objects,
+           props={'Name': namespace.pool_name},
+           unique=True
         )
 
-        (_, rc, message) = Pool.AddDevs(
-           pool_object,
-           force=namespace.force,
-           devices=namespace.device
+        (_, rc, message) = Pool.Methods.AddDevs(
+           get_object(pool_object_path),
+           {'force': namespace.force, 'devices': namespace.device}
         )
         if rc != StratisdErrors.OK:
             raise StratisCliRuntimeError(rc, message)
