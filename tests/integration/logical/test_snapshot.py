@@ -19,13 +19,12 @@ Test 'snapshot'.
 import time
 import unittest
 
-from stratisd_client_dbus import StratisdErrorsGen
-
 from stratis_cli._errors import StratisCliRuntimeError
 
 from .._misc import _device_list
 from .._misc import RUNNER
 from .._misc import Service
+
 
 _DEVICE_STRATEGY = _device_list(1)
 
@@ -60,10 +59,10 @@ class SnapshotTestCase(unittest.TestCase):
         """
         command_line = \
            self._MENU + [self._POOLNAME] + [self._ORIGIN] + [self._SNAP]
-        with self.assertRaises(StratisCliRuntimeError) as ctxt:
+        with self.assertRaises(StratisCliRuntimeError):
             RUNNER(command_line)
-        expected_error = StratisdErrorsGen.get_object().POOL_NOTFOUND
-        self.assertEqual(ctxt.exception.rc, expected_error)
+        # currently no error defined
+        # self.assertEqual(ctxt.exception.rc, StratisdErrors.POOL_NOTFOUND)
 
 
 @unittest.skip("unimplemented")
@@ -100,10 +99,10 @@ class Snapshot1TestCase(unittest.TestCase):
         """
         command_line = \
            self._MENU + [self._POOLNAME] + [self._ORIGIN] + [self._SNAP]
-        with self.assertRaises(StratisCliRuntimeError) as ctxt:
+        with self.assertRaises(StratisCliRuntimeError):
             RUNNER(command_line)
-        expected_error = StratisdErrorsGen.get_object().VOLUME_NOTFOUND
-        self.assertEqual(ctxt.exception.rc, expected_error)
+        # Returned error currently undefined.
+        # self.assertEqual(ctxt.exception.rc, StratisdErrors.VOLUME_NOTFOUND)
 
 
 @unittest.skip('unimplemented')

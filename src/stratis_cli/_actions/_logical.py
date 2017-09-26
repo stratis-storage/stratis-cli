@@ -20,7 +20,6 @@ from __future__ import print_function
 
 from stratisd_client_dbus import Filesystem
 from stratisd_client_dbus import Pool
-from stratisd_client_dbus import StratisdErrorsGen
 from stratisd_client_dbus import get_managed_objects
 from stratisd_client_dbus import get_object
 from stratisd_client_dbus import GMOFilesystem
@@ -28,6 +27,8 @@ from stratisd_client_dbus import GMOFilesystem
 from .._errors import StratisCliRuntimeError
 
 from .._constants import TOP_OBJECT
+
+from .._stratisd_constants import StratisdErrors
 
 from ._misc import GetObjectPath
 
@@ -52,7 +53,7 @@ class LogicalActions(object):
         (_, rc, message) = \
            Pool.CreateFilesystems(pool_object, specs=namespace.fs_name)
 
-        if rc != StratisdErrorsGen().get_object().OK:
+        if rc != StratisdErrors.OK:
             raise StratisCliRuntimeError(rc, message)
 
         return
@@ -98,7 +99,7 @@ class LogicalActions(object):
               filesystems=fs_object_paths
            )
 
-        if rc != StratisdErrorsGen().get_object().OK:
+        if rc != StratisdErrors.OK:
             raise StratisCliRuntimeError(rc, message)
 
         return
@@ -121,7 +122,7 @@ class LogicalActions(object):
 
         (_, rc, message) = \
            Filesystem.CreateSnapshot(volume_object, names=namespace.volume)
-        if rc != StratisdErrorsGen().get_object().OK:
+        if rc != StratisdErrors.OK:
             raise StratisCliRuntimeError(rc, message)
 
         return

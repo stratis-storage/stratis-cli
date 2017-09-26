@@ -20,7 +20,6 @@ from __future__ import print_function
 
 from stratisd_client_dbus import Manager
 from stratisd_client_dbus import Pool
-from stratisd_client_dbus import StratisdErrorsGen
 from stratisd_client_dbus import get_managed_objects
 from stratisd_client_dbus import get_object
 from stratisd_client_dbus import GMOPool
@@ -28,6 +27,8 @@ from stratisd_client_dbus import GMOPool
 from .._constants import TOP_OBJECT
 
 from .._errors import StratisCliRuntimeError
+
+from .._stratisd_constants import StratisdErrors
 
 from ._misc import GetObjectPath
 
@@ -44,8 +45,6 @@ class TopActions(object):
 
         :raises StratisCliRuntimeError:
         """
-        stratisd_errors = StratisdErrorsGen.get_object()
-
         proxy = get_object(TOP_OBJECT)
 
         (_, rc, message) = Manager.CreatePool(
@@ -56,7 +55,7 @@ class TopActions(object):
            devices=namespace.blockdevs
         )
 
-        if rc != stratisd_errors.OK:
+        if rc != StratisdErrors.OK:
             raise StratisCliRuntimeError(rc, message)
 
         return
@@ -92,7 +91,7 @@ class TopActions(object):
         (_, rc, message) = \
            Manager.DestroyPool(proxy, pool=pool_object_path)
 
-        if rc != StratisdErrorsGen.get_object().OK:
+        if rc != StratisdErrors.OK:
             raise StratisCliRuntimeError(rc, message)
 
         return
@@ -110,8 +109,7 @@ class TopActions(object):
 
         (_, rc, message) = Pool.SetName(pool_object, name=namespace.new)
 
-        stratisd_errors = StratisdErrorsGen.get_object()
-        if rc != stratisd_errors.OK:
+        if rc != StratisdErrors.OK:
             raise StratisCliRuntimeError(rc, message)
 
         return
