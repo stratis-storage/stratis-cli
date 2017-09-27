@@ -24,11 +24,11 @@ from stratisd_client_dbus import get_managed_objects
 from stratisd_client_dbus import get_object
 from stratisd_client_dbus import GMOPool
 
-from .._constants import TOP_OBJECT
-
 from .._errors import StratisCliRuntimeError
 
 from .._stratisd_constants import StratisdErrors
+
+from ._constants import TOP_OBJECT
 
 from ._misc import GetObjectPath
 

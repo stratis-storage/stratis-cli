@@ -26,9 +26,9 @@ from stratisd_client_dbus import GMOFilesystem
 
 from .._errors import StratisCliRuntimeError
 
-from .._constants import TOP_OBJECT
-
 from .._stratisd_constants import StratisdErrors
+
+from ._constants import TOP_OBJECT
 
 from ._misc import GetObjectPath
 

@@ -21,9 +21,9 @@ from __future__ import print_function
 from stratisd_client_dbus import Manager
 from stratisd_client_dbus import get_object
 
-from .._constants import TOP_OBJECT
-
 from .._stratisd_constants import RedundancyCodes
+
+from ._constants import TOP_OBJECT
 
 
 class StratisActions(object):
