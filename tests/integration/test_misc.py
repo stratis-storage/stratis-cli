@@ -18,11 +18,10 @@ Test miscellaneous methods.
 import time
 import unittest
 
-from stratisd_client_dbus import get_object
-
+from stratis_cli._actions._connection import get_object
+from stratis_cli._actions._constants import TOP_OBJECT
 from stratis_cli._actions._misc import GetObjectPath
 
-from stratis_cli._actions._constants import TOP_OBJECT
 from stratis_cli._errors import StratisCliDbusLookupError
 
 from ._misc import _device_list

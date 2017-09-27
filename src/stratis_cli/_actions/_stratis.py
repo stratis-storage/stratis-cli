@@ -19,10 +19,10 @@ Miscellaneous actions about stratis.
 from __future__ import print_function
 
 from stratisd_client_dbus import Manager
-from stratisd_client_dbus import get_object
 
 from .._stratisd_constants import RedundancyCodes
 
+from ._connection import get_object
 from ._constants import TOP_OBJECT
 
 

@@ -19,12 +19,12 @@ Miscellaneous physical actions.
 from __future__ import print_function
 
 from stratisd_client_dbus import Pool
-from stratisd_client_dbus import get_object
 
 from .._errors import StratisCliRuntimeError
 from .._errors import StratisCliUnimplementedError
 from .._stratisd_constants import StratisdErrors
 
+from ._connection import get_object
 from ._constants import TOP_OBJECT
 
 from ._misc import GetObjectPath
