@@ -32,7 +32,7 @@ class Rename1TestCase(unittest.TestCase):
     """
     Test 'rename' when pool is non-existant.
     """
-    _MENU = ['pool', 'rename']
+    _MENU = ['--propagate', 'pool', 'rename']
     _POOLNAME = 'deadpool'
     _NEW_POOLNAME = 'livepool'
 
@@ -71,7 +71,7 @@ class Rename2TestCase(unittest.TestCase):
     """
     Test 'rename' when pool exists.
     """
-    _MENU = ['pool', 'rename']
+    _MENU = ['--propagate', 'pool', 'rename']
     _POOLNAME = 'deadpool'
     _NEW_POOLNAME = 'livepool'
 

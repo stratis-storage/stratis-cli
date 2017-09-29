@@ -35,7 +35,7 @@ class SnapshotTestCase(unittest.TestCase):
     """
     Test snapshot of a volume when pool does not exist.
     """
-    _MENU = ['filesystem', 'snapshot']
+    _MENU = ['--propagate', 'filesystem', 'snapshot']
     _POOLNAME = 'deadpool'
     _ORIGIN = 'here'
     _SNAP = 'there'
@@ -71,7 +71,7 @@ class Snapshot1TestCase(unittest.TestCase):
     """
     Test snapshot of a volume when pool exists but volume does not.
     """
-    _MENU = ['filesystem', 'snapshot']
+    _MENU = ['--propagate', 'filesystem', 'snapshot']
     _POOLNAME = 'deadpool'
     _ORIGIN = 'here'
     _SNAP = 'there'
@@ -111,7 +111,7 @@ class Snapshot2TestCase(unittest.TestCase):
     """
     Test snapshot of a volume when pool and volume exists.
     """
-    _MENU = ['filesystem', 'snapshot']
+    _MENU = ['--propagate', 'filesystem', 'snapshot']
     _POOLNAME = 'deadpool'
     _ORIGIN = 'here'
     _SNAP = 'there'

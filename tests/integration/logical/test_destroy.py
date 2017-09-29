@@ -33,7 +33,7 @@ class DestroyTestCase(unittest.TestCase):
     Test destroying a volume when the pool does not exist. In this case,
     an error should be raised, as the request is non-sensical.
     """
-    _MENU = ['filesystem', 'destroy']
+    _MENU = ['--propagate', 'filesystem', 'destroy']
     _POOLNAME = 'deadpool'
     _VOLNAMES = ['oubliette', 'mnemosyne']
 
@@ -65,7 +65,7 @@ class Destroy2TestCase(unittest.TestCase):
     Test destroying a volume when the pool does exist but the volume does not.
     In this case, no error should be raised.
     """
-    _MENU = ['filesystem', 'destroy']
+    _MENU = ['--propagate', 'filesystem', 'destroy']
     _POOLNAME = 'deadpool'
     _VOLNAMES = ['oubliette', 'mnemosyne']
 
@@ -102,7 +102,7 @@ class Destroy3TestCase(unittest.TestCase):
     well. In this case, the volumes should all be destroyed, and no error
     raised as there is no data on the volumes.
     """
-    _MENU = ['filesystem', 'destroy']
+    _MENU = ['--propagate', 'filesystem', 'destroy']
     _POOLNAME = 'deadpool'
     _VOLNAMES = ['oubliette', 'mnemosyne']
 

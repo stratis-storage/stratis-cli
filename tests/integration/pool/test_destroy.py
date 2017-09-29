@@ -37,7 +37,7 @@ class Destroy1TestCase(unittest.TestCase):
 
     'destroy' should always fail if pool is missing.
     """
-    _MENU = ['pool', 'destroy']
+    _MENU = ['--propagate', 'pool', 'destroy']
     _POOLNAME = 'deadpool'
 
     def setUp(self):
@@ -67,7 +67,7 @@ class Destroy2TestCase(unittest.TestCase):
     """
     Test 'destroy' on database which contains the given pool.
     """
-    _MENU = ['pool', 'destroy']
+    _MENU = ['--propagate', 'pool', 'destroy']
     _POOLNAME = 'deadpool'
 
     def setUp(self):
@@ -101,7 +101,7 @@ class Destroy3TestCase(unittest.TestCase):
     """
     Test 'destroy' on database which contains the given pool with a volume.
     """
-    _MENU = ['pool', 'destroy']
+    _MENU = ['--propagate', 'pool', 'destroy']
     _POOLNAME = 'deadpool'
     _VOLNAME = 'vol'
 

@@ -19,6 +19,7 @@ import sys
 
 import dbus
 
+from ._errors import StratisCliError
 from ._parser import gen_parser
 
 def run():
@@ -34,10 +35,16 @@ def run():
         result = parser.parse_args(command_line_args)
         try:
             result.func(result)
+        # Catch exceptions separately to make use of more sophisticated
+        # DBusException get_dbus_message() method.
         except dbus.exceptions.DBusException as err:
             if result.propagate:
                 raise
-            sys.exit(err.get_dbus_message())
+            sys.exit("Execution failed: %s" % err.get_dbus_message())
+        except StratisCliError as err:
+            if result.propagate:
+                raise
+            sys.exit("Execution failed: %s" % str(err))
         return 0
 
     return the_func

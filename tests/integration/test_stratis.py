@@ -19,6 +19,8 @@ Test 'stratisd'.
 import time
 import unittest
 
+import dbus
+
 from ._misc import RUNNER
 from ._misc import Service
 
@@ -27,7 +29,7 @@ class StratisTestCase(unittest.TestCase):
     """
     Test meta information about stratisd.
     """
-    _MENU = ['daemon']
+    _MENU = ['--propagate', 'daemon']
 
     def setUp(self):
         """
@@ -70,5 +72,27 @@ class StratisTestCase(unittest.TestCase):
         but only because redundancy accepts no arguments.
         """
         command_line = self._MENU + ['redundancy', 'version']
+        with self.assertRaises(SystemExit):
+            RUNNER(command_line)
+
+
+class PropagateTestCase(unittest.TestCase):
+    """
+    Verify correct operation of --propagate flag.
+    """
+
+    def testPropagate(self):
+        """
+        If propagate is set, the expected exception will propagate.
+        """
+        command_line = ['--propagate', 'daemon', 'version']
+        with self.assertRaises(dbus.exceptions.DBusException):
+            RUNNER(command_line)
+
+    def testNotPropagate(self):
+        """
+        If propagate is not set, the exception will be SystemExit.
+        """
+        command_line = ['daemon', 'version']
         with self.assertRaises(SystemExit):
             RUNNER(command_line)
