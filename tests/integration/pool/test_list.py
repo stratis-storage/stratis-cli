@@ -31,7 +31,7 @@ class ListTestCase(unittest.TestCase):
     """
     Test 'list'.
     """
-    _MENU = ['pool', 'list']
+    _MENU = ['--propagate', 'pool', 'list']
 
     def setUp(self):
         """
@@ -59,7 +59,7 @@ class List2TestCase(unittest.TestCase):
     """
     Test 'list' with something actually to list.
     """
-    _MENU = ['pool', 'list']
+    _MENU = ['--propagate', 'pool', 'list']
     _POOLNAME = 'deadpool'
 
     def setUp(self):

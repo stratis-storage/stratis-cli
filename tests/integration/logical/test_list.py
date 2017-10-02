@@ -32,7 +32,7 @@ class ListTestCase(unittest.TestCase):
     """
     Test listing a volume for a non-existant pool.
     """
-    _MENU = ['filesystem', 'list']
+    _MENU = ['--propagate', 'filesystem', 'list']
     _POOLNAME = 'deadpool'
 
     def setUp(self):
@@ -95,7 +95,7 @@ class List3TestCase(unittest.TestCase):
     """
     Test listing volumes in an existing pool with some volumes.
     """
-    _MENU = ['filesystem', 'list']
+    _MENU = ['--propagate', 'filesystem', 'list']
     _POOLNAME = 'deadpool'
     _VOLUMES = ['livery', 'liberty', 'library']
 

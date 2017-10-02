@@ -35,7 +35,7 @@ class CreateTestCase(unittest.TestCase):
     """
     Test creating a volume w/out a pool.
     """
-    _MENU = ['filesystem', 'create']
+    _MENU = ['--propagate', 'filesystem', 'create']
     _POOLNAME = 'deadpool'
     _VOLNAMES = ['oubliette', 'mnemosyne']
 
@@ -67,7 +67,7 @@ class Create2TestCase(unittest.TestCase):
     """
     Test creating a volume w/ a pool.
     """
-    _MENU = ['filesystem', 'pool', 'create']
+    _MENU = ['--propagate', 'filesystem', 'pool', 'create']
     _POOLNAME = 'deadpool'
     _VOLNAMES = ['oubliette', 'mnemosyne']
 
@@ -101,7 +101,7 @@ class Create3TestCase(unittest.TestCase):
     """
     Test creating a volume w/ a pool when volume of same name already exists.
     """
-    _MENU = ['filesystem', 'create']
+    _MENU = ['--propagate', 'filesystem', 'create']
     _POOLNAME = 'deadpool'
     _VOLNAMES = ['oubliette', 'mnemosyne']
 

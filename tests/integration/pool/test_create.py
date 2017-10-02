@@ -32,7 +32,7 @@ class CreateTestCase(unittest.TestCase):
     """
     Test 'create' parsing.
     """
-    _MENU = ['pool', 'create']
+    _MENU = ['--propagate', 'pool', 'create']
     _POOLNAME = 'deadpool'
 
     def setUp(self):
@@ -66,7 +66,7 @@ class Create2TestCase(unittest.TestCase):
     """
     Test 'create'.
     """
-    _MENU = ['pool', 'create']
+    _MENU = ['--propagate', 'pool', 'create']
     _POOLNAME = 'deadpool'
 
     def setUp(self):
@@ -99,7 +99,7 @@ class Create3TestCase(unittest.TestCase):
     """
     Test 'create' on name collision.
     """
-    _MENU = ['pool', 'create']
+    _MENU = ['--propagate', 'pool', 'create']
     _POOLNAME = 'deadpool'
 
     def setUp(self):

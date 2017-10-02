@@ -33,7 +33,7 @@ class ListTestCase(unittest.TestCase):
     """
     Test listing devices for a non-existant pool.
     """
-    _MENU = ['blockdev', 'list']
+    _MENU = ['--propagate', 'blockdev', 'list']
     _POOLNAME = 'deadpool'
 
     def setUp(self):
@@ -64,7 +64,7 @@ class List2TestCase(unittest.TestCase):
     """
     Test listing devices in an existing pool.
     """
-    _MENU = ['blockdev', 'list']
+    _MENU = ['--propagate', 'blockdev', 'list']
     _POOLNAME = 'deadpool'
 
     def setUp(self):
