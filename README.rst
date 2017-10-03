@@ -25,7 +25,8 @@ To install, check out the source, and use the included setup script, as::
    > python setup.py install
 
 You will also need to obtain the following related Stratis repos:
-stratisd-client-dbus, into-dbus-python, dbus-signature-pyparsing.
+dbus-client-gen, dbus-python-client-gen, into-dbus-python,
+dbus-signature-pyparsing.
 
 Finally, ensure you have python3-pyparsing package installed.
 
@@ -43,7 +44,7 @@ To run without installing, check out the source, change to the top
 directory and set the ``PYTHONPATH`` environment variable to include
 library dependencies. For example (if using bash shell)::
 
-   > export PYTHONPATH="src:../stratisd-client-dbus/src:../into-dbus-python/src:../dbus-signature-pyparsing/src"
+   > export PYTHONPATH="src:../dbus-client-gen/src:../dbus-python-client-gen/src:../into-dbus-python/src:../dbus-signature-pyparsing/src"
    > ./bin/stratis --help
 
 Since ``stratis`` uses stratisd's API, most operations will fail

@@ -18,18 +18,17 @@ Miscellaneous top-level actions.
 
 from __future__ import print_function
 
-from stratisd_client_dbus import Manager
-from stratisd_client_dbus import Pool
-from stratisd_client_dbus import StratisdErrorsGen
-from stratisd_client_dbus import get_managed_objects
-from stratisd_client_dbus import get_object
-from stratisd_client_dbus import GMOPool
-
-from .._constants import TOP_OBJECT
-
 from .._errors import StratisCliRuntimeError
 
-from ._misc import GetObjectPath
+from .._stratisd_constants import StratisdErrors
+
+from ._connection import get_object
+from ._constants import TOP_OBJECT
+from ._data import Manager
+from ._data import MOPool
+from ._data import ObjectManager
+from ._data import Pool
+from ._data import pools
 
 
 class TopActions(object):
@@ -44,19 +43,19 @@ class TopActions(object):
 
         :raises StratisCliRuntimeError:
         """
-        stratisd_errors = StratisdErrorsGen.get_object()
-
         proxy = get_object(TOP_OBJECT)
 
-        (_, rc, message) = Manager.CreatePool(
+        (_, rc, message) = Manager.Methods.CreatePool(
            proxy,
-           name=namespace.pool_name,
-           redundancy=0,
-           force=namespace.force,
-           devices=namespace.blockdevs
+           {
+              'name': namespace.pool_name,
+              'redundancy': (True, 0),
+              'force': namespace.force,
+              'devices': namespace.blockdevs
+           }
         )
 
-        if rc != stratisd_errors.OK:
+        if rc != StratisdErrors.OK:
             raise StratisCliRuntimeError(rc, message)
 
         return
@@ -71,8 +70,9 @@ class TopActions(object):
         # pylint: disable=unused-argument
         proxy = get_object(TOP_OBJECT)
 
-        for _, info in get_managed_objects(proxy).pools():
-            print(GMOPool(info).Name())
+        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
+        for _, info in pools(managed_objects):
+            print(MOPool(info).Name())
 
         return
 
@@ -86,13 +86,17 @@ class TopActions(object):
         :raises StratisCliRuntimeError:
         """
         proxy = get_object(TOP_OBJECT)
-        pool_object_path = \
-           GetObjectPath.get_pool(proxy, spec={'Name': namespace.pool_name})
+        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
+        (pool_object_path, _) = pools(
+           managed_objects,
+           props={'Name': namespace.pool_name},
+           unique=True
+        )
 
         (_, rc, message) = \
-           Manager.DestroyPool(proxy, pool=pool_object_path)
+           Manager.Methods.DestroyPool(proxy, {'pool': pool_object_path})
 
-        if rc != StratisdErrorsGen.get_object().OK:
+        if rc != StratisdErrors.OK:
             raise StratisCliRuntimeError(rc, message)
 
         return
@@ -103,15 +107,19 @@ class TopActions(object):
         Rename a pool.
         """
         proxy = get_object(TOP_OBJECT)
-
-        pool_object = get_object(
-           GetObjectPath.get_pool(proxy, spec={'Name': namespace.current})
+        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
+        (pool_object_path, _) = pools(
+           managed_objects,
+           props={'Name': namespace.current},
+           unique=True
         )
 
-        (_, rc, message) = Pool.SetName(pool_object, name=namespace.new)
+        (_, rc, message) = Pool.Methods.SetName(
+           get_object(pool_object_path),
+           {'name': namespace.new}
+        )
 
-        stratisd_errors = StratisdErrorsGen.get_object()
-        if rc != stratisd_errors.OK:
+        if rc != StratisdErrors.OK:
             raise StratisCliRuntimeError(rc, message)
 
         return

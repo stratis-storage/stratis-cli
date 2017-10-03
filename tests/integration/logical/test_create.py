@@ -19,14 +19,17 @@ Test 'create'.
 import time
 import unittest
 
-from stratisd_client_dbus import StratisdErrorsGen
 
 from stratis_cli._errors import StratisCliRuntimeError
 from stratis_cli._errors import StratisCliDbusLookupError
 
+from stratis_cli._stratisd_constants import StratisdErrors
+
+
 from .._misc import _device_list
 from .._misc import RUNNER
 from .._misc import Service
+
 
 _DEVICE_STRATEGY = _device_list(1)
 
@@ -133,5 +136,4 @@ class Create3TestCase(unittest.TestCase):
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
         with self.assertRaises(StratisCliRuntimeError) as ctxt:
             RUNNER(command_line)
-        expected_error = StratisdErrorsGen.get_object().ALREADY_EXISTS
-        self.assertEqual(ctxt.exception.rc, expected_error)
+        self.assertEqual(ctxt.exception.rc, StratisdErrors.ALREADY_EXISTS)

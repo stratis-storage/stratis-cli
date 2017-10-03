@@ -18,11 +18,11 @@ Miscellaneous actions about stratis.
 
 from __future__ import print_function
 
-from stratisd_client_dbus import Manager
-from stratisd_client_dbus import StratisdRaidGen
-from stratisd_client_dbus import get_object
+from .._stratisd_constants import RedundancyCodes
 
-from .._constants import TOP_OBJECT
+from ._connection import get_object
+from ._constants import TOP_OBJECT
+from ._data import Manager
 
 
 class StratisActions(object):
@@ -36,9 +36,8 @@ class StratisActions(object):
         List the stratisd redundancy designations.
         """
         # pylint: disable=unused-argument
-        levels = StratisdRaidGen.get_object()
-        for x in levels.fields():
-            print("%s: %d" % (x, getattr(levels, x)))
+        for code in RedundancyCodes:
+            print("%s: %d" % (code.name, code.value))
         return
 
     @staticmethod
@@ -47,4 +46,4 @@ class StratisActions(object):
         List the stratisd version.
         """
         # pylint: disable=unused-argument
-        print("%s" % Manager.Properties.Version(get_object(TOP_OBJECT)))
+        print("%s" % Manager.Properties.Version.Get(get_object(TOP_OBJECT)))
