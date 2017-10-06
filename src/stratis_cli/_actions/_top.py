@@ -29,6 +29,7 @@ from ._data import MOPool
 from ._data import ObjectManager
 from ._data import Pool
 from ._data import pools
+from ._formatting import print_table
 
 
 class TopActions(object):
@@ -61,18 +62,32 @@ class TopActions(object):
         return
 
     @staticmethod
-    def list_pools(namespace):
+    def list_pools(_):
         """
         List all stratis pools.
 
         :raises StratisCliRuntimeError:
         """
-        # pylint: disable=unused-argument
         proxy = get_object(TOP_OBJECT)
 
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        for _, info in pools(managed_objects):
-            print(MOPool(info).Name())
+        mopools = (MOPool(info) for _, info in pools(managed_objects))
+        tables = [
+           [
+              mopool.Name(),
+              mopool.TotalPhysicalSize(),
+              mopool.TotalPhysicalUsed()
+           ] for mopool in mopools
+        ]
+        print_table(
+           [
+              'Name',
+              'Total Physical Size (sectors)',
+              'Total Physical Used (sectors)'
+           ],
+           tables,
+           ['<', '>', '>']
+        )
 
         return
 
