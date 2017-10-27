@@ -65,3 +65,7 @@ doc/_build
 
 # vi
 *.swp
+
+# Eclipse
+.project
+.pydevproject
