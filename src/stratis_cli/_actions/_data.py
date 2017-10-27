@@ -91,6 +91,13 @@ SPECS = {
 <arg name="return_code" type="q" direction="out"/>
 <arg name="return_string" type="s" direction="out"/>
 </method>
+<method name="SnapshotFilesystem">
+<arg name="origin" type="o" direction="in"/>
+<arg name="snapshot_name" type="s" direction="in"/>
+<arg name="result" type="o" direction="out"/>
+<arg name="return_code" type="q" direction="out"/>
+<arg name="return_string" type="s" direction="out"/>
+</method>
 <method name="SetName">
 <arg name="name" type="s" direction="in"/>
 <arg name="action" type="b" direction="out"/>

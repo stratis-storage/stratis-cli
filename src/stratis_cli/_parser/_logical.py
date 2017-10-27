@@ -36,6 +36,28 @@ LOGICAL_SUBCMDS = [
          ],
          func=LogicalActions.create_volumes
      )),
+     ('snapshot',
+     dict(
+         help='Snapshot the named filesystem in a pool',
+         args=[
+             ('pool_name',
+              dict(
+                  action='store',
+                  help='pool name',
+              )),
+             ('origin_name',
+              dict(
+                  action='store',
+                  help='origin name',
+              )),
+             ('snapshot_name',
+              dict(
+                  action='store',
+                  help='snapshot name',
+              )),
+         ],
+         func=LogicalActions.snapshot_filesystem
+     )),
     ('list',
      dict(
          help="List filesystems",
