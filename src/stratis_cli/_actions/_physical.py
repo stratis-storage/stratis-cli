@@ -18,16 +18,32 @@ Miscellaneous physical actions.
 
 from __future__ import print_function
 
+from justbytes import Range
+
 from .._errors import StratisCliRuntimeError
-from .._errors import StratisCliUnimplementedError
 from .._stratisd_constants import StratisdErrors
 
 from ._connection import get_object
+from ._constants import SECTOR_SIZE
 from ._constants import TOP_OBJECT
+from ._constants import UNKNOWN_VALUE_MARKER
+from ._data import devs
+from ._data import MODev
 from ._data import ObjectManager
 from ._data import Pool
 from ._data import pools
+from ._formatting import print_table
 
+
+def state_val_to_string(val):
+    """
+    Convert a blockdev state enumerated value to a string.
+    """
+    states = ["Missing", "Bad", "Spare", "Not-in-use", "In-use"]
+    try:
+        return states[val]
+    except IndexError:
+        return UNKNOWN_VALUE_MARKER
 
 class PhysicalActions(object):
     """
@@ -39,8 +55,35 @@ class PhysicalActions(object):
         """
         List devices in a pool.
         """
-        # pylint: disable=unused-argument
-        raise StratisCliUnimplementedError("No ability to list pools.")
+        proxy = get_object(TOP_OBJECT)
+        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
+        (parent_pool_object_path, _) = pools(
+           managed_objects,
+           props={'Name': namespace.pool_name},
+           unique=True
+        )
+        modevs = [MODev(info) for _, info in devs(
+            managed_objects,
+            props={"Pool": parent_pool_object_path},
+        )]
+        tables = [
+            [
+                modev.Devnode(),
+                str(Range(modev.TotalPhysicalSize(), SECTOR_SIZE)),
+                state_val_to_string(modev.State()),
+            ] for modev in modevs
+        ]
+        print_table(
+            [
+                "Device Node",
+                "Physical Size",
+                "State",
+            ],
+            tables,
+            ['<', '>', '>']
+        )
+
+        return
 
     @staticmethod
     def add_device(namespace):
