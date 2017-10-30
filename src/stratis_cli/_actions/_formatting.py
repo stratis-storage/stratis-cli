@@ -66,4 +66,4 @@ def print_table(
                width=column_lengths[index]
             )
             print(line, end='', file=file)
-    print(file=file)
+        print(file=file)
