@@ -25,3 +25,5 @@ SERVICE_UNKNOWN_ERROR = 'org.freedesktop.DBus.Error.ServiceUnknown'
 REDUNDANCY = {
    'none' : 'STRATIS_RAID_TYPE_SINGLE'
 }
+
+SECTOR_SIZE = 512

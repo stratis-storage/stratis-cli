@@ -18,12 +18,15 @@ Miscellaneous top-level actions.
 
 from __future__ import print_function
 
+from justbytes import Range
+
 from .._errors import StratisCliRuntimeError
 
 from .._stratisd_constants import StratisdErrors
 
 from ._connection import get_object
 from ._constants import TOP_OBJECT
+from ._constants import SECTOR_SIZE
 from ._data import Manager
 from ._data import MOPool
 from ._data import ObjectManager
@@ -75,15 +78,15 @@ class TopActions(object):
         tables = [
            [
               mopool.Name(),
-              mopool.TotalPhysicalSize(),
-              mopool.TotalPhysicalUsed()
+              str(Range(mopool.TotalPhysicalSize(), SECTOR_SIZE)),
+              str(Range(mopool.TotalPhysicalUsed(), SECTOR_SIZE)),
            ] for mopool in mopools
         ]
         print_table(
            [
               'Name',
-              'Total Physical Size (sectors)',
-              'Total Physical Used (sectors)'
+              'Total Physical Size',
+              'Total Physical Used'
            ],
            tables,
            ['<', '>', '>']
