@@ -76,7 +76,13 @@ GitHub for issues and development::
 'stratisd' projects, based on likelihood of issue being with the command-line
 tool or the service daemon.
 Mailing list::
-	stratis-devel@lists.fedorahosted.org for general development discussion
+	stratis-devel@lists.fedorahosted.org for general development
+	discussion
+Unknown values::
+	stratis-cli uses the Stratis API. If the API returns values that
+	stratis-cli cannot interpret, stratis-cli will substitute "???". If
+	encountered, upgrading to the latest version of stratis-cli, or filing
+	an issue, is recommended.
 
 LICENSE
 -------
