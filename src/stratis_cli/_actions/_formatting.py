@@ -58,7 +58,7 @@ def print_table(
         print(line, end='', file=file)
     print(file=file)
 
-    for row in row_entries:
+    for row in sorted(row_entries):
         for index in range(num_columns):
             line = '{0:{align}{width}}'.format(
                row[index],
