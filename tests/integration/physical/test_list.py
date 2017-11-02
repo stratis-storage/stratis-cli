@@ -28,7 +28,6 @@ from .._misc import Service
 _DEVICE_STRATEGY = _device_list(1)
 
 
-@unittest.skip("Not currently listing devices in DBus API.")
 class ListTestCase(unittest.TestCase):
     """
     Test listing devices for a non-existant pool.
@@ -59,7 +58,6 @@ class ListTestCase(unittest.TestCase):
             RUNNER(command_line)
 
 
-@unittest.skip("Not currently listing devices in DBus API.")
 class List2TestCase(unittest.TestCase):
     """
     Test listing devices in an existing pool.
