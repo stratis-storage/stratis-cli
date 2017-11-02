@@ -229,12 +229,14 @@ def _unique_wrapper(interface, func):
 
     return the_func
 
-_filesystems = \
-   mo_query_builder(ET.fromstring(SPECS['org.storage.stratis1.filesystem']))
-filesystems = _unique_wrapper('org.storage.stratis1.filesystem', _filesystems)
+_FILESYSTEM_INTERFACE = 'org.storage.stratis1.filesystem'
+_filesystems = mo_query_builder(ET.fromstring(SPECS[_FILESYSTEM_INTERFACE]))
+filesystems = _unique_wrapper(_FILESYSTEM_INTERFACE, _filesystems)
 
-_pools = mo_query_builder(ET.fromstring(SPECS['org.storage.stratis1.pool']))
-pools = _unique_wrapper('org.storage.stratis1.pool', _pools)
+_POOL_INTERFACE = 'org.storage.stratis1.pool'
+_pools = mo_query_builder(ET.fromstring(SPECS[_POOL_INTERFACE]))
+pools = _unique_wrapper(_POOL_INTERFACE, _pools)
 
-_devs = mo_query_builder(ET.fromstring(SPECS['org.storage.stratis1.blockdev']))
-devs = _unique_wrapper('org.storage.stratis1.blockdev', _devs)
+_BLOCKDEV_INTERFACE = 'org.storage.stratis1.blockdev'
+_devs = mo_query_builder(ET.fromstring(SPECS[_BLOCKDEV_INTERFACE]))
+devs = _unique_wrapper(_BLOCKDEV_INTERFACE, _devs)
