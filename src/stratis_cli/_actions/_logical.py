@@ -116,3 +116,36 @@ class LogicalActions(object):
             raise StratisCliRuntimeError(rc, message)
 
         return
+
+    @staticmethod
+    def snapshot_filesystem(namespace):
+        """
+        Snapshot filesystem in a pool.
+
+        :raises StratisCliRuntimeError:
+        """
+        proxy = get_object(TOP_OBJECT)
+        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
+
+        (pool_object_path, _) = pools(
+           managed_objects,
+           props={'Name': namespace.pool_name},
+           unique=True
+        )
+        (origin_fs_object_path, _) = filesystems(
+            managed_objects,
+            props={'Name': namespace.origin_name, 'Pool': pool_object_path},
+            unique=True
+        )
+
+        (_, rc, message) = \
+           Pool.Methods.SnapshotFilesystem(
+              get_object(pool_object_path),
+              {'origin': origin_fs_object_path,
+               'snapshot_name': namespace.snapshot_name}
+           )
+
+        if rc != StratisdErrors.OK:
+            raise StratisCliRuntimeError(rc, message)
+
+        return
