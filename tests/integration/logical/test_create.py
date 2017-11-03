@@ -65,12 +65,11 @@ class CreateTestCase(unittest.TestCase):
             RUNNER(command_line)
 
 
-@unittest.skip("Creation of a volume could fail if no room in pool.")
 class Create2TestCase(unittest.TestCase):
     """
     Test creating a volume w/ a pool.
     """
-    _MENU = ['--propagate', 'filesystem', 'pool', 'create']
+    _MENU = ['--propagate', 'filesystem', 'create']
     _POOLNAME = 'deadpool'
     _VOLNAMES = ['oubliette', 'mnemosyne']
 
