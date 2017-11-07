@@ -58,12 +58,6 @@ SPECS = {
 <arg name="return_code" type="q" direction="out"/>
 <arg name="return_string" type="s" direction="out"/>
 </method>
-<property name="ErrorValues" type="a(sq)" access="read">
-<annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const"/>
-</property>
-<property name="RedundancyValues" type="a(sq)" access="read">
-<annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const"/>
-</property>
 <property name="Version" type="s" access="read">
 <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const"/>
 </property>
