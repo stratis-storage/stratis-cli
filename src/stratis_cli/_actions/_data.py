@@ -48,7 +48,7 @@ SPECS = {
 <arg name="redundancy" type="(bq)" direction="in"/>
 <arg name="force" type="b" direction="in"/>
 <arg name="devices" type="as" direction="in"/>
-<arg name="result" type="(oas)" direction="out"/>
+<arg name="result" type="(oao)" direction="out"/>
 <arg name="return_code" type="q" direction="out"/>
 <arg name="return_string" type="s" direction="out"/>
 </method>
