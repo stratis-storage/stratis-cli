@@ -72,9 +72,8 @@ class List2TestCase(unittest.TestCase):
         self._service = Service()
         self._service.setUp()
         time.sleep(1)
-        command_line = \
-           ['pool', 'create'] + [self._POOLNAME] + \
-           _DEVICE_STRATEGY.example()
+        command_line = ['pool', 'create'] + [self._POOLNAME] \
+            + _DEVICE_STRATEGY.example()
         RUNNER(command_line)
 
     def tearDown(self):

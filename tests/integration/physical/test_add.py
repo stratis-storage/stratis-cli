@@ -54,8 +54,8 @@ class AddTestCase(unittest.TestCase):
         """
         Adding the devices must fail since the pool does not exist.
         """
-        command_line = self._MENU + [self._POOLNAME] + \
-           _DEVICE_STRATEGY.example()
+        command_line = self._MENU + [self._POOLNAME] \
+            + _DEVICE_STRATEGY.example()
         with self.assertRaises(StratisCliDbusLookupError):
             RUNNER(command_line)
 
@@ -78,8 +78,7 @@ class Add2TestCase(unittest.TestCase):
         self._service = Service()
         self._service.setUp()
         time.sleep(1)
-        command_line = \
-           ['pool', 'create'] + [self._POOLNAME] + self._DEVICES
+        command_line = ['pool', 'create', self._POOLNAME] + self._DEVICES
         RUNNER(command_line)
 
     def tearDown(self):
@@ -113,8 +112,7 @@ class Add3TestCase(unittest.TestCase):
         self._service = Service()
         self._service.setUp()
         time.sleep(1)
-        command_line = \
-           ['pool', 'create'] + [self._POOLNAME] + self._DEVICES[:1]
+        command_line = ['pool', 'create'] + [self._POOLNAME] + self._DEVICES[:1]
         RUNNER(command_line)
 
     def tearDown(self):
