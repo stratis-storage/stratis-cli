@@ -38,7 +38,7 @@ setuptools.setup(
         ],
     install_requires = [
        'dbus-client-gen>=0.2',
-       'dbus-python-client-gen>=0.4',
+       'dbus-python-client-gen>=0.5',
        'justbytes>=0.10',
     ],
     package_dir={"": "src"},
