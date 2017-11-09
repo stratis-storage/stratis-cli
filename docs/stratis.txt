@@ -41,6 +41,8 @@ pool destroy <pool_name>::
      Destroy a pool and all the filesystems created from it.
 filesystem create <pool_name> <fs_name> [<fs_name>..]::
 	   Create one or more filesystems from the specified pool.
+filesystem snapshot <pool_name> <fs_name> <snapshot_name>::
+	   Snapshot the filesystem in the specified pool.
 filesystem list <pool_name>::
 	   List all filesystems that exist in the specified pool.
 filesystem destroy <pool_name> <fs_name> [<fs_name>..]::
