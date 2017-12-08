@@ -87,4 +87,27 @@ LOGICAL_SUBCMDS = [
          ],
          func=LogicalActions.destroy_volumes
      )),
+    ('rename',
+     dict(
+         help='Rename a filesystem',
+         args=[
+             ('pool_name',
+              dict(
+                  action='store',
+                  help='Name of the pool the filesystem is part of',
+              )),
+             ('fs_name',
+              dict(
+                  action='store',
+                  help='Name of the filesystem to change',
+              )),
+             ('new_name',
+              dict(
+                  action='store',
+                  help='New name to give that filesystem',
+              )),
+         ],
+         func=LogicalActions.rename_fs,
+     )),
+
 ]
