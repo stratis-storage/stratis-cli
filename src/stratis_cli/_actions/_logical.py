@@ -157,15 +157,20 @@ class LogicalActions(object):
         """
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        (pool_object_path, _) = filesystems(
-           managed_objects,
-           props={'Name': namespace.fs_name},
-           unique=True
+        (pool_object_path, _) = pools(
+            managed_objects,
+            props={'Name': namespace.pool_name},
+            unique=True
+        )
+        (fs_object_path, _) = filesystems(
+            managed_objects,
+            props={'Name': namespace.fs_name, 'Pool': pool_object_path},
+            unique=True
         )
 
         (_, rc, message) = Filesystem.Methods.SetName(
-           get_object(pool_object_path),
-           {'name': namespace.new_name}
+            get_object(fs_object_path),
+            {'name': namespace.new_name}
         )
 
         if rc != StratisdErrors.OK:

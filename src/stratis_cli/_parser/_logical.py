@@ -91,6 +91,11 @@ LOGICAL_SUBCMDS = [
      dict(
          help='Rename a filesystem',
          args=[
+             ('pool_name',
+              dict(
+                  action='store',
+                  help='Name of the pool the filesystem is part of',
+              )),
              ('fs_name',
               dict(
                   action='store',
