@@ -49,6 +49,8 @@ filesystem destroy <pool_name> <fs_name> [<fs_name>..]::
 	   Destroy one or more filesystems that exist in the specified pool.
 blockdev add [--force] <pool_name> <blockdev> [<blockdev>..]::
 	 Add one or more blockdevs to an existing pool.
+filesystem rename <fs_name> <new_name>::
+     Rename a filesystem.
 blockdev list <pool_name>::
 	 List all blockdevs that make up the specified pool.
 daemon redundancy::

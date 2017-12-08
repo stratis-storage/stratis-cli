@@ -27,6 +27,7 @@ from ._constants import TOP_OBJECT
 from ._data import MOFilesystem
 from ._data import ObjectManager
 from ._data import Pool
+from ._data import Filesystem
 from ._data import filesystems
 from ._data import pools
 
@@ -144,6 +145,28 @@ class LogicalActions(object):
               {'origin': origin_fs_object_path,
                'snapshot_name': namespace.snapshot_name}
            )
+
+        if rc != StratisdErrors.OK:
+            raise StratisCliRuntimeError(rc, message)
+
+        return
+    @staticmethod
+    def rename_fs(namespace):
+        """
+        Rename a filesystem.
+        """
+        proxy = get_object(TOP_OBJECT)
+        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
+        (pool_object_path, _) = filesystems(
+           managed_objects,
+           props={'Name': namespace.fs_name},
+           unique=True
+        )
+
+        (_, rc, message) = Filesystem.Methods.SetName(
+           get_object(pool_object_path),
+           {'name': namespace.new_name}
+        )
 
         if rc != StratisdErrors.OK:
             raise StratisCliRuntimeError(rc, message)
