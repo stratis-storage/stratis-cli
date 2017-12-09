@@ -43,7 +43,7 @@ def add_subcommand(subparser, cmd):
     Add subcommand to a parser based on a subcommand dict.
     """
     name, info = cmd
-    parser = subparser.add_parser(name, help=info['help'])
+    parser = subparser.add_parser(name, help=info['help'], aliases=info.get('aliases', []))
 
     subcmds = info.get('subcmds')
     if subcmds is not None:
@@ -81,6 +81,7 @@ ROOT_SUBCOMMANDS = [
      )),
     ('filesystem',
      dict(
+         aliases=['fs'],
          help="Commands related to filesystems allocated from a pool",
          subcmds=LOGICAL_SUBCMDS,
      )),
