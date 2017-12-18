@@ -8,7 +8,7 @@ stratis - Configure Stratis local storage pools
 SYNOPSIS
 --------
   stratis [GLOBAL OPTIONS] pool <command> [args] [COMMAND OPTIONS]
-  stratis [GLOBAL OPTIONS] filesystem <command> [args] [COMMAND OPTIONS]
+  stratis [GLOBAL OPTIONS] filesystem|fs <command> [args] [COMMAND OPTIONS]
   stratis [GLOBAL OPTIONS] blockdev <command> [args] [COMMAND OPTIONS]
   stratis [GLOBAL OPTIONS] daemon <redundancy|version>
 
