@@ -15,7 +15,7 @@ _stratis()
 	fs_subcommands="create snapshot list rename destroy"
 	blockdev_subcommands="add list"
 	daemon_subcommands="redundancy version"
-	blockdevs=$(echo /dev/disk/*/*)$(lsblk -n -o name -p -l)
+	blockdevs="$(echo /dev/disk/*/*) $(lsblk -n -o name -p -l)"
 
 	if [[ ${cur} == -* ]] ; then
 		COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
