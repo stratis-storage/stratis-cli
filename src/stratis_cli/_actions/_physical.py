@@ -79,7 +79,7 @@ class PhysicalActions(object):
                 "Physical Size",
                 "State",
             ],
-            tables,
+            sorted(tables, key=lambda entry: entry[0]),
             ['<', '>', '>']
         )
 

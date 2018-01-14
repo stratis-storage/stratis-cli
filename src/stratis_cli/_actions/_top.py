@@ -88,7 +88,7 @@ class TopActions(object):
               'Total Physical Size',
               'Total Physical Used'
            ],
-           tables,
+           sorted(tables, key=lambda entry: entry[0]),
            ['<', '>', '>']
         )
 
