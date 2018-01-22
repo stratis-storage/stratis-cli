@@ -86,7 +86,7 @@ _stratis()
 						return 0;
 						;;
 					snapshot|destroy|rename)
-						COMPREPLY=( $(compgen -W  $(stratis filesystem list ${prev}) -- ${cur}) )
+						COMPREPLY=( $(compgen -W  $(stratis filesystem list ${prev} | awk '{if (NR!=1) {print $1}}' ) -- ${cur}) )
 						return 0
 						;;
 				esac
@@ -127,7 +127,7 @@ _stratis()
 							return 0
 							;;
 						destroy)
-							COMPREPLY=( $(compgen -W  $(stratis filesystem list ${third}) -- ${cur}) )
+							COMPREPLY=( $(compgen -W  $(stratis filesystem list ${third} | awk '{if (NR!=1) {print $1}}') -- ${cur}) )
 							return 0
 							;;
 					esac
