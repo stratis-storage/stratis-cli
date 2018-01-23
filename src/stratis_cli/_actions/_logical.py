@@ -30,6 +30,7 @@ from ._data import Pool
 from ._data import Filesystem
 from ._data import filesystems
 from ._data import pools
+from ._formatting import print_table
 
 
 class LogicalActions(object):
@@ -79,8 +80,20 @@ class LogicalActions(object):
            managed_objects,
            props={'Pool': pool_object_path}
         )
-        for _, info in matching_filesystems:
-            print(MOFilesystem(info).Name())
+
+        tables = [
+           [
+              MOFilesystem(info).Name(),
+           ] for _, info in matching_filesystems
+        ]
+
+        print_table(
+           [
+              'Name'
+           ],
+           sorted(tables, key=lambda entry: entry[0]),
+           ['<']
+        )
 
         return
 
