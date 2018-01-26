@@ -45,7 +45,7 @@ PHYSICAL_SUBCMDS = [
      )),
     ('list',
      dict(
-         help="List Pool Information",
+         help="List information about blockdevs in the pool",
          args=[
              ('pool_name',
               dict(
