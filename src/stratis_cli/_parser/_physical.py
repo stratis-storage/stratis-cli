@@ -21,7 +21,7 @@ from .._actions import PhysicalActions
 PHYSICAL_SUBCMDS = [
     ('add',
      dict(
-         help="Add one or more blockdevs to an existing pool",
+         help="Add one or more blockdevs to an existing pool as data storage",
          args=[
              ('pool_name',
               dict(
@@ -41,7 +41,31 @@ PHYSICAL_SUBCMDS = [
                   help="Use devices even if they appear to contain existing data"
               )),
          ],
-         func=PhysicalActions.add_device
+         func=PhysicalActions.add_data_device
+     )),
+    ('add-cache',
+     dict(
+         help="Add one or more blockdevs to an existing pool as cache",
+         args=[
+             ('pool_name',
+              dict(
+                  action='store',
+                  help='Pool name',
+              )),
+             ('device',
+              dict(
+                  help='Block devices to add to the pool as cache',
+                  metavar='blockdev',
+                  nargs='+'
+              )),
+             ('--force',
+              dict(
+                  action='store_true',
+                  default=False,
+                  help="Use devices even if they appear to contain existing data"
+              )),
+         ],
+         func=PhysicalActions.add_cache_device
      )),
     ('list',
      dict(

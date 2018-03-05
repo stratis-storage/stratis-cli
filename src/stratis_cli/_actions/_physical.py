@@ -98,7 +98,7 @@ class PhysicalActions(object):
         return
 
     @staticmethod
-    def add_device(namespace):
+    def add_data_device(namespace):
         """
         Add a device to a pool.
         """
@@ -110,7 +110,28 @@ class PhysicalActions(object):
            unique=True
         )
 
-        (_, rc, message) = Pool.Methods.AddDevs(
+        (_, rc, message) = Pool.Methods.AddDataDevs(
+           get_object(pool_object_path),
+           {'force': namespace.force, 'devices': namespace.device}
+        )
+        if rc != StratisdErrors.OK:
+            raise StratisCliRuntimeError(rc, message)
+        return
+
+    @staticmethod
+    def add_cache_device(namespace):
+        """
+        Add a device to a pool.
+        """
+        proxy = get_object(TOP_OBJECT)
+        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
+        (pool_object_path, _) = pools(
+           managed_objects,
+           props={'Name': namespace.pool_name},
+           unique=True
+        )
+
+        (_, rc, message) = Pool.Methods.AddCacheDevs(
            get_object(pool_object_path),
            {'force': namespace.force, 'devices': namespace.device}
         )
