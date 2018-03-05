@@ -49,8 +49,13 @@ filesystem destroy <pool_name> <fs_name> [<fs_name>..]::
 	   Destroy one or more filesystems that exist in the specified pool.
 filesystem rename <pool_name> <fs_name> <new_name>::
      Rename a filesystem.
-blockdev add [--force] <pool_name> <blockdev> [<blockdev>..]::
-	 Add one or more blockdevs to an existing pool.
+blockdev add-data [--force] <pool_name> <blockdev> [<blockdev>..]::
+	 Add one or more blockdevs to an existing pool, to enlarge its storage
+	 capacity.
+blockdev add-cache [--force] <pool_name> <blockdev> [<blockdev>..]::
+	 Add one or more blockdevs to an existing pool, to be used as a cache
+	 instead of additional storage. Typically, smaller and faster drives,
+	 such as SSDs, are used for this purpose.
 blockdev list <pool_name>::
 	 List all blockdevs that make up the specified pool.
 daemon redundancy::
