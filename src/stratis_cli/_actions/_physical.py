@@ -45,6 +45,16 @@ def state_val_to_string(val):
     except IndexError:
         return UNKNOWN_VALUE_MARKER
 
+def tier_val_to_string(val):
+    """
+    Convert a blockdev tier enumerated value to a string.
+    """
+    states = ["Data", "Cache"]
+    try:
+        return states[val]
+    except IndexError:
+        return UNKNOWN_VALUE_MARKER
+
 class PhysicalActions(object):
     """
     Actions on the physical aspects of a pool.
@@ -71,6 +81,7 @@ class PhysicalActions(object):
                 modev.Devnode(),
                 str(Range(modev.TotalPhysicalSize(), SECTOR_SIZE)),
                 state_val_to_string(modev.State()),
+                tier_val_to_string(modev.Tier()),
             ] for modev in modevs
         ]
         print_table(
@@ -78,9 +89,10 @@ class PhysicalActions(object):
                 "Device Node",
                 "Physical Size",
                 "State",
+                "Tier",
             ],
             sorted(tables, key=lambda entry: entry[0]),
-            ['<', '>', '>']
+            ['<', '>', '>', '>']
         )
 
         return
