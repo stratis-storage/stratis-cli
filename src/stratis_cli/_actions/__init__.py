@@ -17,6 +17,6 @@ Package mediating dbus actions.
 """
 
 from ._logical import LogicalActions
-from ._physical import PhysicalActions
+from ._blockdev import BlockdevActions
 from ._stratis import StratisActions
 from ._top import TopActions

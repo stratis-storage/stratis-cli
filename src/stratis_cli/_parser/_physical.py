@@ -16,7 +16,7 @@
 Definition of block device actions to display in the CLI.
 """
 
-from .._actions import PhysicalActions
+from .._actions import BlockdevActions
 
 PHYSICAL_SUBCMDS = [
     ('add',
@@ -41,7 +41,7 @@ PHYSICAL_SUBCMDS = [
                   help="Use devices even if they appear to contain existing data"
               )),
          ],
-         func=PhysicalActions.add_device
+         func=BlockdevActions.add_device
      )),
     ('list',
      dict(
@@ -53,6 +53,6 @@ PHYSICAL_SUBCMDS = [
                   help='Pool name'
               )),
          ],
-         func=PhysicalActions.list_pool
+         func=BlockdevActions.list_pool
      )),
 ]

@@ -13,7 +13,7 @@
 # limitations under the License.
 
 """
-Miscellaneous physical actions.
+Miscellaneous actions wrt. blockdevs.
 """
 
 from __future__ import print_function
@@ -45,7 +45,7 @@ def state_val_to_string(val):
     except IndexError:
         return UNKNOWN_VALUE_MARKER
 
-class PhysicalActions(object):
+class BlockdevActions(object):
     """
     Actions on the physical aspects of a pool.
     """
