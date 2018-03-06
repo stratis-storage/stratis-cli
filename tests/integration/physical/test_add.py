@@ -28,11 +28,42 @@ from .._misc import Service
 _DEVICE_STRATEGY = _device_list(1)
 
 
-class AddTestCase(unittest.TestCase):
+class AddDataTestCase(unittest.TestCase):
     """
     Test adding devices to a non-existant pool.
     """
-    _MENU = ['--propagate', 'blockdev', 'add']
+    _MENU = ['--propagate', 'blockdev', 'add-data']
+    _POOLNAME = 'deadpool'
+
+
+    def setUp(self):
+        """
+        Start the stratisd daemon with the simulator.
+        """
+        self._service = Service()
+        self._service.setUp()
+        time.sleep(1)
+
+    def tearDown(self):
+        """
+        Stop the stratisd simulator and daemon.
+        """
+        self._service.tearDown()
+
+    def testAdd(self):
+        """
+        Adding the devices must fail since the pool does not exist.
+        """
+        command_line = self._MENU + [self._POOLNAME] \
+            + _DEVICE_STRATEGY.example()
+        with self.assertRaises(StratisCliDbusLookupError):
+            RUNNER(command_line)
+
+class AddCacheTestCase(unittest.TestCase):
+    """
+    Test adding devices to a non-existant pool.
+    """
+    _MENU = ['--propagate', 'blockdev', 'add-cache']
     _POOLNAME = 'deadpool'
 
 

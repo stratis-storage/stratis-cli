@@ -45,6 +45,16 @@ def state_val_to_string(val):
     except IndexError:
         return UNKNOWN_VALUE_MARKER
 
+def tier_val_to_string(val):
+    """
+    Convert a blockdev tier enumerated value to a string.
+    """
+    states = ["Data", "Cache"]
+    try:
+        return states[val]
+    except IndexError:
+        return UNKNOWN_VALUE_MARKER
+
 class PhysicalActions(object):
     """
     Actions on the physical aspects of a pool.
@@ -71,6 +81,7 @@ class PhysicalActions(object):
                 modev.Devnode(),
                 str(Range(modev.TotalPhysicalSize(), SECTOR_SIZE)),
                 state_val_to_string(modev.State()),
+                tier_val_to_string(modev.Tier()),
             ] for modev in modevs
         ]
         print_table(
@@ -78,15 +89,16 @@ class PhysicalActions(object):
                 "Device Node",
                 "Physical Size",
                 "State",
+                "Tier",
             ],
             sorted(tables, key=lambda entry: entry[0]),
-            ['<', '>', '>']
+            ['<', '>', '>', '>']
         )
 
         return
 
     @staticmethod
-    def add_device(namespace):
+    def add_data_device(namespace):
         """
         Add a device to a pool.
         """
@@ -98,7 +110,28 @@ class PhysicalActions(object):
            unique=True
         )
 
-        (_, rc, message) = Pool.Methods.AddDevs(
+        (_, rc, message) = Pool.Methods.AddDataDevs(
+           get_object(pool_object_path),
+           {'force': namespace.force, 'devices': namespace.device}
+        )
+        if rc != StratisdErrors.OK:
+            raise StratisCliRuntimeError(rc, message)
+        return
+
+    @staticmethod
+    def add_cache_device(namespace):
+        """
+        Add a device to a pool.
+        """
+        proxy = get_object(TOP_OBJECT)
+        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
+        (pool_object_path, _) = pools(
+           managed_objects,
+           props={'Name': namespace.pool_name},
+           unique=True
+        )
+
+        (_, rc, message) = Pool.Methods.AddCacheDevs(
            get_object(pool_object_path),
            {'force': namespace.force, 'devices': namespace.device}
         )
