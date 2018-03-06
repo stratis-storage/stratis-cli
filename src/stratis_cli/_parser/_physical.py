@@ -19,9 +19,9 @@ Definition of block device actions to display in the CLI.
 from .._actions import PhysicalActions
 
 PHYSICAL_SUBCMDS = [
-    ('add',
+    ('add-data',
      dict(
-         help="Add one or more blockdevs to an existing pool as data storage",
+         help="Add one or more blockdevs to an existing pool for use as data storage",
          args=[
              ('pool_name',
               dict(
@@ -45,7 +45,7 @@ PHYSICAL_SUBCMDS = [
      )),
     ('add-cache',
      dict(
-         help="Add one or more blockdevs to an existing pool as cache",
+         help="Add one or more blockdevs to an existing pool for use as cache",
          args=[
              ('pool_name',
               dict(
