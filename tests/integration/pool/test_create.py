@@ -59,37 +59,6 @@ class CreateTestCase(unittest.TestCase):
             RUNNER(command_line)
 
 
-class Create2TestCase(unittest.TestCase):
-    """
-    Test 'create'.
-    """
-    _MENU = ['--propagate', 'pool', 'create']
-    _POOLNAME = 'deadpool'
-
-    def setUp(self):
-        """
-        Start the stratisd daemon with the simulator.
-        """
-        self._service = Service()
-        self._service.setUp()
-        time.sleep(1)
-
-    def tearDown(self):
-        """
-        Stop the stratisd simulator and daemon.
-        """
-        self._service.tearDown()
-
-    @unittest.skip("not really handling this")
-    def testCreate(self):
-        """
-        Create expects success unless devices are already occupied.
-        """
-        command_line = self._MENU + [self._POOLNAME] \
-            + _DEVICE_STRATEGY.example()
-        RUNNER(command_line)
-
-
 class Create3TestCase(unittest.TestCase):
     """
     Test 'create' on name collision.
