@@ -11,7 +11,6 @@ arg_map = {
       "--disable=bad-continuation",
       "--disable=duplicate-code",
       "--disable=invalid-name",
-      "--ignored-classes=StratisdErrors",
       "--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}'"
    ],
    "tests" : [
@@ -20,7 +19,6 @@ arg_map = {
       "--disable=bad-continuation",
       "--disable=duplicate-code",
       "--disable=invalid-name",
-      "--disable=no-self-use",
       "--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}'"
    ],
    "bin/stratis" : [
