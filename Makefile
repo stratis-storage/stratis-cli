@@ -12,6 +12,14 @@ coverage:
 test:
 	$(TOX) -c tox.ini -e test
 
+.PHONY: fmt
+fmt:
+	yapf --style pep8 --recursive --in-place check.py setup.py src tests
+
+.PHONY: fmt-travis
+fmt-travis:
+	yapf --style pep8 --recursive --diff check.py setup.py src tests
+
 PYREVERSE_OPTS = --output=pdf
 .PHONY: view
 view:

@@ -14,5 +14,6 @@ branches:
 env:
     matrix:
         - TASK=lint
+        - TASK=fmt-travis
 
 script: make -f Makefile $TASK

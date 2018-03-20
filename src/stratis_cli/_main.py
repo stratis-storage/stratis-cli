@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
 Highest level runner.
 """
@@ -23,6 +22,7 @@ from dbus_python_client_gen import DPClientRuntimeError
 
 from ._errors import StratisCliError
 from ._parser import gen_parser
+
 
 def run():
     """

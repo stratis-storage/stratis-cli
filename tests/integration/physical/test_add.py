@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
 Test 'create'.
 """
@@ -34,7 +33,6 @@ class AddDataTestCase(unittest.TestCase):
     """
     _MENU = ['--propagate', 'blockdev', 'add-data']
     _POOLNAME = 'deadpool'
-
 
     def setUp(self):
         """
@@ -59,13 +57,13 @@ class AddDataTestCase(unittest.TestCase):
         with self.assertRaises(StratisCliDbusLookupError):
             RUNNER(command_line)
 
+
 class AddCacheTestCase(unittest.TestCase):
     """
     Test adding devices to a non-existant pool.
     """
     _MENU = ['--propagate', 'blockdev', 'add-cache']
     _POOLNAME = 'deadpool'
-
 
     def setUp(self):
         """

@@ -11,10 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
 Error heirarchy for stratis cli.
 """
+
 
 class StratisCliError(Exception):
     """
@@ -40,7 +40,7 @@ class StratisCliDbusLookupError(StratisCliError):
         self._interface = interface
         self._spec = spec
 
-    def __str__(self): # pragma: no cover
+    def __str__(self):  # pragma: no cover
         return "No object path found for interface %s and spec %s" % \
            (self._interface, self._spec)
 
@@ -64,7 +64,7 @@ class StratisCliValueError(StratisCliError):
         self._param = param
         self._msg = msg
 
-    def __str__(self): # pragma: no cover
+    def __str__(self):  # pragma: no cover
         if self._msg:
             fmt_str = self._FMT_STR + ": %s"
             return fmt_str % (self._value, self._param, self._msg)
@@ -78,17 +78,20 @@ class StratisCliValueUnimplementedError(StratisCliValueError):
     """
     pass
 
+
 class StratisCliUnimplementedError(StratisCliError):
     """
     Raised if a method is temporarily unimplemented.
     """
     pass
 
+
 class StratisCliKnownBugError(StratisCliError):
     """
     Raised if a method is unimplemented due to a bug.
     """
     pass
+
 
 class StratisCliRuntimeError(StratisCliError):
     """
@@ -108,6 +111,7 @@ class StratisCliRuntimeError(StratisCliError):
 
     def __str__(self):
         return "%s: %s" % (self.rc, self.message)
+
 
 class StratisCliImpossibleError(StratisCliError):
     """

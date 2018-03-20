@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
 Miscellaneous logical actions.
 """
@@ -48,15 +47,10 @@ class LogicalActions(object):
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
         (pool_object_path, _) = pools(
-           managed_objects,
-           props={'Name': namespace.pool_name},
-           unique=True
-        )
+            managed_objects, props={'Name': namespace.pool_name}, unique=True)
 
         (_, rc, message) = Pool.Methods.CreateFilesystems(
-           get_object(pool_object_path),
-           {'specs': namespace.fs_name}
-        )
+            get_object(pool_object_path), {'specs': namespace.fs_name})
 
         if rc != StratisdErrors.OK:
             raise StratisCliRuntimeError(rc, message)
@@ -72,28 +66,16 @@ class LogicalActions(object):
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
         (pool_object_path, _) = pools(
-           managed_objects,
-           props={'Name': namespace.pool_name},
-           unique=True
-        )
+            managed_objects, props={'Name': namespace.pool_name}, unique=True)
         matching_filesystems = filesystems(
-           managed_objects,
-           props={'Pool': pool_object_path}
-        )
+            managed_objects, props={'Pool': pool_object_path})
 
-        tables = [
-           [
-              MOFilesystem(info).Name(),
-           ] for _, info in matching_filesystems
-        ]
+        tables = [[
+            MOFilesystem(info).Name(),
+        ] for _, info in matching_filesystems]
 
-        print_table(
-           [
-              'Name'
-           ],
-           sorted(tables, key=lambda entry: entry[0]),
-           ['<']
-        )
+        print_table(['Name'], sorted(tables, key=lambda entry: entry[0]),
+                    ['<'])
 
         return
 
@@ -108,10 +90,7 @@ class LogicalActions(object):
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
         (pool_object_path, _) = pools(
-           managed_objects,
-           props={'Name': namespace.pool_name},
-           unique=True
-        )
+            managed_objects, props={'Name': namespace.pool_name}, unique=True)
         fs_object_paths = [
            op for name in namespace.fs_name for (op, _) in \
            filesystems(
@@ -142,15 +121,14 @@ class LogicalActions(object):
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
         (pool_object_path, _) = pools(
-           managed_objects,
-           props={'Name': namespace.pool_name},
-           unique=True
-        )
+            managed_objects, props={'Name': namespace.pool_name}, unique=True)
         (origin_fs_object_path, _) = filesystems(
             managed_objects,
-            props={'Name': namespace.origin_name, 'Pool': pool_object_path},
-            unique=True
-        )
+            props={
+                'Name': namespace.origin_name,
+                'Pool': pool_object_path
+            },
+            unique=True)
 
         (_, rc, message) = \
            Pool.Methods.SnapshotFilesystem(
@@ -163,6 +141,7 @@ class LogicalActions(object):
             raise StratisCliRuntimeError(rc, message)
 
         return
+
     @staticmethod
     def rename_fs(namespace):
         """
@@ -171,20 +150,17 @@ class LogicalActions(object):
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
         (pool_object_path, _) = pools(
-            managed_objects,
-            props={'Name': namespace.pool_name},
-            unique=True
-        )
+            managed_objects, props={'Name': namespace.pool_name}, unique=True)
         (fs_object_path, _) = filesystems(
             managed_objects,
-            props={'Name': namespace.fs_name, 'Pool': pool_object_path},
-            unique=True
-        )
+            props={
+                'Name': namespace.fs_name,
+                'Pool': pool_object_path
+            },
+            unique=True)
 
         (_, rc, message) = Filesystem.Methods.SetName(
-            get_object(fs_object_path),
-            {'name': namespace.new_name}
-        )
+            get_object(fs_object_path), {'name': namespace.new_name})
 
         if rc != StratisdErrors.OK:
             raise StratisCliRuntimeError(rc, message)

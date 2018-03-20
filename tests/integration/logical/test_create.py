@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
 Test 'create'.
 """
@@ -19,22 +18,20 @@ Test 'create'.
 import time
 import unittest
 
-
 from stratis_cli._errors import StratisCliRuntimeError
 from stratis_cli._errors import StratisCliDbusLookupError
 
 from stratis_cli._stratisd_constants import StratisdErrors
 
-
 from .._misc import _device_list
 from .._misc import RUNNER
 from .._misc import Service
 
-
 _DEVICE_STRATEGY = _device_list(1)
 
 
-@unittest.skip("Temporarily unable to create multiple filesystems at same time")
+@unittest.skip(
+    "Temporarily unable to create multiple filesystems at same time")
 class CreateTestCase(unittest.TestCase):
     """
     Test creating a volume w/out a pool.
@@ -66,7 +63,8 @@ class CreateTestCase(unittest.TestCase):
             RUNNER(command_line)
 
 
-@unittest.skip("Temporarily unable to create multiple filesystems at same time")
+@unittest.skip(
+    "Temporarily unable to create multiple filesystems at same time")
 class Create2TestCase(unittest.TestCase):
     """
     Test creating a volume w/ a pool.
@@ -100,7 +98,8 @@ class Create2TestCase(unittest.TestCase):
         RUNNER(command_line)
 
 
-@unittest.skip("Temporarily unable to create multiple filesystems at same time")
+@unittest.skip(
+    "Temporarily unable to create multiple filesystems at same time")
 class Create3TestCase(unittest.TestCase):
     """
     Test creating a volume w/ a pool when volume of same name already exists.

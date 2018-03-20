@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
 Test 'snapshot'.
 """
@@ -24,7 +23,6 @@ from stratis_cli._errors import StratisCliDbusLookupError
 from .._misc import _device_list
 from .._misc import RUNNER
 from .._misc import Service
-
 
 _DEVICE_STRATEGY = _device_list(1)
 
@@ -46,7 +44,8 @@ class SnapshotTestCase(unittest.TestCase):
         self._service = Service()
         self._service.setUp()
         time.sleep(1)
-        command_line = ['pool', 'create', self._POOLNAME] + _DEVICE_STRATEGY.example()
+        command_line = ['pool', 'create', self._POOLNAME
+                        ] + _DEVICE_STRATEGY.example()
         RUNNER(command_line)
         command_line = ['filesystem', 'create', self._POOLNAME, self._FSNAME]
         RUNNER(command_line)
@@ -61,8 +60,11 @@ class SnapshotTestCase(unittest.TestCase):
         """
         Creation of the snapshot should succeed since origin pool/filesytem is available.
         """
-        command_line = self._MENU + [self._POOLNAME, self._FSNAME, self._SNAPNAME]
+        command_line = self._MENU + [
+            self._POOLNAME, self._FSNAME, self._SNAPNAME
+        ]
         RUNNER(command_line)
+
 
 class Snapshot1TestCase(unittest.TestCase):
     """
@@ -91,9 +93,12 @@ class Snapshot1TestCase(unittest.TestCase):
         """
         Creation of the snapshot must fail since specified pool does not exist.
         """
-        command_line = self._MENU + [self._POOLNAME, self._FSNAME, self._SNAPNAME]
+        command_line = self._MENU + [
+            self._POOLNAME, self._FSNAME, self._SNAPNAME
+        ]
         with self.assertRaises(StratisCliDbusLookupError):
             RUNNER(command_line)
+
 
 class Snapshot2TestCase(unittest.TestCase):
     """
@@ -111,7 +116,8 @@ class Snapshot2TestCase(unittest.TestCase):
         self._service = Service()
         self._service.setUp()
         time.sleep(1)
-        command_line = ['pool', 'create', self._POOLNAME] + _DEVICE_STRATEGY.example()
+        command_line = ['pool', 'create', self._POOLNAME
+                        ] + _DEVICE_STRATEGY.example()
         RUNNER(command_line)
 
     def tearDown(self):
@@ -124,6 +130,8 @@ class Snapshot2TestCase(unittest.TestCase):
         """
         Creation of the snapshot must fail since filesystem does not exist.
         """
-        command_line = self._MENU + [self._POOLNAME, self._FSNAME, self._SNAPNAME]
+        command_line = self._MENU + [
+            self._POOLNAME, self._FSNAME, self._SNAPNAME
+        ]
         with self.assertRaises(StratisCliDbusLookupError):
             RUNNER(command_line)

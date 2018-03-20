@@ -11,11 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
 Top level parser for Stratis CLI.
 """
-
 
 import argparse
 
@@ -30,6 +28,7 @@ from ._pool import POOL_SUBCMDS
 # pylint: disable=undefined-variable
 PRINT_HELP = lambda parser: lambda _: parser.print_help()
 
+
 def add_args(parser, args=None):
     """
     Call subcommand.add_argument() based on args list.
@@ -38,12 +37,14 @@ def add_args(parser, args=None):
         for name, arg in args:
             parser.add_argument(name, **arg)
 
+
 def add_subcommand(subparser, cmd):
     """
     Add subcommand to a parser based on a subcommand dict.
     """
     name, info = cmd
-    parser = subparser.add_parser(name, help=info['help'], aliases=info.get('aliases', []))
+    parser = subparser.add_parser(
+        name, help=info['help'], aliases=info.get('aliases', []))
 
     subcmds = info.get('subcmds')
     if subcmds is not None:
@@ -54,6 +55,7 @@ def add_subcommand(subparser, cmd):
     add_args(parser, info.get('args', []))
 
     parser.set_defaults(func=info.get('func', PRINT_HELP(parser)))
+
 
 DAEMON_SUBCMDS = [
     ('redundancy',
@@ -69,11 +71,10 @@ DAEMON_SUBCMDS = [
 ]
 
 ROOT_SUBCOMMANDS = [
-    ('pool',
-     dict(
-         help="Perform General Pool Actions",
-         subcmds=POOL_SUBCMDS,
-     )),
+    ('pool', dict(
+        help="Perform General Pool Actions",
+        subcmds=POOL_SUBCMDS,
+    )),
     ('blockdev',
      dict(
          help="Commands related to block devices that make up the pool",
@@ -85,11 +86,10 @@ ROOT_SUBCOMMANDS = [
          help="Commands related to filesystems allocated from a pool",
          subcmds=LOGICAL_SUBCMDS,
      )),
-    ('daemon',
-     dict(
-         help="Stratis daemon information",
-         subcmds=DAEMON_SUBCMDS,
-     )),
+    ('daemon', dict(
+        help="Stratis daemon information",
+        subcmds=DAEMON_SUBCMDS,
+    )),
 ]
 
 GEN_ARGS = [
@@ -100,6 +100,7 @@ GEN_ARGS = [
      )),
 ]
 
+
 def gen_parser():
     """
     Make the parser.
@@ -108,16 +109,10 @@ def gen_parser():
     :rtype: ArgumentParser
     """
     parser = argparse.ArgumentParser(
-       description="Stratis Storage Manager",
-       prog='stratis'
-    )
+        description="Stratis Storage Manager", prog='stratis')
 
     # version is special, it has explicit support in argparse
-    parser.add_argument(
-       '--version',
-       action='version',
-       version=__version__
-    )
+    parser.add_argument('--version', action='version', version=__version__)
 
     add_args(parser, GEN_ARGS)
 

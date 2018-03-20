@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
 Miscellaneous physical actions.
 """
@@ -45,6 +44,7 @@ def state_val_to_string(val):
     except IndexError:
         return UNKNOWN_VALUE_MARKER
 
+
 def tier_val_to_string(val):
     """
     Convert a blockdev tier enumerated value to a string.
@@ -54,6 +54,7 @@ def tier_val_to_string(val):
         return states[val]
     except IndexError:
         return UNKNOWN_VALUE_MARKER
+
 
 class PhysicalActions(object):
     """
@@ -68,32 +69,25 @@ class PhysicalActions(object):
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
         (parent_pool_object_path, _) = pools(
-           managed_objects,
-           props={'Name': namespace.pool_name},
-           unique=True
-        )
-        modevs = [MODev(info) for _, info in devs(
-            managed_objects,
-            props={"Pool": parent_pool_object_path},
-        )]
-        tables = [
-            [
-                modev.Devnode(),
-                str(Range(modev.TotalPhysicalSize(), SECTOR_SIZE)),
-                state_val_to_string(modev.State()),
-                tier_val_to_string(modev.Tier()),
-            ] for modev in modevs
+            managed_objects, props={'Name': namespace.pool_name}, unique=True)
+        modevs = [
+            MODev(info) for _, info in devs(
+                managed_objects,
+                props={"Pool": parent_pool_object_path},
+            )
         ]
-        print_table(
-            [
-                "Device Node",
-                "Physical Size",
-                "State",
-                "Tier",
-            ],
-            sorted(tables, key=lambda entry: entry[0]),
-            ['<', '>', '>', '>']
-        )
+        tables = [[
+            modev.Devnode(),
+            str(Range(modev.TotalPhysicalSize(), SECTOR_SIZE)),
+            state_val_to_string(modev.State()),
+            tier_val_to_string(modev.Tier()),
+        ] for modev in modevs]
+        print_table([
+            "Device Node",
+            "Physical Size",
+            "State",
+            "Tier",
+        ], sorted(tables, key=lambda entry: entry[0]), ['<', '>', '>', '>'])
 
         return
 
@@ -105,15 +99,13 @@ class PhysicalActions(object):
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
         (pool_object_path, _) = pools(
-           managed_objects,
-           props={'Name': namespace.pool_name},
-           unique=True
-        )
+            managed_objects, props={'Name': namespace.pool_name}, unique=True)
 
         (_, rc, message) = Pool.Methods.AddDataDevs(
-           get_object(pool_object_path),
-           {'force': namespace.force, 'devices': namespace.device}
-        )
+            get_object(pool_object_path), {
+                'force': namespace.force,
+                'devices': namespace.device
+            })
         if rc != StratisdErrors.OK:
             raise StratisCliRuntimeError(rc, message)
         return
@@ -126,15 +118,13 @@ class PhysicalActions(object):
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
         (pool_object_path, _) = pools(
-           managed_objects,
-           props={'Name': namespace.pool_name},
-           unique=True
-        )
+            managed_objects, props={'Name': namespace.pool_name}, unique=True)
 
         (_, rc, message) = Pool.Methods.AddCacheDevs(
-           get_object(pool_object_path),
-           {'force': namespace.force, 'devices': namespace.device}
-        )
+            get_object(pool_object_path), {
+                'force': namespace.force,
+                'devices': namespace.device
+            })
         if rc != StratisdErrors.OK:
             raise StratisCliRuntimeError(rc, message)
         return

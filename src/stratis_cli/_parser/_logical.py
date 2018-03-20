@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
 Definition of filesystem actions to display in the CLI.
 """
@@ -23,70 +22,57 @@ LOGICAL_SUBCMDS = [
      dict(
          help='Create filesystems in a pool',
          args=[
-             ('pool_name',
-              dict(
-                  action='store',
-                  help='pool name',
-              )),
+             ('pool_name', dict(
+                 action='store',
+                 help='pool name',
+             )),
              ('fs_name',
               dict(
                   help='Create filesystems in this pool using the given names',
                   nargs='+',
               )),
          ],
-         func=LogicalActions.create_volumes
-     )),
-     ('snapshot',
+         func=LogicalActions.create_volumes)),
+    ('snapshot',
      dict(
          help='Snapshot the named filesystem in a pool',
          args=[
-             ('pool_name',
-              dict(
-                  action='store',
-                  help='pool name',
-              )),
-             ('origin_name',
-              dict(
-                  action='store',
-                  help='origin name',
-              )),
-             ('snapshot_name',
-              dict(
-                  action='store',
-                  help='snapshot name',
-              )),
+             ('pool_name', dict(
+                 action='store',
+                 help='pool name',
+             )),
+             ('origin_name', dict(
+                 action='store',
+                 help='origin name',
+             )),
+             ('snapshot_name', dict(
+                 action='store',
+                 help='snapshot name',
+             )),
          ],
-         func=LogicalActions.snapshot_filesystem
-     )),
+         func=LogicalActions.snapshot_filesystem)),
     ('list',
      dict(
          help="List filesystems",
          args=[
-             ('pool_name',
-              dict(
-                  action='store',
-                  help='Pool name'
-              )),
+             ('pool_name', dict(action='store', help='Pool name')),
          ],
-         func=LogicalActions.list_volumes
-     )),
+         func=LogicalActions.list_volumes)),
     ('destroy',
      dict(
          help='Destroy filesystems in a pool',
          args=[
-             ('pool_name',
-              dict(
-                  action='store',
-                  help='pool name',
-              )),
+             ('pool_name', dict(
+                 action='store',
+                 help='pool name',
+             )),
              ('fs_name',
               dict(
                   help='Destroy the named filesystems in this pool',
                   nargs='+',
               )),
          ],
-         func=LogicalActions.destroy_volumes
-     )),
+         func=LogicalActions.destroy_volumes)),
     ('rename',
      dict(
          help='Rename a filesystem',
@@ -109,5 +95,4 @@ LOGICAL_SUBCMDS = [
          ],
          func=LogicalActions.rename_fs,
      )),
-
 ]
