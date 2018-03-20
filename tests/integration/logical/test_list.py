@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
 Test 'create'.
 """
@@ -90,8 +89,8 @@ class List2TestCase(unittest.TestCase):
         RUNNER(command_line)
 
 
-
-@unittest.skip("Temporarily unable to create multiple filesystems at same time")
+@unittest.skip(
+    "Temporarily unable to create multiple filesystems at same time")
 class List3TestCase(unittest.TestCase):
     """
     Test listing volumes in an existing pool with some volumes.

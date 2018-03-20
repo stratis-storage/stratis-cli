@@ -5,28 +5,22 @@ import subprocess
 import sys
 
 arg_map = {
-   "src/stratis_cli" : [
-      "--reports=no",
-      "--disable=I",
-      "--disable=bad-continuation",
-      "--disable=duplicate-code",
-      "--disable=invalid-name",
-      "--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}'"
-   ],
-   "tests" : [
-      "--reports=no",
-      "--disable=I",
-      "--disable=bad-continuation",
-      "--disable=duplicate-code",
-      "--disable=invalid-name",
-      "--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}'"
-   ],
-   "bin/stratis" : [
-      "--reports=no",
-      "--disable=bad-continuation",
-      "--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}'"
-   ],
+    "src/stratis_cli": [
+        "--reports=no", "--disable=I", "--disable=bad-continuation",
+        "--disable=duplicate-code", "--disable=invalid-name",
+        "--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}'"
+    ],
+    "tests": [
+        "--reports=no", "--disable=I", "--disable=bad-continuation",
+        "--disable=duplicate-code", "--disable=invalid-name",
+        "--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}'"
+    ],
+    "bin/stratis": [
+        "--reports=no", "--disable=bad-continuation",
+        "--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}'"
+    ],
 }
+
 
 def get_parser():
     """
@@ -37,12 +31,12 @@ def get_parser():
     """
     parser = argparse.ArgumentParser()
     parser.add_argument(
-       "package",
-       choices=arg_map.keys(),
-       help="designates the package to test"
-    )
+        "package",
+        choices=arg_map.keys(),
+        help="designates the package to test")
     parser.add_argument("--ignore", help="ignore these files")
     return parser
+
 
 def get_command(namespace):
     """
@@ -54,6 +48,7 @@ def get_command(namespace):
     if namespace.ignore:
         cmd.append("--ignore=%s" % namespace.ignore)
     return cmd
+
 
 def main():
     args = get_parser().parse_args()

@@ -11,14 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
 Test 'list'.
 """
 
 import time
 import unittest
-
 
 from .._misc import _device_list
 from .._misc import RUNNER

@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
 Definition of pool actions to display in the CLI.
 """
@@ -23,11 +22,10 @@ POOL_SUBCMDS = [
      dict(
          help='Create a pool',
          args=[
-             ('pool_name',
-              dict(
-                  action='store',
-                  help='Name of new pool',
-              )),
+             ('pool_name', dict(
+                 action='store',
+                 help='Name of new pool',
+             )),
              ('blockdevs',
               dict(
                   help='Create the pool using these block devs',
@@ -59,11 +57,10 @@ POOL_SUBCMDS = [
      dict(
          help='Destroy a pool',
          args=[
-             ('pool_name',
-              dict(
-                  action='store',
-                  help='pool name',
-              )),
+             ('pool_name', dict(
+                 action='store',
+                 help='pool name',
+             )),
          ],
          func=TopActions.destroy_pool,
      )),
@@ -71,16 +68,14 @@ POOL_SUBCMDS = [
      dict(
          help='Rename a pool',
          args=[
-             ('current',
-              dict(
-                  action='store',
-                  help='Current pool name',
-              )),
-             ('new',
-              dict(
-                  action='store',
-                  help='New pool name',
-              )),
+             ('current', dict(
+                 action='store',
+                 help='Current pool name',
+             )),
+             ('new', dict(
+                 action='store',
+                 help='New pool name',
+             )),
          ],
          func=TopActions.rename_pool,
      )),

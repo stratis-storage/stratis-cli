@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
 Low-level interactions with the D-Bus.
 """
@@ -30,7 +29,7 @@ class Bus(object):
     _BUS = None
 
     @staticmethod
-    def get_bus(): # pragma: no cover
+    def get_bus():  # pragma: no cover
         """
         Get our bus.
         """
@@ -39,7 +38,8 @@ class Bus(object):
 
         return Bus._BUS
 
-def get_object(object_path): # pragma: no cover
+
+def get_object(object_path):  # pragma: no cover
     """
     Get an object from an object path.
 
