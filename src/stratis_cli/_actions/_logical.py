@@ -92,18 +92,16 @@ class LogicalActions(object):
         (pool_object_path, _) = pools(
             managed_objects, props={'Name': namespace.pool_name}, unique=True)
         fs_object_paths = [
-           op for name in namespace.fs_name for (op, _) in \
-           filesystems(
-              managed_objects,
-              props={'Name': name, 'Pool': pool_object_path}
-           )
+            op for name in namespace.fs_name for (op, _) in filesystems(
+                managed_objects,
+                props={
+                    'Name': name,
+                    'Pool': pool_object_path
+                })
         ]
 
-        (_, rc, message) = \
-           Pool.Methods.DestroyFilesystems(
-              get_object(pool_object_path),
-              {'filesystems': fs_object_paths}
-           )
+        (_, rc, message) = Pool.Methods.DestroyFilesystems(
+            get_object(pool_object_path), {'filesystems': fs_object_paths})
 
         if rc != StratisdErrors.OK:
             raise StratisCliRuntimeError(rc, message)
@@ -130,12 +128,11 @@ class LogicalActions(object):
             },
             unique=True)
 
-        (_, rc, message) = \
-           Pool.Methods.SnapshotFilesystem(
-              get_object(pool_object_path),
-              {'origin': origin_fs_object_path,
-               'snapshot_name': namespace.snapshot_name}
-           )
+        (_, rc, message) = Pool.Methods.SnapshotFilesystem(
+            get_object(pool_object_path), {
+                'origin': origin_fs_object_path,
+                'snapshot_name': namespace.snapshot_name
+            })
 
         if rc != StratisdErrors.OK:
             raise StratisCliRuntimeError(rc, message)
