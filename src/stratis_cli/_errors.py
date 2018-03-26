@@ -62,4 +62,4 @@ class StratisCliRuntimeError(StratisCliError):
         self.message = message
 
     def __str__(self):
-        return "%s: %s" % (self.rc, self.message)
+        return "%s" % self.message
