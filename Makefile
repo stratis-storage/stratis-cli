@@ -26,8 +26,8 @@ view:
 	-rm -Rf _pyreverse
 	mkdir _pyreverse
 	PYTHONPATH=src pyreverse ${PYREVERSE_OPTS} --project="stratis-cli" src/stratis_cli
-	mv classes_stratis_cli.pdf _pyreverse
-	mv packages_stratis_cli.pdf _pyreverse
+	mv classes_stratis-cli.pdf _pyreverse
+	mv packages_stratis-cli.pdf _pyreverse
 
 .PHONY: archive
 archive:

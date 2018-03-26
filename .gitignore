@@ -69,3 +69,6 @@ doc/_build
 # Eclipse
 .project
 .pydevproject
+
+# Visualization
+_pyreverse
