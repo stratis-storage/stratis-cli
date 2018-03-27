@@ -1,2 +1,2 @@
-tox
+tox==2.9.1
 yapf
