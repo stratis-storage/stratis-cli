@@ -63,3 +63,10 @@ class StratisCliRuntimeError(StratisCliError):
 
     def __str__(self):
         return "%s: %s" % (self.rc, self.message)
+
+
+class StratisCliGenerationError(StratisCliError):
+    """
+    Exception that occurs during generation of classes.
+    """
+    pass
