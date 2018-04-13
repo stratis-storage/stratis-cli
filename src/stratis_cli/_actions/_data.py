@@ -198,6 +198,12 @@ except DPClientGenerationError as err:
         "Failed to generate some class needed for invoking dbus-python methods"
     ) from err
 
+# FIXME: catch DbusClientGenerationError once exported # pylint: disable=fixme
+# Note that these managed_object_class method calls can never actually raise an
+# exception, because the managed_object_class method only raises an exception on
+# introspection data that does not match the expected schema, and if there is
+# such data, then the calls to make_class() above will already have caused an
+# exception to be raised, and this code will never be reached.
 MOFilesystem = managed_object_class(
     "MOFilesystem", ET.fromstring(SPECS['org.storage.stratis1.filesystem']))
 MOPool = managed_object_class("MOPool",
