@@ -55,8 +55,6 @@ class LogicalActions(object):
         if rc != StratisdErrors.OK:
             raise StratisCliRuntimeError(rc, message)
 
-        return
-
     @staticmethod
     def list_volumes(namespace):
         """
@@ -76,8 +74,6 @@ class LogicalActions(object):
 
         print_table(['Name'], sorted(tables, key=lambda entry: entry[0]),
                     ['<'])
-
-        return
 
     @staticmethod
     def destroy_volumes(namespace):
@@ -105,8 +101,6 @@ class LogicalActions(object):
 
         if rc != StratisdErrors.OK:
             raise StratisCliRuntimeError(rc, message)
-
-        return
 
     @staticmethod
     def snapshot_filesystem(namespace):
@@ -137,8 +131,6 @@ class LogicalActions(object):
         if rc != StratisdErrors.OK:
             raise StratisCliRuntimeError(rc, message)
 
-        return
-
     @staticmethod
     def rename_fs(namespace):
         """
@@ -161,5 +153,3 @@ class LogicalActions(object):
 
         if rc != StratisdErrors.OK:
             raise StratisCliRuntimeError(rc, message)
-
-        return

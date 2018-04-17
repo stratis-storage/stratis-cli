@@ -89,8 +89,6 @@ class PhysicalActions(object):
             "Tier",
         ], sorted(tables, key=lambda entry: entry[0]), ['<', '>', '>', '>'])
 
-        return
-
     @staticmethod
     def add_data_device(namespace):
         """
@@ -108,7 +106,6 @@ class PhysicalActions(object):
             })
         if rc != StratisdErrors.OK:
             raise StratisCliRuntimeError(rc, message)
-        return
 
     @staticmethod
     def add_cache_device(namespace):
@@ -127,4 +124,3 @@ class PhysicalActions(object):
             })
         if rc != StratisdErrors.OK:
             raise StratisCliRuntimeError(rc, message)
-        return

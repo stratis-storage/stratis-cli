@@ -37,7 +37,6 @@ class StratisActions(object):
         # pylint: disable=unused-argument
         for code in RedundancyCodes:
             print("%s: %d" % (code.name, code.value))
-        return
 
     @staticmethod
     def list_stratisd_version(namespace):
