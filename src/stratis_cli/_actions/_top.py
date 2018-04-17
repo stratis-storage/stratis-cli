@@ -59,8 +59,6 @@ class TopActions(object):
         if rc != StratisdErrors.OK:
             raise StratisCliRuntimeError(rc, message)
 
-        return
-
     @staticmethod
     def list_pools(_):
         """
@@ -80,8 +78,6 @@ class TopActions(object):
         print_table(['Name', 'Total Physical Size', 'Total Physical Used'],
                     sorted(tables, key=lambda entry: entry[0]),
                     ['<', '>', '>'])
-
-        return
 
     @staticmethod
     def destroy_pool(namespace):
@@ -103,8 +99,6 @@ class TopActions(object):
         if rc != StratisdErrors.OK:
             raise StratisCliRuntimeError(rc, message)
 
-        return
-
     @staticmethod
     def rename_pool(namespace):
         """
@@ -120,5 +114,3 @@ class TopActions(object):
 
         if rc != StratisdErrors.OK:
             raise StratisCliRuntimeError(rc, message)
-
-        return
