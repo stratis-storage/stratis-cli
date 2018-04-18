@@ -21,8 +21,10 @@ from dbus_client_gen import managed_object_class
 from dbus_client_gen import mo_query_builder
 
 from dbus_python_client_gen import make_class
+from dbus_python_client_gen import DPClientGenerationError
 
 from .._errors import StratisCliDbusLookupError
+from .._errors import StratisCliGenerationError
 
 SPECS = {
     "org.freedesktop.DBus.ObjectManager":
@@ -180,16 +182,28 @@ SPECS = {
 """,
 }
 
-Filesystem = make_class("Filesystem",
-                        ET.fromstring(
-                            SPECS['org.storage.stratis1.filesystem']))
-Manager = make_class("Manager",
-                     ET.fromstring(SPECS['org.storage.stratis1.Manager']))
-ObjectManager = make_class("ObjectManager",
-                           ET.fromstring(
-                               SPECS['org.freedesktop.DBus.ObjectManager']))
-Pool = make_class("Pool", ET.fromstring(SPECS['org.storage.stratis1.pool']))
+try:
+    Filesystem = make_class("Filesystem",
+                            ET.fromstring(
+                                SPECS['org.storage.stratis1.filesystem']))
+    Manager = make_class("Manager",
+                         ET.fromstring(SPECS['org.storage.stratis1.Manager']))
+    ObjectManager = make_class(
+        "ObjectManager",
+        ET.fromstring(SPECS['org.freedesktop.DBus.ObjectManager']))
+    Pool = make_class("Pool",
+                      ET.fromstring(SPECS['org.storage.stratis1.pool']))
+except DPClientGenerationError as err:
+    raise StratisCliGenerationError(
+        "Failed to generate some class needed for invoking dbus-python methods"
+    ) from err
 
+# FIXME: catch DbusClientGenerationError once exported # pylint: disable=fixme
+# Note that these managed_object_class method calls can never actually raise an
+# exception, because the managed_object_class method only raises an exception on
+# introspection data that does not match the expected schema, and if there is
+# such data, then the calls to make_class() above will already have caused an
+# exception to be raised, and this code will never be reached.
 MOFilesystem = managed_object_class(
     "MOFilesystem", ET.fromstring(SPECS['org.storage.stratis1.filesystem']))
 MOPool = managed_object_class("MOPool",
