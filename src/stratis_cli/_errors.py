@@ -45,17 +45,16 @@ class StratisCliDbusLookupError(StratisCliError):
            (self._interface, self._spec)
 
 
-class StratisCliRuntimeError(StratisCliError):
+class StratisCliEngineError(StratisCliError):
     """
-    Raised if there was a failure due to a RuntimeError.
+    Raised if there was a failure due to an error in stratisd's engine.
     """
 
     def __init__(self, rc, message):
         """ Initializer.
 
-            :param object value: the value
-            :param str param: the parameter
-            :param str msg: an explanatory message
+            :param rc int: the error code returned by the engine
+            :param str message: whatever message accompanied the error code
         """
         # pylint: disable=super-init-not-called
         self.rc = rc

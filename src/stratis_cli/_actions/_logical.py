@@ -17,7 +17,7 @@ Miscellaneous logical actions.
 
 from __future__ import print_function
 
-from .._errors import StratisCliRuntimeError
+from .._errors import StratisCliEngineError
 
 from .._stratisd_constants import StratisdErrors
 
@@ -42,7 +42,7 @@ class LogicalActions(object):
         """
         Create volumes in a pool.
 
-        :raises StratisCliRuntimeError:
+        :raises StratisCliEngineError:
         """
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -53,7 +53,7 @@ class LogicalActions(object):
             get_object(pool_object_path), {'specs': namespace.fs_name})
 
         if rc != StratisdErrors.OK:
-            raise StratisCliRuntimeError(rc, message)
+            raise StratisCliEngineError(rc, message)
 
     @staticmethod
     def list_volumes(namespace):
@@ -80,7 +80,7 @@ class LogicalActions(object):
         """
         Destroy volumes in a pool.
 
-        :raises StratisCliRuntimeError:
+        :raises StratisCliEngineError:
         """
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -100,14 +100,14 @@ class LogicalActions(object):
             get_object(pool_object_path), {'filesystems': fs_object_paths})
 
         if rc != StratisdErrors.OK:
-            raise StratisCliRuntimeError(rc, message)
+            raise StratisCliEngineError(rc, message)
 
     @staticmethod
     def snapshot_filesystem(namespace):
         """
         Snapshot filesystem in a pool.
 
-        :raises StratisCliRuntimeError:
+        :raises StratisCliEngineError:
         """
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -129,7 +129,7 @@ class LogicalActions(object):
             })
 
         if rc != StratisdErrors.OK:
-            raise StratisCliRuntimeError(rc, message)
+            raise StratisCliEngineError(rc, message)
 
     @staticmethod
     def rename_fs(namespace):
@@ -152,4 +152,4 @@ class LogicalActions(object):
             get_object(fs_object_path), {'name': namespace.new_name})
 
         if rc != StratisdErrors.OK:
-            raise StratisCliRuntimeError(rc, message)
+            raise StratisCliEngineError(rc, message)

@@ -19,7 +19,7 @@ from __future__ import print_function
 
 from justbytes import Range
 
-from .._errors import StratisCliRuntimeError
+from .._errors import StratisCliEngineError
 
 from .._stratisd_constants import StratisdErrors
 
@@ -44,7 +44,7 @@ class TopActions(object):
         """
         Create a stratis pool.
 
-        :raises StratisCliRuntimeError:
+        :raises StratisCliEngineError:
         """
         proxy = get_object(TOP_OBJECT)
 
@@ -57,14 +57,14 @@ class TopActions(object):
             })
 
         if rc != StratisdErrors.OK:
-            raise StratisCliRuntimeError(rc, message)
+            raise StratisCliEngineError(rc, message)
 
     @staticmethod
     def list_pools(_):
         """
         List all stratis pools.
 
-        :raises StratisCliRuntimeError:
+        :raises StratisCliEngineError:
         """
         proxy = get_object(TOP_OBJECT)
 
@@ -86,7 +86,7 @@ class TopActions(object):
 
         If no pool exists, the method succeeds.
 
-        :raises StratisCliRuntimeError:
+        :raises StratisCliEngineError:
         """
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -97,7 +97,7 @@ class TopActions(object):
            Manager.Methods.DestroyPool(proxy, {'pool': pool_object_path})
 
         if rc != StratisdErrors.OK:
-            raise StratisCliRuntimeError(rc, message)
+            raise StratisCliEngineError(rc, message)
 
     @staticmethod
     def rename_pool(namespace):
@@ -113,4 +113,4 @@ class TopActions(object):
             get_object(pool_object_path), {'name': namespace.new})
 
         if rc != StratisdErrors.OK:
-            raise StratisCliRuntimeError(rc, message)
+            raise StratisCliEngineError(rc, message)

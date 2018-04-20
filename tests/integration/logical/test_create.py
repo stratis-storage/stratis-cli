@@ -18,8 +18,8 @@ Test 'create'.
 import time
 import unittest
 
-from stratis_cli._errors import StratisCliRuntimeError
 from stratis_cli._errors import StratisCliDbusLookupError
+from stratis_cli._errors import StratisCliEngineError
 
 from stratis_cli._stratisd_constants import StratisdErrors
 
@@ -133,6 +133,6 @@ class Create3TestCase(unittest.TestCase):
         volume of the same name.
         """
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
-        with self.assertRaises(StratisCliRuntimeError) as ctxt:
+        with self.assertRaises(StratisCliEngineError) as ctxt:
             RUNNER(command_line)
         self.assertEqual(ctxt.exception.rc, StratisdErrors.ALREADY_EXISTS)
