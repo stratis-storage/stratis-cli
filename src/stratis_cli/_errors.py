@@ -23,7 +23,14 @@ class StratisCliError(Exception):
     pass
 
 
-class StratisCliDbusLookupError(StratisCliError):
+class StratisCliRuntimeError(StratisCliError):
+    """
+    Exception raised during runtime.
+    """
+    pass
+
+
+class StratisCliDbusLookupError(StratisCliRuntimeError):
     """
     Error raised when an object path is not found for a given specification.
     """
@@ -45,7 +52,7 @@ class StratisCliDbusLookupError(StratisCliError):
            (self._interface, self._spec)
 
 
-class StratisCliEngineError(StratisCliError):
+class StratisCliEngineError(StratisCliRuntimeError):
     """
     Raised if there was a failure due to an error in stratisd's engine.
     """

@@ -20,7 +20,7 @@ import dbus
 
 from dbus_python_client_gen import DPClientRuntimeError
 
-from ._errors import StratisCliError
+from ._errors import StratisCliRuntimeError
 from ._parser import gen_parser
 
 
@@ -43,7 +43,7 @@ def run():
             if result.propagate:
                 raise
             sys.exit("Execution failed: %s" % err.get_dbus_message())
-        except (DPClientRuntimeError, StratisCliError) as err:
+        except (DPClientRuntimeError, StratisCliRuntimeError) as err:
             if result.propagate:
                 raise
             sys.exit("Execution failed: %s" % str(err))
