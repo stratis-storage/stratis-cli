@@ -44,12 +44,12 @@ class StratisCliDbusLookupError(StratisCliRuntimeError):
         :type spec: a dict of str * object
         """
         # pylint: disable=super-init-not-called
-        self._interface = interface
-        self._spec = spec
+        self.interface = interface
+        self.spec = spec
 
     def __str__(self):  # pragma: no cover
         return "No object path found for interface %s and spec %s" % \
-           (self._interface, self._spec)
+           (self.interface, self.spec)
 
 
 class StratisCliEngineError(StratisCliRuntimeError):
