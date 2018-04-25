@@ -15,7 +15,6 @@
 Test 'stratisd'.
 """
 
-import time
 import unittest
 
 import dbus
@@ -36,7 +35,6 @@ class StratisTestCase(unittest.TestCase):
         """
         self._service = Service()
         self._service.setUp()
-        time.sleep(1)
 
     def tearDown(self):
         """
