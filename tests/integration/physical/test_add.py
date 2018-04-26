@@ -15,7 +15,6 @@
 Test 'create'.
 """
 
-import time
 import unittest
 
 from stratis_cli._errors import StratisCliDbusLookupError
@@ -40,7 +39,6 @@ class AddDataTestCase(unittest.TestCase):
         """
         self._service = Service()
         self._service.setUp()
-        time.sleep(1)
 
     def tearDown(self):
         """
@@ -71,7 +69,6 @@ class AddCacheTestCase(unittest.TestCase):
         """
         self._service = Service()
         self._service.setUp()
-        time.sleep(1)
 
     def tearDown(self):
         """
