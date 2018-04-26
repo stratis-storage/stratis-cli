@@ -22,12 +22,12 @@ then enables multiple *filesystems* to be created from the pool.
 
 GLOBAL OPTIONS
 --------------
---propagate::
-	Propagate D-Bus errors.
 --version::
 	Show stratis-cli version.
 --help, -h::
 	Show help on command.
+--propagate::
+	(For debugging.) Allow exceptions raised during execution to propagate.
 
 COMMANDS
 --------
