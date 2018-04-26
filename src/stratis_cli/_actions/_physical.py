@@ -19,7 +19,7 @@ from __future__ import print_function
 
 from justbytes import Range
 
-from .._errors import StratisCliRuntimeError
+from .._errors import StratisCliEngineError
 from .._stratisd_constants import StratisdErrors
 
 from ._connection import get_object
@@ -105,7 +105,7 @@ class PhysicalActions(object):
                 'devices': namespace.device
             })
         if rc != StratisdErrors.OK:
-            raise StratisCliRuntimeError(rc, message)
+            raise StratisCliEngineError(rc, message)
 
     @staticmethod
     def add_cache_device(namespace):
@@ -123,4 +123,4 @@ class PhysicalActions(object):
                 'devices': namespace.device
             })
         if rc != StratisdErrors.OK:
-            raise StratisCliRuntimeError(rc, message)
+            raise StratisCliEngineError(rc, message)

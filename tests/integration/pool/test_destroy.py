@@ -17,8 +17,8 @@ Test 'destroy'.
 
 import unittest
 
-from stratis_cli._errors import StratisCliRuntimeError
 from stratis_cli._errors import StratisCliDbusLookupError
+from stratis_cli._errors import StratisCliEngineError
 
 from stratis_cli._stratisd_constants import StratisdErrors
 
@@ -124,7 +124,7 @@ class Destroy3TestCase(unittest.TestCase):
         This should fail since it has a filesystem.
         """
         command_line = self._MENU + [self._POOLNAME]
-        with self.assertRaises(StratisCliRuntimeError) as ctxt:
+        with self.assertRaises(StratisCliEngineError) as ctxt:
             RUNNER(command_line)
         self.assertEqual(ctxt.exception.rc, StratisdErrors.BUSY)
 

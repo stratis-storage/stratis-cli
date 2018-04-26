@@ -23,7 +23,14 @@ class StratisCliError(Exception):
     pass
 
 
-class StratisCliDbusLookupError(StratisCliError):
+class StratisCliRuntimeError(StratisCliError):
+    """
+    Exception raised during runtime.
+    """
+    pass
+
+
+class StratisCliDbusLookupError(StratisCliRuntimeError):
     """
     Error raised when an object path is not found for a given specification.
     """
@@ -37,25 +44,24 @@ class StratisCliDbusLookupError(StratisCliError):
         :type spec: a dict of str * object
         """
         # pylint: disable=super-init-not-called
-        self._interface = interface
-        self._spec = spec
+        self.interface = interface
+        self.spec = spec
 
     def __str__(self):  # pragma: no cover
         return "No object path found for interface %s and spec %s" % \
-           (self._interface, self._spec)
+           (self.interface, self.spec)
 
 
-class StratisCliRuntimeError(StratisCliError):
+class StratisCliEngineError(StratisCliRuntimeError):
     """
-    Raised if there was a failure due to a RuntimeError.
+    Raised if there was a failure due to an error in stratisd's engine.
     """
 
     def __init__(self, rc, message):
         """ Initializer.
 
-            :param object value: the value
-            :param str param: the parameter
-            :param str msg: an explanatory message
+            :param rc int: the error code returned by the engine
+            :param str message: whatever message accompanied the error code
         """
         # pylint: disable=super-init-not-called
         self.rc = rc
