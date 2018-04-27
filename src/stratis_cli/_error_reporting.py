@@ -46,6 +46,26 @@ def get_error_msgs(errors):
     return
 
 
+def interpret_errors(errors):
+    """
+    Laboriously add best guesses at the cause of the error, based on
+    developer knowledge and possibly further information that is gathered
+    in this method.
+
+    :param errors: the chain of errors
+    :type errors: list of Exception
+    :returns: None if no interpretation found, otherwise str
+    """
+    # pylint: disable=fixme
+    # TODO: This method is extremely rudimentary. It should not be extended
+    # using exactly the structure it has now.
+    if isinstance(errors[1], dbus.exceptions.DBusException) and \
+        errors[1].get_dbus_name() == \
+        'org.freedesktop.DBus.Error.ServiceUnknown':
+        return "Most likely the Stratis daemon, stratisd, is not running."
+    return None
+
+
 def generate_error_message(errors):
     """
     Generate an error message from the given errors.
@@ -84,4 +104,9 @@ def handle_error(err):
 
     error_msg = generate_error_message(errors)
 
-    sys.exit("Execution failure caused by:%s%s" % (os.linesep, error_msg))
+    explanation = interpret_errors(errors)
+
+    exit_msg = "Execution failure caused by:%s%s" % (os.linesep, error_msg) + \
+            ("" if explanation is None else "%s%s%s" % (os.linesep, os.linesep, explanation))
+
+    sys.exit(exit_msg)
