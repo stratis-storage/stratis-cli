@@ -46,6 +46,32 @@ def get_error_msgs(errors):
     return
 
 
+def generate_error_message(errors):
+    """
+    Generate an error message from the given errors.
+
+    :param errors: a list of exceptions
+    :type errors: list of Exception
+
+    :returns: str
+
+    Precondition: len(errors) > 0
+    """
+    # Skip message from first error, which is StratisCliActionError.
+    # This error just tells what the command line arguments were and what
+    # the resulting parser namespace was, which is probably not interesting
+    # to the user.
+    error_msgs = [msg for msg in get_error_msgs(errors[1:])]
+    if error_msgs == []:
+        # It is unlikely that, within the whole chain of errors, there
+        # will be no message that is not an empty string. If there is
+        # there is some program error, so just raise the exception.
+        raise errors[0]
+
+    return ("%s    which in turn caused:%s" % (os.linesep, os.linesep)).join(
+        reversed(error_msgs))
+
+
 def handle_error(err):
     """
     Do the right thing with the given error, which may be the head of an error
@@ -56,18 +82,6 @@ def handle_error(err):
 
     errors = [error for error in get_errors(err)]
 
-    # Skip message from first error, which is StratisCliActionError.
-    # This error just tells what the command line arguments were and what
-    # the resulting parser namespace was, which is probably not interesting
-    # to the user.
-    error_msgs = [msg for msg in get_error_msgs(errors[1:])]
-    if error_msgs == []:
-        # It is unlikely that, within the whole chain of errors, there
-        # will be no message that is not an empty string. If there is
-        # there is some program error, so just raise the exception.
-        raise err
-
-    error_msg = ("%s    which in turn caused:%s" %
-                 (os.linesep, os.linesep)).join(reversed(error_msgs))
+    error_msg = generate_error_message(errors)
 
     sys.exit("Execution failure caused by:%s%s" % (os.linesep, error_msg))
