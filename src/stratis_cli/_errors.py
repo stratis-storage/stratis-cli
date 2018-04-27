@@ -71,6 +71,29 @@ class StratisCliEngineError(StratisCliRuntimeError):
         return "%s: %s" % (self.rc, self.message)
 
 
+class StratisCliActionError(StratisCliRuntimeError):
+    """
+    Raised if an action selected by the parser failed.
+    """
+
+    def __init__(self, command_line_args, namespace):
+        """
+        Initialize with parser-returned namespace.
+
+        :param command_line_args: the arguments passed on the command line
+        :type command_line_args: list of str
+        :param Namespace namespace: the namespace constructed by the parser
+        """
+        # pylint: disable=super-init-not-called
+        self.command_line_args = command_line_args
+        self.namespace = namespace
+
+    def __str__(self):
+        fmt_str = ("Action selected by command-line arguments %s which were "
+                   "parsed to %s failed")
+        return fmt_str % (self.command_line_args, self.namespace)
+
+
 class StratisCliGenerationError(StratisCliError):
     """
     Exception that occurs during generation of classes.

@@ -19,6 +19,7 @@ import dbus
 
 from dbus_python_client_gen import DPClientRuntimeError
 
+from ._errors import StratisCliActionError
 from ._errors import StratisCliRuntimeError
 from ._error_reporting import handle_error
 from ._parser import gen_parser
@@ -36,9 +37,12 @@ def run():
         """
         result = parser.parse_args(command_line_args)
         try:
-            result.func(result)
-        except (dbus.exceptions.DBusException, DPClientRuntimeError,
-                StratisCliRuntimeError) as err:
+            try:
+                result.func(result)
+            except (dbus.exceptions.DBusException, DPClientRuntimeError,
+                    StratisCliRuntimeError) as err:
+                raise StratisCliActionError(command_line_args, result) from err
+        except StratisCliActionError as err:
             if result.propagate:
                 raise
 
