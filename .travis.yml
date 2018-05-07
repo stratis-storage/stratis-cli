@@ -11,9 +11,11 @@ python: "3.4"
 branches:
     only: master
 
-env:
-    matrix:
-        - TASK=lint
-        - TASK=fmt-travis
+matrix:
+    allow_failures:
+        - env: TASK=lint
+    include:
+        - env: TASK=lint
+        - env: TASK=fmt-travis
 
 script: make -f Makefile $TASK
