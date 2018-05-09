@@ -86,5 +86,5 @@ Internal Software Architecture
 
 Python Coding Style
 -------------------
-``stratis`` uses PEP-8 style, with the additional rule that continuation lines
-are indented 3 spaces.
+``stratis`` conforms to PEP-8 style guidelines as enforced by the ``yapf``
+formatting tool.
