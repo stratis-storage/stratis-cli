@@ -12,8 +12,6 @@ branches:
     only: master
 
 matrix:
-    allow_failures:
-        - env: TASK=lint
     include:
         - env: TASK=lint
         - env: TASK=fmt-travis
