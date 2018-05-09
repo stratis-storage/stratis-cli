@@ -18,6 +18,36 @@ Stratisd error classes.
 from enum import IntEnum
 
 
+def value_to_name(klass):
+    """
+    Generate a function to convert an IntEnum value to its name.
+
+    :param type klass: the class defining the IntEnum
+    :returns: a function to convert a single number to a name
+    :rtype: int -> str
+    """
+
+    def the_func(num):
+        """
+        Convert the enum value to a string which is just its name.
+        Replace underscores in the name with spaces.
+
+        If there is no name for the value, return a special string.
+
+        :param int num: the number to convert
+        :returns: the name for the number or an error string
+        :rtype: str
+        """
+        try:
+            the_str = str(klass(num)).rsplit('.')[-1].replace("_", " ")
+        except ValueError:
+            the_str = "Unknown value (%s) for %s constant" % (num,
+                                                              klass.__name__)
+        return the_str
+
+    return the_func
+
+
 class StratisdErrors(IntEnum):
     """
     Stratisd Errors
@@ -33,8 +63,14 @@ class StratisdErrors(IntEnum):
     NOT_FOUND = 7
 
 
+STRATISD_ERROR_TO_NAME = value_to_name(StratisdErrors)
+
+
 class RedundancyCodes(IntEnum):
     """
     Redundancy Codes
     """
     NONE = 0
+
+
+REDUNDANCY_CODE_TO_NAME = value_to_name(RedundancyCodes)

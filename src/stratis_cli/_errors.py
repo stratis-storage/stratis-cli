@@ -15,6 +15,8 @@
 Error heirarchy for stratis cli.
 """
 
+from ._stratisd_constants import STRATISD_ERROR_TO_NAME
+
 
 class StratisCliError(Exception):
     """
@@ -68,7 +70,7 @@ class StratisCliEngineError(StratisCliRuntimeError):
         self.message = message
 
     def __str__(self):
-        return "%s: %s" % (self.rc, self.message)
+        return "%s: %s" % (STRATISD_ERROR_TO_NAME(self.rc), self.message)
 
 
 class StratisCliActionError(StratisCliRuntimeError):
