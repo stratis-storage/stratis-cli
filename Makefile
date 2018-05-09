@@ -4,14 +4,6 @@ TOX=tox
 lint:
 	$(TOX) -c tox.ini -e lint
 
-.PHONY: coverage
-coverage:
-	$(TOX) -c tox.ini -e coverage
-
-.PHONY: test
-test:
-	$(TOX) -c tox.ini -e test
-
 .PHONY: fmt
 fmt:
 	yapf --style pep8 --recursive --in-place check.py setup.py src tests
