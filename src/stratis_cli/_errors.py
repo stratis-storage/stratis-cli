@@ -49,7 +49,7 @@ class StratisCliDbusLookupError(StratisCliRuntimeError):
         self.interface = interface
         self.spec = spec
 
-    def __str__(self):  # pragma: no cover
+    def __str__(self):
         return "No object path found for interface %s and spec %s" % \
            (self.interface, self.spec)
 
