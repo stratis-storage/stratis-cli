@@ -17,6 +17,7 @@ Test 'snapshot'.
 
 import unittest
 
+from stratis_cli._errors import StratisCliActionError
 from stratis_cli._errors import StratisCliDbusLookupError
 
 from .._misc import _device_list
@@ -93,8 +94,10 @@ class Snapshot1TestCase(unittest.TestCase):
         command_line = self._MENU + [
             self._POOLNAME, self._FSNAME, self._SNAPNAME
         ]
-        with self.assertRaises(StratisCliDbusLookupError):
+        with self.assertRaises(StratisCliActionError) as context:
             RUNNER(command_line)
+        cause = context.exception.__cause__
+        self.assertIsInstance(cause, StratisCliDbusLookupError)
 
 
 class Snapshot2TestCase(unittest.TestCase):
@@ -129,5 +132,7 @@ class Snapshot2TestCase(unittest.TestCase):
         command_line = self._MENU + [
             self._POOLNAME, self._FSNAME, self._SNAPNAME
         ]
-        with self.assertRaises(StratisCliDbusLookupError):
+        with self.assertRaises(StratisCliActionError) as context:
             RUNNER(command_line)
+        cause = context.exception.__cause__
+        self.assertIsInstance(cause, StratisCliDbusLookupError)

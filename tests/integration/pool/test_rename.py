@@ -17,6 +17,7 @@ Test 'rename'.
 
 import unittest
 
+from stratis_cli._errors import StratisCliActionError
 from stratis_cli._errors import StratisCliDbusLookupError
 
 from .._misc import RUNNER
@@ -52,16 +53,20 @@ class Rename1TestCase(unittest.TestCase):
         This should fail because original name does not exist.
         """
         command_line = self._MENU + [self._POOLNAME, self._NEW_POOLNAME]
-        with self.assertRaises(StratisCliDbusLookupError):
+        with self.assertRaises(StratisCliActionError) as context:
             RUNNER(command_line)
+        cause = context.exception.__cause__
+        self.assertIsInstance(cause, StratisCliDbusLookupError)
 
     def testSameName(self):
         """
         Renaming to itself will fail because the pool does not exist.
         """
         command_line = self._MENU + [self._POOLNAME, self._POOLNAME]
-        with self.assertRaises(StratisCliDbusLookupError):
+        with self.assertRaises(StratisCliActionError) as context:
             RUNNER(command_line)
+        cause = context.exception.__cause__
+        self.assertIsInstance(cause, StratisCliDbusLookupError)
 
 
 class Rename2TestCase(unittest.TestCase):
@@ -107,5 +112,7 @@ class Rename2TestCase(unittest.TestCase):
         This should fail, because this pool is not there.
         """
         command_line = self._MENU + ["nopool", self._POOLNAME]
-        with self.assertRaises(StratisCliDbusLookupError):
+        with self.assertRaises(StratisCliActionError) as context:
             RUNNER(command_line)
+        cause = context.exception.__cause__
+        self.assertIsInstance(cause, StratisCliDbusLookupError)

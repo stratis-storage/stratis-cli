@@ -17,6 +17,7 @@ Test 'create'.
 
 import unittest
 
+from stratis_cli._errors import StratisCliActionError
 from stratis_cli._errors import StratisCliDbusLookupError
 from stratis_cli._errors import StratisCliEngineError
 
@@ -57,8 +58,10 @@ class CreateTestCase(unittest.TestCase):
         Creation of the volume must fail since pool is not specified.
         """
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
-        with self.assertRaises(StratisCliDbusLookupError):
+        with self.assertRaises(StratisCliActionError) as context:
             RUNNER(command_line)
+        cause = context.exception.__cause__
+        self.assertIsInstance(cause, StratisCliDbusLookupError)
 
 
 @unittest.skip(
@@ -129,6 +132,8 @@ class Create3TestCase(unittest.TestCase):
         volume of the same name.
         """
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
-        with self.assertRaises(StratisCliEngineError) as ctxt:
+        with self.assertRaises(StratisCliEngineError) as context:
             RUNNER(command_line)
-        self.assertEqual(ctxt.exception.rc, StratisdErrors.ALREADY_EXISTS)
+        cause = context.exception.__cause__
+        self.assertIsInstance(cause, StratisCliEngineError)
+        self.assertEqual(cause.rc, StratisdErrors.ALREADY_EXISTS)
