@@ -17,6 +17,7 @@ Test 'destroy'.
 
 import unittest
 
+from stratis_cli._errors import StratisCliActionError
 from stratis_cli._errors import StratisCliDbusLookupError
 from stratis_cli._errors import StratisCliEngineError
 
@@ -56,8 +57,10 @@ class Destroy1TestCase(unittest.TestCase):
         Destroy should fail because there is no object path for the pool.
         """
         command_line = self._MENU + [self._POOLNAME]
-        with self.assertRaises(StratisCliDbusLookupError):
+        with self.assertRaises(StratisCliActionError) as context:
             RUNNER(command_line)
+        cause = context.exception.__cause__
+        self.assertIsInstance(cause, StratisCliDbusLookupError)
 
 
 class Destroy2TestCase(unittest.TestCase):
@@ -124,9 +127,11 @@ class Destroy3TestCase(unittest.TestCase):
         This should fail since it has a filesystem.
         """
         command_line = self._MENU + [self._POOLNAME]
-        with self.assertRaises(StratisCliEngineError) as ctxt:
+        with self.assertRaises(StratisCliActionError) as context:
             RUNNER(command_line)
-        self.assertEqual(ctxt.exception.rc, StratisdErrors.BUSY)
+        cause = context.exception.__cause__
+        self.assertIsInstance(cause, StratisCliEngineError)
+        self.assertEqual(cause.rc, StratisdErrors.BUSY)
 
     def testWithFilesystemRemoved(self):
         """

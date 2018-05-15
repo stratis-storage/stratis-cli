@@ -17,6 +17,7 @@ Test 'create'.
 
 import unittest
 
+from stratis_cli._errors import StratisCliActionError
 from stratis_cli._errors import StratisCliEngineError
 
 from .._misc import _device_list
@@ -85,5 +86,7 @@ class Create3TestCase(unittest.TestCase):
         """
         command_line = self._MENU + [self._POOLNAME] \
             + _DEVICE_STRATEGY.example()
-        with self.assertRaises(StratisCliEngineError):
+        with self.assertRaises(StratisCliActionError) as context:
             RUNNER(command_line)
+        cause = context.exception.__cause__
+        self.assertIsInstance(cause, StratisCliEngineError)

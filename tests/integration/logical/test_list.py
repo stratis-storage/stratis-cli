@@ -17,6 +17,7 @@ Test 'create'.
 
 import unittest
 
+from stratis_cli._errors import StratisCliActionError
 from stratis_cli._errors import StratisCliDbusLookupError
 
 from .._misc import _device_list
@@ -51,8 +52,10 @@ class ListTestCase(unittest.TestCase):
         Listing the volume must fail since the pool does not exist.
         """
         command_line = self._MENU + [self._POOLNAME]
-        with self.assertRaises(StratisCliDbusLookupError):
+        with self.assertRaises(StratisCliActionError) as context:
             RUNNER(command_line)
+        cause = context.exception.__cause__
+        self.assertIsInstance(cause, StratisCliDbusLookupError)
 
 
 class List2TestCase(unittest.TestCase):

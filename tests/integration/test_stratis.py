@@ -19,6 +19,8 @@ import unittest
 
 import dbus
 
+from stratis_cli._errors import StratisCliActionError
+
 from ._misc import RUNNER
 from ._misc import Service
 
@@ -83,8 +85,10 @@ class PropagateTestCase(unittest.TestCase):
         If propagate is set, the expected exception will propagate.
         """
         command_line = ['--propagate', 'daemon', 'version']
-        with self.assertRaises(dbus.exceptions.DBusException):
+        with self.assertRaises(StratisCliActionError) as context:
             RUNNER(command_line)
+        cause = context.exception.__cause__
+        self.assertIsInstance(cause, dbus.exceptions.DBusException)
 
     def testNotPropagate(self):
         """
