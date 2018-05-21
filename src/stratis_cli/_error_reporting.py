@@ -59,6 +59,12 @@ def interpret_errors(errors):
     # pylint: disable=fixme
     # TODO: This method is extremely rudimentary. It should not be extended
     # using exactly the structure it has now.
+    if isinstance(errors[1], AttributeError):
+        import traceback
+        frame = traceback.extract_tb(errors[1].__traceback__)[-1]
+        fmt_str = ("Most likely there is an error in the source at line %d "
+                   "in file %s. The text of the line is \"%s\".")
+        return fmt_str % (frame.lineno, frame.filename, frame.line)
     if isinstance(errors[1], dbus.exceptions.DBusException) and \
         errors[1].get_dbus_name() == \
         'org.freedesktop.DBus.Error.ServiceUnknown':
