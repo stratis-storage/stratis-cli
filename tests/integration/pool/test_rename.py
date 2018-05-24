@@ -18,7 +18,7 @@ Test 'rename'.
 import unittest
 
 from stratis_cli._errors import StratisCliActionError
-from stratis_cli._errors import StratisCliDbusLookupError
+from stratis_cli._errors import StratisCliUniqueLookupError
 
 from .._misc import RUNNER
 from .._misc import Service
@@ -56,7 +56,7 @@ class Rename1TestCase(unittest.TestCase):
         with self.assertRaises(StratisCliActionError) as context:
             RUNNER(command_line)
         cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliDbusLookupError)
+        self.assertIsInstance(cause, StratisCliUniqueLookupError)
 
     def testSameName(self):
         """
@@ -66,7 +66,7 @@ class Rename1TestCase(unittest.TestCase):
         with self.assertRaises(StratisCliActionError) as context:
             RUNNER(command_line)
         cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliDbusLookupError)
+        self.assertIsInstance(cause, StratisCliUniqueLookupError)
 
 
 class Rename2TestCase(unittest.TestCase):
@@ -115,4 +115,4 @@ class Rename2TestCase(unittest.TestCase):
         with self.assertRaises(StratisCliActionError) as context:
             RUNNER(command_line)
         cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliDbusLookupError)
+        self.assertIsInstance(cause, StratisCliUniqueLookupError)

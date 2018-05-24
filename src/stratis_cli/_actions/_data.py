@@ -23,8 +23,8 @@ from dbus_client_gen import mo_query_builder
 from dbus_python_client_gen import make_class
 from dbus_python_client_gen import DPClientGenerationError
 
-from .._errors import StratisCliDbusLookupError
 from .._errors import StratisCliGenerationError
+from .._errors import StratisCliUniqueLookupError
 
 SPECS = {
     "org.freedesktop.DBus.ObjectManager":
@@ -214,44 +214,25 @@ MODev = managed_object_class("MODev",
                                  SPECS['org.storage.stratis1.blockdev']))
 
 
-def _unique_wrapper(interface, func):
+def unique(iterable):
     """
-    Wraps other methods, implementing an additional unique parameter.
+    Get a unique result from the iterable. If the result is not unique,
+    raise an exception.
+
+    :returns: an object path and its corresponding data
+    :rtype: object path * dict
     """
-
-    def the_func(managed_objects, props=None, unique=False):
-        """
-        Call func on managed_objects and props. If unique is True, return
-        the unique result or else raise an error. Otherwise, return the
-        original result.
-
-        :param dict managed_objects: result of calling GetManagedObjects()
-        :param dict props: props to narrow search on, empty if None
-        :param bool unique: whether the result is required to be unique
-
-        :returns: the result of calling the_func, or a unique element
-        :rtype: generator of str * dict OR a single pair of str * dict
-        :raises StratisCliDbusLookupError: if unique == True and none found
-        """
-        result = func(managed_objects, props=props)
-        if unique is True:
-            result = [x for x in result]
-            if len(result) != 1:
-                raise StratisCliDbusLookupError(interface, props)
-            return result[0]
-        return result
-
-    return the_func
+    result = [x for x in iterable]
+    if len(result) != 1:
+        raise StratisCliUniqueLookupError(result)
+    return result[0]
 
 
 _FILESYSTEM_INTERFACE = 'org.storage.stratis1.filesystem'
-_filesystems = mo_query_builder(ET.fromstring(SPECS[_FILESYSTEM_INTERFACE]))
-filesystems = _unique_wrapper(_FILESYSTEM_INTERFACE, _filesystems)
+filesystems = mo_query_builder(ET.fromstring(SPECS[_FILESYSTEM_INTERFACE]))
 
 _POOL_INTERFACE = 'org.storage.stratis1.pool'
-_pools = mo_query_builder(ET.fromstring(SPECS[_POOL_INTERFACE]))
-pools = _unique_wrapper(_POOL_INTERFACE, _pools)
+pools = mo_query_builder(ET.fromstring(SPECS[_POOL_INTERFACE]))
 
 _BLOCKDEV_INTERFACE = 'org.storage.stratis1.blockdev'
-_devs = mo_query_builder(ET.fromstring(SPECS[_BLOCKDEV_INTERFACE]))
-devs = _unique_wrapper(_BLOCKDEV_INTERFACE, _devs)
+devs = mo_query_builder(ET.fromstring(SPECS[_BLOCKDEV_INTERFACE]))
