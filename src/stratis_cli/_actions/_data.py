@@ -19,6 +19,7 @@ import xml.etree.ElementTree as ET
 
 from dbus_client_gen import managed_object_class
 from dbus_client_gen import mo_query_builder
+from dbus_client_gen import DbusClientGenerationError
 
 from dbus_python_client_gen import make_class
 from dbus_python_client_gen import DPClientGenerationError
@@ -198,20 +199,29 @@ except DPClientGenerationError as err:
         "Failed to generate some class needed for invoking dbus-python methods"
     ) from err
 
-# FIXME: catch DbusClientGenerationError once exported # pylint: disable=fixme
-# Note that these managed_object_class method calls can never actually raise an
-# exception, because the managed_object_class method only raises an exception on
-# introspection data that does not match the expected schema, and if there is
-# such data, then the calls to make_class() above will already have caused an
-# exception to be raised, and this code will never be reached.
-MOFilesystem = managed_object_class(
-    "MOFilesystem", ET.fromstring(SPECS['org.storage.stratis1.filesystem']))
-MOPool = managed_object_class("MOPool",
-                              ET.fromstring(
-                                  SPECS['org.storage.stratis1.pool']))
-MODev = managed_object_class("MODev",
-                             ET.fromstring(
-                                 SPECS['org.storage.stratis1.blockdev']))
+try:
+    MOFilesystem = managed_object_class(
+        "MOFilesystem", ET.fromstring(
+            SPECS['org.storage.stratis1.filesystem']))
+    MOPool = managed_object_class("MOPool",
+                                  ET.fromstring(
+                                      SPECS['org.storage.stratis1.pool']))
+    MODev = managed_object_class("MODev",
+                                 ET.fromstring(
+                                     SPECS['org.storage.stratis1.blockdev']))
+
+    _FILESYSTEM_INTERFACE = 'org.storage.stratis1.filesystem'
+    filesystems = mo_query_builder(ET.fromstring(SPECS[_FILESYSTEM_INTERFACE]))
+
+    _POOL_INTERFACE = 'org.storage.stratis1.pool'
+    pools = mo_query_builder(ET.fromstring(SPECS[_POOL_INTERFACE]))
+
+    _BLOCKDEV_INTERFACE = 'org.storage.stratis1.blockdev'
+    devs = mo_query_builder(ET.fromstring(SPECS[_BLOCKDEV_INTERFACE]))
+except DbusClientGenerationError as err:
+    raise StratisCliGenerationError(
+        "Failed to generate some class needed for examining D-Bus data"
+    ) from err
 
 
 def unique(iterable):
@@ -226,13 +236,3 @@ def unique(iterable):
     if len(result) != 1:
         raise StratisCliUniqueLookupError(result)
     return result[0]
-
-
-_FILESYSTEM_INTERFACE = 'org.storage.stratis1.filesystem'
-filesystems = mo_query_builder(ET.fromstring(SPECS[_FILESYSTEM_INTERFACE]))
-
-_POOL_INTERFACE = 'org.storage.stratis1.pool'
-pools = mo_query_builder(ET.fromstring(SPECS[_POOL_INTERFACE]))
-
-_BLOCKDEV_INTERFACE = 'org.storage.stratis1.blockdev'
-devs = mo_query_builder(ET.fromstring(SPECS[_BLOCKDEV_INTERFACE]))

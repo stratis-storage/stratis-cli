@@ -17,6 +17,7 @@ Highest level runner.
 
 import dbus
 
+from dbus_client_gen import DbusClientRuntimeError
 from dbus_python_client_gen import DPClientRuntimeError
 
 from ._errors import StratisCliActionError
@@ -40,7 +41,8 @@ def run():
             try:
                 result.func(result)
             except (dbus.exceptions.DBusException, AttributeError,
-                    DPClientRuntimeError, StratisCliRuntimeError) as err:
+                    DbusClientRuntimeError, DPClientRuntimeError,
+                    StratisCliRuntimeError) as err:
                 raise StratisCliActionError(command_line_args, result) from err
         except StratisCliActionError as err:
             if result.propagate:
