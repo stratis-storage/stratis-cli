@@ -183,41 +183,36 @@ SPECS = {
 """,
 }
 
+_FILESYSTEM_INTERFACE = 'org.storage.stratis1.filesystem'
+_POOL_INTERFACE = 'org.storage.stratis1.pool'
+_BLOCKDEV_INTERFACE = 'org.storage.stratis1.blockdev'
+
 try:
-    Filesystem = make_class("Filesystem",
-                            ET.fromstring(
-                                SPECS['org.storage.stratis1.filesystem']))
+    filesystem_spec = ET.fromstring(SPECS[_FILESYSTEM_INTERFACE])
+    Filesystem = make_class("Filesystem", filesystem_spec)
+    MOFilesystem = managed_object_class("MOFilesystem", filesystem_spec)
+    filesystems = mo_query_builder(filesystem_spec)
+
+    pool_spec = ET.fromstring(SPECS[_POOL_INTERFACE])
+    Pool = make_class("Pool", pool_spec)
+    MOPool = managed_object_class("MOPool", pool_spec)
+    pools = mo_query_builder(pool_spec)
+
+    blockdev_spec = ET.fromstring(SPECS[_BLOCKDEV_INTERFACE])
+    MODev = managed_object_class("MODev", blockdev_spec)
+    devs = mo_query_builder(blockdev_spec)
+
     Manager = make_class("Manager",
                          ET.fromstring(SPECS['org.storage.stratis1.Manager']))
+
     ObjectManager = make_class(
         "ObjectManager",
         ET.fromstring(SPECS['org.freedesktop.DBus.ObjectManager']))
-    Pool = make_class("Pool",
-                      ET.fromstring(SPECS['org.storage.stratis1.pool']))
+
 except DPClientGenerationError as err:
     raise StratisCliGenerationError(
         "Failed to generate some class needed for invoking dbus-python methods"
     ) from err
-
-try:
-    MOFilesystem = managed_object_class(
-        "MOFilesystem", ET.fromstring(
-            SPECS['org.storage.stratis1.filesystem']))
-    MOPool = managed_object_class("MOPool",
-                                  ET.fromstring(
-                                      SPECS['org.storage.stratis1.pool']))
-    MODev = managed_object_class("MODev",
-                                 ET.fromstring(
-                                     SPECS['org.storage.stratis1.blockdev']))
-
-    _FILESYSTEM_INTERFACE = 'org.storage.stratis1.filesystem'
-    filesystems = mo_query_builder(ET.fromstring(SPECS[_FILESYSTEM_INTERFACE]))
-
-    _POOL_INTERFACE = 'org.storage.stratis1.pool'
-    pools = mo_query_builder(ET.fromstring(SPECS[_POOL_INTERFACE]))
-
-    _BLOCKDEV_INTERFACE = 'org.storage.stratis1.blockdev'
-    devs = mo_query_builder(ET.fromstring(SPECS[_BLOCKDEV_INTERFACE]))
 except DbusClientGenerationError as err:
     raise StratisCliGenerationError(
         "Failed to generate some class needed for examining D-Bus data"
