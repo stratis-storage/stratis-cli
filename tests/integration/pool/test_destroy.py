@@ -18,8 +18,8 @@ Test 'destroy'.
 import unittest
 
 from stratis_cli._errors import StratisCliActionError
-from stratis_cli._errors import StratisCliDbusLookupError
 from stratis_cli._errors import StratisCliEngineError
+from stratis_cli._errors import StratisCliUniqueLookupError
 
 from stratis_cli._stratisd_constants import StratisdErrors
 
@@ -60,7 +60,7 @@ class Destroy1TestCase(unittest.TestCase):
         with self.assertRaises(StratisCliActionError) as context:
             RUNNER(command_line)
         cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliDbusLookupError)
+        self.assertIsInstance(cause, StratisCliUniqueLookupError)
 
 
 class Destroy2TestCase(unittest.TestCase):

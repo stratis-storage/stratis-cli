@@ -19,12 +19,13 @@ import xml.etree.ElementTree as ET
 
 from dbus_client_gen import managed_object_class
 from dbus_client_gen import mo_query_builder
+from dbus_client_gen import DbusClientGenerationError
 
 from dbus_python_client_gen import make_class
 from dbus_python_client_gen import DPClientGenerationError
 
-from .._errors import StratisCliDbusLookupError
 from .._errors import StratisCliGenerationError
+from .._errors import StratisCliUniqueLookupError
 
 SPECS = {
     "org.freedesktop.DBus.ObjectManager":
@@ -182,76 +183,51 @@ SPECS = {
 """,
 }
 
+_FILESYSTEM_INTERFACE = 'org.storage.stratis1.filesystem'
+_POOL_INTERFACE = 'org.storage.stratis1.pool'
+_BLOCKDEV_INTERFACE = 'org.storage.stratis1.blockdev'
+
 try:
-    Filesystem = make_class("Filesystem",
-                            ET.fromstring(
-                                SPECS['org.storage.stratis1.filesystem']))
+    filesystem_spec = ET.fromstring(SPECS[_FILESYSTEM_INTERFACE])
+    Filesystem = make_class("Filesystem", filesystem_spec)
+    MOFilesystem = managed_object_class("MOFilesystem", filesystem_spec)
+    filesystems = mo_query_builder(filesystem_spec)
+
+    pool_spec = ET.fromstring(SPECS[_POOL_INTERFACE])
+    Pool = make_class("Pool", pool_spec)
+    MOPool = managed_object_class("MOPool", pool_spec)
+    pools = mo_query_builder(pool_spec)
+
+    blockdev_spec = ET.fromstring(SPECS[_BLOCKDEV_INTERFACE])
+    MODev = managed_object_class("MODev", blockdev_spec)
+    devs = mo_query_builder(blockdev_spec)
+
     Manager = make_class("Manager",
                          ET.fromstring(SPECS['org.storage.stratis1.Manager']))
+
     ObjectManager = make_class(
         "ObjectManager",
         ET.fromstring(SPECS['org.freedesktop.DBus.ObjectManager']))
-    Pool = make_class("Pool",
-                      ET.fromstring(SPECS['org.storage.stratis1.pool']))
+
 except DPClientGenerationError as err:
     raise StratisCliGenerationError(
         "Failed to generate some class needed for invoking dbus-python methods"
     ) from err
-
-# FIXME: catch DbusClientGenerationError once exported # pylint: disable=fixme
-# Note that these managed_object_class method calls can never actually raise an
-# exception, because the managed_object_class method only raises an exception on
-# introspection data that does not match the expected schema, and if there is
-# such data, then the calls to make_class() above will already have caused an
-# exception to be raised, and this code will never be reached.
-MOFilesystem = managed_object_class(
-    "MOFilesystem", ET.fromstring(SPECS['org.storage.stratis1.filesystem']))
-MOPool = managed_object_class("MOPool",
-                              ET.fromstring(
-                                  SPECS['org.storage.stratis1.pool']))
-MODev = managed_object_class("MODev",
-                             ET.fromstring(
-                                 SPECS['org.storage.stratis1.blockdev']))
+except DbusClientGenerationError as err:
+    raise StratisCliGenerationError(
+        "Failed to generate some class needed for examining D-Bus data"
+    ) from err
 
 
-def _unique_wrapper(interface, func):
+def unique(iterable):
     """
-    Wraps other methods, implementing an additional unique parameter.
+    Get a unique result from the iterable. If the result is not unique,
+    raise an exception.
+
+    :returns: an object path and its corresponding data
+    :rtype: object path * dict
     """
-
-    def the_func(managed_objects, props=None, unique=False):
-        """
-        Call func on managed_objects and props. If unique is True, return
-        the unique result or else raise an error. Otherwise, return the
-        original result.
-
-        :param dict managed_objects: result of calling GetManagedObjects()
-        :param dict props: props to narrow search on, empty if None
-        :param bool unique: whether the result is required to be unique
-
-        :returns: the result of calling the_func, or a unique element
-        :rtype: generator of str * dict OR a single pair of str * dict
-        :raises StratisCliDbusLookupError: if unique == True and none found
-        """
-        result = func(managed_objects, props=props)
-        if unique is True:
-            result = [x for x in result]
-            if len(result) != 1:
-                raise StratisCliDbusLookupError(interface, props)
-            return result[0]
-        return result
-
-    return the_func
-
-
-_FILESYSTEM_INTERFACE = 'org.storage.stratis1.filesystem'
-_filesystems = mo_query_builder(ET.fromstring(SPECS[_FILESYSTEM_INTERFACE]))
-filesystems = _unique_wrapper(_FILESYSTEM_INTERFACE, _filesystems)
-
-_POOL_INTERFACE = 'org.storage.stratis1.pool'
-_pools = mo_query_builder(ET.fromstring(SPECS[_POOL_INTERFACE]))
-pools = _unique_wrapper(_POOL_INTERFACE, _pools)
-
-_BLOCKDEV_INTERFACE = 'org.storage.stratis1.blockdev'
-_devs = mo_query_builder(ET.fromstring(SPECS[_BLOCKDEV_INTERFACE]))
-devs = _unique_wrapper(_BLOCKDEV_INTERFACE, _devs)
+    result = [x for x in iterable]
+    if len(result) != 1:
+        raise StratisCliUniqueLookupError(result)
+    return result[0]

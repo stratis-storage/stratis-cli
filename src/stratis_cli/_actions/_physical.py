@@ -31,6 +31,7 @@ from ._data import MODev
 from ._data import ObjectManager
 from ._data import Pool
 from ._data import pools
+from ._data import unique
 from ._formatting import print_table
 
 
@@ -68,13 +69,15 @@ class PhysicalActions(object):
         """
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        (parent_pool_object_path, _) = pools(
-            managed_objects, props={'Name': namespace.pool_name}, unique=True)
+        (parent_pool_object_path, _) = unique(
+            pools(props={
+                'Name': namespace.pool_name
+            }).search(managed_objects))
         modevs = [
-            MODev(info) for _, info in devs(
-                managed_objects,
-                props={"Pool": parent_pool_object_path},
-            )
+            MODev(info)
+            for _, info in devs(props={
+                "Pool": parent_pool_object_path
+            }, ).search(managed_objects)
         ]
         tables = [[
             modev.Devnode(),
@@ -96,8 +99,10 @@ class PhysicalActions(object):
         """
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        (pool_object_path, _) = pools(
-            managed_objects, props={'Name': namespace.pool_name}, unique=True)
+        (pool_object_path, _) = unique(
+            pools(props={
+                'Name': namespace.pool_name
+            }).search(managed_objects))
 
         (_, rc, message) = Pool.Methods.AddDataDevs(
             get_object(pool_object_path), {
@@ -114,8 +119,10 @@ class PhysicalActions(object):
         """
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        (pool_object_path, _) = pools(
-            managed_objects, props={'Name': namespace.pool_name}, unique=True)
+        (pool_object_path, _) = unique(
+            pools(props={
+                'Name': namespace.pool_name
+            }).search(managed_objects))
 
         (_, rc, message) = Pool.Methods.AddCacheDevs(
             get_object(pool_object_path), {

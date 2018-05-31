@@ -31,6 +31,7 @@ from ._data import MOPool
 from ._data import ObjectManager
 from ._data import Pool
 from ._data import pools
+from ._data import unique
 from ._formatting import print_table
 
 
@@ -69,7 +70,7 @@ class TopActions(object):
         proxy = get_object(TOP_OBJECT)
 
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        mopools = (MOPool(info) for _, info in pools(managed_objects))
+        mopools = (MOPool(info) for _, info in pools().search(managed_objects))
         tables = [[
             mopool.Name(),
             str(Range(mopool.TotalPhysicalSize(), SECTOR_SIZE)),
@@ -90,8 +91,10 @@ class TopActions(object):
         """
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        (pool_object_path, _) = pools(
-            managed_objects, props={'Name': namespace.pool_name}, unique=True)
+        (pool_object_path, _) = unique(
+            pools(props={
+                'Name': namespace.pool_name
+            }).search(managed_objects))
 
         (_, rc, message) = \
            Manager.Methods.DestroyPool(proxy, {'pool': pool_object_path})
@@ -106,8 +109,10 @@ class TopActions(object):
         """
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        (pool_object_path, _) = pools(
-            managed_objects, props={'Name': namespace.current}, unique=True)
+        (pool_object_path, _) = unique(
+            pools(props={
+                'Name': namespace.current
+            }).search(managed_objects))
 
         (_, rc, message) = Pool.Methods.SetName(
             get_object(pool_object_path), {'name': namespace.new})

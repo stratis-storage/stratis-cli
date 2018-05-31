@@ -19,6 +19,20 @@ import sys
 
 import dbus
 
+from dbus_client_gen import DbusClientMissingInterfaceError
+from dbus_client_gen import DbusClientMissingPropertyError
+from dbus_client_gen import DbusClientMissingSearchPropertiesError
+from dbus_client_gen import DbusClientUnknownSearchPropertiesError
+
+_DBUS_INTERFACE_MSG = (
+    "The version of stratis you are running expects a different "
+    "D-Bus interface than the one stratisd provides. Most likely "
+    "you are running a version that requires a newer version of "
+    "stratisd than you are running.")
+
+_STRATIS_CLI_BUG_MSG = ("Most likely there is a bug in stratis, the program "
+                        "you are running.")
+
 
 def get_errors(exc):
     """
@@ -46,6 +60,7 @@ def get_error_msgs(errors):
     return
 
 
+# pylint: disable=too-many-return-statements
 def interpret_errors(errors):
     """
     Laboriously add best guesses at the cause of the error, based on
@@ -69,6 +84,15 @@ def interpret_errors(errors):
         errors[1].get_dbus_name() == \
         'org.freedesktop.DBus.Error.ServiceUnknown':
         return "Most likely the Stratis daemon, stratisd, is not running."
+    if isinstance(errors[1], DbusClientUnknownSearchPropertiesError):
+        return _STRATIS_CLI_BUG_MSG
+    if isinstance(errors[1], DbusClientMissingSearchPropertiesError):
+        return _DBUS_INTERFACE_MSG
+    if isinstance(errors[1], DbusClientMissingInterfaceError):
+        return _STRATIS_CLI_BUG_MSG
+    if isinstance(errors[1], DbusClientMissingPropertyError):
+        return _DBUS_INTERFACE_MSG
+
     return None
 
 

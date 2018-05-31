@@ -18,7 +18,7 @@ Test 'create'.
 import unittest
 
 from stratis_cli._errors import StratisCliActionError
-from stratis_cli._errors import StratisCliDbusLookupError
+from stratis_cli._errors import StratisCliUniqueLookupError
 
 from .._misc import _device_list
 from .._misc import RUNNER
@@ -56,7 +56,7 @@ class AddDataTestCase(unittest.TestCase):
         with self.assertRaises(StratisCliActionError) as context:
             RUNNER(command_line)
         cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliDbusLookupError)
+        self.assertIsInstance(cause, StratisCliUniqueLookupError)
 
 
 class AddCacheTestCase(unittest.TestCase):
@@ -88,4 +88,4 @@ class AddCacheTestCase(unittest.TestCase):
         with self.assertRaises(StratisCliActionError) as context:
             RUNNER(command_line)
         cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliDbusLookupError)
+        self.assertIsInstance(cause, StratisCliUniqueLookupError)

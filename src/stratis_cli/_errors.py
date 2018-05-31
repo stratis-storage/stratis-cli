@@ -32,26 +32,25 @@ class StratisCliRuntimeError(StratisCliError):
     pass
 
 
-class StratisCliDbusLookupError(StratisCliRuntimeError):
+class StratisCliUniqueLookupError(StratisCliRuntimeError):
     """
-    Error raised when an object path is not found for a given specification.
+    Error raised when an unique object path is not found for a given
+    specification.
     """
 
-    def __init__(self, interface, spec):
+    def __init__(self, matches):
         """
         Initializer.
 
-        :param str interface: the specified interface, or some part thereof
-        :param spec: the narrowing spec, based on interface properties
-        :type spec: a dict of str * object
+        :param matches: the list of matches actually found
+        :type matches: list of object path * dict
         """
         # pylint: disable=super-init-not-called
-        self.interface = interface
-        self.spec = spec
+        self.matches = matches
 
     def __str__(self):
-        return "No object path found for interface %s and spec %s" % \
-           (self.interface, self.spec)
+        return "No unique item found among returned matches: (%s)" % \
+            ", ".join(str(x) for x in self.matches)
 
 
 class StratisCliEngineError(StratisCliRuntimeError):

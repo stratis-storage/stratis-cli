@@ -29,6 +29,7 @@ from ._data import Pool
 from ._data import Filesystem
 from ._data import filesystems
 from ._data import pools
+from ._data import unique
 from ._formatting import print_table
 
 
@@ -46,8 +47,10 @@ class LogicalActions(object):
         """
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        (pool_object_path, _) = pools(
-            managed_objects, props={'Name': namespace.pool_name}, unique=True)
+        (pool_object_path, _) = unique(
+            pools(props={
+                'Name': namespace.pool_name
+            }).search(managed_objects))
 
         (_, rc, message) = Pool.Methods.CreateFilesystems(
             get_object(pool_object_path), {'specs': namespace.fs_name})
@@ -63,10 +66,13 @@ class LogicalActions(object):
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
-        (pool_object_path, _) = pools(
-            managed_objects, props={'Name': namespace.pool_name}, unique=True)
-        matching_filesystems = filesystems(
-            managed_objects, props={'Pool': pool_object_path})
+        (pool_object_path, _) = unique(
+            pools(props={
+                'Name': namespace.pool_name
+            }).search(managed_objects))
+        matching_filesystems = filesystems(props={
+            'Pool': pool_object_path
+        }).search(managed_objects)
 
         tables = [[
             MOFilesystem(info).Name(),
@@ -85,15 +91,16 @@ class LogicalActions(object):
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
-        (pool_object_path, _) = pools(
-            managed_objects, props={'Name': namespace.pool_name}, unique=True)
+        (pool_object_path, _) = unique(
+            pools(props={
+                'Name': namespace.pool_name
+            }).search(managed_objects))
         fs_object_paths = [
-            op for name in namespace.fs_name for (op, _) in filesystems(
-                managed_objects,
-                props={
-                    'Name': name,
-                    'Pool': pool_object_path
-                })
+            op for name in namespace.fs_name
+            for (op, _) in filesystems(props={
+                'Name': name,
+                'Pool': pool_object_path
+            }).search(managed_objects)
         ]
 
         (_, rc, message) = Pool.Methods.DestroyFilesystems(
@@ -112,15 +119,15 @@ class LogicalActions(object):
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
-        (pool_object_path, _) = pools(
-            managed_objects, props={'Name': namespace.pool_name}, unique=True)
-        (origin_fs_object_path, _) = filesystems(
-            managed_objects,
-            props={
+        (pool_object_path, _) = unique(
+            pools(props={
+                'Name': namespace.pool_name
+            }).search(managed_objects))
+        (origin_fs_object_path, _) = unique(
+            filesystems(props={
                 'Name': namespace.origin_name,
                 'Pool': pool_object_path
-            },
-            unique=True)
+            }).search(managed_objects))
 
         (_, rc, message) = Pool.Methods.SnapshotFilesystem(
             get_object(pool_object_path), {
@@ -138,15 +145,15 @@ class LogicalActions(object):
         """
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        (pool_object_path, _) = pools(
-            managed_objects, props={'Name': namespace.pool_name}, unique=True)
-        (fs_object_path, _) = filesystems(
-            managed_objects,
-            props={
+        (pool_object_path, _) = unique(
+            pools(props={
+                'Name': namespace.pool_name
+            }).search(managed_objects))
+        (fs_object_path, _) = unique(
+            filesystems(props={
                 'Name': namespace.fs_name,
                 'Pool': pool_object_path
-            },
-            unique=True)
+            }).search(managed_objects))
 
         (_, rc, message) = Filesystem.Methods.SetName(
             get_object(fs_object_path), {'name': namespace.new_name})
