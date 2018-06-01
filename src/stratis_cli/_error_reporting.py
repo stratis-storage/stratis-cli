@@ -74,26 +74,31 @@ def interpret_errors(errors):
     # pylint: disable=fixme
     # TODO: This method is extremely rudimentary. It should not be extended
     # using exactly the structure it has now.
-    if isinstance(errors[1], AttributeError):
-        import traceback
-        frame = traceback.extract_tb(errors[1].__traceback__)[-1]
-        fmt_str = ("Most likely there is an error in the source at line %d "
-                   "in file %s. The text of the line is \"%s\".")
-        return fmt_str % (frame.lineno, frame.filename, frame.line)
-    if isinstance(errors[1], dbus.exceptions.DBusException) and \
-        errors[1].get_dbus_name() == \
-        'org.freedesktop.DBus.Error.ServiceUnknown':
-        return "Most likely the Stratis daemon, stratisd, is not running."
-    if isinstance(errors[1], DbusClientUnknownSearchPropertiesError):
-        return _STRATIS_CLI_BUG_MSG
-    if isinstance(errors[1], DbusClientMissingSearchPropertiesError):
-        return _DBUS_INTERFACE_MSG
-    if isinstance(errors[1], DbusClientMissingInterfaceError):
-        return _STRATIS_CLI_BUG_MSG
-    if isinstance(errors[1], DbusClientMissingPropertyError):
-        return _DBUS_INTERFACE_MSG
+    try:
+        if isinstance(errors[1], AttributeError):
+            import traceback
+            frame = traceback.extract_tb(errors[1].__traceback__)[-1]
+            fmt_str = (
+                "Most likely there is an error in the source at line %d "
+                "in file %s. The text of the line is \"%s\".")
+            return fmt_str % (frame.lineno, frame.filename, frame.line)
+        if isinstance(errors[1], dbus.exceptions.DBusException) and \
+            errors[1].get_dbus_name() == \
+            'org.freedesktop.DBus.Error.ServiceUnknown':
+            return "Most likely the Stratis daemon, stratisd, is not running."
+        if isinstance(errors[1], DbusClientUnknownSearchPropertiesError):
+            return _STRATIS_CLI_BUG_MSG
+        if isinstance(errors[1], DbusClientMissingSearchPropertiesError):
+            return _DBUS_INTERFACE_MSG
+        if isinstance(errors[1], DbusClientMissingInterfaceError):
+            return _STRATIS_CLI_BUG_MSG
+        if isinstance(errors[1], DbusClientMissingPropertyError):
+            return _DBUS_INTERFACE_MSG
 
-    return None
+        return None
+    # pylint: disable=broad-except
+    except Exception:
+        return None
 
 
 def generate_error_message(errors):
