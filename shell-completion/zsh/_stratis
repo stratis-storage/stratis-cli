@@ -1,0 +1,89 @@
+#compdef stratis
+
+# Completion function for zsh
+
+(( $+functions[_stratis_pools] )) ||
+_stratis_pools() {
+  local -a expl
+  _description pools expl pool
+  compadd "$@" "$expl[@]" - \
+      ${${(f)"$(_call_program stratis-pools stratis pool list)"}:#*[[:blank:]]*}
+}
+
+(( $+functions[_stratis_filesystems] )) ||
+_stratis_filesystems() {
+  local pool="$argv[-1]"
+  local -a expl
+  _description pools expl pool
+  compadd "${(@)argv[1,-2]}" "$expl[@]" - \
+      ${${(f)"$(_call_program stratis-filesystems stratis filesystem list $pool)"}:#*[[:blank:]]*}
+}
+
+local curcontext="$curcontext" nm="$compstate[nmatches]"
+local -a state state_descr line help
+local -A opt_args
+
+help=( '(- 1)'{-h,--help}'[display help on command]' )
+_arguments -C $help \
+  '--propagate[propagate D-Bus errors]' \
+  '(- 1)--version[display version information]' \
+  '(--version --propagate)1:command:(pool filesystem blockdev daemon)' \
+  '*::: :->args'
+
+if [[ -n $state ]]; then
+  curcontext="${curcontext%:*}-${(j.-.)line[1,2]}:"
+  case ${(j.:.)line[1,2]} in
+    pool:create)
+      _arguments $help \
+	'--force[overwrite existing metadata on specified devices]' \
+	'--redundancy=[specify redundancy level for this pool]:redundancy:(none)' \
+	':pool name' '*:block device:_files -P/ -W/ -g "*(-%)"'
+    ;;
+    pool:list) _arguments $help && ret=0 ;;
+    pool:destroy) _arguments $help ':pool:_stratis_pools' ;;
+    pool:rename) _arguments $help ':current pool name:_stratis_pools' ':new pool name' ;;
+    pool:*)
+      _wanted commands expl command compadd create list rename destroy
+    ;;
+
+    filesystem:create)
+      _arguments $help '(-):pool:_stratis_pools' '*:filesystem name'
+    ;;
+    filesystem:list) _arguments $help '(-):pool:_stratis_pools' ;;
+    filesystem:destroy)
+      _arguments $help '(-):pool:_stratis_pools' \
+	'*:filesystem:_stratis_filesystems $line[1]' \
+    ;;
+    filesystem:rename)
+      _arguments $help '(-):pool:_stratis_pools' \
+	':current filesystem name:_stratis_filesystems $line[1]' \
+	':new filesystem name'
+    ;;
+    filesystem:snapshot)
+      _arguments $help '(-):pool:_stratis_pools' \
+	':origin:_stratis_filesystems $line[1]' \
+	':snapshot name'
+    ;;
+    filesystem:*)
+      _wanted commands expl command compadd \
+	  create snapshot list destroy rename
+    ;;
+    blockdev:add-(cache|data))
+      _arguments $help \
+	'(-)--force[use devices even if they appear to contain existing data]' \
+	'(-):pool:_stratis_pools' '*:block device:_files -P/ -W/ -g "*(-%)"'
+    ;;
+    blockdev:list) _arguments $help '(-):pool:_stratis_pools' ;;
+    blockdev:*)
+      _wanted commands expl command compadd -M 'r:|-=* r:|=*' \
+	  add-data add-cache list
+    ;;
+    daemon:(redundancy|version)) _arguments $help ;;
+    daemon:*)
+      _wanted commands expl command compadd redundancy version
+    ;;
+  esac
+fi
+
+[[ nm -ne compstate[nmatches] ]] && return 0
+return 1
