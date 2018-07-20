@@ -57,7 +57,6 @@ def get_error_msgs(errors):
             error_str = str(error)
         if error_str is not None and error_str != "":
             yield error_str
-    return
 
 
 # pylint: disable=too-many-return-statements

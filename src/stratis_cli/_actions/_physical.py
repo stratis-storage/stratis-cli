@@ -57,7 +57,7 @@ def tier_val_to_string(val):
         return UNKNOWN_VALUE_MARKER
 
 
-class PhysicalActions(object):
+class PhysicalActions():
     """
     Actions on the physical aspects of a pool.
     """

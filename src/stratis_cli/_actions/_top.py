@@ -35,7 +35,7 @@ from ._data import unique
 from ._formatting import print_table
 
 
-class TopActions(object):
+class TopActions():
     """
     Top level actions.
     """

@@ -33,7 +33,7 @@ from ._data import unique
 from ._formatting import print_table
 
 
-class LogicalActions(object):
+class LogicalActions():
     """
     Actions on the logical aspects of a pool.
     """
