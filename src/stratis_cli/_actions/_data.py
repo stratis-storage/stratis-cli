@@ -27,6 +27,8 @@ from dbus_python_client_gen import DPClientGenerationError
 from .._errors import StratisCliGenerationError
 from .._errors import StratisCliUniqueLookupError
 
+from ._constants import DBUS_TIMEOUT_SECONDS
+
 SPECS = {
     "org.freedesktop.DBus.ObjectManager":
     """
@@ -189,12 +191,13 @@ _BLOCKDEV_INTERFACE = 'org.storage.stratis1.blockdev'
 
 try:
     filesystem_spec = ET.fromstring(SPECS[_FILESYSTEM_INTERFACE])
-    Filesystem = make_class("Filesystem", filesystem_spec)
+    Filesystem = make_class("Filesystem", filesystem_spec,
+                            DBUS_TIMEOUT_SECONDS)
     MOFilesystem = managed_object_class("MOFilesystem", filesystem_spec)
     filesystems = mo_query_builder(filesystem_spec)
 
     pool_spec = ET.fromstring(SPECS[_POOL_INTERFACE])
-    Pool = make_class("Pool", pool_spec)
+    Pool = make_class("Pool", pool_spec, DBUS_TIMEOUT_SECONDS)
     MOPool = managed_object_class("MOPool", pool_spec)
     pools = mo_query_builder(pool_spec)
 
@@ -203,11 +206,13 @@ try:
     devs = mo_query_builder(blockdev_spec)
 
     Manager = make_class("Manager",
-                         ET.fromstring(SPECS['org.storage.stratis1.Manager']))
+                         ET.fromstring(SPECS['org.storage.stratis1.Manager']),
+                         DBUS_TIMEOUT_SECONDS)
 
     ObjectManager = make_class(
         "ObjectManager",
-        ET.fromstring(SPECS['org.freedesktop.DBus.ObjectManager']))
+        ET.fromstring(SPECS['org.freedesktop.DBus.ObjectManager']),
+        DBUS_TIMEOUT_SECONDS)
 
 except DPClientGenerationError as err:
     raise StratisCliGenerationError(
