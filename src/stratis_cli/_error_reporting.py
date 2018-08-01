@@ -83,10 +83,6 @@ def interpret_errors(errors):
                 "Most likely there is an error in the source at line %d "
                 "in file %s. The text of the line is \"%s\".")
             return fmt_str % (frame.lineno, frame.filename, frame.line)
-        if isinstance(error, dbus.exceptions.DBusException) and \
-            error.get_dbus_name() == \
-            'org.freedesktop.DBus.Error.ServiceUnknown':
-            return "Most likely the Stratis daemon, stratisd, is not running."
         if isinstance(error, DbusClientUnknownSearchPropertiesError):
             return _STRATIS_CLI_BUG_MSG
         if isinstance(error, DbusClientMissingSearchPropertiesError):
@@ -102,6 +98,10 @@ def interpret_errors(errors):
             error.get_dbus_name() == \
             'org.freedesktop.DBus.Error.AccessDenied':
             return "Most likely stratis has insufficient permissions for the action requested."
+        if isinstance(error, dbus.exceptions.DBusException) and \
+            error.get_dbus_name() == \
+            'org.freedesktop.DBus.Error.NameHasNoOwner':
+            return "Most likely the Stratis daemon, stratisd, is not running."
 
         return None
     # pylint: disable=broad-except
