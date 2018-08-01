@@ -96,6 +96,13 @@ def interpret_errors(errors):
         if isinstance(error, DbusClientMissingPropertyError):
             return _DBUS_INTERFACE_MSG
 
+        # Inspect lowest error
+        error = errors[-1]
+        if isinstance(error, dbus.exceptions.DBusException) and \
+            error.get_dbus_name() == \
+            'org.freedesktop.DBus.Error.AccessDenied':
+            return "Most likely stratis has insufficient permissions for the action requested."
+
         return None
     # pylint: disable=broad-except
     except Exception:
