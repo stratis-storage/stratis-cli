@@ -92,15 +92,16 @@ class PhysicalActions():
             for _, info in devs(props=properties, ).search(managed_objects)
         ]
         tables = [[
+            path_to_name[modev.Pool()],
             modev.Devnode(),
             str(Range(modev.TotalPhysicalSize(), SECTOR_SIZE)),
             state_val_to_string(modev.State()),
-            tier_val_to_string(modev.Tier()), path_to_name[modev.Pool()]
+            tier_val_to_string(modev.Tier())
         ] for modev in modevs]
         print_table(
-            ["Device Node", "Physical Size", "State", "Tier", "Pool Name"],
-            sorted(tables, key=lambda entry: (entry[4], entry[0])),
-            ['<', '>', '>', '>', '>'])
+            ["Pool Name", "Device Node", "Physical Size", "State", "Tier"],
+            sorted(tables, key=lambda entry: (entry[0], entry[1])),
+            ['<', '<', '>', '>', '>'])
 
     @staticmethod
     def add_data_device(namespace):
