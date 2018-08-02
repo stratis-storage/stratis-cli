@@ -65,7 +65,8 @@ PHYSICAL_SUBCMDS = [
      dict(
          help="List information about blockdevs in the pool",
          args=[
-             ('pool_name', dict(action='store', help='Pool name')),
+             ('pool_name',
+              dict(action='store', default=None, nargs="?", help='Pool name')),
          ],
          func=PhysicalActions.list_pool)),
 ]

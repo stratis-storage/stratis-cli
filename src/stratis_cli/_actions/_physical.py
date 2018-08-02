@@ -28,6 +28,7 @@ from ._constants import TOP_OBJECT
 from ._constants import UNKNOWN_VALUE_MARKER
 from ._data import devs
 from ._data import MODev
+from ._data import MOPool
 from ._data import ObjectManager
 from ._data import Pool
 from ._data import pools
@@ -69,28 +70,38 @@ class PhysicalActions():
         """
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        (parent_pool_object_path, _) = unique(
-            pools(props={
-                'Name': namespace.pool_name
-            }).search(managed_objects))
+
+        # If user specified a pool name we wil constrain output to that one
+        # pool, else we will output all blockdevs.
+        if namespace.pool_name:
+            (parent_pool_object_path, _) = unique(
+                pools(props={
+                    'Name': namespace.pool_name
+                }).search(managed_objects))
+
+            properties = {"Pool": parent_pool_object_path}
+            path_to_name = {parent_pool_object_path: namespace.pool_name}
+        else:
+            properties = {}
+            path_to_name = dict(
+                (path, MOPool(info).Name())
+                for path, info in pools().search(managed_objects))
+
         modevs = [
             MODev(info)
-            for _, info in devs(props={
-                "Pool": parent_pool_object_path
-            }, ).search(managed_objects)
+            for _, info in devs(props=properties, ).search(managed_objects)
         ]
         tables = [[
+            path_to_name[modev.Pool()],
             modev.Devnode(),
             str(Range(modev.TotalPhysicalSize(), SECTOR_SIZE)),
             state_val_to_string(modev.State()),
-            tier_val_to_string(modev.Tier()),
+            tier_val_to_string(modev.Tier())
         ] for modev in modevs]
-        print_table([
-            "Device Node",
-            "Physical Size",
-            "State",
-            "Tier",
-        ], sorted(tables, key=lambda entry: entry[0]), ['<', '>', '>', '>'])
+        print_table(
+            ["Pool Name", "Device Node", "Physical Size", "State", "Tier"],
+            sorted(tables, key=lambda entry: (entry[0], entry[1])),
+            ['<', '<', '>', '>', '>'])
 
     @staticmethod
     def add_data_device(namespace):
