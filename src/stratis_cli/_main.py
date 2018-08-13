@@ -20,6 +20,8 @@ import dbus
 from dbus_client_gen import DbusClientRuntimeError
 from dbus_python_client_gen import DPClientRuntimeError
 
+import justbytes as jb
+
 from ._errors import StratisCliActionError
 from ._errors import StratisCliRuntimeError
 from ._error_reporting import handle_error
@@ -31,6 +33,10 @@ def run():
     Generate a function that parses arguments and executes.
     """
     parser = gen_parser()
+
+    # Set default configuration parameters for display of sizes, i.e., values
+    # that are generally given in bytes or some multiple thereof.
+    jb.Config.set_display_config(jb.DisplayConfig(show_approx_str=False))
 
     def the_func(command_line_args):
         """
