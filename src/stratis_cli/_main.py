@@ -25,12 +25,17 @@ from ._errors import StratisCliRuntimeError
 from ._error_reporting import handle_error
 from ._parser import gen_parser
 
+import justbytes as jb
 
 def run():
     """
     Generate a function that parses arguments and executes.
     """
     parser = gen_parser()
+
+    # Disable showing indicator when printing sizes that values are
+    # approximate
+    jb.Config.set_display_config(jb.DisplayConfig(show_approx_str=False))
 
     def the_func(command_line_args):
         """
