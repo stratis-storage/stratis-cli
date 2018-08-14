@@ -73,7 +73,7 @@ class PhysicalActions():
 
         # If user specified a pool name we wil constrain output to that one
         # pool, else we will output all blockdevs.
-        if namespace.pool_name:
+        if vars(namespace).get("pool_name"):
             (parent_pool_object_path, _) = unique(
                 pools(props={
                     'Name': namespace.pool_name
