@@ -18,6 +18,7 @@ Top level parser for Stratis CLI.
 import argparse
 
 from .._actions import StratisActions
+from .._actions import TopActions
 
 from .._version import __version__
 
@@ -71,10 +72,12 @@ DAEMON_SUBCMDS = [
 ]
 
 ROOT_SUBCOMMANDS = [
-    ('pool', dict(
-        help="Perform General Pool Actions",
-        subcmds=POOL_SUBCMDS,
-    )),
+    ('pool',
+     dict(
+         help="Perform General Pool Actions",
+         subcmds=POOL_SUBCMDS,
+         func=TopActions.list_pools,
+     )),
     ('blockdev',
      dict(
          help="Commands related to block devices that make up the pool",
