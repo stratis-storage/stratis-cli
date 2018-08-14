@@ -68,5 +68,6 @@ PHYSICAL_SUBCMDS = [
              ('pool_name',
               dict(action='store', default=None, nargs="?", help='Pool name')),
          ],
-         func=PhysicalActions.list_pool)),
+         func=PhysicalActions.list_pool,
+         default=True)),
 ]

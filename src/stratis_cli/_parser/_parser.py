@@ -46,15 +46,20 @@ def add_subcommand(subparser, cmd):
     parser = subparser.add_parser(
         name, help=info['help'], aliases=info.get('aliases', []))
 
+    default_func = info.get('func', PRINT_HELP(parser))
+
     subcmds = info.get('subcmds')
     if subcmds is not None:
         subparsers = parser.add_subparsers(title='subcommands')
         for subcmd in subcmds:
             add_subcommand(subparsers, subcmd)
 
+            if subcmd[1].get("default", False) == True:
+                default_func = subcmd[1]['func']
+
     add_args(parser, info.get('args', []))
 
-    parser.set_defaults(func=info.get('func', PRINT_HELP(parser)))
+    parser.set_defaults(func=default_func)
 
 
 DAEMON_SUBCMDS = [

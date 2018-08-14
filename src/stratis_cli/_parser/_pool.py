@@ -52,6 +52,7 @@ POOL_SUBCMDS = [
          help="List pools",
          description="Lists Stratis pools that exist on the system",
          func=TopActions.list_pools,
+         default=True,
      )),
     ('destroy',
      dict(
