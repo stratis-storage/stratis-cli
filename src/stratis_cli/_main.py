@@ -27,12 +27,12 @@ from ._errors import StratisCliRuntimeError
 from ._error_reporting import handle_error
 from ._parser import gen_parser
 
+
 def run():
     """
     Generate a function that parses arguments and executes.
     """
     parser = gen_parser()
-
 
     # Set default configuration parameters for display of sizes, i.e., values
     # that are generally given in bytes or some multiple thereof.
