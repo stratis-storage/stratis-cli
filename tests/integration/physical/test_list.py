@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """
-Test 'create'.
+Test 'list'.
 """
 
 import unittest
@@ -57,6 +57,14 @@ class ListTestCase(unittest.TestCase):
         cause = context.exception.__cause__
         self.assertIsInstance(cause, StratisCliUniqueLookupError)
 
+    def testListEmpty(self):
+        """
+        Listing the devices should succeed without a pool name specified.
+        The list should be empty.
+        """
+        command_line = self._MENU
+        RUNNER(command_line)
+
 
 class List2TestCase(unittest.TestCase):
     """
@@ -86,4 +94,11 @@ class List2TestCase(unittest.TestCase):
         Listing the devices should succeed.
         """
         command_line = self._MENU + [self._POOLNAME]
+        RUNNER(command_line)
+
+    def testListEmpty(self):
+        """
+        Listing the devices should succeed without a pool name specified.
+        """
+        command_line = self._MENU
         RUNNER(command_line)
