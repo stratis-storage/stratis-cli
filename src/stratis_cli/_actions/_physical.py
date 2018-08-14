@@ -72,7 +72,7 @@ class PhysicalActions():
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
-        if hasattr(namespace, "pool_name") and namespace.pool_name is not None:
+        if getattr(namespace, "pool_name", None) is not None:
             (parent_pool_object_path, _) = unique(
                 pools(props={
                     'Name': namespace.pool_name
