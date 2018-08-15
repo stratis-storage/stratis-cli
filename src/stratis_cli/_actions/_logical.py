@@ -18,6 +18,7 @@ Miscellaneous logical actions.
 from __future__ import print_function
 
 from justbytes import Range
+from dateutil import parser as date_parser
 
 from .._errors import StratisCliEngineError
 
@@ -94,10 +95,11 @@ class LogicalActions():
             path_to_name[mofilesystem.Pool()],
             mofilesystem.Name(),
             str(Range(mofilesystem.Used(), 1)),
+            date_parser.parse(mofilesystem.Created()).astimezone().strftime("%b %d %Y %H:%M"),
         ] for mofilesystem in mofilesystems]
 
-        print_table(['Pool Name', 'Name', 'Used'], sorted(tables, key=lambda entry: entry[0]),
-                    ['<', '<', '>'])
+        print_table(['Pool Name', 'Name', 'Used', 'Created'], sorted(tables, key=lambda entry: entry[0]),
+                    ['<', '<', '>', '>'])
 
     @staticmethod
     def destroy_volumes(namespace):
