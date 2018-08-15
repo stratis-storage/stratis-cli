@@ -17,6 +17,8 @@ Miscellaneous logical actions.
 
 from __future__ import print_function
 
+from justbytes import Range
+
 from .._errors import StratisCliEngineError
 
 from .._stratisd_constants import StratisdErrors
@@ -78,10 +80,11 @@ class LogicalActions():
         tables = [[
             path_to_name[mofilesystem.Pool()],
             mofilesystem.Name(),
+            str(Range(mofilesystem.Used())),
         ] for mofilesystem in mofilesystems]
 
-        print_table(['Pool Name', 'Name'], sorted(tables, key=lambda entry: entry[0]),
-                    ['<', '<'])
+        print_table(['Pool Name', 'Name', 'Used'], sorted(tables, key=lambda entry: entry[0]),
+                    ['<', '<', '>'])
 
     @staticmethod
     def destroy_volumes(namespace):
