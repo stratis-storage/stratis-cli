@@ -39,6 +39,7 @@ setuptools.setup(
         'dbus-client-gen>=0.3',
         'dbus-python-client-gen>=0.5',
         'justbytes==0.11',
+        'python-dateutil',
     ],
     package_dir={"": "src"},
     packages=setuptools.find_packages("src"),
