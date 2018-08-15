@@ -70,7 +70,6 @@ class LogicalActions():
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
-
         if getattr(namespace, "pool_name", None) is not None:
             (parent_pool_object_path, _) = unique(
                 pools(props={
@@ -85,23 +84,25 @@ class LogicalActions():
                 (path, MOPool(info).Name())
                 for path, info in pools().search(managed_objects))
 
-
         mofilesystems = [
-            MOFilesystem(info)
-            for _, info in filesystems(props=properties, ).search(managed_objects)
+            MOFilesystem(info) for _, info in filesystems(props=properties)
+            .search(managed_objects)
         ]
 
         tables = [[
             path_to_name[mofilesystem.Pool()],
             mofilesystem.Name(),
             str(Range(mofilesystem.Used(), 1)),
-            date_parser.parse(mofilesystem.Created()).astimezone().strftime("%b %d %Y %H:%M"),
+            date_parser.parse(mofilesystem.Created()).astimezone().strftime(
+                "%b %d %Y %H:%M"),
             mofilesystem.Devnode(),
             ", ".join(mofilesystem.MountPoints()),
         ] for mofilesystem in mofilesystems]
 
-        print_table(['Pool Name', 'Name', 'Used', 'Created', 'Device', 'Mount Points'], sorted(tables, key=lambda entry: entry[0]),
-                    ['<', '<', '<', '<', '<', '<'])
+        print_table(
+            ['Pool Name', 'Name', 'Used', 'Created', 'Device', 'Mount Points'],
+            sorted(tables,
+                   key=lambda entry: entry[0]), ['<', '<', '<', '<', '<', '<'])
 
     @staticmethod
     def destroy_volumes(namespace):
