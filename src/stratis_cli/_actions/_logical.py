@@ -24,6 +24,7 @@ from .._stratisd_constants import StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._data import MOFilesystem
+from ._data import MOPool
 from ._data import ObjectManager
 from ._data import Pool
 from ._data import Filesystem
@@ -66,20 +67,34 @@ class LogicalActions():
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
-        (pool_object_path, _) = unique(
-            pools(props={
-                'Name': namespace.pool_name
-            }).search(managed_objects))
-        matching_filesystems = filesystems(props={
-            'Pool': pool_object_path
-        }).search(managed_objects)
+
+        if getattr(namespace, "pool_name", None) is not None:
+            (parent_pool_object_path, _) = unique(
+                pools(props={
+                    'Name': namespace.pool_name
+                }).search(managed_objects))
+
+            properties = {"Pool": parent_pool_object_path}
+            path_to_name = {parent_pool_object_path: namespace.pool_name}
+        else:
+            properties = {}
+            path_to_name = dict(
+                (path, MOPool(info).Name())
+                for path, info in pools().search(managed_objects))
+
+
+        mofilesystems = [
+            MOFilesystem(info)
+            for _, info in filesystems(props=properties, ).search(managed_objects)
+        ]
 
         tables = [[
-            MOFilesystem(info).Name(),
-        ] for _, info in matching_filesystems]
+            path_to_name[mofilesystem.Pool()],
+            mofilesystem.Name(),
+        ] for mofilesystem in mofilesystems]
 
-        print_table(['Name'], sorted(tables, key=lambda entry: entry[0]),
-                    ['<'])
+        print_table(['Pool Name', 'Name'], sorted(tables, key=lambda entry: entry[0]),
+                    ['<', '<'])
 
     @staticmethod
     def destroy_volumes(namespace):
