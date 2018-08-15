@@ -31,6 +31,7 @@ from ._data import filesystems
 from ._data import pools
 from ._data import unique
 from ._formatting import print_table
+from ._util import get_objects
 
 
 class LogicalActions():
@@ -66,20 +67,16 @@ class LogicalActions():
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
-        (pool_object_path, _) = unique(
-            pools(props={
-                'Name': namespace.pool_name
-            }).search(managed_objects))
-        matching_filesystems = filesystems(props={
-            'Pool': pool_object_path
-        }).search(managed_objects)
+        (mofilesystems, path_to_name) = get_objects(
+            namespace, "pool_name", managed_objects, filesystems, MOFilesystem)
 
         tables = [[
-            MOFilesystem(info).Name(),
-        ] for _, info in matching_filesystems]
+            path_to_name[mofilesystem.Pool()],
+            mofilesystem.Name(),
+        ] for mofilesystem in mofilesystems]
 
-        print_table(['Name'], sorted(tables, key=lambda entry: entry[0]),
-                    ['<'])
+        print_table(['Pool Name', 'Name'], sorted(tables, key=lambda entry: entry[0]),
+                    ['<', '<'])
 
     @staticmethod
     def destroy_volumes(namespace):
