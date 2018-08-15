@@ -65,6 +65,14 @@ class ListTestCase(unittest.TestCase):
         command_line = self._MENU
         RUNNER(command_line)
 
+    def testListDefault(self):
+        """
+        Blockdev subcommand should default to listing all blockdevs for all
+        pools. The list should be empty.
+        """
+        command_line = self._MENU[:-1]
+        RUNNER(command_line)
+
 
 class List2TestCase(unittest.TestCase):
     """
@@ -101,4 +109,12 @@ class List2TestCase(unittest.TestCase):
         Listing the devices should succeed without a pool name specified.
         """
         command_line = self._MENU
+        RUNNER(command_line)
+
+    def testListDefault(self):
+        """
+        Blockdev subcommand should default to listing all blockdevs for all
+        pools.
+        """
+        command_line = self._MENU[:-1]
         RUNNER(command_line)
