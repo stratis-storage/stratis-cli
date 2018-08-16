@@ -50,6 +50,15 @@ class ListTestCase(unittest.TestCase):
         command_line = self._MENU
         RUNNER(command_line)
 
+    def testListDefault(self):
+        """
+        Test default listing action when "list" is not specified.
+
+        List should just succeed, even though there is nothing to list.
+        """
+        command_line = self._MENU[:-1]
+        RUNNER(command_line)
+
 
 class List2TestCase(unittest.TestCase):
     """
@@ -79,4 +88,11 @@ class List2TestCase(unittest.TestCase):
         List should just succeed.
         """
         command_line = self._MENU
+        RUNNER(command_line)
+
+    def testListDefault(self):
+        """
+        Test default listing action when "list" is not specified.
+        """
+        command_line = self._MENU[:-1]
         RUNNER(command_line)

@@ -66,14 +66,13 @@ class PhysicalActions():
     @staticmethod
     def list_pool(namespace):
         """
-        List devices in a pool.
+        List devices. If a pool is specified in the namespace, list devices
+        for that pool. Otherwise, list all devices for all pools.
         """
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
-        # If user specified a pool name we wil constrain output to that one
-        # pool, else we will output all blockdevs.
-        if namespace.pool_name:
+        if getattr(namespace, "pool_name", None) is not None:
             (parent_pool_object_path, _) = unique(
                 pools(props={
                     'Name': namespace.pool_name
