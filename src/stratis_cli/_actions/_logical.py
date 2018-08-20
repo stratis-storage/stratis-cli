@@ -87,10 +87,9 @@ class LogicalActions():
             mofilesystem.Devnode(),
         ] for mofilesystem in mofilesystems]
 
-        print_table(
-            ['Pool Name', 'Name', 'Used', 'Created', 'Device'],
-            sorted(tables,
-                   key=lambda entry: entry[0]), ['<', '<', '<', '<', '<'])
+        print_table(['Pool Name', 'Name', 'Used', 'Created', 'Device'],
+                    sorted(tables, key=lambda entry: entry[0]),
+                    ['<', '<', '<', '<', '<'])
 
     @staticmethod
     def destroy_volumes(namespace):
