@@ -17,8 +17,8 @@ Miscellaneous logical actions.
 
 from __future__ import print_function
 
-from justbytes import Range
 from dateutil import parser as date_parser
+from justbytes import Range
 
 from .._errors import StratisCliEngineError
 
