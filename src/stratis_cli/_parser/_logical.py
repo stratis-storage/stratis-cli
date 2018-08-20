@@ -55,7 +55,8 @@ LOGICAL_SUBCMDS = [
      dict(
          help="List filesystems",
          args=[
-             ('pool_name', dict(action='store', help='Pool name')),
+             ('pool_name',
+              dict(action='store', default=None, nargs="?", help='Pool name')),
          ],
          func=LogicalActions.list_volumes)),
     ('destroy',
