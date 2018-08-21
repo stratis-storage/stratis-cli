@@ -81,7 +81,7 @@ class LogicalActions():
         tables = [[
             path_to_name[mofilesystem.Pool()],
             mofilesystem.Name(),
-            str(Range(mofilesystem.Used(), 1)),
+            str(Range(mofilesystem.Used())),
             date_parser.parse(mofilesystem.Created()).astimezone().strftime(
                 "%b %d %Y %H:%M"),
             mofilesystem.Devnode(),

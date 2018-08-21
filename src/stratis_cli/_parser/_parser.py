@@ -17,8 +17,8 @@ Top level parser for Stratis CLI.
 
 import argparse
 
-from .._actions import PhysicalActions
 from .._actions import LogicalActions
+from .._actions import PhysicalActions
 from .._actions import StratisActions
 from .._actions import TopActions
 

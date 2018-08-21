@@ -129,7 +129,6 @@ class List4TestCase(unittest.TestCase):
     """
     Test listing volumes in an existing pool with some volumes.
     """
-    _MENU = ['--propagate', 'filesystem', 'list']
     _POOLNAME = 'deadpool'
     _VOLUMES = ['livery', 'liberty', 'library']
 
@@ -166,7 +165,7 @@ class List4TestCase(unittest.TestCase):
         """
         Listing multiple volumes in a non-empty pool should succeed.
         """
-        command_line = self._MENU + [self._POOLNAME]
+        command_line = ['--propagate', 'filesystem', 'list', self._POOLNAME]
         RUNNER(command_line)
 
         # Also should work when no pool name is given
