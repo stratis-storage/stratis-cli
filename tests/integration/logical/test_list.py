@@ -124,6 +124,7 @@ class List3TestCase(unittest.TestCase):
         command_line = self._MENU + [self._POOLNAME]
         RUNNER(command_line)
 
+
 class List4TestCase(unittest.TestCase):
     """
     Test listing volumes in an existing pool with some volumes.
@@ -142,11 +143,14 @@ class List4TestCase(unittest.TestCase):
             + _DEVICE_STRATEGY.example()
         RUNNER(command_line)
 
-        command_line = ['filesystem', 'create', self._POOLNAME] + self._VOLUMES[0]
+        command_line = ['filesystem', 'create', self._POOLNAME
+                        ] + self._VOLUMES[0]
         RUNNER(command_line)
-        command_line = ['filesystem', 'create', self._POOLNAME] + self._VOLUMES[1]
+        command_line = ['filesystem', 'create', self._POOLNAME
+                        ] + self._VOLUMES[1]
         RUNNER(command_line)
-        command_line = ['filesystem', 'create', self._POOLNAME] + self._VOLUMES[2]
+        command_line = ['filesystem', 'create', self._POOLNAME
+                        ] + self._VOLUMES[2]
         RUNNER(command_line)
 
     def tearDown(self):
