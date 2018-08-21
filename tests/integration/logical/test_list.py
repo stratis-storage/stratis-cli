@@ -123,3 +123,49 @@ class List3TestCase(unittest.TestCase):
         """
         command_line = self._MENU + [self._POOLNAME]
         RUNNER(command_line)
+
+class List4TestCase(unittest.TestCase):
+    """
+    Test listing volumes in an existing pool with some volumes.
+    """
+    _MENU = ['--propagate', 'filesystem', 'list']
+    _POOLNAME = 'deadpool'
+    _VOLUMES = ['livery', 'liberty', 'library']
+
+    def setUp(self):
+        """
+        Start the stratisd daemon with the simulator.
+        """
+        self._service = Service()
+        self._service.setUp()
+        command_line = ['pool', 'create', self._POOLNAME] \
+            + _DEVICE_STRATEGY.example()
+        RUNNER(command_line)
+
+        command_line = ['filesystem', 'create', self._POOLNAME] + self._VOLUMES[0]
+        RUNNER(command_line)
+        command_line = ['filesystem', 'create', self._POOLNAME] + self._VOLUMES[1]
+        RUNNER(command_line)
+        command_line = ['filesystem', 'create', self._POOLNAME] + self._VOLUMES[2]
+        RUNNER(command_line)
+
+    def tearDown(self):
+        """
+        Stop the stratisd simulator and daemon.
+        """
+        self._service.tearDown()
+
+    def testList(self):
+        """
+        Listing multiple volumes in a non-empty pool should succeed.
+        """
+        command_line = self._MENU + [self._POOLNAME]
+        RUNNER(command_line)
+
+        # Also should work when no pool name is given
+        command_line = ['--propagate', 'filesystem']
+        RUNNER(command_line)
+
+        # Also should work using 'fs' alias
+        command_line = ['--propagate', 'fs']
+        RUNNER(command_line)
