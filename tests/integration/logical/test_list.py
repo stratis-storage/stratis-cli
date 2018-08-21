@@ -143,11 +143,17 @@ class List4TestCase(unittest.TestCase):
             + _DEVICE_STRATEGY.example()
         RUNNER(command_line)
 
-        command_line = ['filesystem', 'create', self._POOLNAME, self._VOLUMES[0]]
+        command_line = [
+            'filesystem', 'create', self._POOLNAME, self._VOLUMES[0]
+        ]
         RUNNER(command_line)
-        command_line = ['filesystem', 'create', self._POOLNAME, self._VOLUMES[1]]
+        command_line = [
+            'filesystem', 'create', self._POOLNAME, self._VOLUMES[1]
+        ]
         RUNNER(command_line)
-        command_line = ['filesystem', 'create', self._POOLNAME, self._VOLUMES[2]]
+        command_line = [
+            'filesystem', 'create', self._POOLNAME, self._VOLUMES[2]
+        ]
         RUNNER(command_line)
 
     def tearDown(self):
