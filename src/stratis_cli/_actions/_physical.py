@@ -33,7 +33,7 @@ from ._data import Pool
 from ._data import pools
 from ._data import unique
 from ._formatting import print_table
-from ._util import get_pools
+from ._util import get_objects
 
 
 def state_val_to_string(val):
@@ -72,13 +72,9 @@ class PhysicalActions():
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
-        (properties, path_to_name) = get_pools(namespace, "pool_name",
-                                               managed_objects)
+        (modevs, path_to_name) = get_objects(namespace, "pool_name",
+                                             managed_objects, devs, MODev)
 
-        modevs = [
-            MODev(info)
-            for _, info in devs(props=properties, ).search(managed_objects)
-        ]
         tables = [[
             path_to_name[modev.Pool()],
             modev.Devnode(),
