@@ -34,7 +34,7 @@ from ._data import filesystems
 from ._data import pools
 from ._data import unique
 from ._formatting import print_table
-from ._util import get_pools
+from ._util import get_objects
 
 
 class LogicalActions():
@@ -70,13 +70,8 @@ class LogicalActions():
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
-        (properties, path_to_name) = get_pools(namespace, "pool_name",
-                                               managed_objects)
-
-        mofilesystems = [
-            MOFilesystem(info) for _, info in filesystems(props=properties)
-            .search(managed_objects)
-        ]
+        (mofilesystems, path_to_name) = get_objects(
+            namespace, "pool_name", managed_objects, filesystems, MOFilesystem)
 
         tables = [[
             path_to_name[mofilesystem.Pool()],
