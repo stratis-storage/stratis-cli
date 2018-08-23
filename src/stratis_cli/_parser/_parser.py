@@ -17,6 +17,7 @@ Top level parser for Stratis CLI.
 
 import argparse
 
+from .._actions import LogicalActions
 from .._actions import PhysicalActions
 from .._actions import StratisActions
 from .._actions import TopActions
@@ -90,6 +91,7 @@ ROOT_SUBCOMMANDS = [
          aliases=['fs'],
          help="Commands related to filesystems allocated from a pool",
          subcmds=LOGICAL_SUBCMDS,
+         func=LogicalActions.list_volumes,
      )),
     ('daemon', dict(
         help="Stratis daemon information",

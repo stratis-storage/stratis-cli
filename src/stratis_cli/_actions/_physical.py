@@ -28,12 +28,12 @@ from ._constants import TOP_OBJECT
 from ._constants import UNKNOWN_VALUE_MARKER
 from ._data import devs
 from ._data import MODev
-from ._data import MOPool
 from ._data import ObjectManager
 from ._data import Pool
 from ._data import pools
 from ._data import unique
 from ._formatting import print_table
+from ._util import get_objects
 
 
 def state_val_to_string(val):
@@ -72,24 +72,9 @@ class PhysicalActions():
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
-        if getattr(namespace, "pool_name", None) is not None:
-            (parent_pool_object_path, _) = unique(
-                pools(props={
-                    'Name': namespace.pool_name
-                }).search(managed_objects))
+        (modevs, path_to_name) = get_objects(namespace, "pool_name",
+                                             managed_objects, devs, MODev)
 
-            properties = {"Pool": parent_pool_object_path}
-            path_to_name = {parent_pool_object_path: namespace.pool_name}
-        else:
-            properties = {}
-            path_to_name = dict(
-                (path, MOPool(info).Name())
-                for path, info in pools().search(managed_objects))
-
-        modevs = [
-            MODev(info)
-            for _, info in devs(props=properties, ).search(managed_objects)
-        ]
         tables = [[
             path_to_name[modev.Pool()],
             modev.Devnode(),
