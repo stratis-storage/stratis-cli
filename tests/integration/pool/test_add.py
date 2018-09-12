@@ -31,7 +31,7 @@ class AddDataTestCase(unittest.TestCase):
     """
     Test adding devices to a non-existant pool.
     """
-    _MENU = ['--propagate', 'blockdev', 'add-data']
+    _MENU = ['--propagate', 'pool', 'add-data']
     _POOLNAME = 'deadpool'
 
     def setUp(self):
@@ -63,7 +63,7 @@ class AddCacheTestCase(unittest.TestCase):
     """
     Test adding devices to a non-existant pool.
     """
-    _MENU = ['--propagate', 'blockdev', 'add-cache']
+    _MENU = ['--propagate', 'pool', 'add-cache']
     _POOLNAME = 'deadpool'
 
     def setUp(self):
