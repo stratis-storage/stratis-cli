@@ -98,10 +98,13 @@ def interpret_errors(errors):
             error.get_dbus_name() == \
             'org.freedesktop.DBus.Error.AccessDenied':
             return "Most likely stratis has insufficient permissions for the action requested."
+        # We have observed two causes of this problem. The first is that
+        # stratisd is not running at all. The second is that stratisd has not
+        # yet established its D-Bus service.
         if isinstance(error, dbus.exceptions.DBusException) and \
             error.get_dbus_name() == \
             'org.freedesktop.DBus.Error.NameHasNoOwner':
-            return "Most likely the Stratis daemon, stratisd, is not running."
+            return "Most likely stratis is unable to connect to the stratisd D-Bus service."
 
         return None
     # pylint: disable=broad-except
