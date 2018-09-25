@@ -31,12 +31,6 @@ POOL_SUBCMDS = [
                   help='Create the pool using these block devs',
                   nargs='+',
               )),
-             ('--force',
-              dict(
-                  action='store_true',
-                  default=False,
-                  help="Overwrite existing metadata on specified devices",
-              )),
              ('--redundancy',
               dict(
                   action='store',
@@ -93,12 +87,6 @@ POOL_SUBCMDS = [
                   help='Block devices to add to the pool',
                   metavar='blockdev',
                   nargs='+')),
-             ('--force',
-              dict(
-                  action='store_true',
-                  default=False,
-                  help=
-                  "Use devices even if they appear to contain existing data")),
          ],
          func=TopActions.add_data_device)),
     ('add-cache',
@@ -114,12 +102,6 @@ POOL_SUBCMDS = [
                   help='Block devices to add to the pool as cache',
                   metavar='blockdev',
                   nargs='+')),
-             ('--force',
-              dict(
-                  action='store_true',
-                  default=False,
-                  help=
-                  "Use devices even if they appear to contain existing data")),
          ],
          func=TopActions.add_cache_device)),
 ]

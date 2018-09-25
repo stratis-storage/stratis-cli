@@ -31,7 +31,7 @@ GLOBAL OPTIONS
 
 COMMANDS
 --------
-pool create [--force] <pool_name> <blockdev> [<blockdev>..]::
+pool create <pool_name> <blockdev> [<blockdev>..]::
      Create a pool from one or more block devices, with the given pool name.
 pool list::
      List all pools on the system.
@@ -39,10 +39,10 @@ pool rename <old_pool_name> <new_pool_name>::
      Rename a pool.
 pool destroy <pool_name>::
      Destroy a pool and all the filesystems created from it.
-pool add-data [--force] <pool_name> <blockdev> [<blockdev>..]::
+pool add-data <pool_name> <blockdev> [<blockdev>..]::
 	 Add one or more blockdevs to an existing pool, to enlarge its storage
 	 capacity.
-pool add-cache [--force] <pool_name> <blockdev> [<blockdev>..]::
+pool add-cache <pool_name> <blockdev> [<blockdev>..]::
 	 Add one or more blockdevs to an existing pool, to be used as a cache
 	 instead of additional storage. Typically, smaller and faster drives,
 	 such as SSDs, are used for this purpose.

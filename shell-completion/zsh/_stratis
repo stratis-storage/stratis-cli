@@ -35,7 +35,6 @@ if [[ -n $state ]]; then
   case ${(j.:.)line[1,2]} in
     pool:create)
       _arguments $help \
-	'--force[overwrite existing metadata on specified devices]' \
 	'--redundancy=[specify redundancy level for this pool]:redundancy:(none)' \
 	':pool name' '*:block device:_files -P/ -W/ -g "*(-%)"'
     ;;
@@ -70,7 +69,6 @@ if [[ -n $state ]]; then
     ;;
     blockdev:add-(cache|data))
       _arguments $help \
-	'(-)--force[use devices even if they appear to contain existing data]' \
 	'(-):pool:_stratis_pools' '*:block device:_files -P/ -W/ -g "*(-%)"'
     ;;
     blockdev:list) _arguments $help '(-):pool:_stratis_pools' ;;
