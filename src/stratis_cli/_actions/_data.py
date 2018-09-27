@@ -106,7 +106,7 @@ SPECS = {
 <arg name="return_string" type="s" direction="out"/>
 </method>
 <property name="Name" type="s" access="read">
-<annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="false"/>
+<annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="true"/>
 </property>
 <property name="TotalPhysicalSize" type="s" access="read">
 <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="false"/>
@@ -116,6 +116,15 @@ SPECS = {
 </property>
 <property name="Uuid" type="s" access="read">
 <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const"/>
+</property>
+<property name="State" type="q" access="read">
+<annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="true"/>
+</property>
+<property name="ExtendState" type="q" access="read">
+<annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="true"/>
+</property>
+<property name="SpaceState" type="q" access="read">
+<annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="true"/>
 </property>
 </interface>
 """,
@@ -135,7 +144,7 @@ SPECS = {
 <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const"/>
 </property>
 <property name="Name" type="s" access="read">
-<annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="false"/>
+<annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="true"/>
 </property>
 <property name="Pool" type="o" access="read">
 <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const"/>
@@ -170,7 +179,7 @@ SPECS = {
 <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const"/>
 </property>
 <property name="State" type="q" access="read">
-<annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="false"/>
+<annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="true"/>
 </property>
 <property name="Tier" type="q" access="read">
 <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="false"/>
