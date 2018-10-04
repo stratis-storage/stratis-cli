@@ -15,8 +15,6 @@
 Miscellaneous top-level actions.
 """
 
-from __future__ import print_function
-
 from justbytes import Range
 
 from .._errors import StratisCliEngineError

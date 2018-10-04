@@ -15,8 +15,6 @@
 Miscellaneous actions about stratis.
 """
 
-from __future__ import print_function
-
 from .._stratisd_constants import RedundancyCodes
 
 from ._connection import get_object
