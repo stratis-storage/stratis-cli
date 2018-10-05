@@ -50,14 +50,16 @@ filesystem create <pool_name> <fs_name> [<fs_name>..]::
 	   Create one or more filesystems from the specified pool.
 filesystem snapshot <pool_name> <fs_name> <snapshot_name>::
 	   Snapshot the filesystem in the specified pool.
-filesystem list <pool_name>::
-	   List all filesystems that exist in the specified pool.
+filesystem list [pool_name]::
+	   List all filesystems that exist in the specified pool, or all
+	   pools, if no pool name is given.
 filesystem destroy <pool_name> <fs_name> [<fs_name>..]::
 	   Destroy one or more filesystems that exist in the specified pool.
 filesystem rename <pool_name> <fs_name> <new_name>::
      Rename a filesystem.
-blockdev list <pool_name>::
-	 List all blockdevs that make up the specified pool.
+blockdev list [pool_name]::
+	 List all blockdevs that make up the specified pool, or all pools, if
+	 no pool name is given.
 daemon redundancy::
        List the redundancy levels that the Stratis service supports.
 daemon version::
