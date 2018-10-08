@@ -15,8 +15,6 @@
 Miscellaneous physical actions.
 """
 
-from __future__ import print_function
-
 from justbytes import Range
 
 from ._connection import get_object

@@ -15,8 +15,6 @@
 Shared utilities.
 """
 
-from __future__ import print_function
-
 from ._data import MOPool
 from ._data import pools
 from ._data import unique
