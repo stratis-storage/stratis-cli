@@ -26,6 +26,7 @@ from dbus_python_client_gen import DPClientGenerationError
 
 from .._errors import StratisCliGenerationError
 from .._errors import StratisCliUniqueLookupError
+from .._errors import StratisCliValueError
 
 from ._constants import DBUS_TIMEOUT_SECONDS
 
@@ -200,6 +201,28 @@ SPECS = {
 _FILESYSTEM_INTERFACE = 'org.storage.stratis1.filesystem'
 _POOL_INTERFACE = 'org.storage.stratis1.pool'
 _BLOCKDEV_INTERFACE = 'org.storage.stratis1.blockdev'
+
+
+def interface_name_to_common_name(interface_name):
+    """
+    Maps a D-Bus interface name to the common name that identifies the type
+    of stratisd thing that the interface represents.
+
+    :param str interface_name: the interface name
+    :returns: a common name
+    :rtype: str
+    """
+    if interface_name == _BLOCKDEV_INTERFACE:
+        return "block device"
+
+    if interface_name == _FILESYSTEM_INTERFACE:
+        return "filesystem"
+
+    if interface_name == _POOL_INTERFACE:
+        return "pool"
+
+    raise StratisCliValueError(interface_name, "interface_name")
+
 
 try:
     filesystem_spec = ET.fromstring(SPECS[_FILESYSTEM_INTERFACE])

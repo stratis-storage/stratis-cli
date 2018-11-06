@@ -30,6 +30,26 @@ class StratisCliRuntimeError(StratisCliError):
     """
 
 
+class StratisCliValueError(StratisCliRuntimeError):
+    """
+    Error raised when a parameter has an unacceptable value.
+    """
+
+    def __init__(self, value, param):
+        """ Initializer.
+
+            :param object value: the value
+            :param str param: the parameter
+        """
+        # pylint: disable=super-init-not-called
+        self._value = value
+        self._param = param
+
+    def __str__(self):
+        return "value '%s' for parameter %s is unacceptable" % (self._value,
+                                                                self._param)
+
+
 class StratisCliUniqueLookupError(StratisCliRuntimeError):
     """
     Error raised when an unique object path is not found for a given
