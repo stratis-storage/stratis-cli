@@ -15,8 +15,9 @@
 Test 'list'.
 """
 
+from dbus_client_gen import DbusClientUniqueResultError
+
 from stratis_cli._errors import StratisCliActionError
-from stratis_cli._errors import StratisCliUniqueLookupError
 
 from .._misc import _device_list
 from .._misc import RUNNER
@@ -40,7 +41,7 @@ class ListTestCase(SimTestCase):
         with self.assertRaises(StratisCliActionError) as context:
             RUNNER(command_line)
         cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliUniqueLookupError)
+        self.assertIsInstance(cause, DbusClientUniqueResultError)
 
     def testListEmpty(self):
         """

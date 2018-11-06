@@ -17,7 +17,6 @@ Shared utilities.
 
 from ._data import MOPool
 from ._data import pools
-from ._data import unique
 
 
 def get_objects(namespace, pool_name_key, managed_objects, search_function,
@@ -41,10 +40,10 @@ def get_objects(namespace, pool_name_key, managed_objects, search_function,
     """
     pool_name = getattr(namespace, pool_name_key, None)
     if pool_name is not None:
-        (parent_pool_object_path, _) = unique(
+        (parent_pool_object_path, _) = next(
             pools(props={
                 'Name': pool_name
-            }).search(managed_objects))
+            }).require_unique_match(True).search(managed_objects))
 
         properties = {"Pool": parent_pool_object_path}
         path_to_name = {parent_pool_object_path: namespace.pool_name}

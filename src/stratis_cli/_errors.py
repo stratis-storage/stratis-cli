@@ -50,27 +50,6 @@ class StratisCliValueError(StratisCliRuntimeError):
                                                                 self._param)
 
 
-class StratisCliUniqueLookupError(StratisCliRuntimeError):
-    """
-    Error raised when an unique object path is not found for a given
-    specification.
-    """
-
-    def __init__(self, matches):
-        """
-        Initializer.
-
-        :param matches: the list of matches actually found
-        :type matches: list of object path * dict
-        """
-        # pylint: disable=super-init-not-called
-        self.matches = matches
-
-    def __str__(self):
-        return "No unique item found among returned matches: (%s)" % \
-            ", ".join(str(x) for x in self.matches)
-
-
 class StratisCliEngineError(StratisCliRuntimeError):
     """
     Raised if there was a failure due to an error in stratisd's engine.

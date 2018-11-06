@@ -15,8 +15,9 @@
 Test 'snapshot'.
 """
 
+from dbus_client_gen import DbusClientUniqueResultError
+
 from stratis_cli._errors import StratisCliActionError
-from stratis_cli._errors import StratisCliUniqueLookupError
 
 from .._misc import _device_list
 from .._misc import RUNNER
@@ -75,7 +76,7 @@ class Snapshot1TestCase(SimTestCase):
         with self.assertRaises(StratisCliActionError) as context:
             RUNNER(command_line)
         cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliUniqueLookupError)
+        self.assertIsInstance(cause, DbusClientUniqueResultError)
 
 
 class Snapshot2TestCase(SimTestCase):
@@ -106,4 +107,4 @@ class Snapshot2TestCase(SimTestCase):
         with self.assertRaises(StratisCliActionError) as context:
             RUNNER(command_line)
         cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliUniqueLookupError)
+        self.assertIsInstance(cause, DbusClientUniqueResultError)

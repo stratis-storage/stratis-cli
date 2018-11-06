@@ -17,9 +17,10 @@ Test 'create'.
 
 import unittest
 
+from dbus_client_gen import DbusClientUniqueResultError
+
 from stratis_cli._errors import StratisCliActionError
 from stratis_cli._errors import StratisCliEngineError
-from stratis_cli._errors import StratisCliUniqueLookupError
 
 from stratis_cli._stratisd_constants import StratisdErrors
 
@@ -48,7 +49,7 @@ class CreateTestCase(SimTestCase):
         with self.assertRaises(StratisCliActionError) as context:
             RUNNER(command_line)
         cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliUniqueLookupError)
+        self.assertIsInstance(cause, DbusClientUniqueResultError)
 
 
 @unittest.skip(

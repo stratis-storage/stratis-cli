@@ -25,7 +25,6 @@ from dbus_python_client_gen import make_class
 from dbus_python_client_gen import DPClientGenerationError
 
 from .._errors import StratisCliGenerationError
-from .._errors import StratisCliUniqueLookupError
 from .._errors import StratisCliValueError
 
 from ._constants import DBUS_TIMEOUT_SECONDS
@@ -257,17 +256,3 @@ except DbusClientGenerationError as err:
     raise StratisCliGenerationError(
         "Failed to generate some class needed for examining D-Bus data"
     ) from err
-
-
-def unique(iterable):
-    """
-    Get a unique result from the iterable. If the result is not unique,
-    raise an exception.
-
-    :returns: an object path and its corresponding data
-    :rtype: object path * dict
-    """
-    result = [x for x in iterable]
-    if len(result) != 1:
-        raise StratisCliUniqueLookupError(result)
-    return result[0]
