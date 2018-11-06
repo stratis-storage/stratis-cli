@@ -22,7 +22,10 @@ import dbus
 from dbus_client_gen import DbusClientMissingInterfaceError
 from dbus_client_gen import DbusClientMissingPropertyError
 from dbus_client_gen import DbusClientMissingSearchPropertiesError
+from dbus_client_gen import DbusClientUniqueResultError
 from dbus_client_gen import DbusClientUnknownSearchPropertiesError
+
+from ._actions import interface_name_to_common_name
 
 _DBUS_INTERFACE_MSG = (
     "The version of stratis you are running expects a different "
@@ -83,6 +86,13 @@ def interpret_errors(errors):
                 "Most likely there is an error in the source at line %d "
                 "in file %s. The text of the line is \"%s\".")
             return fmt_str % (frame.lineno, frame.filename, frame.line)
+
+        if isinstance(error,
+                      DbusClientUniqueResultError) and error.result == []:
+            fmt_str = "Most likely you specified a %s which does not exist."
+            return fmt_str % interface_name_to_common_name(
+                error.interface_name)
+
         if isinstance(error, DbusClientUnknownSearchPropertiesError):
             return _STRATIS_CLI_BUG_MSG
         if isinstance(error, DbusClientMissingSearchPropertiesError):
