@@ -29,6 +29,9 @@ from .._errors import StratisCliValueError
 
 from ._constants import DBUS_TIMEOUT_SECONDS
 
+MAXIMUM_STRATISD_VERSION = (1, 0, 1)
+REQUIRED_STRATISD_VERSION = (1, 0, 1)
+
 SPECS = {
     "org.freedesktop.DBus.ObjectManager":
     """

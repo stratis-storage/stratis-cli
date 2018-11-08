@@ -15,7 +15,18 @@
 Shared utilities.
 """
 
+from functools import wraps
+
+from .._errors import StratisCliStratisdVersionError
+
+from ._connection import get_object
+
+from ._constants import TOP_OBJECT
+
+from ._data import Manager
 from ._data import MOPool
+from ._data import MAXIMUM_STRATISD_VERSION
+from ._data import REQUIRED_STRATISD_VERSION
 from ._data import pools
 
 
@@ -58,3 +69,39 @@ def get_objects(namespace, pool_name_key, managed_objects, search_function,
     ]
 
     return (objects, path_to_name)
+
+
+def _verify_stratisd_version():
+    """
+    Check that the version of stratisd that is running is compatible with
+    this version of the CLI. Note that standard packaging should enforce this,
+    but users could be running in non-standard ways.
+
+    :returns: the proxy object for TOP_OBJECT
+    """
+    proxy = get_object(TOP_OBJECT)
+    version = Manager.Properties.Version.Get(proxy)
+    version = tuple([int(x) for x in version.split(".")])
+    if version < REQUIRED_STRATISD_VERSION or version > MAXIMUM_STRATISD_VERSION:
+        raise StratisCliStratisdVersionError(
+            version, REQUIRED_STRATISD_VERSION, MAXIMUM_STRATISD_VERSION)
+    return proxy
+
+
+def verify_stratisd_version_decorator(orig_func):
+    """
+    Decorator for stratis methods that call stratisd.
+
+    :param orig_func: the original function
+    :type orig_func: (Namespace * object path) -> None
+    """
+
+    @wraps(orig_func)
+    def the_func(namespace):
+        """
+        Function that verifies stratisd version is correct before doing
+        its principle business.
+        """
+        orig_func(namespace, _verify_stratisd_version())
+
+    return the_func

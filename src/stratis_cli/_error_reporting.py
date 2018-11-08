@@ -27,6 +27,8 @@ from dbus_client_gen import DbusClientUnknownSearchPropertiesError
 
 from ._actions import interface_name_to_common_name
 
+from ._errors import StratisCliStratisdVersionError
+
 _DBUS_INTERFACE_MSG = (
     "The version of stratis you are running expects a different "
     "D-Bus interface than the one stratisd provides. Most likely "
@@ -101,6 +103,13 @@ def interpret_errors(errors):
             return _STRATIS_CLI_BUG_MSG
         if isinstance(error, DbusClientMissingPropertyError):
             return _DBUS_INTERFACE_MSG
+
+        if isinstance(error, StratisCliStratisdVersionError):
+            fmt_str = (
+                "The version of stratisd you are using %s is not compatible "
+                "with this version of stratis. stratis can execute only the "
+                "subset of its commands that do not require stratisd.")
+            return fmt_str % (error.actual_version, )
 
         # Inspect lowest error
         error = errors[-1]

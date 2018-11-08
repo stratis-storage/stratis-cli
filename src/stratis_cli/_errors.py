@@ -92,6 +92,24 @@ class StratisCliActionError(StratisCliRuntimeError):
         return fmt_str % (self.command_line_args, self.namespace)
 
 
+class StratisCliStratisdVersionError(StratisCliRuntimeError):
+    """
+    Raised if stratisd version is not compatible with this CLI version.
+    """
+
+    def __init__(self, actual_version, required_version, maximum_version):
+        """
+        """
+        # pylint: disable=super-init-not-called
+        self.actual_version = actual_version
+        self.required_version = required_version
+        self.maximum_version = maximum_version
+
+    def __str__(self):
+        fmt_str = "stratisd version %s does not meet stratis version requirement %s"
+        return fmt_str % (self.actual_version, self.required_version)
+
+
 class StratisCliGenerationError(StratisCliError):
     """
     Exception that occurs during generation of classes.
