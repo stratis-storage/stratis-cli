@@ -30,6 +30,7 @@ from ._data import ObjectManager
 from ._data import Pool
 from ._data import pools
 from ._formatting import print_table
+from ._util import verify_stratisd_version_decorator
 
 
 class TopActions():
@@ -77,7 +78,8 @@ class TopActions():
                     ['<', '>', '>'])
 
     @staticmethod
-    def destroy_pool(namespace):
+    @verify_stratisd_version_decorator
+    def destroy_pool(namespace, proxy):
         """
         Destroy a stratis pool.
 
@@ -85,7 +87,6 @@ class TopActions():
 
         :raises StratisCliEngineError:
         """
-        proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
         (pool_object_path, _) = next(
             pools(props={
