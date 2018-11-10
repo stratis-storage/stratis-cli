@@ -15,8 +15,6 @@
 Miscellaneous logical actions.
 """
 
-import subprocess
-
 from justbytes import Range
 from dateutil import parser as date_parser
 
@@ -35,18 +33,6 @@ from ._data import pools
 from ._data import unique
 from ._formatting import print_table
 from ._util import get_objects
-
-
-def get_uuid(pool_name, fs_name):
-    """
-    Returns the UUID of a filesystem
-    """
-    args = [
-        'sudo', 'blkid', '-p', '/dev/stratis/' + pool_name + '/' + fs_name,
-        '-s', 'UUID', '-o', 'value'
-    ]
-
-    return subprocess.check_output(args).strip().decode('utf-8')
 
 
 class LogicalActions():
@@ -92,7 +78,7 @@ class LogicalActions():
             date_parser.parse(mofilesystem.Created()).astimezone().strftime(
                 "%b %d %Y %H:%M"),
             mofilesystem.Devnode(),
-            get_uuid(path_to_name[mofilesystem.Pool()], mofilesystem.Name()),
+            mofilesystem.Uuid(),
         ] for mofilesystem in mofilesystems]
 
         print_table(['Pool Name', 'Name', 'Used', 'Created', 'Device', 'UUID'],
