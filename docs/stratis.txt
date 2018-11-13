@@ -20,6 +20,9 @@ and the filesystems allocated from the pool.
 Stratis creates a *pool* from one or more block devices (*blockdevs*), and
 then enables multiple *filesystems* to be created from the pool.
 
+If the block device is already in use, its signature has to be erased using
+*wipefs -a <blockdev>* before trying to add it to a pool.
+
 GLOBAL OPTIONS
 --------------
 --version::
