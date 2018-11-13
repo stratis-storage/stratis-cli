@@ -78,11 +78,12 @@ class LogicalActions():
             date_parser.parse(mofilesystem.Created()).astimezone().strftime(
                 "%b %d %Y %H:%M"),
             mofilesystem.Devnode(),
+            mofilesystem.Uuid(),
         ] for mofilesystem in mofilesystems]
 
-        print_table(['Pool Name', 'Name', 'Used', 'Created', 'Device'],
+        print_table(['Pool Name', 'Name', 'Used', 'Created', 'Device', 'UUID'],
                     sorted(tables, key=lambda entry: entry[0]),
-                    ['<', '<', '<', '<', '<'])
+                    ['<', '<', '<', '<', '<', '<'])
 
     @staticmethod
     def destroy_volumes(namespace):
