@@ -25,33 +25,20 @@ from stratis_cli._stratisd_constants import StratisdErrors
 
 from .._misc import _device_list
 from .._misc import RUNNER
-from .._misc import Service
+from .._misc import SimTestCase
 
 _DEVICE_STRATEGY = _device_list(1)
 
 
 @unittest.skip(
     "Temporarily unable to create multiple filesystems at same time")
-class CreateTestCase(unittest.TestCase):
+class CreateTestCase(SimTestCase):
     """
     Test creating a volume w/out a pool.
     """
     _MENU = ['--propagate', 'filesystem', 'create']
     _POOLNAME = 'deadpool'
     _VOLNAMES = ['oubliette', 'mnemosyne']
-
-    def setUp(self):
-        """
-        Start the stratisd daemon with the simulator.
-        """
-        self._service = Service()
-        self._service.setUp()
-
-    def tearDown(self):
-        """
-        Stop the stratisd simulator and daemon.
-        """
-        self._service.tearDown()
 
     def testCreation(self):
         """
@@ -66,7 +53,7 @@ class CreateTestCase(unittest.TestCase):
 
 @unittest.skip(
     "Temporarily unable to create multiple filesystems at same time")
-class Create2TestCase(unittest.TestCase):
+class Create2TestCase(SimTestCase):
     """
     Test creating a volume w/ a pool.
     """
@@ -78,17 +65,10 @@ class Create2TestCase(unittest.TestCase):
         """
         Start the stratisd daemon with the simulator.
         """
-        self._service = Service()
-        self._service.setUp()
+        super().setUp()
         command_line = ['pool', 'create', self._POOLNAME] \
             + _DEVICE_STRATEGY.example()
         RUNNER(command_line)
-
-    def tearDown(self):
-        """
-        Stop the stratisd simulator and daemon.
-        """
-        self._service.tearDown()
 
     def testCreation(self):
         """
@@ -100,7 +80,7 @@ class Create2TestCase(unittest.TestCase):
 
 @unittest.skip(
     "Temporarily unable to create multiple filesystems at same time")
-class Create3TestCase(unittest.TestCase):
+class Create3TestCase(SimTestCase):
     """
     Test creating a volume w/ a pool when volume of same name already exists.
     """
@@ -112,19 +92,12 @@ class Create3TestCase(unittest.TestCase):
         """
         Start the stratisd daemon with the simulator.
         """
-        self._service = Service()
-        self._service.setUp()
+        super().setUp()
         command_line = ['pool', 'create', self._POOLNAME] \
             +  _DEVICE_STRATEGY.example()
         RUNNER(command_line)
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
         RUNNER(command_line)
-
-    def tearDown(self):
-        """
-        Stop the stratisd simulator and daemon.
-        """
-        self._service.tearDown()
 
     def testCreation(self):
         """

@@ -15,38 +15,23 @@
 Test 'rename'.
 """
 
-import unittest
-
 from stratis_cli._errors import StratisCliActionError
 from stratis_cli._errors import StratisCliUniqueLookupError
 
 from .._misc import RUNNER
-from .._misc import Service
+from .._misc import SimTestCase
 from .._misc import _device_list
 
 _DEVICE_STRATEGY = _device_list(1)
 
 
-class Rename1TestCase(unittest.TestCase):
+class Rename1TestCase(SimTestCase):
     """
     Test 'rename' when pool is non-existant.
     """
     _MENU = ['--propagate', 'pool', 'rename']
     _POOLNAME = 'deadpool'
     _NEW_POOLNAME = 'livepool'
-
-    def setUp(self):
-        """
-        Start the stratisd daemon with the simulator.
-        """
-        self._service = Service()
-        self._service.setUp()
-
-    def tearDown(self):
-        """
-        Stop the stratisd simulator and daemon.
-        """
-        self._service.tearDown()
 
     def testRename(self):
         """
@@ -69,7 +54,7 @@ class Rename1TestCase(unittest.TestCase):
         self.assertIsInstance(cause, StratisCliUniqueLookupError)
 
 
-class Rename2TestCase(unittest.TestCase):
+class Rename2TestCase(SimTestCase):
     """
     Test 'rename' when pool exists.
     """
@@ -81,17 +66,10 @@ class Rename2TestCase(unittest.TestCase):
         """
         Start the stratisd daemon with the simulator.
         """
-        self._service = Service()
-        self._service.setUp()
+        super().setUp()
         command_line = ['pool', 'create', self._POOLNAME] \
             + _DEVICE_STRATEGY.example()
         RUNNER(command_line)
-
-    def tearDown(self):
-        """
-        Stop the stratisd simulator and daemon.
-        """
-        self._service.tearDown()
 
     def testRename(self):
         """

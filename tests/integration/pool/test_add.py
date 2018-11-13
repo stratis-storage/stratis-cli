@@ -15,37 +15,22 @@
 Test 'create'.
 """
 
-import unittest
-
 from stratis_cli._errors import StratisCliActionError
 from stratis_cli._errors import StratisCliUniqueLookupError
 
 from .._misc import _device_list
 from .._misc import RUNNER
-from .._misc import Service
+from .._misc import SimTestCase
 
 _DEVICE_STRATEGY = _device_list(1)
 
 
-class AddDataTestCase(unittest.TestCase):
+class AddDataTestCase(SimTestCase):
     """
     Test adding devices to a non-existant pool.
     """
     _MENU = ['--propagate', 'pool', 'add-data']
     _POOLNAME = 'deadpool'
-
-    def setUp(self):
-        """
-        Start the stratisd daemon with the simulator.
-        """
-        self._service = Service()
-        self._service.setUp()
-
-    def tearDown(self):
-        """
-        Stop the stratisd simulator and daemon.
-        """
-        self._service.tearDown()
 
     def testAdd(self):
         """
@@ -59,25 +44,12 @@ class AddDataTestCase(unittest.TestCase):
         self.assertIsInstance(cause, StratisCliUniqueLookupError)
 
 
-class AddCacheTestCase(unittest.TestCase):
+class AddCacheTestCase(SimTestCase):
     """
     Test adding devices to a non-existant pool.
     """
     _MENU = ['--propagate', 'pool', 'add-cache']
     _POOLNAME = 'deadpool'
-
-    def setUp(self):
-        """
-        Start the stratisd daemon with the simulator.
-        """
-        self._service = Service()
-        self._service.setUp()
-
-    def tearDown(self):
-        """
-        Stop the stratisd simulator and daemon.
-        """
-        self._service.tearDown()
 
     def testAdd(self):
         """

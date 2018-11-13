@@ -15,37 +15,22 @@
 Test 'create'.
 """
 
-import unittest
-
 from stratis_cli._errors import StratisCliActionError
 from stratis_cli._errors import StratisCliEngineError
 
 from .._misc import _device_list
 from .._misc import RUNNER
-from .._misc import Service
+from .._misc import SimTestCase
 
 _DEVICE_STRATEGY = _device_list(1)
 
 
-class CreateTestCase(unittest.TestCase):
+class CreateTestCase(SimTestCase):
     """
     Test 'create' parsing.
     """
     _MENU = ['--propagate', 'pool', 'create']
     _POOLNAME = 'deadpool'
-
-    def setUp(self):
-        """
-        Start the stratisd daemon with the simulator.
-        """
-        self._service = Service()
-        self._service.setUp()
-
-    def tearDown(self):
-        """
-        Stop the stratisd simulator and daemon.
-        """
-        self._service.tearDown()
 
     def testRedundancy(self):
         """
@@ -57,7 +42,7 @@ class CreateTestCase(unittest.TestCase):
             RUNNER(command_line)
 
 
-class Create3TestCase(unittest.TestCase):
+class Create3TestCase(SimTestCase):
     """
     Test 'create' on name collision.
     """
@@ -68,17 +53,10 @@ class Create3TestCase(unittest.TestCase):
         """
         Start the stratisd daemon with the simulator.
         """
-        self._service = Service()
-        self._service.setUp()
+        super().setUp()
         command_line = ['pool', 'create', self._POOLNAME] \
             + _DEVICE_STRATEGY.example()
         RUNNER(command_line)
-
-    def tearDown(self):
-        """
-        Stop the stratisd simulator and daemon.
-        """
-        self._service.tearDown()
 
     def testCreate(self):
         """

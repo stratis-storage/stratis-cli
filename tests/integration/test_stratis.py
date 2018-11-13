@@ -22,27 +22,14 @@ import dbus
 from stratis_cli._errors import StratisCliActionError
 
 from ._misc import RUNNER
-from ._misc import Service
+from ._misc import SimTestCase
 
 
-class StratisTestCase(unittest.TestCase):
+class StratisTestCase(SimTestCase):
     """
     Test meta information about stratisd.
     """
     _MENU = ['--propagate', 'daemon']
-
-    def setUp(self):
-        """
-        Start the stratisd daemon with the simulator.
-        """
-        self._service = Service()
-        self._service.setUp()
-
-    def tearDown(self):
-        """
-        Stop the stratisd simulator and daemon.
-        """
-        self._service.tearDown()
 
     def testStratisVersion(self):
         """

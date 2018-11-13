@@ -22,30 +22,17 @@ from stratis_cli._errors import StratisCliUniqueLookupError
 
 from .._misc import _device_list
 from .._misc import RUNNER
-from .._misc import Service
+from .._misc import SimTestCase
 
 _DEVICE_STRATEGY = _device_list(1)
 
 
-class ListTestCase(unittest.TestCase):
+class ListTestCase(SimTestCase):
     """
     Test listing a volume for a non-existant pool.
     """
     _MENU = ['--propagate', 'filesystem', 'list']
     _POOLNAME = 'deadpool'
-
-    def setUp(self):
-        """
-        Start the stratisd daemon with the simulator.
-        """
-        self._service = Service()
-        self._service.setUp()
-
-    def tearDown(self):
-        """
-        Stop the stratisd simulator and daemon.
-        """
-        self._service.tearDown()
 
     def testList(self):
         """
@@ -58,7 +45,7 @@ class ListTestCase(unittest.TestCase):
         self.assertIsInstance(cause, StratisCliUniqueLookupError)
 
 
-class List2TestCase(unittest.TestCase):
+class List2TestCase(SimTestCase):
     """
     Test listing volumes in an existing pool with no volumes.
     """
@@ -69,17 +56,10 @@ class List2TestCase(unittest.TestCase):
         """
         Start the stratisd daemon with the simulator.
         """
-        self._service = Service()
-        self._service.setUp()
+        super().setUp()
         command_line = ['pool', 'create'] + [self._POOLNAME] \
             +  _DEVICE_STRATEGY.example()
         RUNNER(command_line)
-
-    def tearDown(self):
-        """
-        Stop the stratisd simulator and daemon.
-        """
-        self._service.tearDown()
 
     def testList(self):
         """
@@ -91,7 +71,7 @@ class List2TestCase(unittest.TestCase):
 
 @unittest.skip(
     "Temporarily unable to create multiple filesystems at same time")
-class List3TestCase(unittest.TestCase):
+class List3TestCase(SimTestCase):
     """
     Test listing volumes in an existing pool with some volumes.
     """
@@ -103,19 +83,12 @@ class List3TestCase(unittest.TestCase):
         """
         Start the stratisd daemon with the simulator.
         """
-        self._service = Service()
-        self._service.setUp()
+        super().setUp()
         command_line = ['pool', 'create', self._POOLNAME] \
             + _DEVICE_STRATEGY.example()
         RUNNER(command_line)
         command_line = ['filesystem', 'create', self._POOLNAME] + self._VOLUMES
         RUNNER(command_line)
-
-    def tearDown(self):
-        """
-        Stop the stratisd simulator and daemon.
-        """
-        self._service.tearDown()
 
     def testList(self):
         """
@@ -125,7 +98,7 @@ class List3TestCase(unittest.TestCase):
         RUNNER(command_line)
 
 
-class List4TestCase(unittest.TestCase):
+class List4TestCase(SimTestCase):
     """
     Test listing volumes in an existing pool with some volumes.
     """
@@ -136,8 +109,7 @@ class List4TestCase(unittest.TestCase):
         """
         Start the stratisd daemon with the simulator.
         """
-        self._service = Service()
-        self._service.setUp()
+        super().setUp()
         command_line = ['pool', 'create', self._POOLNAME] \
             + _DEVICE_STRATEGY.example()
         RUNNER(command_line)
@@ -154,12 +126,6 @@ class List4TestCase(unittest.TestCase):
             'filesystem', 'create', self._POOLNAME, self._VOLUMES[2]
         ]
         RUNNER(command_line)
-
-    def tearDown(self):
-        """
-        Stop the stratisd simulator and daemon.
-        """
-        self._service.tearDown()
 
     def testList(self):
         """
