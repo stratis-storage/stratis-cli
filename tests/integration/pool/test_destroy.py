@@ -15,8 +15,6 @@
 Test 'destroy'.
 """
 
-import unittest
-
 from stratis_cli._errors import StratisCliActionError
 from stratis_cli._errors import StratisCliEngineError
 from stratis_cli._errors import StratisCliUniqueLookupError
@@ -25,12 +23,12 @@ from stratis_cli._stratisd_constants import StratisdErrors
 
 from .._misc import _device_list
 from .._misc import RUNNER
-from .._misc import Service
+from .._misc import SimTestCase
 
 _DEVICE_STRATEGY = _device_list(1)
 
 
-class Destroy1TestCase(unittest.TestCase):
+class Destroy1TestCase(SimTestCase):
     """
     Test 'destroy' on empty database.
 
@@ -38,19 +36,6 @@ class Destroy1TestCase(unittest.TestCase):
     """
     _MENU = ['--propagate', 'pool', 'destroy']
     _POOLNAME = 'deadpool'
-
-    def setUp(self):
-        """
-        Start the stratisd daemon with the simulator.
-        """
-        self._service = Service()
-        self._service.setUp()
-
-    def tearDown(self):
-        """
-        Stop the stratisd simulator and daemon.
-        """
-        self._service.tearDown()
 
     def testExecution(self):
         """
@@ -63,7 +48,7 @@ class Destroy1TestCase(unittest.TestCase):
         self.assertIsInstance(cause, StratisCliUniqueLookupError)
 
 
-class Destroy2TestCase(unittest.TestCase):
+class Destroy2TestCase(SimTestCase):
     """
     Test 'destroy' on database which contains the given pool.
     """
@@ -74,17 +59,10 @@ class Destroy2TestCase(unittest.TestCase):
         """
         Start the stratisd daemon with the simulator.
         """
-        self._service = Service()
-        self._service.setUp()
+        super().setUp()
         command_line = ['pool', 'create', self._POOLNAME] \
             + _DEVICE_STRATEGY.example()
         RUNNER(command_line)
-
-    def tearDown(self):
-        """
-        Stop the stratisd simulator and daemon.
-        """
-        self._service.tearDown()
 
     def testExecution(self):
         """
@@ -94,7 +72,7 @@ class Destroy2TestCase(unittest.TestCase):
         RUNNER(command_line)
 
 
-class Destroy3TestCase(unittest.TestCase):
+class Destroy3TestCase(SimTestCase):
     """
     Test 'destroy' on database which contains the given pool with a volume.
     """
@@ -106,21 +84,13 @@ class Destroy3TestCase(unittest.TestCase):
         """
         Start the stratisd daemon with the simulator.
         """
-        self._service = Service()
-        self._service.setUp()
-
+        super().setUp()
         command_line = ['pool', 'create', self._POOLNAME] \
             + _DEVICE_STRATEGY.example()
         RUNNER(command_line)
 
         command_line = ['filesystem', 'create', self._POOLNAME, self._VOLNAME]
         RUNNER(command_line)
-
-    def tearDown(self):
-        """
-        Stop the stratisd simulator and daemon.
-        """
-        self._service.tearDown()
 
     def testExecution(self):
         """

@@ -20,6 +20,7 @@ import string
 import subprocess
 import sys
 import time
+import unittest
 
 from hypothesis import strategies
 
@@ -62,6 +63,25 @@ class Service():
         # pylint: disable=no-member
         self._stratisd.terminate()
         self._stratisd.wait()
+
+
+class SimTestCase(unittest.TestCase):
+    """
+    A SimTestCase must always start and stop stratisd (simulator vesion).
+    """
+
+    def setUp(self):
+        """
+        Start the stratisd daemon with the simulator.
+        """
+        self._service = Service()
+        self._service.setUp()
+
+    def tearDown(self):
+        """
+        Stop the stratisd simulator and daemon.
+        """
+        self._service.tearDown()
 
 
 RUNNER = run()

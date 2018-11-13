@@ -15,33 +15,18 @@
 Test 'list'.
 """
 
-import unittest
-
 from .._misc import _device_list
 from .._misc import RUNNER
-from .._misc import Service
+from .._misc import SimTestCase
 
 _DEVICE_STRATEGY = _device_list(1)
 
 
-class ListTestCase(unittest.TestCase):
+class ListTestCase(SimTestCase):
     """
     Test 'list'.
     """
     _MENU = ['--propagate', 'pool', 'list']
-
-    def setUp(self):
-        """
-        Start the stratisd daemon with the simulator.
-        """
-        self._service = Service()
-        self._service.setUp()
-
-    def tearDown(self):
-        """
-        Stop the stratisd simulator and daemon.
-        """
-        self._service.tearDown()
 
     def testList(self):
         """
@@ -60,7 +45,7 @@ class ListTestCase(unittest.TestCase):
         RUNNER(command_line)
 
 
-class List2TestCase(unittest.TestCase):
+class List2TestCase(SimTestCase):
     """
     Test 'list' with something actually to list.
     """
@@ -71,17 +56,10 @@ class List2TestCase(unittest.TestCase):
         """
         Start the stratisd daemon with the simulator.
         """
-        self._service = Service()
-        self._service.setUp()
+        super().setUp()
         command_line = ['pool', 'create', self._POOLNAME] \
             + _DEVICE_STRATEGY.example()
         RUNNER(command_line)
-
-    def tearDown(self):
-        """
-        Stop the stratisd simulator and daemon.
-        """
-        self._service.tearDown()
 
     def testList(self):
         """

@@ -15,19 +15,17 @@
 Test 'snapshot'.
 """
 
-import unittest
-
 from stratis_cli._errors import StratisCliActionError
 from stratis_cli._errors import StratisCliUniqueLookupError
 
 from .._misc import _device_list
 from .._misc import RUNNER
-from .._misc import Service
+from .._misc import SimTestCase
 
 _DEVICE_STRATEGY = _device_list(1)
 
 
-class SnapshotTestCase(unittest.TestCase):
+class SnapshotTestCase(SimTestCase):
     """
     Test creating a snapshot of a filesystem in a pool.  In this case
     the snapshot should be created and no error raised.
@@ -41,19 +39,12 @@ class SnapshotTestCase(unittest.TestCase):
         """
         Start the stratisd daemon with the simulator.
         """
-        self._service = Service()
-        self._service.setUp()
+        super().setUp()
         command_line = ['pool', 'create', self._POOLNAME] + \
                 _DEVICE_STRATEGY.example()
         RUNNER(command_line)
         command_line = ['filesystem', 'create', self._POOLNAME, self._FSNAME]
         RUNNER(command_line)
-
-    def tearDown(self):
-        """
-        Stop the stratisd simulator and daemon.
-        """
-        self._service.tearDown()
 
     def testSnapshot(self):
         """
@@ -65,7 +56,7 @@ class SnapshotTestCase(unittest.TestCase):
         RUNNER(command_line)
 
 
-class Snapshot1TestCase(unittest.TestCase):
+class Snapshot1TestCase(SimTestCase):
     """
     Test creating a snapshot w/out a pool.
     """
@@ -73,19 +64,6 @@ class Snapshot1TestCase(unittest.TestCase):
     _POOLNAME = 'nopool'
     _SNAPNAME = 'snapfs'
     _FSNAME = 'fs'
-
-    def setUp(self):
-        """
-        Start the stratisd daemon with the simulator.
-        """
-        self._service = Service()
-        self._service.setUp()
-
-    def tearDown(self):
-        """
-        Stop the stratisd simulator and daemon.
-        """
-        self._service.tearDown()
 
     def testCreation(self):
         """
@@ -100,7 +78,7 @@ class Snapshot1TestCase(unittest.TestCase):
         self.assertIsInstance(cause, StratisCliUniqueLookupError)
 
 
-class Snapshot2TestCase(unittest.TestCase):
+class Snapshot2TestCase(SimTestCase):
     """
     Test creating a snapshot w/out a filesystem.
     """
@@ -113,17 +91,10 @@ class Snapshot2TestCase(unittest.TestCase):
         """
         Start the stratisd daemon with the simulator.
         """
-        self._service = Service()
-        self._service.setUp()
+        super().setUp()
         command_line = ['pool', 'create', self._POOLNAME] + \
                 _DEVICE_STRATEGY.example()
         RUNNER(command_line)
-
-    def tearDown(self):
-        """
-        Stop the stratisd simulator and daemon.
-        """
-        self._service.tearDown()
 
     def testCreation(self):
         """
