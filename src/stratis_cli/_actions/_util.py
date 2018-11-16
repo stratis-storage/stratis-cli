@@ -39,10 +39,11 @@ def get_objects(namespace, pool_name_key, managed_objects, search_function,
     :returns: objects of interest and a map from pool object path to name
     :rtype: list * dict
     """
-    if getattr(namespace, pool_name_key, None) is not None:
+    pool_name = getattr(namespace, pool_name_key, None)
+    if pool_name is not None:
         (parent_pool_object_path, _) = unique(
             pools(props={
-                'Name': namespace.pool_name
+                'Name': pool_name
             }).search(managed_objects))
 
         properties = {"Pool": parent_pool_object_path}
