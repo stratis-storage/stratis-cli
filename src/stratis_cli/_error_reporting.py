@@ -105,11 +105,9 @@ def interpret_errors(errors):
             return _DBUS_INTERFACE_MSG
 
         if isinstance(error, StratisCliStratisdVersionError):
-            fmt_str = (
-                "The version of stratisd you are using %s is not compatible "
-                "with this version of stratis. stratis can execute only the "
-                "subset of its commands that do not require stratisd.")
-            return fmt_str % (error.actual_version, )
+            fmt_str = ("%s. stratis can execute only the subset of its "
+                       "commands that do not require stratisd.")
+            return fmt_str % (error, )
 
         # Inspect lowest error
         error = errors[-1]
