@@ -22,14 +22,12 @@ class StratisCliError(Exception):
     """
     Top-level stratis cli error.
     """
-    pass
 
 
 class StratisCliRuntimeError(StratisCliError):
     """
     Exception raised during runtime.
     """
-    pass
 
 
 class StratisCliUniqueLookupError(StratisCliRuntimeError):
@@ -99,4 +97,3 @@ class StratisCliGenerationError(StratisCliError):
     """
     Exception that occurs during generation of classes.
     """
-    pass
