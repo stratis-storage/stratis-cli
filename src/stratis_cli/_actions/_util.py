@@ -26,7 +26,7 @@ from ._constants import TOP_OBJECT
 from ._data import Manager
 from ._data import MOPool
 from ._data import MAXIMUM_STRATISD_VERSION
-from ._data import REQUIRED_STRATISD_VERSION
+from ._data import MINIMUM_STRATISD_VERSION
 from ._data import pools
 
 
@@ -82,9 +82,9 @@ def _verify_stratisd_version():
     proxy = get_object(TOP_OBJECT)
     version = Manager.Properties.Version.Get(proxy)
     version = tuple([int(x) for x in version.split(".")])
-    if version < REQUIRED_STRATISD_VERSION or version > MAXIMUM_STRATISD_VERSION:
-        raise StratisCliStratisdVersionError(
-            version, REQUIRED_STRATISD_VERSION, MAXIMUM_STRATISD_VERSION)
+    if version < MINIMUM_STRATISD_VERSION or version > MAXIMUM_STRATISD_VERSION:
+        raise StratisCliStratisdVersionError(version, MINIMUM_STRATISD_VERSION,
+                                             MAXIMUM_STRATISD_VERSION)
     return proxy
 
 
