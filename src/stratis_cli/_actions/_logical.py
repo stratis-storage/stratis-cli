@@ -30,7 +30,6 @@ from ._data import Pool
 from ._data import Filesystem
 from ._data import filesystems
 from ._data import pools
-from ._data import unique
 from ._formatting import print_table
 from ._util import get_objects
 
@@ -49,10 +48,10 @@ class LogicalActions():
         """
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        (pool_object_path, _) = unique(
+        (pool_object_path, _) = next(
             pools(props={
                 'Name': namespace.pool_name
-            }).search(managed_objects))
+            }).require_unique_match(True).search(managed_objects))
 
         (_, rc, message) = Pool.Methods.CreateFilesystems(
             get_object(pool_object_path), {'specs': namespace.fs_name})
@@ -95,10 +94,10 @@ class LogicalActions():
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
-        (pool_object_path, _) = unique(
+        (pool_object_path, _) = next(
             pools(props={
                 'Name': namespace.pool_name
-            }).search(managed_objects))
+            }).require_unique_match(True).search(managed_objects))
         fs_object_paths = [
             op for name in namespace.fs_name
             for (op, _) in filesystems(props={
@@ -123,15 +122,15 @@ class LogicalActions():
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
-        (pool_object_path, _) = unique(
+        (pool_object_path, _) = next(
             pools(props={
                 'Name': namespace.pool_name
-            }).search(managed_objects))
-        (origin_fs_object_path, _) = unique(
+            }).require_unique_match(True).search(managed_objects))
+        (origin_fs_object_path, _) = next(
             filesystems(props={
                 'Name': namespace.origin_name,
                 'Pool': pool_object_path
-            }).search(managed_objects))
+            }).require_unique_match(True).search(managed_objects))
 
         (_, rc, message) = Pool.Methods.SnapshotFilesystem(
             get_object(pool_object_path), {
@@ -149,15 +148,15 @@ class LogicalActions():
         """
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        (pool_object_path, _) = unique(
+        (pool_object_path, _) = next(
             pools(props={
                 'Name': namespace.pool_name
-            }).search(managed_objects))
-        (fs_object_path, _) = unique(
+            }).require_unique_match(True).search(managed_objects))
+        (fs_object_path, _) = next(
             filesystems(props={
                 'Name': namespace.fs_name,
                 'Pool': pool_object_path
-            }).search(managed_objects))
+            }).require_unique_match(True).search(managed_objects))
 
         (_, rc, message) = Filesystem.Methods.SetName(
             get_object(fs_object_path), {'name': namespace.new_name})

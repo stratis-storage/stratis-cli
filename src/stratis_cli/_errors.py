@@ -30,25 +30,24 @@ class StratisCliRuntimeError(StratisCliError):
     """
 
 
-class StratisCliUniqueLookupError(StratisCliRuntimeError):
+class StratisCliValueError(StratisCliRuntimeError):
     """
-    Error raised when an unique object path is not found for a given
-    specification.
+    Error raised when a parameter has an unacceptable value.
     """
 
-    def __init__(self, matches):
-        """
-        Initializer.
+    def __init__(self, value, param):
+        """ Initializer.
 
-        :param matches: the list of matches actually found
-        :type matches: list of object path * dict
+            :param object value: the value
+            :param str param: the parameter
         """
         # pylint: disable=super-init-not-called
-        self.matches = matches
+        self._value = value
+        self._param = param
 
     def __str__(self):
-        return "No unique item found among returned matches: (%s)" % \
-            ", ".join(str(x) for x in self.matches)
+        return "value '%s' for parameter %s is unacceptable" % (self._value,
+                                                                self._param)
 
 
 class StratisCliEngineError(StratisCliRuntimeError):

@@ -25,7 +25,7 @@ from dbus_python_client_gen import make_class
 from dbus_python_client_gen import DPClientGenerationError
 
 from .._errors import StratisCliGenerationError
-from .._errors import StratisCliUniqueLookupError
+from .._errors import StratisCliValueError
 
 from ._constants import DBUS_TIMEOUT_SECONDS
 
@@ -201,6 +201,28 @@ _FILESYSTEM_INTERFACE = 'org.storage.stratis1.filesystem'
 _POOL_INTERFACE = 'org.storage.stratis1.pool'
 _BLOCKDEV_INTERFACE = 'org.storage.stratis1.blockdev'
 
+
+def interface_name_to_common_name(interface_name):
+    """
+    Maps a D-Bus interface name to the common name that identifies the type
+    of stratisd thing that the interface represents.
+
+    :param str interface_name: the interface name
+    :returns: a common name
+    :rtype: str
+    """
+    if interface_name == _BLOCKDEV_INTERFACE:
+        return "block device"
+
+    if interface_name == _FILESYSTEM_INTERFACE:
+        return "filesystem"
+
+    if interface_name == _POOL_INTERFACE:
+        return "pool"
+
+    raise StratisCliValueError(interface_name, "interface_name")
+
+
 try:
     filesystem_spec = ET.fromstring(SPECS[_FILESYSTEM_INTERFACE])
     Filesystem = make_class("Filesystem", filesystem_spec,
@@ -234,17 +256,3 @@ except DbusClientGenerationError as err:
     raise StratisCliGenerationError(
         "Failed to generate some class needed for examining D-Bus data"
     ) from err
-
-
-def unique(iterable):
-    """
-    Get a unique result from the iterable. If the result is not unique,
-    raise an exception.
-
-    :returns: an object path and its corresponding data
-    :rtype: object path * dict
-    """
-    result = [x for x in iterable]
-    if len(result) != 1:
-        raise StratisCliUniqueLookupError(result)
-    return result[0]

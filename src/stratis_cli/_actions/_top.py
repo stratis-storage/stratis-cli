@@ -29,7 +29,6 @@ from ._data import MOPool
 from ._data import ObjectManager
 from ._data import Pool
 from ._data import pools
-from ._data import unique
 from ._formatting import print_table
 
 
@@ -88,10 +87,10 @@ class TopActions():
         """
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        (pool_object_path, _) = unique(
+        (pool_object_path, _) = next(
             pools(props={
                 'Name': namespace.pool_name
-            }).search(managed_objects))
+            }).require_unique_match(True).search(managed_objects))
 
         (_, rc, message) = \
            Manager.Methods.DestroyPool(proxy, {'pool': pool_object_path})
@@ -106,10 +105,10 @@ class TopActions():
         """
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        (pool_object_path, _) = unique(
+        (pool_object_path, _) = next(
             pools(props={
                 'Name': namespace.current
-            }).search(managed_objects))
+            }).require_unique_match(True).search(managed_objects))
 
         (_, rc, message) = Pool.Methods.SetName(
             get_object(pool_object_path), {'name': namespace.new})
@@ -124,10 +123,10 @@ class TopActions():
         """
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        (pool_object_path, _) = unique(
+        (pool_object_path, _) = next(
             pools(props={
                 'Name': namespace.pool_name
-            }).search(managed_objects))
+            }).require_unique_match(True).search(managed_objects))
 
         (_, rc, message) = Pool.Methods.AddDataDevs(
             get_object(pool_object_path), {'devices': namespace.device})
@@ -141,10 +140,10 @@ class TopActions():
         """
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        (pool_object_path, _) = unique(
+        (pool_object_path, _) = next(
             pools(props={
                 'Name': namespace.pool_name
-            }).search(managed_objects))
+            }).require_unique_match(True).search(managed_objects))
 
         (_, rc, message) = Pool.Methods.AddCacheDevs(
             get_object(pool_object_path), {'devices': namespace.device})
