@@ -11,9 +11,9 @@ _stratis()
 	third="${COMP_WORDS[3]}"
 	opts="-h --help --version"
 	root_subcommands="--help --version daemon pool blockdev filesystem"
-	pool_subcommands="create list rename destroy"
+	pool_subcommands="create list add-data add-cache rename destroy"
 	fs_subcommands="create snapshot list rename destroy"
-	blockdev_subcommands="add list"
+	blockdev_subcommands="list"
 	daemon_subcommands="redundancy version"
 	blockdevs="$(echo /dev/disk/*/*) $(lsblk -n -o name -p -l)"
 
@@ -58,7 +58,7 @@ _stratis()
 					-h|--help)
 						return 0
 						;;
-					add|list)
+					list)
 						COMPREPLY=( $(compgen -W  $(stratis pool list | awk '{if (NR!=1) {print $1}}' | tr '\n' ' ') -- ${cur}) )
 						return 0
 						;;
@@ -72,7 +72,7 @@ _stratis()
 					-h|--help|create|list)
 						return 0
 						;;
-					rename|destroy)
+					rename|destroy|add-data|add-cache)
 						COMPREPLY=( $(compgen -W  $(stratis pool list | awk '{if (NR!=1) {print $1}}' | tr '\n' ' ') -- ${cur}) )
 						return 0
 						;;
@@ -92,15 +92,6 @@ _stratis()
 				esac
 				;;
 			blockdev)
-				case ${x2prev} in
-					-h|--help|list)
-						return 0
-						;;
-					add)
-						COMPREPLY=( $(compgen -W  "${blockdevs}" -- ${cur}) )
-						return 0
-						;;
-				esac
 				return 0
 				;;
 			daemon)
@@ -111,14 +102,14 @@ _stratis()
 					-h|--help|list|rename|destroy)
 						return 0
 						;;
-					create)
+					create|add-data|add-cache)
 						COMPREPLY=( $(compgen -W  "${blockdevs}" -- ${cur}) )
 						return 0
 						;;
 				esac
 		esac
 
-#	Code to handle multiple block device names or multiple filesystem names for filesystem destroy, blockdev add and pool create
+#	Code to handle multiple block device names or multiple filesystem names for filesystem destroy and pool create/add-data/add-cache
 		if [[ ${COMP_CWORD} > 3 ]]; then
 			case ${first} in
 				filesystem|fs)
@@ -137,24 +128,12 @@ _stratis()
 						-h|--help|list|rename|destroy)
 							return 0
 							;;
-						create)
+						create|add-cache|add-data)
 							COMPREPLY=( $(compgen -W  "${blockdevs}" -- ${cur}) )
 							return 0
 							;;
 					esac
 					;;
-				blockdev)
-					case ${second} in
-						-h|--help|list)
-							return 0
-							;;
-						add)
-							COMPREPLY=( $(compgen -W  "${blockdevs}" -- ${cur}) )
-							return 0
-							;;
-					esac
-					;;
-					
 			esac
 		fi
 		if [[ ${COMP_CWORD} -eq 1 ]]; then
