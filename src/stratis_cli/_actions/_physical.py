@@ -17,15 +17,14 @@ Miscellaneous physical actions.
 
 from justbytes import Range
 
-from ._connection import get_object
 from ._constants import SECTOR_SIZE
-from ._constants import TOP_OBJECT
 from ._constants import UNKNOWN_VALUE_MARKER
 from ._data import devs
 from ._data import MODev
 from ._data import ObjectManager
 from ._formatting import print_table
 from ._util import get_objects
+from ._util import verify_stratisd_version_decorator
 
 
 def state_val_to_string(val):
@@ -57,12 +56,12 @@ class PhysicalActions():
     # pylint: disable=too-few-public-methods
 
     @staticmethod
-    def list_pool(namespace):
+    @verify_stratisd_version_decorator
+    def list_pool(namespace, proxy):
         """
         List devices. If a pool is specified in the namespace, list devices
         for that pool. Otherwise, list all devices for all pools.
         """
-        proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
         (modevs, path_to_name) = get_objects(namespace, "pool_name",
