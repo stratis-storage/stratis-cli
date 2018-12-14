@@ -24,11 +24,11 @@ from stratis_cli._errors import StratisCliEngineError
 
 from stratis_cli._stratisd_constants import StratisdErrors
 
-from .._misc import _device_list
+from .._misc import device_name_list
 from .._misc import RUNNER
 from .._misc import SimTestCase
 
-_DEVICE_STRATEGY = _device_list(1)
+_DEVICE_STRATEGY = device_name_list(1)
 
 
 @unittest.skip(
@@ -67,8 +67,7 @@ class Create2TestCase(SimTestCase):
         Start the stratisd daemon with the simulator.
         """
         super().setUp()
-        command_line = ['pool', 'create', self._POOLNAME] \
-            + _DEVICE_STRATEGY.example()
+        command_line = ['pool', 'create', self._POOLNAME] + _DEVICE_STRATEGY()
         RUNNER(command_line)
 
     def testCreation(self):
@@ -94,8 +93,7 @@ class Create3TestCase(SimTestCase):
         Start the stratisd daemon with the simulator.
         """
         super().setUp()
-        command_line = ['pool', 'create', self._POOLNAME] \
-            +  _DEVICE_STRATEGY.example()
+        command_line = ['pool', 'create', self._POOLNAME] + _DEVICE_STRATEGY()
         RUNNER(command_line)
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
         RUNNER(command_line)

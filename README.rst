@@ -54,8 +54,7 @@ Testing
 -------
 There are unit and integration tests in the ``tests`` directory.
 
-Running tests depends on some additional packages: python3-pytest,
-python3-hypothesis.
+python3-pytest is required in order to run the tests.
 
 These can be run by setting the PYTHONPATH environment variable as
 shown above, and also setting the STRATIS environment variable to the

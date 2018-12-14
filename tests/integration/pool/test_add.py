@@ -19,11 +19,11 @@ from dbus_client_gen import DbusClientUniqueResultError
 
 from stratis_cli._errors import StratisCliActionError
 
-from .._misc import _device_list
+from .._misc import device_name_list
 from .._misc import RUNNER
 from .._misc import SimTestCase
 
-_DEVICE_STRATEGY = _device_list(1)
+_DEVICE_STRATEGY = device_name_list(1)
 
 
 class AddDataTestCase(SimTestCase):
@@ -37,8 +37,7 @@ class AddDataTestCase(SimTestCase):
         """
         Adding the devices must fail since the pool does not exist.
         """
-        command_line = self._MENU + [self._POOLNAME] \
-            + _DEVICE_STRATEGY.example()
+        command_line = self._MENU + [self._POOLNAME] + _DEVICE_STRATEGY()
         with self.assertRaises(StratisCliActionError) as context:
             RUNNER(command_line)
         cause = context.exception.__cause__
@@ -56,8 +55,7 @@ class AddCacheTestCase(SimTestCase):
         """
         Adding the devices must fail since the pool does not exist.
         """
-        command_line = self._MENU + [self._POOLNAME] \
-            + _DEVICE_STRATEGY.example()
+        command_line = self._MENU + [self._POOLNAME] + _DEVICE_STRATEGY()
         with self.assertRaises(StratisCliActionError) as context:
             RUNNER(command_line)
         cause = context.exception.__cause__
