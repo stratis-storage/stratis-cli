@@ -27,7 +27,7 @@ def value_to_name(klass):
     :rtype: int -> str
     """
 
-    def the_func(num):
+    def the_func(num, terse_unknown=False):
         """
         Convert the enum value to a string which is just its name.
         Replace underscores in the name with spaces.
@@ -35,14 +35,15 @@ def value_to_name(klass):
         If there is no name for the value, return a special string.
 
         :param int num: the number to convert
+        :param bool terse_unknown: terse format for unknown name, default false
         :returns: the name for the number or an error string
         :rtype: str
         """
         try:
             the_str = str(klass(num)).rsplit('.')[-1].replace("_", " ")
         except ValueError:
-            the_str = "Unknown value (%s) for %s constant" % (num,
-                                                              klass.__name__)
+            the_str = '???' if terse_unknown else "Unknown value (%s) for %s constant" % (
+                num, klass.__name__)
         return the_str
 
     return the_func
@@ -72,3 +73,28 @@ class RedundancyCodes(IntEnum):
 
 
 REDUNDANCY_CODE_TO_NAME = value_to_name(RedundancyCodes)
+
+
+class BlockDevStates(IntEnum):
+    """
+    State of individual block devices.
+    """
+    Missing = 0
+    Bad = 1
+    Spare = 2
+    NotInUse = 3
+    InUse = 4
+
+
+BLOCK_DEV_STATE_TO_NAME = value_to_name(BlockDevStates)
+
+
+class BlockDevTiers(IntEnum):
+    """
+    Tier to which a blockdev device belongs.
+    """
+    Data = 0
+    Cache = 1
+
+
+BLOCK_DEV_TIER_TO_NAME = value_to_name(BlockDevTiers)
