@@ -26,6 +26,7 @@ from dbus_client_gen import DbusClientUniqueResultError
 from dbus_client_gen import DbusClientUnknownSearchPropertiesError
 
 from ._actions import interface_name_to_common_name
+from ._errors import StratisCliEngineError
 
 _DBUS_INTERFACE_MSG = (
     "The version of stratis you are running expects a different "
@@ -101,6 +102,12 @@ def interpret_errors(errors):
             return _STRATIS_CLI_BUG_MSG
         if isinstance(error, DbusClientMissingPropertyError):
             return _DBUS_INTERFACE_MSG
+
+        if isinstance(error, StratisCliEngineError):
+            fmt_str = ("stratisd failed to perform the operation that you "
+                       "requested. It returned the following information via "
+                       "the D-Bus: %s.")
+            return fmt_str % error
 
         # Inspect lowest error
         error = errors[-1]
