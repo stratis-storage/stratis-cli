@@ -18,11 +18,11 @@ Test 'create'.
 from stratis_cli._errors import StratisCliActionError
 from stratis_cli._errors import StratisCliEngineError
 
-from .._misc import _device_list
+from .._misc import device_name_list
 from .._misc import RUNNER
 from .._misc import SimTestCase
 
-_DEVICE_STRATEGY = _device_list(1)
+_DEVICE_STRATEGY = device_name_list(1)
 
 
 class CreateTestCase(SimTestCase):
@@ -36,8 +36,8 @@ class CreateTestCase(SimTestCase):
         """
         Parser error on all redundancy that is not 'none'.
         """
-        command_line = self._MENU + ['--redundancy', 'raid6', self._POOLNAME] \
-            + _DEVICE_STRATEGY.example()
+        command_line = self._MENU + ['--redundancy', 'raid6', self._POOLNAME
+                                     ] + _DEVICE_STRATEGY()
         with self.assertRaises(SystemExit):
             RUNNER(command_line)
 
@@ -54,16 +54,14 @@ class Create3TestCase(SimTestCase):
         Start the stratisd daemon with the simulator.
         """
         super().setUp()
-        command_line = ['pool', 'create', self._POOLNAME] \
-            + _DEVICE_STRATEGY.example()
+        command_line = ['pool', 'create', self._POOLNAME] + _DEVICE_STRATEGY()
         RUNNER(command_line)
 
     def testCreate(self):
         """
         Create should fail trying to create new pool with same name as previous.
         """
-        command_line = self._MENU + [self._POOLNAME] \
-            + _DEVICE_STRATEGY.example()
+        command_line = self._MENU + [self._POOLNAME] + _DEVICE_STRATEGY()
         with self.assertRaises(StratisCliActionError) as context:
             RUNNER(command_line)
         cause = context.exception.__cause__

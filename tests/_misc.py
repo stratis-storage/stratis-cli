@@ -16,13 +16,12 @@ Miscellaneous methods to support testing.
 """
 
 import os
+import random
 import string
 import subprocess
 import sys
 import time
 import unittest
-
-from hypothesis import strategies
 
 from stratis_cli import run
 
@@ -33,15 +32,21 @@ except KeyError:
     sys.exit(message)
 
 
-def _device_list(minimum):
+def device_name_list(min_devices=0, max_devices=10):
     """
-    Get a device generating strategy.
+    Return a function that returns a random list of device names based on
+    parameters.
+    """
 
-    :param int minimum: the minimum number of devices, must be at least 0
-    """
-    return strategies.lists(
-        strategies.text(alphabet=string.ascii_letters + "/", min_size=1),
-        min_size=minimum)
+    def the_func():
+        return [
+            "/dev/%s" % ''.join(
+                random.choice(string.ascii_uppercase + string.digits)
+                for _ in range(4))
+            for _ in range(random.randrange(min_devices, max_devices + 1))
+        ]
+
+    return the_func
 
 
 class _Service():
