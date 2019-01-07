@@ -17,37 +17,17 @@ Miscellaneous physical actions.
 
 from justbytes import Range
 
+from .._stratisd_constants import BLOCK_DEV_STATE_TO_NAME
+from .._stratisd_constants import BLOCK_DEV_TIER_TO_NAME
+
 from ._connection import get_object
 from ._constants import SECTOR_SIZE
 from ._constants import TOP_OBJECT
-from ._constants import UNKNOWN_VALUE_MARKER
 from ._data import devs
 from ._data import MODev
 from ._data import ObjectManager
 from ._formatting import print_table
 from ._util import get_objects
-
-
-def state_val_to_string(val):
-    """
-    Convert a blockdev state enumerated value to a string.
-    """
-    states = ["Missing", "Bad", "Spare", "Not-in-use", "In-use"]
-    try:
-        return states[val]
-    except IndexError:
-        return UNKNOWN_VALUE_MARKER
-
-
-def tier_val_to_string(val):
-    """
-    Convert a blockdev tier enumerated value to a string.
-    """
-    states = ["Data", "Cache"]
-    try:
-        return states[val]
-    except IndexError:
-        return UNKNOWN_VALUE_MARKER
 
 
 class PhysicalActions():
@@ -72,8 +52,8 @@ class PhysicalActions():
             path_to_name[modev.Pool()],
             modev.Devnode(),
             str(Range(modev.TotalPhysicalSize(), SECTOR_SIZE)),
-            state_val_to_string(modev.State()),
-            tier_val_to_string(modev.Tier())
+            BLOCK_DEV_STATE_TO_NAME(modev.State(), True),
+            BLOCK_DEV_TIER_TO_NAME(modev.Tier(), True)
         ] for modev in modevs]
         print_table(
             ["Pool Name", "Device Node", "Physical Size", "State", "Tier"],

@@ -20,8 +20,4 @@ TOP_OBJECT = '/org/storage/stratis1'
 
 SECTOR_SIZE = 512
 
-# This string is used in all instances where an uninterpretable value is
-# retrieved from the API.
-UNKNOWN_VALUE_MARKER = "???"
-
 DBUS_TIMEOUT_SECONDS = 120
