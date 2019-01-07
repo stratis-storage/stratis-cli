@@ -197,6 +197,8 @@ SPECS = {
 """,
 }
 
+_MANAGER_INTERFACE = 'org.storage.stratis1.Manager'
+
 _FILESYSTEM_INTERFACE = 'org.storage.stratis1.filesystem'
 _POOL_INTERFACE = 'org.storage.stratis1.pool'
 _BLOCKDEV_INTERFACE = 'org.storage.stratis1.blockdev'
@@ -239,8 +241,7 @@ try:
     MODev = managed_object_class("MODev", blockdev_spec)
     devs = mo_query_builder(blockdev_spec)
 
-    Manager = make_class("Manager",
-                         ET.fromstring(SPECS['org.storage.stratis1.Manager']),
+    Manager = make_class("Manager", ET.fromstring(SPECS[_MANAGER_INTERFACE]),
                          DBUS_TIMEOUT_SECONDS)
 
     ObjectManager = make_class(
