@@ -17,6 +17,11 @@ Formatting for tables.
 
 import sys
 
+try:
+    from wcwidth import wcswidth
+except ImportError:
+    wcswidth = len
+
 
 def print_table(column_headings, row_entries, alignment, file=sys.stdout):
     """
@@ -38,8 +43,9 @@ def print_table(column_headings, row_entries, alignment, file=sys.stdout):
 
     column_lengths = [
         max(
-            max((len(e[index]) for e in row_entries), default=0),
-            len(column_headings[index])) + 2 for index in range(num_columns)
+            max((wcswidth(e[index]) for e in row_entries), default=0),
+            wcswidth(column_headings[index])) + 2
+        for index in range(num_columns)
     ]
 
     for index in range(num_columns):
@@ -52,9 +58,14 @@ def print_table(column_headings, row_entries, alignment, file=sys.stdout):
 
     for row in row_entries:
         for index in range(num_columns):
+            calc_w = column_lengths[index]
+            wide_s = wcswidth(row[index])
+
+            # -1 is returned for non-printable wide character
+            if wide_s != -1:
+                calc_w -= wide_s - len(row[index])
+
             line = '{0:{align}{width}}'.format(
-                row[index],
-                align=alignment[index],
-                width=column_lengths[index])
+                row[index], align=alignment[index], width=calc_w)
             print(line, end='', file=file)
         print(file=file)
