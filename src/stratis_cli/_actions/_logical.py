@@ -120,7 +120,12 @@ class LogicalActions():
 
         :raises StratisCliEngineError:
         """
+        import time
+        before = time.time()
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
+        after = time.time()
+        print("Elapsed time for GetManagedObjects call = %f" %
+              (after - before))
 
         (pool_object_path, _) = next(
             pools(props={
@@ -132,11 +137,15 @@ class LogicalActions():
                 'Pool': pool_object_path
             }).require_unique_match(True).search(managed_objects))
 
+        before = time.time()
         (_, rc, message) = Pool.Methods.SnapshotFilesystem(
             get_object(pool_object_path), {
                 'origin': origin_fs_object_path,
                 'snapshot_name': namespace.snapshot_name
             })
+        after = time.time()
+        print("Elapsed time for SnapshotFilesystem call = %f" %
+              (after - before))
 
         if rc != StratisdErrors.OK:
             raise StratisCliEngineError(rc, message)
