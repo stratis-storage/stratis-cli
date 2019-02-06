@@ -60,9 +60,9 @@ def print_table(column_headings, row_entries, alignment, file=sys.stdout):
         for index in range(num_columns):
             calc_w = column_lengths[index]
             entry = row[index]
-            wide_s = maybe_wcswidth(entry)
 
             # -1 is returned for non-printable wide character
+            wide_s = maybe_wcswidth(entry)
             if wide_s != -1:
                 calc_w -= wide_s - len(entry)
 
