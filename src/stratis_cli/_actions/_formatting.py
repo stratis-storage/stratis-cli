@@ -62,9 +62,9 @@ def print_table(column_headings, row_entries, alignment, file=sys.stdout):
             entry = row[index]
 
             # -1 is returned for non-printable wide character
-            wide_s = maybe_wcswidth(entry)
-            if wide_s != -1:
-                column_width -= wide_s - len(entry)
+            entry_width = maybe_wcswidth(entry)
+            if entry_width != -1:
+                column_width -= entry_width - len(entry)
 
             line = '{0:{align}{width}}'.format(
                 entry, align=alignment[index], width=column_width)
