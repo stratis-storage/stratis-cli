@@ -59,13 +59,14 @@ def print_table(column_headings, row_entries, alignment, file=sys.stdout):
     for row in row_entries:
         for index in range(num_columns):
             calc_w = column_lengths[index]
-            wide_s = maybe_wcswidth(row[index])
+            entry = row[index]
+            wide_s = maybe_wcswidth(entry)
 
             # -1 is returned for non-printable wide character
             if wide_s != -1:
-                calc_w -= wide_s - len(row[index])
+                calc_w -= wide_s - len(entry)
 
             line = '{0:{align}{width}}'.format(
-                row[index], align=alignment[index], width=calc_w)
+                entry, align=alignment[index], width=calc_w)
             print(line, end='', file=file)
         print(file=file)
