@@ -34,6 +34,11 @@ def print_table(column_headings, row_entries, alignment, file=sys.stdout):
 
     Precondition: len(column_headings) == len(alignment) == len of each entry
     in row_entries.
+
+    Precondition: all(mcswidth(h) != -1 for h in column_headings)
+                  all(mcswidth(i) != -1 for row in rows for item in row)
+                  (in other words, no items to be printed contain
+                   unprintable characters)
     """
 
     num_columns = len(column_headings)
@@ -58,10 +63,8 @@ def print_table(column_headings, row_entries, alignment, file=sys.stdout):
             column_width = column_lengths[index]
             entry = row[index]
 
-            # -1 is returned for non-printable wide character
             entry_width = wcswidth(entry)
-            if entry_width != -1:
-                column_width -= entry_width - len(entry)
+            column_width -= entry_width - len(entry)
 
             line = '{0:{align}{width}}'.format(
                 entry, align=alignment[index], width=column_width)
