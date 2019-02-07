@@ -20,6 +20,27 @@ import sys
 from wcwidth import wcswidth
 
 
+def _get_column_width_chars(column_width_cells, entry):
+    """
+    From the desired column width in cells and the item to be printed,
+    calculate the required column width in characters to pass to the
+    format method.
+
+    In order to get the correct width in chars it is necessary to subtract
+    the number of cells above 1 (or add the number of cells below 1) that
+    an individual character occupies.
+
+    :param int column_width_cells: the column width, in cells
+    :param str entry: the entry to be printed
+
+    :returns: the column width in characters
+
+    Precondition: mcswidth(entry) != -1
+                  (equivalently, entry has no unprintable characters)
+    """
+    return column_width_cells - (wcswidth(entry) - len(entry))
+
+
 def print_table(column_headings, row_entries, alignment, file=sys.stdout):
     """
     Given the column headings and the row_entries, print a table.
@@ -51,22 +72,21 @@ def print_table(column_headings, row_entries, alignment, file=sys.stdout):
     ]
 
     for index in range(num_columns):
+        entry = column_headings[index]
+        column_width_chars = _get_column_width_chars(column_lengths[index],
+                                                     entry)
         line = '{0:{align}{width}}'.format(
-            column_headings[index],
-            align=alignment[index],
-            width=column_lengths[index])
+            entry, align=alignment[index], width=column_width_chars)
         print(line, end='', file=file)
     print(file=file)
 
     for row in row_entries:
         for index in range(num_columns):
-            column_width = column_lengths[index]
             entry = row[index]
-
-            entry_width = wcswidth(entry)
-            column_width -= entry_width - len(entry)
+            column_width_chars = _get_column_width_chars(
+                column_lengths[index], entry)
 
             line = '{0:{align}{width}}'.format(
-                entry, align=alignment[index], width=column_width)
+                entry, align=alignment[index], width=column_width_chars)
             print(line, end='', file=file)
         print(file=file)
