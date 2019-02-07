@@ -17,10 +17,7 @@ Formatting for tables.
 
 import sys
 
-try:
-    from wcwidth import wcswidth as maybe_wcswidth
-except ImportError:
-    maybe_wcswidth = len
+from wcwidth import wcswidth
 
 
 def print_table(column_headings, row_entries, alignment, file=sys.stdout):
@@ -43,8 +40,8 @@ def print_table(column_headings, row_entries, alignment, file=sys.stdout):
 
     column_lengths = [
         max(
-            max((maybe_wcswidth(e[index]) for e in row_entries), default=0),
-            maybe_wcswidth(column_headings[index])) + 2
+            max((wcswidth(e[index]) for e in row_entries), default=0),
+            wcswidth(column_headings[index])) + 2
         for index in range(num_columns)
     ]
 
@@ -62,7 +59,7 @@ def print_table(column_headings, row_entries, alignment, file=sys.stdout):
             entry = row[index]
 
             # -1 is returned for non-printable wide character
-            entry_width = maybe_wcswidth(entry)
+            entry_width = wcswidth(entry)
             if entry_width != -1:
                 column_width -= entry_width - len(entry)
 
