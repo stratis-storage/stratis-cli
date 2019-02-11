@@ -100,3 +100,41 @@ def print_table(column_headings, row_entries, alignment, file=sys.stdout):
     for row in row_entries:
         _print_row(file, num_columns, row, column_lengths, alignment)
         print(file=file)
+
+
+def main():
+    """
+    A function that prints out some tables.
+    To be used for a visual check of correctness of formatting.
+    """
+
+    print("Example table...")
+    table = [['Pool Name', 'Name', 'Used', 'Created', 'Device'], [
+        'yes_you_can', '☺', '546 MiB', 'Oct 05 2018 16:24',
+        '/dev/stratis/yes_you_can/☺'
+    ], [
+        'yes_you_can', '漢字', '546 MiB', 'Oct 10 2018 09:37',
+        '/dev/stratis/yes_you_can/漢字'
+    ]]
+    print_table(table[0], table[1:], ['<', '<', '<', '<', '<'])
+
+    print()
+    print("Example table...")
+    table = [['Pool Name', 'Name', 'Used', 'Created', 'Device', 'UUID'], [
+        'unicode', 'e', '546 MiB', 'Feb 07 2019 15:33', '/stratis/unicode/e',
+        '3bf22806a6df4660aa527d646209595f'
+    ], [
+        'unicode', 'eeee', '546 MiB', 'Feb 07 2019 15:33',
+        '/stratis/unicode/eeee', '17101e39e72e423c90d8be5cb37c055b'
+    ], [
+        'unicodé', 'é', '546 MiB', 'Feb 07 2019 15:33',
+        '/stratis/unicodé/é', '0c2caf641dde41beb40bed6911f75c74'
+    ], [
+        'unicodé', 'éééé', '546 MiB', 'Feb 07 2019 15:33',
+        '/stratis/unicodé/éééé', '4ecacb15fb64453191d7da731c5f1601'
+    ]]
+    print_table(table[0], table[1:], ['<', '<', '<', '<', '<', '<'])
+
+
+if __name__ == "__main__":
+    main()
