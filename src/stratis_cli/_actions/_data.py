@@ -29,12 +29,6 @@ from .._errors import StratisCliValueError
 
 from ._constants import DBUS_TIMEOUT_SECONDS
 
-MAXIMUM_STRATISD_VERSION = (1, 0, 99)
-MINIMUM_STRATISD_VERSION = (1, 0, 0)
-
-# a sanity check on the relation between the minimum and maximum versions
-assert MINIMUM_STRATISD_VERSION <= MAXIMUM_STRATISD_VERSION
-
 SPECS = {
     "org.freedesktop.DBus.ObjectManager":
     """
