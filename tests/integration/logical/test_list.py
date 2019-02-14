@@ -50,7 +50,7 @@ class List2TestCase(SimTestCase):
     """
     Test listing volumes in an existing pool with no volumes.
     """
-    _MENU = ['filesystem', 'list']
+    _MENU = ['--propagate', 'filesystem', 'list']
     _POOLNAME = 'deadpool'
 
     def setUp(self):
