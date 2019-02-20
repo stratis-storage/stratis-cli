@@ -35,7 +35,7 @@ def _get_column_width_chars(column_width_cells, entry):
 
     :returns: the column width in characters
 
-    Precondition: mcswidth(entry) != -1
+    Precondition: wcswidth(entry) != -1
                   (equivalently, entry has no unprintable characters)
     """
     return column_width_cells - (wcswidth(entry) - len(entry))
@@ -50,9 +50,10 @@ def _print_row(file, num_columns, row, column_widths, column_alignments):
     :param int num_columns: the number of columns in the table
     :param list row: the list of items to print
     :param list column_widths: corresponding list of column widths
-    :param list column_alignments: correspoindg list of column alignment specs
+    :param list column_alignments: corresponding list of column alignment specs
 
-    Precondition: num_columns == len(row) == len(column_widths) == len(aligment)
+    Precondition: num_columns == len(row) == len(column_widths) ==
+                  len(alignment)
     Precondition: no elements of row have unprintable characters
     """
     for index in range(num_columns):
@@ -79,8 +80,8 @@ def print_table(column_headings, row_entries, alignment, file=sys.stdout):
     Precondition: len(column_headings) == len(alignment) == len of each entry
     in row_entries.
 
-    Precondition: all(mcswidth(h) != -1 for h in column_headings)
-                  all(mcswidth(i) != -1 for row in rows for item in row)
+    Precondition: all(wcswidth(h) != -1 for h in column_headings)
+                  all(wcswidth(i) != -1 for row in rows for item in row)
                   (in other words, no items to be printed contain
                    unprintable characters)
     """
