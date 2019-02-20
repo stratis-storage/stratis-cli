@@ -20,7 +20,7 @@ import sys
 from wcwidth import wcswidth
 
 
-def _get_column_width_chars(column_width_cells, entry):
+def _get_column_width_chars(column_width_cells, entry, entry_width):
     """
     From the desired column width in cells and the item to be printed,
     calculate the required column width in characters to pass to the
@@ -32,22 +32,24 @@ def _get_column_width_chars(column_width_cells, entry):
 
     :param int column_width_cells: the column width, in cells
     :param str entry: the entry to be printed
+    :param int entry_width: the value of wcswidth(entry)
 
     :returns: the column width in characters
 
-    Precondition: wcswidth(entry) != -1
+    Precondition: entry_width != -1
                   (equivalently, entry has no unprintable characters)
     """
-    return column_width_cells - (wcswidth(entry) - len(entry))
+    return column_width_cells - (entry_width - len(entry))
 
 
-def _print_row(file, row, column_widths, column_alignments):
+def _print_row(file, row, row_widths, column_widths, column_alignments):
     """
     Print a single row in a table. The row might be the header row, or
     a row of data items.
 
     :param file: file to print to
     :param list row: the list of items to print
+    :param list row_widths: the list of wcswidth for the row
     :param list column_widths: corresponding list of column widths
     :param list column_alignments: corresponding list of column alignment specs
 
@@ -57,10 +59,10 @@ def _print_row(file, row, column_widths, column_alignments):
     """
     for index, entry in enumerate(row):
         column_width_chars = _get_column_width_chars(column_widths[index],
-                                                     entry)
+                                                     entry, row_widths[index])
         line = '{0:{align}{width}}'.format(
             entry, align=column_alignments[index], width=column_width_chars)
-        print(line, end='', file=file)
+        print(line, end='  ', file=file)
 
 
 def print_table(column_headings, row_entries, alignment, file=sys.stdout):
@@ -85,21 +87,22 @@ def print_table(column_headings, row_entries, alignment, file=sys.stdout):
                   (in other words, no items to be printed contain
                    unprintable characters)
     """
+    column_lengths = [0] * len(column_headings)
+    cell_widths = []
 
-    num_columns = len(column_headings)
+    # Column header isn't different than any other row, insert into rows.
+    row_entries.insert(0, column_headings)
 
-    column_lengths = [
-        max(
-            max((wcswidth(e[index]) for e in row_entries), default=0),
-            wcswidth(column_headings[index])) + 2
-        for index in range(num_columns)
-    ]
+    for row_index, row in enumerate(row_entries):
+        cell_widths.append([])
+        for line_index, cell in enumerate(row):
+            cell_width = wcswidth(cell)
+            cell_widths[row_index].append(cell_width)
+            column_lengths[line_index] = max(column_lengths[line_index],
+                                             cell_width)
 
-    _print_row(file, column_headings, column_lengths, alignment)
-    print(file=file)
-
-    for row in row_entries:
-        _print_row(file, row, column_lengths, alignment)
+    for row, row_widths in zip(row_entries, cell_widths):
+        _print_row(file, row, row_widths, column_lengths, alignment)
         print(file=file)
 
 
