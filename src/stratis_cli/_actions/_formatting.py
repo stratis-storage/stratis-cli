@@ -76,6 +76,8 @@ def print_table(column_headings, row_entries, alignment, file=sys.stdout):
     :type row_entries: list of list of str
     :param alignment: the alignment indicator for each key, '<', '>', '^', '='
     :type alignment: list of str
+    :param file: file to print too
+    :type file: writeable stream
 
     Precondition: len(column_headings) == len(alignment) == len of each entry
     in row_entries.
