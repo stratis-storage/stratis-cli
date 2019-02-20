@@ -41,13 +41,12 @@ def _get_column_width_chars(column_width_cells, entry):
     return column_width_cells - (wcswidth(entry) - len(entry))
 
 
-def _print_row(file, num_columns, row, column_widths, column_alignments):
+def _print_row(file, row, column_widths, column_alignments):
     """
     Print a single row in a table. The row might be the header row, or
     a row of data items.
 
     :param file: file to print to
-    :param int num_columns: the number of columns in the table
     :param list row: the list of items to print
     :param list column_widths: corresponding list of column widths
     :param list column_alignments: corresponding list of column alignment specs
@@ -56,8 +55,7 @@ def _print_row(file, num_columns, row, column_widths, column_alignments):
                   len(alignment)
     Precondition: no elements of row have unprintable characters
     """
-    for index in range(num_columns):
-        entry = row[index]
+    for index, entry in enumerate(row):
         column_width_chars = _get_column_width_chars(column_widths[index],
                                                      entry)
         line = '{0:{align}{width}}'.format(
@@ -97,11 +95,11 @@ def print_table(column_headings, row_entries, alignment, file=sys.stdout):
         for index in range(num_columns)
     ]
 
-    _print_row(file, num_columns, column_headings, column_lengths, alignment)
+    _print_row(file, column_headings, column_lengths, alignment)
     print(file=file)
 
     for row in row_entries:
-        _print_row(file, num_columns, row, column_lengths, alignment)
+        _print_row(file, row, column_lengths, alignment)
         print(file=file)
 
 
