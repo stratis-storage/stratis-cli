@@ -124,7 +124,9 @@ def main():
 
     print()
     print("Example table...")
-    table = [['Pool Name', 'Name', 'Used', 'Created', 'Device', 'UUID'], [
+    table = [[
+        u'Pool Na\u030ame', u'Na\u030ame', 'Used', 'Created', 'Device', 'UUID'
+    ], [
         'unicode', 'e', '546 MiB', 'Feb 07 2019 15:33', '/stratis/unicode/e',
         '3bf22806a6df4660aa527d646209595f'
     ], [
