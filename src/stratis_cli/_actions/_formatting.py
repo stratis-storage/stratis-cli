@@ -56,12 +56,13 @@ def _print_row(file, row, row_widths, column_widths, column_alignments):
     Precondition: len(row) == len(column_widths) == len(alignment)
     Precondition: no elements of row have unprintable characters
     """
+    entries = []
     for index, entry in enumerate(row):
         column_width_chars = _get_column_width_chars(column_widths[index],
                                                      entry, row_widths[index])
-        line = '{0:{align}{width}}'.format(
-            entry, align=column_alignments[index], width=column_width_chars)
-        print(line, end='  ', file=file)
+        entries.append('{0:{align}{width}}'.format(
+            entry, align=column_alignments[index], width=column_width_chars))
+    print('  '.join(entries), end='', file=file)
 
 
 def print_table(column_headings, row_entries, alignment, file=sys.stdout):
