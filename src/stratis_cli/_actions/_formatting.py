@@ -53,8 +53,7 @@ def _print_row(file, row, row_widths, column_widths, column_alignments):
     :param list column_widths: corresponding list of column widths
     :param list column_alignments: corresponding list of column alignment specs
 
-    Precondition: num_columns == len(row) == len(column_widths) ==
-                  len(alignment)
+    Precondition: len(row) == len(column_widths) == len(alignment)
     Precondition: no elements of row have unprintable characters
     """
     for index, entry in enumerate(row):
