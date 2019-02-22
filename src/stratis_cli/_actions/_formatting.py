@@ -95,11 +95,11 @@ def print_table(column_headings, row_entries, alignment, file=sys.stdout):
 
     for row_index, row in enumerate(row_entries):
         cell_widths.append([])
-        for line_index, cell in enumerate(row):
+        for column_index, cell in enumerate(row):
             cell_width = wcswidth(cell)
             cell_widths[row_index].append(cell_width)
-            column_lengths[line_index] = max(column_lengths[line_index],
-                                             cell_width)
+            column_lengths[column_index] = max(column_lengths[column_index],
+                                               cell_width)
 
     for row, row_widths in zip(row_entries, cell_widths):
         _print_row(file, row, row_widths, column_lengths, alignment)
