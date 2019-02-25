@@ -49,8 +49,15 @@ pool add-cache <pool_name> <blockdev> [<blockdev>..]::
 	 Add one or more blockdevs to an existing pool, to be used as a cache
 	 instead of additional storage. Typically, smaller and faster drives,
 	 such as SSDs, are used for this purpose.
+         NOTE: There is a temporary restriction on the total size of the
+         cache device of 32 TiB. Adding devices to the cache so that the
+         cumulative size of all the devices in the cache exceeds 32 TiB will
+         result in an error.
 filesystem create <pool_name> <fs_name> [<fs_name>..]::
 	   Create one or more filesystems from the specified pool.
+           NOTE: There is a temporary restriction on the number of filesystems
+           that can be specified with this command. Specifying more than one
+           filesystem will result in an error.
 filesystem snapshot <pool_name> <fs_name> <snapshot_name>::
 	   Snapshot the filesystem in the specified pool.
 filesystem list [pool_name]::

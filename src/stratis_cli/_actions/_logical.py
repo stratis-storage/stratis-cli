@@ -23,6 +23,7 @@ from .._errors import StratisCliEngineError
 from .._stratisd_constants import StratisdErrors
 
 from ._connection import get_object
+from ._constants import TOP_OBJECT
 from ._data import MOFilesystem
 from ._data import ObjectManager
 from ._data import Pool
@@ -31,7 +32,6 @@ from ._data import filesystems
 from ._data import pools
 from ._formatting import print_table
 from ._util import get_objects
-from ._util import verify_stratisd_version_decorator
 
 
 class LogicalActions():
@@ -40,13 +40,13 @@ class LogicalActions():
     """
 
     @staticmethod
-    @verify_stratisd_version_decorator
-    def create_volumes(namespace, proxy):
+    def create_volumes(namespace):
         """
         Create volumes in a pool.
 
         :raises StratisCliEngineError:
         """
+        proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
         (pool_object_path, _) = next(
             pools(props={
@@ -60,11 +60,11 @@ class LogicalActions():
             raise StratisCliEngineError(rc, message)
 
     @staticmethod
-    @verify_stratisd_version_decorator
-    def list_volumes(namespace, proxy):
+    def list_volumes(namespace):
         """
         List the volumes in a pool.
         """
+        proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
         (mofilesystems, path_to_name) = get_objects(
@@ -85,13 +85,13 @@ class LogicalActions():
                     ['<', '<', '<', '<', '<', '<'])
 
     @staticmethod
-    @verify_stratisd_version_decorator
-    def destroy_volumes(namespace, proxy):
+    def destroy_volumes(namespace):
         """
         Destroy volumes in a pool.
 
         :raises StratisCliEngineError:
         """
+        proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
         (pool_object_path, _) = next(
@@ -113,13 +113,13 @@ class LogicalActions():
             raise StratisCliEngineError(rc, message)
 
     @staticmethod
-    @verify_stratisd_version_decorator
-    def snapshot_filesystem(namespace, proxy):
+    def snapshot_filesystem(namespace):
         """
         Snapshot filesystem in a pool.
 
         :raises StratisCliEngineError:
         """
+        proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
         (pool_object_path, _) = next(
@@ -142,11 +142,11 @@ class LogicalActions():
             raise StratisCliEngineError(rc, message)
 
     @staticmethod
-    @verify_stratisd_version_decorator
-    def rename_fs(namespace, proxy):
+    def rename_fs(namespace):
         """
         Rename a filesystem.
         """
+        proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
         (pool_object_path, _) = next(
             pools(props={

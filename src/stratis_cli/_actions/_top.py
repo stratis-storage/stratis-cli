@@ -22,6 +22,7 @@ from .._errors import StratisCliEngineError
 from .._stratisd_constants import StratisdErrors
 
 from ._connection import get_object
+from ._constants import TOP_OBJECT
 from ._constants import SECTOR_SIZE
 from ._data import Manager
 from ._data import MOPool
@@ -29,7 +30,6 @@ from ._data import ObjectManager
 from ._data import Pool
 from ._data import pools
 from ._formatting import print_table
-from ._util import verify_stratisd_version_decorator
 
 
 class TopActions():
@@ -38,13 +38,14 @@ class TopActions():
     """
 
     @staticmethod
-    @verify_stratisd_version_decorator
-    def create_pool(namespace, proxy):
+    def create_pool(namespace):
         """
         Create a stratis pool.
 
         :raises StratisCliEngineError:
         """
+        proxy = get_object(TOP_OBJECT)
+
         (_, rc, message) = Manager.Methods.CreatePool(
             proxy, {
                 'name': namespace.pool_name,
@@ -56,13 +57,14 @@ class TopActions():
             raise StratisCliEngineError(rc, message)
 
     @staticmethod
-    @verify_stratisd_version_decorator
-    def list_pools(_, proxy):
+    def list_pools(_):
         """
         List all stratis pools.
 
         :raises StratisCliEngineError:
         """
+        proxy = get_object(TOP_OBJECT)
+
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
         mopools = (MOPool(info) for _, info in pools().search(managed_objects))
         tables = [[
@@ -75,8 +77,7 @@ class TopActions():
                     ['<', '>', '>'])
 
     @staticmethod
-    @verify_stratisd_version_decorator
-    def destroy_pool(namespace, proxy):
+    def destroy_pool(namespace):
         """
         Destroy a stratis pool.
 
@@ -84,6 +85,7 @@ class TopActions():
 
         :raises StratisCliEngineError:
         """
+        proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
         (pool_object_path, _) = next(
             pools(props={
@@ -97,11 +99,11 @@ class TopActions():
             raise StratisCliEngineError(rc, message)
 
     @staticmethod
-    @verify_stratisd_version_decorator
-    def rename_pool(namespace, proxy):
+    def rename_pool(namespace):
         """
         Rename a pool.
         """
+        proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
         (pool_object_path, _) = next(
             pools(props={
@@ -115,11 +117,11 @@ class TopActions():
             raise StratisCliEngineError(rc, message)
 
     @staticmethod
-    @verify_stratisd_version_decorator
-    def add_data_device(namespace, proxy):
+    def add_data_device(namespace):
         """
         Add a device to a pool.
         """
+        proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
         (pool_object_path, _) = next(
             pools(props={
@@ -132,11 +134,11 @@ class TopActions():
             raise StratisCliEngineError(rc, message)
 
     @staticmethod
-    @verify_stratisd_version_decorator
-    def add_cache_device(namespace, proxy):
+    def add_cache_device(namespace):
         """
         Add a device to a pool.
         """
+        proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
         (pool_object_path, _) = next(
             pools(props={

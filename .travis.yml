@@ -1,12 +1,10 @@
 os: linux
-dist: trusty
-
-before_install:
-    - sudo apt-get -qq update
-    - sudo apt-get install -y libdbus-glib-1-dev
-
 language: python
-python: "3.4"
+
+addons:
+  apt:
+    packages:
+      libdbus-glib-1-dev
 
 branches:
     only: master
@@ -14,6 +12,8 @@ branches:
 matrix:
     include:
         - env: TASK=lint
+          python: "3.4" # dbus-python does not compile on higher versions
         - env: TASK=fmt-travis
+          python: "3.6" # Run fmt task on newest version currently available
 
 script: make -f Makefile $TASK
