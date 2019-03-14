@@ -15,7 +15,9 @@
 Tests to ensure stratis is working as installed from packages.  All
 interaction with Stratis will be done through command line.
 """
+import argparse
 import os
+import sys
 import time
 import unittest
 from subprocess import Popen, PIPE
@@ -23,13 +25,13 @@ from subprocess import Popen, PIPE
 from testlib.utils import exec_command, rpm_package_version, process_exists
 from testlib.stratis import StratisCli, STRATIS_CLI, TEST_PREF, p_n, fs_n
 
+DISKS = []
+
 
 class StratisCertify(unittest.TestCase):
     """
     Unit tests for Stratis
     """
-    # DISKS = ["/dev/sdb", "/dev/sdc", "/dev/sdd"]
-    DISKS = ["/dev/sdc", "/dev/sdd"]
 
     def setUp(self):
         """
@@ -88,7 +90,7 @@ class StratisCertify(unittest.TestCase):
         :return: None
         """
         pool_name = p_n()
-        StratisCli.pool_create(pool_name, [self.DISKS[0]])
+        StratisCli.pool_create(pool_name, [DISKS[0]])
         pools = StratisCli.pool_list()
         self.assertTrue(pool_name in pools)
         self.assertEqual(1, len(pools))
@@ -100,7 +102,7 @@ class StratisCertify(unittest.TestCase):
         """
         pool_name = p_n()
         new_name = p_n()
-        StratisCli.pool_create(pool_name, [self.DISKS[0]])
+        StratisCli.pool_create(pool_name, [DISKS[0]])
         self.assertTrue(pool_name in StratisCli.pool_list())
         StratisCli.pool_rename(pool_name, new_name)
         pl = StratisCli.pool_list()
@@ -113,7 +115,7 @@ class StratisCertify(unittest.TestCase):
         :return: None
         """
         pool_name = p_n()
-        StratisCli.pool_create(pool_name, [self.DISKS[0]])
+        StratisCli.pool_create(pool_name, [DISKS[0]])
         StratisCli.pool_destroy(pool_name)
         pools = StratisCli.pool_list()
         self.assertFalse(pool_name in pools)
@@ -125,11 +127,11 @@ class StratisCertify(unittest.TestCase):
         :return: None
         """
         pool_name = p_n()
-        StratisCli.pool_create(pool_name, [self.DISKS[0]])
-        StratisCli.pool_add(pool_name, "add-data", self.DISKS[1:])
+        StratisCli.pool_create(pool_name, [DISKS[0]])
+        StratisCli.pool_add(pool_name, "add-data", DISKS[1:])
         block_devs = StratisCli.blockdev_list()
 
-        for d in self.DISKS:
+        for d in DISKS:
             self.assertTrue(d in block_devs)
 
     def test_pool_add_cache(self):
@@ -138,11 +140,11 @@ class StratisCertify(unittest.TestCase):
         :return: None
         """
         pool_name = p_n()
-        StratisCli.pool_create(pool_name, [self.DISKS[0]])
-        StratisCli.pool_add(pool_name, "add-cache", self.DISKS[1:])
+        StratisCli.pool_create(pool_name, [DISKS[0]])
+        StratisCli.pool_add(pool_name, "add-cache", DISKS[1:])
         block_devs = StratisCli.blockdev_list()
 
-        for d in self.DISKS:
+        for d in DISKS:
             self.assertTrue(d in block_devs)
 
     def test_fs_create(self):
@@ -152,7 +154,7 @@ class StratisCertify(unittest.TestCase):
         """
         pool_name = p_n()
         fs_name = fs_n()
-        StratisCli.pool_create(pool_name, [self.DISKS[0]])
+        StratisCli.pool_create(pool_name, [DISKS[0]])
         StratisCli.fs_create(pool_name, fs_name)
         fs = StratisCli.fs_list()
         self.assertTrue(fs_name in fs.keys())
@@ -167,7 +169,7 @@ class StratisCertify(unittest.TestCase):
         pool_name = p_n()
         fs_name = fs_n()
         fs_too = fs_n()
-        StratisCli.pool_create(pool_name, [self.DISKS[0]])
+        StratisCli.pool_create(pool_name, [DISKS[0]])
         StratisCli.fs_create(pool_name, fs_name)
         StratisCli.fs_create(pool_name, fs_too)
         StratisCli.fs_destroy(pool_name, fs_name)
@@ -185,7 +187,7 @@ class StratisCertify(unittest.TestCase):
         pool_name = p_n()
         fs_name = fs_n()
         fs_ss = fs_n()
-        StratisCli.pool_create(pool_name, [self.DISKS[0]])
+        StratisCli.pool_create(pool_name, [DISKS[0]])
         StratisCli.fs_create(pool_name, fs_name)
         StratisCli.fs_ss_create(pool_name, fs_name, fs_ss)
 
@@ -195,12 +197,12 @@ class StratisCertify(unittest.TestCase):
         :return:
         """
         pool_name = p_n()
-        StratisCli.pool_create(pool_name, [self.DISKS[0]])
+        StratisCli.pool_create(pool_name, [DISKS[0]])
 
         block_devs = StratisCli.blockdev_list()
-        self.assertTrue(self.DISKS[0] in block_devs)
+        self.assertTrue(DISKS[0] in block_devs)
         self.assertEqual(1, len(block_devs))
-        self.assertEqual(pool_name, block_devs[self.DISKS[0]]["POOL_NAME"])
+        self.assertEqual(pool_name, block_devs[DISKS[0]]["POOL_NAME"])
 
     @unittest.expectedFailure
     def test_no_args(self):
@@ -219,7 +221,7 @@ class StratisCertify(unittest.TestCase):
         pool_name = p_n()
         fs_name = fs_n()
         fs_new_name = fs_n()
-        StratisCli.pool_create(pool_name, [self.DISKS[0]])
+        StratisCli.pool_create(pool_name, [DISKS[0]])
         StratisCli.fs_create(pool_name, fs_name)
         StratisCli.fs_rename(pool_name, fs_name, fs_new_name)
 
@@ -236,7 +238,7 @@ class StratisCertify(unittest.TestCase):
         :return:
         """
         process = Popen(
-            [STRATIS_CLI, "pool", "create", "interrupted", self.DISKS[0]],
+            [STRATIS_CLI, "pool", "create", "interrupted", DISKS[0]],
             stdout=PIPE,
             stderr=PIPE,
             close_fds=True,
@@ -263,10 +265,10 @@ class StratisCertify(unittest.TestCase):
         """
         pool_name = p_n()
         new_name = p_n()
-        StratisCli.pool_create(pool_name, [self.DISKS[0]])
+        StratisCli.pool_create(pool_name, [DISKS[0]])
 
         stdout, _ = exec_command(
-            [STRATIS_CLI, "pool", "create", new_name, self.DISKS[0]],
+            [STRATIS_CLI, "pool", "create", new_name, DISKS[0]],
             expected_exit_code=1,
             expecting_stderr=True)
 
@@ -280,7 +282,7 @@ class StratisCertify(unittest.TestCase):
         """
         pool_name = p_n()
         fs_name = fs_n()
-        StratisCli.pool_create(pool_name, block_devices=self.DISKS)
+        StratisCli.pool_create(pool_name, block_devices=DISKS)
         StratisCli.fs_create(pool_name, fs_name)
 
         self.assertEqual(StratisCli.pool_list(), StratisCli.pool_list(False))
@@ -290,4 +292,14 @@ class StratisCertify(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main()
+    ap = argparse.ArgumentParser()
+    ap.add_argument(
+        "--disk",
+        action="append",
+        dest="DISKS",
+        help="disks to use",
+        required=True)
+    disks, args = ap.parse_known_args()
+    DISKS = disks.DISKS
+    print("Using block device(s) for tests: %s" % DISKS)
+    unittest.main(argv=sys.argv[:1] + args)
