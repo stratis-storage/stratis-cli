@@ -238,7 +238,7 @@ class StratisCertify(unittest.TestCase):
         :return:
         """
         process = Popen(
-            [STRATIS_CLI, "pool", "create", "interrupted", DISKS[0]],
+            [STRATIS_CLI, "pool", "create", p_n(), DISKS[0]],
             stdout=PIPE,
             stderr=PIPE,
             close_fds=True,
