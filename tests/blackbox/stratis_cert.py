@@ -22,8 +22,9 @@ import time
 import unittest
 from subprocess import Popen, PIPE
 
-from testlib.utils import exec_command, rpm_package_version, process_exists
-from testlib.stratis import StratisCli, STRATIS_CLI, TEST_PREF, p_n, fs_n
+from testlib.utils import exec_command, rpm_package_version, process_exists, \
+    file_create, file_signature, rs, stratis_link
+from testlib.stratis import StratisCli, STRATIS_CLI, TEST_PREF, fs_n, p_n
 
 DISKS = []
 
@@ -238,7 +239,8 @@ class StratisCertify(unittest.TestCase):
         :return:
         """
         process = Popen(
-            [STRATIS_CLI, "pool", "create", p_n(), DISKS[0]],
+            [STRATIS_CLI, "pool", "create",
+             p_n(), DISKS[0]],
             stdout=PIPE,
             stderr=PIPE,
             close_fds=True,
@@ -289,6 +291,45 @@ class StratisCertify(unittest.TestCase):
         self.assertEqual(StratisCli.fs_list(), StratisCli.fs_list(False))
         self.assertEqual(StratisCli.blockdev_list(),
                          StratisCli.blockdev_list(False))
+
+    def test_simple_data_io(self):
+        """
+        Create a pool and fs, create some files on it and validate them to
+        ensure very basic data path is working.
+        :return: None
+        """
+        mount_path = None
+        try:
+            pool_name = p_n()
+            fs_name = fs_n()
+            StratisCli.pool_create(pool_name, block_devices=DISKS)
+            StratisCli.fs_create(pool_name, fs_name)
+
+            # mount the fs
+            mount_path = os.path.join(os.path.sep + "mnt", rs(16))
+            os.mkdir(mount_path)
+            exec_command(
+                ["mount",
+                 stratis_link(pool_name, fs_name), mount_path])
+
+            files = {}
+            total_size = 0
+            # Do some simple IO to it, creating at most about ~100MiB data
+            while total_size < 1024 * 1024 * 100:
+                fn, signature, size = file_create(mount_path)
+                total_size += size
+                files[fn] = signature
+
+            # Validate them
+            for name, signature in files.items():
+                self.assertTrue(file_signature(name), signature)
+
+        finally:
+            # Make sure we un-mount the fs before we bail as we can't clean up
+            # Stratis when the FS is mounted.
+            if mount_path:
+                exec_command(["umount", mount_path])
+                os.rmdir(mount_path)
 
 
 if __name__ == "__main__":
