@@ -75,14 +75,14 @@ class StratisCertify(unittest.TestCase):
         :return: None
         """
         self.assertEqual(
-            rpm_package_version("stratisd"), StratisCli.dameon_version())
+            rpm_package_version("stratisd"), StratisCli.daemon_version())
 
     def test_daemon_redundancy(self):
         """
         Test daemon redundancy returns expected values.
         :return:
         """
-        self.assertEqual(("NONE", 0), StratisCli.dameon_redundancy())
+        self.assertEqual(("NONE", 0), StratisCli.daemon_redundancy())
 
     def test_pool_create(self):
         """

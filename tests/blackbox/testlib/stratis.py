@@ -54,7 +54,7 @@ class StratisCli:
         return stdout.strip()
 
     @staticmethod
-    def dameon_version():
+    def daemon_version():
         """
         Returns the version of daemon
         :return: String representation of version
@@ -63,7 +63,7 @@ class StratisCli:
         return stdout.strip()
 
     @staticmethod
-    def dameon_redundancy():
+    def daemon_redundancy():
         """
         Returns what redundancy the daemon supports
         :return: (Desc, int)
