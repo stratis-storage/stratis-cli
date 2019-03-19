@@ -150,7 +150,7 @@ def file_create(directory):
     """
     Create a random sized file in the specified directory
     :param directory: Directory to create file in
-    :return: (filename, file signature)
+    :return: (file name, file signature, file size)
     """
     file_name = os.path.join(directory, rs(12))
     file_size = random.randint(512, len(RAND_DATA))
@@ -164,7 +164,7 @@ def file_create(directory):
 def file_signature(file_name):
     """
     Return md5 signature for file name
-    :param file_name:
+    :param file_name: File to return md5sum for
     :return: md5 for file
     """
     with open(file_name, "r") as f:

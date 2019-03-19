@@ -24,7 +24,7 @@ from subprocess import Popen, PIPE
 
 from testlib.utils import exec_command, rpm_package_version, process_exists, \
     file_create, file_signature, rs, stratis_link
-from testlib.stratis import StratisCli, STRATIS_CLI, TEST_PREF, fs_n, p_n
+from testlib.stratis import StratisCli, STRATIS_CLI, fs_n, p_n
 
 DISKS = []
 
@@ -191,6 +191,8 @@ class StratisCertify(unittest.TestCase):
         StratisCli.pool_create(pool_name, [DISKS[0]])
         StratisCli.fs_create(pool_name, fs_name)
         StratisCli.fs_ss_create(pool_name, fs_name, fs_ss)
+        fs = StratisCli.fs_list()
+        self.assertTrue(fs_ss in fs)
 
     def test_block_dev_list(self):
         """
@@ -271,8 +273,7 @@ class StratisCertify(unittest.TestCase):
 
         stdout, _ = exec_command(
             [STRATIS_CLI, "pool", "create", new_name, DISKS[0]],
-            expected_exit_code=1,
-            expecting_stderr=True)
+            expected_exit_code=1)
 
         # Users want the pool name in the error output
         self.assertTrue(pool_name in stdout)
