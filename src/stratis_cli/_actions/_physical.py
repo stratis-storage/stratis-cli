@@ -15,8 +15,6 @@
 Miscellaneous physical actions.
 """
 
-from justbytes import Range
-
 from .._stratisd_constants import BLOCK_DEV_STATE_TO_NAME
 from .._stratisd_constants import BLOCK_DEV_TIER_TO_NAME
 
@@ -27,7 +25,7 @@ from ._data import devs
 from ._data import MODev
 from ._data import ObjectManager
 from ._formatting import print_table
-from ._util import get_objects
+from ._util import bytes_to_human, get_objects
 
 
 class PhysicalActions():
@@ -51,7 +49,7 @@ class PhysicalActions():
         tables = [[
             path_to_name[modev.Pool()],
             modev.Devnode(),
-            str(Range(modev.TotalPhysicalSize(), SECTOR_SIZE)),
+            bytes_to_human(int(modev.TotalPhysicalSize()) * SECTOR_SIZE),
             BLOCK_DEV_STATE_TO_NAME(modev.State(), True),
             BLOCK_DEV_TIER_TO_NAME(modev.Tier(), True)
         ] for modev in modevs]

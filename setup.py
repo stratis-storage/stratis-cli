@@ -37,7 +37,7 @@ setuptools.setup(
     ],
     install_requires=[
         'dbus-client-gen>=0.4', 'dbus-python-client-gen>=0.5',
-        'justbytes==0.11', 'python-dateutil', 'wcwidth'
+        'python-dateutil', 'wcwidth'
     ],
     package_dir={"": "src"},
     packages=setuptools.find_packages("src"),

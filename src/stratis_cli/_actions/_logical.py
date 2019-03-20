@@ -15,7 +15,6 @@
 Miscellaneous logical actions.
 """
 
-from justbytes import Range
 from dateutil import parser as date_parser
 
 from .._errors import StratisCliEngineError
@@ -31,7 +30,7 @@ from ._data import Filesystem
 from ._data import filesystems
 from ._data import pools
 from ._formatting import print_table
-from ._util import get_objects
+from ._util import bytes_to_human, get_objects
 
 
 class LogicalActions():
@@ -73,7 +72,7 @@ class LogicalActions():
         tables = [[
             path_to_name[mofilesystem.Pool()],
             mofilesystem.Name(),
-            str(Range(mofilesystem.Used())),
+            bytes_to_human(int(mofilesystem.Used())),
             date_parser.parse(mofilesystem.Created()).astimezone().strftime(
                 "%b %d %Y %H:%M"),
             mofilesystem.Devnode(),

@@ -15,8 +15,6 @@
 Miscellaneous top-level actions.
 """
 
-from justbytes import Range
-
 from .._errors import StratisCliEngineError
 
 from .._stratisd_constants import StratisdErrors
@@ -30,6 +28,7 @@ from ._data import ObjectManager
 from ._data import Pool
 from ._data import pools
 from ._formatting import print_table
+from ._util import bytes_to_human
 
 
 class TopActions():
@@ -64,13 +63,12 @@ class TopActions():
         :raises StratisCliEngineError:
         """
         proxy = get_object(TOP_OBJECT)
-
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
         mopools = (MOPool(info) for _, info in pools().search(managed_objects))
         tables = [[
             mopool.Name(),
-            str(Range(mopool.TotalPhysicalSize(), SECTOR_SIZE)),
-            str(Range(mopool.TotalPhysicalUsed(), SECTOR_SIZE)),
+            bytes_to_human(int(mopool.TotalPhysicalSize()) * SECTOR_SIZE),
+            bytes_to_human(int(mopool.TotalPhysicalUsed()) * SECTOR_SIZE),
         ] for mopool in mopools]
         print_table(['Name', 'Total Physical Size', 'Total Physical Used'],
                     sorted(tables, key=lambda entry: entry[0]),

@@ -14,6 +14,7 @@
 """
 Shared utilities.
 """
+import math
 
 from ._data import MOPool
 from ._data import pools
@@ -58,3 +59,24 @@ def get_objects(namespace, pool_name_key, managed_objects, search_function,
     ]
 
     return (objects, path_to_name)
+
+
+def bytes_to_human(num_bytes):
+    """
+    Given a size in bytes return a human readable string representing it.
+    :param num_bytes: Size to change representation (positive integers only)
+    :return: human readable representation of number of bytes
+    """
+    assert num_bytes >= 0
+
+    if num_bytes == 0:
+        return "0 B"
+
+    units = int(math.floor(math.log2(num_bytes) / math.log2(1024)))
+    unit_str = ["B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB"]
+    result = (num_bytes / (1024**units))
+    if float(result).is_integer():
+        format_str = "%d %s"
+    else:
+        format_str = "%.2f %s"
+    return format_str % (result, unit_str[units])
