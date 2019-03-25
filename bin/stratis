@@ -17,17 +17,22 @@
 Entry script for stratis CLI.
 """
 
-import sys
+try:
 
-from stratis_cli import run
+    import sys
 
-
-def main():
-    """
-    The main method.
-    """
-    return run()(sys.argv[1:])
+    from stratis_cli import run
 
 
-if __name__ == "__main__":
-    main()
+    def main():
+        """
+        The main method.
+        """
+        return run()(sys.argv[1:])
+
+
+    if __name__ == "__main__":
+        main()
+
+except KeyboardInterrupt:
+    sys.exit("Received KeyboardInterrupt")
