@@ -34,4 +34,4 @@ docs:
 	cd doc/_build/html; zip -r ../../../docs *
 
 dbus-tests:
-	py.test-3 ./tests
+	py.test-3 ./tests/whitebox
