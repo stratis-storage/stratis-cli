@@ -73,3 +73,6 @@ doc/_build
 
 # Visualization
 _pyreverse
+
+# VS Code
+.vscode
