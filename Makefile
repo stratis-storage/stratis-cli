@@ -1,3 +1,5 @@
+PYTEST_OPTS = -rsx
+
 TOX=tox
 
 .PHONY: lint
@@ -34,4 +36,4 @@ docs:
 	cd doc/_build/html; zip -r ../../../docs *
 
 dbus-tests:
-	py.test-3 ./tests/whitebox
+	py.test-3 ${PYTEST_OPTS} ./tests/whitebox
