@@ -1,5 +1,7 @@
 os: linux
+dist: xenial
 language: python
+python: "3.5" # dbus-python can not be built on higher versions of Python
 
 addons:
   apt:
@@ -10,10 +12,7 @@ branches:
     only: master
 
 matrix:
-    include:
-        - env: TASK=lint
-          python: "3.4" # dbus-python does not compile on higher versions
-        - env: TASK=fmt-travis
-          python: "3.6" # Run fmt task on newest version currently available
+    - TASK=lint
+    - TASK=fmt-travis
 
 script: make -f Makefile $TASK
