@@ -261,23 +261,6 @@ class StratisCertify(unittest.TestCase):
         self.assertTrue("Traceback" not in stderr_text)
         self.assertNotEqual(process.returncode, 0)
 
-    @unittest.expectedFailure
-    def test_create_pool_used_dev(self):
-        """
-        Ref. https://bugzilla.redhat.com/show_bug.cgi?id=1686852
-        :return: None
-        """
-        pool_name = p_n()
-        new_name = p_n()
-        StratisCli.pool_create(pool_name, [DISKS[0]])
-
-        stdout, _ = exec_command(
-            [STRATIS_CLI, "pool", "create", new_name, DISKS[0]],
-            expected_exit_code=1)
-
-        # Users want the pool name in the error output
-        self.assertTrue(pool_name in stdout)
-
     def test_no_list_listings(self):
         """
         Test that commands that optionally take a list work both ways.
