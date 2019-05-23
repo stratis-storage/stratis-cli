@@ -122,9 +122,8 @@ def handle_error(err):
     if explanation is None:
         exit_msg = (
             "stratis encountered an unexpected error during execution. "
-            "Please report the error at "
-            "https://github.com/stratis-storage/stratis-cli, and "
-            "include the stack trace below.")
+            "Please report the error and include in your report the stack "
+            "trace shown below.")
         print(exit_msg, os.linesep, file=sys.stderr, flush=True)
         raise err
 
