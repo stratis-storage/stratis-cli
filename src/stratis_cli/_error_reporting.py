@@ -62,13 +62,6 @@ def interpret_errors(errors):
     try:
         # Inspect top-most error after StratisCliActionError
         error = errors[1]
-        if isinstance(error, AttributeError):
-            import traceback
-            frame = traceback.extract_tb(error.__traceback__)[-1]
-            fmt_str = (
-                "Most likely there is an error in the source at line %d "
-                "in file %s. The text of the line is \"%s\".")
-            return fmt_str % (frame.lineno, frame.filename, frame.line)
 
         if isinstance(error,
                       DbusClientUniqueResultError) and error.result == []:
