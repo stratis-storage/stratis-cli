@@ -49,7 +49,7 @@ def units_to_bytes(size, units):
         "EiB": 1024**6,
         "ZiB": 1024**7
     }
-    return int(size) * conv[units]
+    return float(size) * conv[units]
 
 
 def stratis_link(pool_name, fs_name=None):
