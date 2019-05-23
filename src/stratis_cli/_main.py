@@ -46,7 +46,8 @@ def run():
         try:
             try:
                 result.func(result)
-            except (dbus.exceptions.DBusException, AttributeError,
+            except (ArithmeticError, AttributeError, NameError, SyntaxError,
+                    TypeError, dbus.exceptions.DBusException,
                     DbusClientRuntimeError, DPClientRuntimeError,
                     StratisCliRuntimeError) as err:
                 raise StratisCliActionError(command_line_args, result) from err
