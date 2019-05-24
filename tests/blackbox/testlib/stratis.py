@@ -18,7 +18,8 @@ import datetime
 import os
 import time
 
-from .utils import exec_command, rs, umount_mdv, stratis_link, units_to_bytes
+from .utils import (exec_command, rs, umount_mdv, stratis_link,
+                    size_representation)
 
 # Some packaged systems might place this in /usr/sbin
 STRATIS_CLI = os.getenv("STRATIS_CLI", "/usr/bin/stratis")
@@ -95,8 +96,8 @@ class StratisCli:
 
             if name.startswith(TEST_PREF):
                 rc[name] = dict(
-                    SIZE=units_to_bytes(size, size_units),
-                    USED=units_to_bytes(used, used_units))
+                    SIZE=size_representation(size, size_units),
+                    USED=size_representation(used, used_units))
         return rc
 
     @staticmethod
@@ -139,7 +140,7 @@ class StratisCli:
 
             rc[name] = dict(
                 POOL_NAME=pool_name,
-                USED_SIZE=units_to_bytes(used, used_units),
+                USED_SIZE=size_representation(used, used_units),
                 UUID=uuid,
                 SYM_LINK=sym_link,
                 CREATED=created,
@@ -172,7 +173,7 @@ class StratisCli:
             if pool_name.startswith(TEST_PREF):
                 rc[device_node] = dict(
                     POOL_NAME=pool_name,
-                    SIZE=units_to_bytes(size, size_units),
+                    SIZE=size_representation(size, size_units),
                     STATE=state,
                     TIER=tier)
 
