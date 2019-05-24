@@ -15,15 +15,9 @@
 Highest level runner.
 """
 
-import dbus
-
-from dbus_client_gen import DbusClientRuntimeError
-from dbus_python_client_gen import DPClientRuntimeError
-
 import justbytes as jb
 
 from ._errors import StratisCliActionError
-from ._errors import StratisCliRuntimeError
 from ._error_reporting import handle_error
 from ._parser import gen_parser
 
@@ -46,9 +40,14 @@ def run():
         try:
             try:
                 result.func(result)
-            except (dbus.exceptions.DBusException, AttributeError,
-                    DbusClientRuntimeError, DPClientRuntimeError,
-                    StratisCliRuntimeError) as err:
+
+            # Keyboard Interrupt is recaught at the outermost possible layer.
+            # It is outside the regular execution of the program, so it is
+            # handled only there; it is just reraised here.
+            except KeyboardInterrupt as err:
+                raise err
+            # pylint: disable=broad-except
+            except BaseException as err:
                 raise StratisCliActionError(command_line_args, result) from err
         except StratisCliActionError as err:
             if result.propagate:
