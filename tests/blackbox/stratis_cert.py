@@ -233,7 +233,6 @@ class StratisCertify(unittest.TestCase):
         self.assertFalse(fs_name in fs.keys())
         self.assertEqual(1, len(fs))
 
-    @unittest.expectedFailure
     def test_signal_interruption(self):
         """
         Send a signal in the middle of a command to ensure that we don't get
