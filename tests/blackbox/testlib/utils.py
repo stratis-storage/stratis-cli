@@ -33,7 +33,7 @@ def rs(length=4):
         random.choice(string.ascii_uppercase) for _ in range(length)))
 
 
-def units_to_bytes(size, units):
+def size_representation(size, units):
     """
     Convert size and units to a string
     :param size: Size to convert (numeric as a string from CLI output)
