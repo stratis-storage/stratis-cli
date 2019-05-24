@@ -11,8 +11,8 @@ addons:
 branches:
     only: master
 
-matrix:
-    - TASK=lint
-    - TASK=fmt-travis
+env:
+  - TASK=lint
+  - TASK=fmt-travis
 
 script: make -f Makefile $TASK
