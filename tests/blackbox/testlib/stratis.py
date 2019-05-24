@@ -18,10 +18,7 @@ import datetime
 import os
 import time
 
-from .utils import (exec_command,
-                    rs,
-                    umount_mdv,
-                    stratis_link,
+from .utils import (exec_command, rs, umount_mdv, stratis_link,
                     size_representation)
 
 # Some packaged systems might place this in /usr/sbin
