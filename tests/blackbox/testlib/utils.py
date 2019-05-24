@@ -33,23 +33,14 @@ def rs(length=4):
         random.choice(string.ascii_uppercase) for _ in range(length)))
 
 
-def units_to_bytes(size, units):
+def size_representation(size, units):
     """
-    Convert size and units to bytes
+    Convert size and units to a string
     :param size: Size to convert (numeric as a string from CLI output)
     :param units: Unit designator
-    :return: Number of bytes
+    :return: String with size and units
     """
-    conv = {
-        "KiB": 1024**1,
-        "MiB": 1024**2,
-        "GiB": 1024**3,
-        "TiB": 1024**4,
-        "PiB": 1024**5,
-        "EiB": 1024**6,
-        "ZiB": 1024**7
-    }
-    return int(size) * conv[units]
+    return size + units
 
 
 def stratis_link(pool_name, fs_name=None):
