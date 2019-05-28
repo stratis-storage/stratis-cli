@@ -11,7 +11,7 @@ Run the test as root and supply 3 or more block devices on the
 command line that are blank for test use, eg.
 
 ```bash
-# python3 -v stratis_cert.py --disk /dev/vda --disk /dev/vdb --disk /dev/vdc
+# python3 stratis_cert.py -v --disk /dev/vda --disk /dev/vdb --disk /dev/vdc
 ```
 
 Notes
