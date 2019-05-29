@@ -102,7 +102,7 @@ def print_table(column_headings, row_entries, alignment, file=sys.stdout):
                   (in other words, no items to be printed contain
                    unprintable characters)
     """
-    column_lengths = [0] * len(column_headings)
+    column_widths = [0] * len(column_headings)
     cell_widths = []
 
     # Column header isn't different than any other row, insert into rows.
@@ -113,11 +113,11 @@ def print_table(column_headings, row_entries, alignment, file=sys.stdout):
         for column_index, cell in enumerate(row):
             cell_width = maybe_wcswidth(cell)
             cell_widths[row_index].append(cell_width)
-            column_lengths[column_index] = max(column_lengths[column_index],
-                                               cell_width)
+            column_widths[column_index] = max(column_widths[column_index],
+                                              cell_width)
 
     for row, row_widths in zip(row_entries, cell_widths):
-        _print_row(file, row, row_widths, column_lengths, alignment)
+        _print_row(file, row, row_widths, column_widths, alignment)
         print(file=file)
 
 
