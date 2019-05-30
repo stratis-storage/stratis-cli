@@ -17,7 +17,20 @@ Formatting for tables.
 
 import sys
 
-from wcwidth import wcswidth
+# If the wcwidth package is not available the wcswidth function will not
+# be available. In that case, use the standard function len where wcswidth
+# would otherwise be used. Since len determines the number of _characters_
+# in a string, rather than its width in cells, text containing characters
+# occupying more or less than one cell, will in the general case, not be
+# properly aligned in the column output. The wcwidth package may not be
+# available in every distribution due to the non-local nature of its
+# installation mechanism, which builds functions dynamically from tables
+# made available online at www.unicode.org.
+try:
+    from wcwidth import wcswidth
+    maybe_wcswidth = wcswidth
+except ImportError:
+    maybe_wcswidth = len
 
 
 def _get_column_width_chars(column_width_cells, entry, entry_width):
@@ -96,7 +109,7 @@ def print_table(column_headings, row_entries, alignment, file=sys.stdout):
     for row_index, row in enumerate(row_entries):
         cell_widths.append([])
         for column_index, cell in enumerate(row):
-            cell_width = wcswidth(cell)
+            cell_width = maybe_wcswidth(cell)
             cell_widths[row_index].append(cell_width)
             column_lengths[column_index] = max(column_lengths[column_index],
                                                cell_width)
