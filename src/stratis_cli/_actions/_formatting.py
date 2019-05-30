@@ -17,29 +17,44 @@ Formatting for tables.
 
 import sys
 
-from wcwidth import wcswidth
+# If the wcwidth package is not available the wcswidth function will not
+# be available. In that case, use the standard function len where wcswidth
+# would otherwise be used. Since len determines the number of _characters_
+# in a string, rather than its width in cells, text containing characters
+# occupying more or less than one cell, will in the general case, not be
+# properly aligned in the column output. The wcwidth package may not be
+# available in every distribution due to the non-local nature of its
+# installation mechanism, which builds functions dynamically from tables
+# made available online at www.unicode.org.
+try:
+    from wcwidth import wcswidth
+    maybe_wcswidth = wcswidth
+except ImportError:
+    maybe_wcswidth = len
 
 
-def _get_column_width_chars(column_width_cells, entry, entry_width):
+def _get_column_len(column_width, entry_len, entry_width):
     """
     From the desired column width in cells and the item to be printed,
-    calculate the required column width in characters to pass to the
-    format method.
+    calculate the required number of characters to pass to the format method.
 
     In order to get the correct width in chars it is necessary to subtract
     the number of cells above 1 (or add the number of cells below 1) that
     an individual character occupies.
 
-    :param int column_width_cells: the column width, in cells
-    :param str entry: the entry to be printed
-    :param int entry_width: the value of wcswidth(entry)
+    :param int column_width: the column width, in cells
+    :param int entry_len: the entry len, in characters
+    :param int entry_width: the entry width, in cells
 
     :returns: the column width in characters
+
+    Note that if wcswidth has defaulted to len,
+    entry_width == entry_len, so the result is always column_width.
 
     Precondition: entry_width != -1
                   (equivalently, entry has no unprintable characters)
     """
-    return column_width_cells - (entry_width - len(entry))
+    return column_width - (entry_width - entry_len)
 
 
 def _print_row(file, row, row_widths, column_widths, column_alignments):
@@ -58,10 +73,10 @@ def _print_row(file, row, row_widths, column_widths, column_alignments):
     """
     entries = []
     for index, entry in enumerate(row):
-        column_width_chars = _get_column_width_chars(column_widths[index],
-                                                     entry, row_widths[index])
+        column_len = _get_column_len(column_widths[index], len(entry),
+                                     row_widths[index])
         entries.append('{0:{align}{width}}'.format(
-            entry, align=column_alignments[index], width=column_width_chars))
+            entry, align=column_alignments[index], width=column_len))
     print('  '.join(entries), end='', file=file)
 
 
@@ -87,7 +102,7 @@ def print_table(column_headings, row_entries, alignment, file=sys.stdout):
                   (in other words, no items to be printed contain
                    unprintable characters)
     """
-    column_lengths = [0] * len(column_headings)
+    column_widths = [0] * len(column_headings)
     cell_widths = []
 
     # Column header isn't different than any other row, insert into rows.
@@ -96,13 +111,13 @@ def print_table(column_headings, row_entries, alignment, file=sys.stdout):
     for row_index, row in enumerate(row_entries):
         cell_widths.append([])
         for column_index, cell in enumerate(row):
-            cell_width = wcswidth(cell)
+            cell_width = maybe_wcswidth(cell)
             cell_widths[row_index].append(cell_width)
-            column_lengths[column_index] = max(column_lengths[column_index],
-                                               cell_width)
+            column_widths[column_index] = max(column_widths[column_index],
+                                              cell_width)
 
     for row, row_widths in zip(row_entries, cell_widths):
-        _print_row(file, row, row_widths, column_lengths, alignment)
+        _print_row(file, row, row_widths, column_widths, alignment)
         print(file=file)
 
 
