@@ -131,12 +131,6 @@ class StratisCli:
             ts = time.mktime(
                 datetime.datetime.strptime(created,
                                            "%b %d %Y %H:%M").timetuple())
-            now = time.time()
-
-            # Everything we have created should have occurred very recently, but
-            # our CI systems can be slow, so give them some time, we might need
-            # to remove this assert if it becomes problematic.
-            assert (now - ts) < 300.0
 
             rc[name] = dict(
                 POOL_NAME=pool_name,
