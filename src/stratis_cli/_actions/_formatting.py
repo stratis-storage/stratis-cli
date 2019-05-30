@@ -33,26 +33,28 @@ except ImportError:
     maybe_wcswidth = len
 
 
-def _get_column_width_chars(column_width_cells, entry, entry_width):
+def _get_column_len(column_width, entry_len, entry_width):
     """
     From the desired column width in cells and the item to be printed,
-    calculate the required column width in characters to pass to the
-    format method.
+    calculate the required number of characters to pass to the format method.
 
     In order to get the correct width in chars it is necessary to subtract
     the number of cells above 1 (or add the number of cells below 1) that
     an individual character occupies.
 
-    :param int column_width_cells: the column width, in cells
-    :param str entry: the entry to be printed
-    :param int entry_width: the value of wcswidth(entry)
+    :param int column_width: the column width, in cells
+    :param int entry_len: the entry len, in characters
+    :param int entry_width: the entry width, in cells
 
     :returns: the column width in characters
+
+    Note that if wcswidth has defaulted to len,
+    entry_width == entry_len, so the result is always column_width.
 
     Precondition: entry_width != -1
                   (equivalently, entry has no unprintable characters)
     """
-    return column_width_cells - (entry_width - len(entry))
+    return column_width - (entry_width - entry_len)
 
 
 def _print_row(file, row, row_widths, column_widths, column_alignments):
@@ -71,10 +73,10 @@ def _print_row(file, row, row_widths, column_widths, column_alignments):
     """
     entries = []
     for index, entry in enumerate(row):
-        column_width_chars = _get_column_width_chars(column_widths[index],
-                                                     entry, row_widths[index])
+        column_len = _get_column_len(column_widths[index], len(entry),
+                                     row_widths[index])
         entries.append('{0:{align}{width}}'.format(
-            entry, align=column_alignments[index], width=column_width_chars))
+            entry, align=column_alignments[index], width=column_len))
     print('  '.join(entries), end='', file=file)
 
 
