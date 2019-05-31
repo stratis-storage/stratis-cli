@@ -61,7 +61,6 @@ class StratisCertify(unittest.TestCase):
         StratisCli.destroy_all()
         self.assertEqual(0, len(StratisCli.pool_list()))
 
-    @unittest.expectedFailure
     def test_client_version(self):
         """
         Ref. https://bugzilla.redhat.com/show_bug.cgi?id=1652124
