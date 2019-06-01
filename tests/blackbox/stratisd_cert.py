@@ -164,20 +164,6 @@ class StratisCertify(unittest.TestCase):
         self.assertFalse(fs_n in fs)
         self.assertTrue(fs_too in fs)
 
-    def test_fs_snap_shot(self):
-        """
-        Test creating a FS snap shot.
-        :return: None
-        """
-        pool_name = p_n()
-        fs_name = fs_n()
-        fs_ss = fs_n()
-        StratisCli.pool_create(pool_name, [DISKS[0]])
-        StratisCli.fs_create(pool_name, fs_name)
-        StratisCli.fs_ss_create(pool_name, fs_name, fs_ss)
-        fs = StratisCli.fs_list()
-        self.assertTrue(fs_ss in fs)
-
     def test_block_dev_list(self):
         """
         Test block device listing
