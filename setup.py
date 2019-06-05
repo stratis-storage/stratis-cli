@@ -36,7 +36,7 @@ setuptools.setup(
         'Topic :: System :: Filesystems', 'Topic :: Systems Administration'
     ],
     install_requires=[
-        'dbus-client-gen>=0.4', 'dbus-python-client-gen>=0.5',
+        'dbus-client-gen>=0.4', 'dbus-python-client-gen>=0.6',
         'justbytes==0.11', 'python-dateutil', 'wcwidth'
     ],
     package_dir={"": "src"},
