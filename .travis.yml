@@ -1,7 +1,7 @@
 os: linux
 dist: xenial
 language: python
-python: "3.5" # dbus-python can not be built on higher versions of Python
+python: "3.7"
 
 addons:
   apt:
