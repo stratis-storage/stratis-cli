@@ -22,8 +22,8 @@ import time
 import unittest
 from subprocess import Popen, PIPE
 
-from testlib.utils import exec_command, rpm_package_version, process_exists, \
-    file_create, file_signature, rs, stratis_link
+from testlib.utils import (exec_command, process_exists, file_create,
+                           file_signature, rs, stratis_link)
 from testlib.stratis import StratisCli, STRATIS_CLI, fs_n, p_n
 
 DISKS = []
@@ -60,14 +60,6 @@ class StratisCertify(unittest.TestCase):
         """
         StratisCli.destroy_all()
         self.assertEqual(0, len(StratisCli.pool_list()))
-
-    def test_client_version(self):
-        """
-        Ref. https://bugzilla.redhat.com/show_bug.cgi?id=1652124
-        :return: None
-        """
-        self.assertEqual(
-            rpm_package_version('stratis-cli'), StratisCli.cli_version())
 
     def test_daemon_redundancy(self):
         """
