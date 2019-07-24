@@ -15,13 +15,9 @@
 Miscellaneous physical actions.
 """
 
-from justbytes import Range
-
-from .._stratisd_constants import BLOCK_DEV_STATE_TO_NAME
 from .._stratisd_constants import BLOCK_DEV_TIER_TO_NAME
 
 from ._connection import get_object
-from ._constants import SECTOR_SIZE
 from ._constants import TOP_OBJECT
 from ._formatting import print_table
 
@@ -78,14 +74,12 @@ class PhysicalActions:
             [
                 path_to_name[modev.Pool()],
                 modev.Devnode(),
-                str(Range(modev.TotalPhysicalSize(), SECTOR_SIZE)),
-                BLOCK_DEV_STATE_TO_NAME(modev.State(), True),
                 BLOCK_DEV_TIER_TO_NAME(modev.Tier(), True),
             ]
             for modev in modevs
         ]
         print_table(
-            ["Pool Name", "Device Node", "Physical Size", "State", "Tier"],
+            ["Pool Name", "Device Node", "Tier"],
             sorted(tables, key=lambda entry: (entry[0], entry[1])),
-            ["<", "<", ">", ">", ">"],
+            ["<", "<", ">"],
         )
