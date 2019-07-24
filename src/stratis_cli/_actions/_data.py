@@ -177,7 +177,7 @@ SPECS = {
 <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const"/>
 </property>
 </interface>
-"""
+""",
 }
 
 _MANAGER_INTERFACE = "org.storage.stratis1.Manager"

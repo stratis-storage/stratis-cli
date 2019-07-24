@@ -15,7 +15,6 @@
 Miscellaneous logical actions.
 """
 
-from justbytes import Range
 from dateutil import parser as date_parser
 
 from .._errors import StratisCliEngineError
@@ -102,7 +101,6 @@ class LogicalActions:
             [
                 path_to_name[mofilesystem.Pool()],
                 mofilesystem.Name(),
-                str(Range(mofilesystem.Used())),
                 date_parser.parse(mofilesystem.Created())
                 .astimezone()
                 .strftime("%b %d %Y %H:%M"),
@@ -113,9 +111,9 @@ class LogicalActions:
         ]
 
         print_table(
-            ["Pool Name", "Name", "Used", "Created", "Device", "UUID"],
+            ["Pool Name", "Name", "Created", "Device", "UUID"],
             sorted(tables, key=lambda entry: entry[0]),
-            ["<", "<", "<", "<", "<", "<"],
+            ["<", "<", "<", "<", "<"],
         )
 
     @staticmethod
