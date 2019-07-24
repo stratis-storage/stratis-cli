@@ -15,15 +15,12 @@
 Miscellaneous top-level actions.
 """
 
-from justbytes import Range
-
 from .._errors import StratisCliEngineError
 
 from .._stratisd_constants import StratisdErrors
 
 from ._connection import get_object
 from ._constants import TOP_OBJECT
-from ._constants import SECTOR_SIZE
 from ._formatting import print_table
 
 
@@ -70,19 +67,8 @@ class TopActions:
 
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
         mopools = (MOPool(info) for _, info in pools().search(managed_objects))
-        tables = [
-            [
-                mopool.Name(),
-                str(Range(mopool.TotalPhysicalSize(), SECTOR_SIZE)),
-                str(Range(mopool.TotalPhysicalUsed(), SECTOR_SIZE)),
-            ]
-            for mopool in mopools
-        ]
-        print_table(
-            ["Name", "Total Physical Size", "Total Physical Used"],
-            sorted(tables, key=lambda entry: entry[0]),
-            ["<", ">", ">"],
-        )
+        tables = [[mopool.Name()] for mopool in mopools]
+        print_table(["Name"], sorted(tables, key=lambda entry: entry[0]), ["<"])
 
     @staticmethod
     def destroy_pool(namespace):
