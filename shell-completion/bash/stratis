@@ -1,15 +1,33 @@
 _stratis()
 {
-	local cur prev x2prev x3prev opts root_subcommands pool_subcommands fs_subcommands blockdev_subcommands daemon_subcommands complete_pools blockdevs first second third
+	local cur prev x2prev x3prev opts root_subcommands pool_subcommands fs_subcommands blockdev_subcommands daemon_subcommands complete_pools blockdevs first second third comp_cword_adj
+
 	COMPREPLY=()
+	comp_words_adj=()
+
+	comp_cword_adj="${COMP_CWORD}"
+
+# Turn comp_cword_adj and comp_word_adj into versions of COMP_WORD
+# and COMP_CWORD that pretend --propagate doesn't exist
+	for word in "${COMP_WORDS[@]}"
+	do
+		if [[ ${word} == "--propagate" ]]; then
+			((comp_cword_adj--))
+		else
+			comp_words_adj+=(${word})
+		fi
+	done
+	
+# The current word needs to be able to be completed for --propagate
 	cur="${COMP_WORDS[COMP_CWORD]}"
-	prev="${COMP_WORDS[COMP_CWORD-1]}"
-	x2prev="${COMP_WORDS[COMP_CWORD-2]}"
-	x3prev="${COMP_WORDS[COMP_CWORD-3]}"
-	first="${COMP_WORDS[1]}"
-	second="${COMP_WORDS[2]}"
-	third="${COMP_WORDS[3]}"
-	opts="-h --help --version"
+# The other words must ignore --propagate and use adjusted values
+	prev="${comp_words_adj[comp_cword_adj-1]}"
+	x2prev="${comp_words_adj[comp_cword_adj-2]}"
+	x3prev="${comp_words_adj[comp_cword_adj-3]}"
+	first="${comp_words_adj[1]}"
+	second="${comp_words_adj[2]}"
+	third="${comp_words_adj[3]}"
+	opts="-h --help --version --propagate"
 	root_subcommands="--help --version daemon pool blockdev filesystem"
 	pool_subcommands="create list add-data add-cache rename destroy"
 	fs_subcommands="create snapshot list rename destroy"
@@ -110,7 +128,7 @@ _stratis()
 		esac
 
 #	Code to handle multiple block device names or multiple filesystem names for filesystem destroy and pool create/add-data/add-cache
-		if [[ ${COMP_CWORD} > 3 ]]; then
+		if [[ ${comp_cword_adj} > 3 ]]; then
 			case ${first} in
 				filesystem|fs)
 					case ${second} in
@@ -136,7 +154,7 @@ _stratis()
 					;;
 			esac
 		fi
-		if [[ ${COMP_CWORD} -eq 1 ]]; then
+		if [[ ${comp_cword_adj} -eq 1 ]]; then
 			COMPREPLY=( $(compgen -W "${root_subcommands}" -- ${cur}) )
 			return 0
 		fi
