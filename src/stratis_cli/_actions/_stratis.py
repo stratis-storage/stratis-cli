@@ -28,18 +28,16 @@ class StratisActions():
     """
 
     @staticmethod
-    def list_stratisd_redundancy(namespace):
+    def list_stratisd_redundancy(_namespace):
         """
         List the stratisd redundancy designations.
         """
-        # pylint: disable=unused-argument
         for code in RedundancyCodes:
             print("%s: %d" % (code.name, code.value))
 
     @staticmethod
-    def list_stratisd_version(namespace):
+    def list_stratisd_version(_namespace):
         """
         List the stratisd version.
         """
-        # pylint: disable=unused-argument
         print("%s" % Manager.Properties.Version.Get(get_object(TOP_OBJECT)))

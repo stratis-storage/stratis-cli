@@ -46,7 +46,6 @@ def run():
             # handled only there; it is just reraised here.
             except KeyboardInterrupt as err:
                 raise err
-            # pylint: disable=broad-except
             except BaseException as err:
                 raise StratisCliActionError(command_line_args, result) from err
         except StratisCliActionError as err:
