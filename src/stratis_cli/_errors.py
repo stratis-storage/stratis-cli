@@ -15,6 +15,8 @@
 Error heirarchy for stratis cli.
 """
 
+from ._stratisd_constants import BlockDevTiers
+from ._stratisd_constants import BLOCK_DEV_TIER_TO_NAME
 from ._stratisd_constants import STRATISD_ERROR_TO_NAME
 
 
@@ -28,6 +30,88 @@ class StratisCliRuntimeError(StratisCliError):
     """
     Exception raised during runtime.
     """
+
+
+class StratisNoChangeError(StratisCliError):
+    """
+    Raised if there was a failure due to no changed state in stratisd's engine.
+    """
+
+    def __init__(self, command, resource):
+        """ Initializer.
+
+            :param str command: the executed command
+            :param str resource: the target resource
+        """
+        # pylint: disable=super-init-not-called
+        self.command = command
+        self.resource = resource
+
+    def __str__(self):
+        return "The command '%s' has already been completed for resource '%s'" % (
+            self.command,
+            self.resource,
+        )
+
+
+class StratisPartialChangeError(StratisCliError):
+    """
+    Raised if there was a failure due to partially changed state in stratisd's engine.
+    """
+
+    def __init__(self, command, changed_resources, unchanged_resources):
+        """ Initializer.
+
+            :param str command: the command run that caused the error
+            :param list of str changed_resources: the target resources that would change
+            :param list of str unchanged_resources: the target resources that would not change
+        """
+        # pylint: disable=super-init-not-called
+        self.command = command
+        self.changed_resources = changed_resources
+        self.unchanged_resources = unchanged_resources
+
+    def __str__(self):
+        msg = "The command '%s' has already been completed for resources %s " % (
+            self.command,
+            self.unchanged_resources,
+        )
+        if self.changed_resources != []:
+            msg += "but not yet for resources %s" % self.changed_resources
+        return msg
+
+
+class StratisInUseError(StratisCliError):
+    """
+    Raised if a block device is added as both a blockdev and a cachedev
+    """
+
+    def __init__(self, blockdevs, added_as):
+        """ Initializer.
+
+            :param list of str blockdevs: the blockdevs that would be added in both tiers
+            :param _stratisd_constants.BlockDevTiers added_as: whether the action causing the
+            error on the cache or data tier
+        """
+        # pylint: disable=super-init-not-called
+        self.blockdevs = blockdevs
+        self.added_as = added_as
+
+    def __str__(self):
+        if self.added_as == BlockDevTiers.Data:
+            already_added = BlockDevTiers.Cache
+        else:
+            already_added = BlockDevTiers.Data
+
+        return (
+            "The resources %s would be added to the %s tier but have already been "
+            "added to the %s tier"
+            % (
+                self.blockdevs,
+                BLOCK_DEV_TIER_TO_NAME(self.added_as),
+                BLOCK_DEV_TIER_TO_NAME(already_added),
+            )
+        )
 
 
 # This exception is only raised in the unlikely event that the introspection

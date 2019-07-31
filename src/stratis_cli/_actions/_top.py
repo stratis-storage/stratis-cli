@@ -18,7 +18,11 @@ Miscellaneous top-level actions.
 from justbytes import Range
 
 from .._errors import StratisCliEngineError
+from .._errors import StratisInUseError
+from .._errors import StratisNoChangeError
+from .._errors import StratisPartialChangeError
 
+from .._stratisd_constants import BlockDevTiers
 from .._stratisd_constants import StratisdErrors
 
 from ._connection import get_object
@@ -43,7 +47,7 @@ class TopActions:
 
         proxy = get_object(TOP_OBJECT)
 
-        (_, rc, message) = Manager.Methods.CreatePool(
+        ((changed, (_, _)), rc, message) = Manager.Methods.CreatePool(
             proxy,
             {
                 "name": namespace.pool_name,
@@ -54,6 +58,10 @@ class TopActions:
 
         if rc != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(rc, message)
+
+        if not changed:
+            resource = namespace.pool_name
+            raise StratisNoChangeError("create", resource)
 
     @staticmethod
     def list_pools(_):
@@ -105,7 +113,7 @@ class TopActions:
             .search(managed_objects)
         )
 
-        (_, rc, message) = Manager.Methods.DestroyPool(
+        ((changed, _), rc, message) = Manager.Methods.DestroyPool(
             proxy, {"pool": pool_object_path}
         )
 
@@ -113,6 +121,10 @@ class TopActions:
         # if the pool can not be destroyed because it has filesystems.
         if rc != StratisdErrors.OK:
             raise StratisCliEngineError(rc, message)
+
+        if not changed:
+            resource = namespace.pool_name
+            raise StratisNoChangeError("destroy", resource)
 
     @staticmethod
     def rename_pool(namespace):
@@ -131,20 +143,27 @@ class TopActions:
             .search(managed_objects)
         )
 
-        (_, rc, message) = Pool.Methods.SetName(
+        ((changed, _), rc, message) = Pool.Methods.SetName(
             get_object(pool_object_path), {"name": namespace.new}
         )
 
         if rc != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(rc, message)
 
+        if not changed:
+            resource = namespace.new
+            raise StratisNoChangeError("rename", resource)
+
     @staticmethod
     def add_data_devices(namespace):
         """
         Add specified data devices to a pool.
         """
+        # pylint: disable=too-many-locals
+        from ._data import MODev
         from ._data import ObjectManager
         from ._data import Pool
+        from ._data import devs
         from ._data import pools
 
         proxy = get_object(TOP_OBJECT)
@@ -154,6 +173,32 @@ class TopActions:
             .require_unique_match(True)
             .search(managed_objects)
         )
+
+        blockdevs = frozenset(namespace.blockdevs)
+
+        cache = frozenset(
+            str(MODev(info).Devnode())
+            for (_, info) in devs(props={"Tier": BlockDevTiers.Cache}).search(
+                managed_objects
+            )
+        )
+        already_cache = blockdevs.intersection(cache)
+        if already_cache != frozenset():
+            raise StratisInUseError(list(already_cache), BlockDevTiers.Data)
+
+        data = frozenset(
+            str(MODev(info).Devnode())
+            for (_, info) in devs(props={"Tier": BlockDevTiers.Data}).search(
+                managed_objects
+            )
+        )
+        already_data = blockdevs.intersection(data)
+
+        if already_data != frozenset():
+            new_data = blockdevs.difference(already_data)
+            raise StratisPartialChangeError(
+                "add-data", list(new_data), list(already_data)
+            )
 
         (_, rc, message) = Pool.Methods.AddDataDevs(
             get_object(pool_object_path), {"devices": namespace.blockdevs}
@@ -166,8 +211,11 @@ class TopActions:
         """
         Add specified cache devices to a pool.
         """
+        # pylint: disable=too-many-locals
+        from ._data import MODev
         from ._data import ObjectManager
         from ._data import Pool
+        from ._data import devs
         from ._data import pools
 
         proxy = get_object(TOP_OBJECT)
@@ -177,6 +225,33 @@ class TopActions:
             .require_unique_match(True)
             .search(managed_objects)
         )
+
+        blockdevs = frozenset(namespace.blockdevs)
+
+        data = frozenset(
+            str(MODev(info).Devnode())
+            for (_, info) in devs(props={"Tier": BlockDevTiers.Data}).search(
+                managed_objects
+            )
+        )
+        already_data = blockdevs.intersection(data)
+
+        if already_data != frozenset():
+            raise StratisInUseError(list(already_data), BlockDevTiers.Cache)
+
+        cache = frozenset(
+            str(MODev(info).Devnode())
+            for (_, info) in devs(props={"Tier": BlockDevTiers.Cache}).search(
+                managed_objects
+            )
+        )
+        already_cache = blockdevs.intersection(cache)
+
+        if already_cache != frozenset():
+            new_cache = blockdevs.difference(already_cache)
+            raise StratisPartialChangeError(
+                "add-cache", list(new_cache), list(already_cache)
+            )
 
         (_, rc, message) = Pool.Methods.AddCacheDevs(
             get_object(pool_object_path), {"devices": namespace.blockdevs}
