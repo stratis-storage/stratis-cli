@@ -29,6 +29,9 @@ from ._actions import POOL_INTERFACE
 
 from ._errors import StratisCliEngineError
 from ._errors import StratisCliUnknownInterfaceError
+from ._errors import StratisInUseError
+from ._errors import StratisNoChangeError
+from ._errors import StratisPartialChangeError
 
 _DBUS_INTERFACE_MSG = (
     "The version of stratis you are running expects a different "
@@ -121,6 +124,19 @@ def interpret_errors(errors):
                 "stratisd failed to perform the operation that you "
                 "requested. It returned the following information via "
                 "the D-Bus: %s."
+            )
+            return fmt_str % error
+        if isinstance(error, StratisNoChangeError):
+            fmt_str = "stratis-cli issued a command that had no effect: %s"
+            return fmt_str % error
+        if isinstance(error, StratisPartialChangeError):
+            fmt_str = (
+                "stratis-cli issued a command that could not be completely applied: %s"
+            )
+            return fmt_str % error
+        if isinstance(error, StratisInUseError):
+            fmt_str = (
+                "stratis-cli issued a command that added a blockdev to both tiers: %s"
             )
             return fmt_str % error
 

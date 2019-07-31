@@ -19,6 +19,8 @@ from justbytes import Range
 from dateutil import parser as date_parser
 
 from .._errors import StratisCliEngineError
+from .._errors import StratisNoChangeError
+from .._errors import StratisPartialChangeError
 
 from .._stratisd_constants import StratisdErrors
 
@@ -39,8 +41,11 @@ class LogicalActions:
 
         :raises StratisCliEngineError:
         """
+        # pylint: disable=too-many-locals
+        from ._data import MOFilesystem
         from ._data import ObjectManager
         from ._data import Pool
+        from ._data import filesystems
         from ._data import pools
 
         proxy = get_object(TOP_OBJECT)
@@ -50,6 +55,16 @@ class LogicalActions:
             .require_unique_match(True)
             .search(managed_objects)
         )
+
+        fs_names = {
+            MOFilesystem(info).Name(): path
+            for (path, info) in filesystems().search(managed_objects)
+        }
+        unchanged = [name for name in namespace.fs_name if name in fs_names]
+
+        if unchanged == []:
+            changed = [name for name in namespace.fs_name if name not in fs_names]
+            raise StratisPartialChangeError("create", changed, unchanged)
 
         (_, rc, message) = Pool.Methods.CreateFilesystems(
             get_object(pool_object_path), {"specs": namespace.fs_name}
@@ -125,6 +140,8 @@ class LogicalActions:
 
         :raises StratisCliEngineError:
         """
+        # pylint: disable=too-many-locals
+        from ._data import MOFilesystem
         from ._data import ObjectManager
         from ._data import Pool
         from ._data import filesystems
@@ -145,6 +162,16 @@ class LogicalActions:
                 props={"Name": name, "Pool": pool_object_path}
             ).search(managed_objects)
         ]
+
+        fs_names = [
+            MOFilesystem(info).Name()
+            for (_, info) in filesystems().search(managed_objects)
+        ]
+        unchanged = [name for name in namespace.fs_name if name not in fs_names]
+
+        if unchanged == []:
+            changed = [name for name in namespace.fs_name if name in fs_names]
+            raise StratisPartialChangeError("destroy", changed, unchanged)
 
         (_, rc, message) = Pool.Methods.DestroyFilesystems(
             get_object(pool_object_path), {"filesystems": fs_object_paths}
@@ -179,13 +206,17 @@ class LogicalActions:
             .search(managed_objects)
         )
 
-        (_, rc, message) = Pool.Methods.SnapshotFilesystem(
+        ((changed, _), rc, message) = Pool.Methods.SnapshotFilesystem(
             get_object(pool_object_path),
             {"origin": origin_fs_object_path, "snapshot_name": namespace.snapshot_name},
         )
 
         if rc != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(rc, message)
+
+        if not changed:
+            resource = namespace.snapshot_name
+            raise StratisNoChangeError("snapshot", resource)
 
     @staticmethod
     def rename_fs(namespace):
@@ -210,9 +241,13 @@ class LogicalActions:
             .search(managed_objects)
         )
 
-        (_, rc, message) = Filesystem.Methods.SetName(
+        ((changed, _), rc, message) = Filesystem.Methods.SetName(
             get_object(fs_object_path), {"name": namespace.new_name}
         )
 
         if rc != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(rc, message)
+
+        if not changed:
+            resource = namespace.new_name
+            raise StratisNoChangeError("rename", resource)
