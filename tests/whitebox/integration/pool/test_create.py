@@ -16,7 +16,7 @@ Test 'create'.
 """
 
 from stratis_cli._errors import StratisCliActionError
-from stratis_cli._errors import StratisCliEngineError
+from stratis_cli._errors import StratisCliNoChangeError
 
 from .._misc import device_name_list
 from .._misc import RUNNER
@@ -68,4 +68,4 @@ class Create3TestCase(SimTestCase):
         with self.assertRaises(StratisCliActionError) as context:
             RUNNER(command_line)
         cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliEngineError)
+        self.assertIsInstance(cause, StratisCliNoChangeError)
