@@ -54,9 +54,14 @@ class LogicalActions:
             .search(managed_objects)
         )
 
-        (_, rc, message) = Pool.Methods.CreateFilesystems(
+        ((changed, _), rc, message) = Pool.Methods.CreateFilesystems(
             get_object(pool_object_path), {"specs": namespace.fs_name}
         )
+
+        if not changed:
+            raise StratisCliEngineError(
+                StratisdErrors.ALREADY_EXISTS, "Filesystem already exists"
+            )
 
         if rc != StratisdErrors.OK:
             raise StratisCliEngineError(rc, message)

@@ -46,7 +46,7 @@ class TopActions:
         """
         proxy = get_object(TOP_OBJECT)
 
-        (_, rc, message) = Manager.Methods.CreatePool(
+        ((changed, (_, _)), rc, message) = Manager.Methods.CreatePool(
             proxy,
             {
                 "name": namespace.pool_name,
@@ -54,6 +54,11 @@ class TopActions:
                 "devices": namespace.blockdevs,
             },
         )
+
+        if not changed:
+            raise StratisCliEngineError(
+                StratisdErrors.ALREADY_EXISTS, "Pool already exists"
+            )
 
         if rc != StratisdErrors.OK:
             raise StratisCliEngineError(rc, message)
@@ -140,9 +145,16 @@ class TopActions:
             .search(managed_objects)
         )
 
-        (_, rc, message) = Pool.Methods.AddDataDevs(
+        ((changed, _), rc, message) = Pool.Methods.AddDataDevs(
             get_object(pool_object_path), {"devices": namespace.blockdevs}
         )
+
+        if not changed:
+            raise StratisCliEngineError(
+                StratisdErrors.ALREADY_EXISTS,
+                "Data devices are already registered with stratisd",
+            )
+
         if rc != StratisdErrors.OK:
             raise StratisCliEngineError(rc, message)
 
@@ -159,8 +171,15 @@ class TopActions:
             .search(managed_objects)
         )
 
-        (_, rc, message) = Pool.Methods.AddCacheDevs(
+        ((changed, _), rc, message) = Pool.Methods.AddCacheDevs(
             get_object(pool_object_path), {"devices": namespace.blockdevs}
         )
+
+        if not changed:
+            raise StratisCliEngineError(
+                StratisdErrors.ALREADY_EXISTS,
+                "Cache devices are already registered with stratisd",
+            )
+
         if rc != StratisdErrors.OK:
             raise StratisCliEngineError(rc, message)
