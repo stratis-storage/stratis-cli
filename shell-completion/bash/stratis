@@ -17,7 +17,7 @@ _stratis()
 			comp_words_adj+=(${word})
 		fi
 	done
-	
+
 # The current word needs to be able to be completed for --propagate
 	cur="${COMP_WORDS[COMP_CWORD]}"
 # The other words must ignore --propagate and use adjusted values
@@ -27,8 +27,9 @@ _stratis()
 	first="${comp_words_adj[1]}"
 	second="${comp_words_adj[2]}"
 	third="${comp_words_adj[3]}"
-	opts="-h --help --version --propagate"
-	root_subcommands="--help --version daemon pool blockdev filesystem"
+	opts="-h --help"
+	global_opts="--version --propagate ${opts}"
+	root_subcommands="daemon pool blockdev filesystem ${global_opts}"
 	pool_subcommands="create list add-data add-cache rename destroy"
 	fs_subcommands="create snapshot list rename destroy"
 	blockdev_subcommands="list"
@@ -36,7 +37,11 @@ _stratis()
 	blockdevs="$(echo /dev/disk/*/*) $(lsblk -n -o name -p -l)"
 
 	if [[ ${cur} == -* ]] ; then
-		COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+        if [[ ${comp_cword_adj} -eq 1 ]]; then
+            COMPREPLY=( $(compgen -W "${global_opts}" -- ${cur}) )
+        else
+            COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+        fi
 		return 0
 	else
 		case ${prev} in
