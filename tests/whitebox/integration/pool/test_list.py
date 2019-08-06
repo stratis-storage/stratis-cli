@@ -26,7 +26,8 @@ class ListTestCase(SimTestCase):
     """
     Test 'list'.
     """
-    _MENU = ['--propagate', 'pool', 'list']
+
+    _MENU = ["--propagate", "pool", "list"]
 
     def testList(self):
         """
@@ -49,15 +50,16 @@ class List2TestCase(SimTestCase):
     """
     Test 'list' with something actually to list.
     """
-    _MENU = ['--propagate', 'pool', 'list']
-    _POOLNAME = 'deadpool'
+
+    _MENU = ["--propagate", "pool", "list"]
+    _POOLNAME = "deadpool"
 
     def setUp(self):
         """
         Start the stratisd daemon with the simulator.
         """
         super().setUp()
-        command_line = ['pool', 'create', self._POOLNAME] + _DEVICE_STRATEGY()
+        command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
         RUNNER(command_line)
 
     def testList(self):

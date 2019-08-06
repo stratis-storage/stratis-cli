@@ -28,6 +28,7 @@ import sys
 # made available online at www.unicode.org.
 try:
     from wcwidth import wcswidth
+
     maybe_wcswidth = wcswidth
 except ImportError:
     maybe_wcswidth = len
@@ -73,11 +74,15 @@ def _print_row(file, row, row_widths, column_widths, column_alignments):
     """
     entries = []
     for index, entry in enumerate(row):
-        column_len = _get_column_len(column_widths[index], len(entry),
-                                     row_widths[index])
-        entries.append('{0:{align}{width}}'.format(
-            entry, align=column_alignments[index], width=column_len))
-    print('  '.join(entries), end='', file=file)
+        column_len = _get_column_len(
+            column_widths[index], len(entry), row_widths[index]
+        )
+        entries.append(
+            "{0:{align}{width}}".format(
+                entry, align=column_alignments[index], width=column_len
+            )
+        )
+    print("  ".join(entries), end="", file=file)
 
 
 def print_table(column_headings, row_entries, alignment, file=sys.stdout):
@@ -113,8 +118,7 @@ def print_table(column_headings, row_entries, alignment, file=sys.stdout):
         for column_index, cell in enumerate(row):
             cell_width = maybe_wcswidth(cell)
             cell_widths[row_index].append(cell_width)
-            column_widths[column_index] = max(column_widths[column_index],
-                                              cell_width)
+            column_widths[column_index] = max(column_widths[column_index], cell_width)
 
     for row, row_widths in zip(row_entries, cell_widths):
         _print_row(file, row, row_widths, column_widths, alignment)
@@ -128,33 +132,63 @@ def main():
     """
 
     print("Example table...")
-    table = [['Pool Name', 'Name', 'Used', 'Created', 'Device'], [
-        'yes_you_can', '☺', '546 MiB', 'Oct 05 2018 16:24',
-        '/dev/stratis/yes_you_can/☺'
-    ], [
-        'yes_you_can', '漢字', '546 MiB', 'Oct 10 2018 09:37',
-        '/dev/stratis/yes_you_can/漢字'
-    ]]
-    print_table(table[0], table[1:], ['<', '<', '<', '<', '<'])
+    table = [
+        ["Pool Name", "Name", "Used", "Created", "Device"],
+        [
+            "yes_you_can",
+            "☺",
+            "546 MiB",
+            "Oct 05 2018 16:24",
+            "/dev/stratis/yes_you_can/☺",
+        ],
+        [
+            "yes_you_can",
+            "漢字",
+            "546 MiB",
+            "Oct 10 2018 09:37",
+            "/dev/stratis/yes_you_can/漢字",
+        ],
+    ]
+    print_table(table[0], table[1:], ["<", "<", "<", "<", "<"])
 
     print()
     print("Example table...")
-    table = [[
-        u'Pool Na\u030ame', u'Na\u030ame', 'Used', 'Created', 'Device', 'UUID'
-    ], [
-        'unicode', 'e', '546 MiB', 'Feb 07 2019 15:33', '/stratis/unicode/e',
-        '3bf22806a6df4660aa527d646209595f'
-    ], [
-        'unicode', 'eeee', '546 MiB', 'Feb 07 2019 15:33',
-        '/stratis/unicode/eeee', '17101e39e72e423c90d8be5cb37c055b'
-    ], [
-        'unicodé', 'é', '546 MiB', 'Feb 07 2019 15:33',
-        '/stratis/unicodé/é', '0c2caf641dde41beb40bed6911f75c74'
-    ], [
-        'unicodé', 'éééé', '546 MiB', 'Feb 07 2019 15:33',
-        '/stratis/unicodé/éééé', '4ecacb15fb64453191d7da731c5f1601'
-    ]]
-    print_table(table[0], table[1:], ['<', '<', '<', '<', '<', '<'])
+    table = [
+        [u"Pool Na\u030ame", u"Na\u030ame", "Used", "Created", "Device", "UUID"],
+        [
+            "unicode",
+            "e",
+            "546 MiB",
+            "Feb 07 2019 15:33",
+            "/stratis/unicode/e",
+            "3bf22806a6df4660aa527d646209595f",
+        ],
+        [
+            "unicode",
+            "eeee",
+            "546 MiB",
+            "Feb 07 2019 15:33",
+            "/stratis/unicode/eeee",
+            "17101e39e72e423c90d8be5cb37c055b",
+        ],
+        [
+            "unicodé",
+            "é",
+            "546 MiB",
+            "Feb 07 2019 15:33",
+            "/stratis/unicodé/é",
+            "0c2caf641dde41beb40bed6911f75c74",
+        ],
+        [
+            "unicodé",
+            "éééé",
+            "546 MiB",
+            "Feb 07 2019 15:33",
+            "/stratis/unicodé/éééé",
+            "4ecacb15fb64453191d7da731c5f1601",
+        ],
+    ]
+    print_table(table[0], table[1:], ["<", "<", "<", "<", "<", "<"])
 
 
 if __name__ == "__main__":

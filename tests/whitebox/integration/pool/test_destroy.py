@@ -35,8 +35,9 @@ class Destroy1TestCase(SimTestCase):
 
     'destroy' should always fail if pool is missing.
     """
-    _MENU = ['--propagate', 'pool', 'destroy']
-    _POOLNAME = 'deadpool'
+
+    _MENU = ["--propagate", "pool", "destroy"]
+    _POOLNAME = "deadpool"
 
     def testExecution(self):
         """
@@ -53,15 +54,16 @@ class Destroy2TestCase(SimTestCase):
     """
     Test 'destroy' on database which contains the given pool.
     """
-    _MENU = ['--propagate', 'pool', 'destroy']
-    _POOLNAME = 'deadpool'
+
+    _MENU = ["--propagate", "pool", "destroy"]
+    _POOLNAME = "deadpool"
 
     def setUp(self):
         """
         Start the stratisd daemon with the simulator.
         """
         super().setUp()
-        command_line = ['pool', 'create', self._POOLNAME] + _DEVICE_STRATEGY()
+        command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
         RUNNER(command_line)
 
     def testExecution(self):
@@ -76,19 +78,20 @@ class Destroy3TestCase(SimTestCase):
     """
     Test 'destroy' on database which contains the given pool with a volume.
     """
-    _MENU = ['--propagate', 'pool', 'destroy']
-    _POOLNAME = 'deadpool'
-    _VOLNAME = 'vol'
+
+    _MENU = ["--propagate", "pool", "destroy"]
+    _POOLNAME = "deadpool"
+    _VOLNAME = "vol"
 
     def setUp(self):
         """
         Start the stratisd daemon with the simulator.
         """
         super().setUp()
-        command_line = ['pool', 'create', self._POOLNAME] + _DEVICE_STRATEGY()
+        command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
         RUNNER(command_line)
 
-        command_line = ['filesystem', 'create', self._POOLNAME, self._VOLNAME]
+        command_line = ["filesystem", "create", self._POOLNAME, self._VOLNAME]
         RUNNER(command_line)
 
     def testExecution(self):
@@ -106,7 +109,7 @@ class Destroy3TestCase(SimTestCase):
         """
         This should succeed since the filesystem is removed first.
         """
-        command_line = ['filesystem', 'destroy', self._POOLNAME, self._VOLNAME]
+        command_line = ["filesystem", "destroy", self._POOLNAME, self._VOLNAME]
         RUNNER(command_line)
         command_line = self._MENU + [self._POOLNAME]
         RUNNER(command_line)

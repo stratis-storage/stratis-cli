@@ -46,64 +46,67 @@ def add_subcommand(subparser, cmd):
     """
     name, info = cmd
     parser = subparser.add_parser(
-        name, help=info['help'], aliases=info.get('aliases', []))
+        name, help=info["help"], aliases=info.get("aliases", [])
+    )
 
-    subcmds = info.get('subcmds')
+    subcmds = info.get("subcmds")
     if subcmds is not None:
-        subparsers = parser.add_subparsers(title='subcommands')
+        subparsers = parser.add_subparsers(title="subcommands")
         for subcmd in subcmds:
             add_subcommand(subparsers, subcmd)
 
-    add_args(parser, info.get('args', []))
+    add_args(parser, info.get("args", []))
 
-    parser.set_defaults(func=info.get('func', PRINT_HELP(parser)))
+    parser.set_defaults(func=info.get("func", PRINT_HELP(parser)))
 
 
 DAEMON_SUBCMDS = [
-    ('redundancy',
-     dict(
-         help="Redundancy designations understood by stratisd daemon",
-         func=StratisActions.list_stratisd_redundancy,
-     )),
-    ('version',
-     dict(
-         help="version of stratisd daemon",
-         func=StratisActions.list_stratisd_version,
-     )),
+    (
+        "redundancy",
+        dict(
+            help="Redundancy designations understood by stratisd daemon",
+            func=StratisActions.list_stratisd_redundancy,
+        ),
+    ),
+    (
+        "version",
+        dict(
+            help="version of stratisd daemon", func=StratisActions.list_stratisd_version
+        ),
+    ),
 ]
 
 ROOT_SUBCOMMANDS = [
-    ('pool',
-     dict(
-         help="Perform General Pool Actions",
-         subcmds=POOL_SUBCMDS,
-         func=TopActions.list_pools,
-     )),
-    ('blockdev',
-     dict(
-         help="Commands related to block devices that make up the pool",
-         subcmds=PHYSICAL_SUBCMDS,
-         func=PhysicalActions.list_pool,
-     )),
-    ('filesystem',
-     dict(
-         aliases=['fs'],
-         help="Commands related to filesystems allocated from a pool",
-         subcmds=LOGICAL_SUBCMDS,
-         func=LogicalActions.list_volumes,
-     )),
-    ('daemon', dict(
-        help="Stratis daemon information",
-        subcmds=DAEMON_SUBCMDS,
-    )),
+    (
+        "pool",
+        dict(
+            help="Perform General Pool Actions",
+            subcmds=POOL_SUBCMDS,
+            func=TopActions.list_pools,
+        ),
+    ),
+    (
+        "blockdev",
+        dict(
+            help="Commands related to block devices that make up the pool",
+            subcmds=PHYSICAL_SUBCMDS,
+            func=PhysicalActions.list_pool,
+        ),
+    ),
+    (
+        "filesystem",
+        dict(
+            aliases=["fs"],
+            help="Commands related to filesystems allocated from a pool",
+            subcmds=LOGICAL_SUBCMDS,
+            func=LogicalActions.list_volumes,
+        ),
+    ),
+    ("daemon", dict(help="Stratis daemon information", subcmds=DAEMON_SUBCMDS)),
 ]
 
 GEN_ARGS = [
-    ('--propagate',
-     dict(
-         action='store_true',
-         help='Allow exceptions to propagate',
-     )),
+    ("--propagate", dict(action="store_true", help="Allow exceptions to propagate"))
 ]
 
 
@@ -115,14 +118,15 @@ def gen_parser():
     :rtype: ArgumentParser
     """
     parser = argparse.ArgumentParser(
-        description="Stratis Storage Manager", prog='stratis')
+        description="Stratis Storage Manager", prog="stratis"
+    )
 
     # version is special, it has explicit support in argparse
-    parser.add_argument('--version', action='version', version=__version__)
+    parser.add_argument("--version", action="version", version=__version__)
 
     add_args(parser, GEN_ARGS)
 
-    subparsers = parser.add_subparsers(title='subcommands')
+    subparsers = parser.add_subparsers(title="subcommands")
 
     for subcmd in ROOT_SUBCOMMANDS:
         add_subcommand(subparsers, subcmd)

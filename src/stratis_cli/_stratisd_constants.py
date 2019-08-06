@@ -40,10 +40,13 @@ def value_to_name(klass):
         :rtype: str
         """
         try:
-            the_str = str(klass(num)).rsplit('.')[-1].replace("_", " ")
+            the_str = str(klass(num)).rsplit(".")[-1].replace("_", " ")
         except ValueError:
-            the_str = '???' if terse_unknown else "Unknown value (%s) for %s constant" % (
-                num, klass.__name__)
+            the_str = (
+                "???"
+                if terse_unknown
+                else "Unknown value (%s) for %s constant" % (num, klass.__name__)
+            )
         return the_str
 
     return the_func
@@ -53,6 +56,7 @@ class StratisdErrors(IntEnum):
     """
     Stratisd Errors
     """
+
     OK = 0
     ERROR = 1
 
@@ -69,6 +73,7 @@ class RedundancyCodes(IntEnum):
     """
     Redundancy Codes
     """
+
     NONE = 0
 
 
@@ -79,6 +84,7 @@ class BlockDevStates(IntEnum):
     """
     State of individual block devices.
     """
+
     Missing = 0
     Bad = 1
     Spare = 2
@@ -93,6 +99,7 @@ class BlockDevTiers(IntEnum):
     """
     Tier to which a blockdev device belongs.
     """
+
     Data = 0
     Cache = 1
 

@@ -30,9 +30,10 @@ class Rename1TestCase(SimTestCase):
     """
     Test 'rename' when pool is non-existant.
     """
-    _MENU = ['--propagate', 'pool', 'rename']
-    _POOLNAME = 'deadpool'
-    _NEW_POOLNAME = 'livepool'
+
+    _MENU = ["--propagate", "pool", "rename"]
+    _POOLNAME = "deadpool"
+    _NEW_POOLNAME = "livepool"
 
     def testRename(self):
         """
@@ -59,16 +60,17 @@ class Rename2TestCase(SimTestCase):
     """
     Test 'rename' when pool exists.
     """
-    _MENU = ['--propagate', 'pool', 'rename']
-    _POOLNAME = 'deadpool'
-    _NEW_POOLNAME = 'livepool'
+
+    _MENU = ["--propagate", "pool", "rename"]
+    _POOLNAME = "deadpool"
+    _NEW_POOLNAME = "livepool"
 
     def setUp(self):
         """
         Start the stratisd daemon with the simulator.
         """
         super().setUp()
-        command_line = ['pool', 'create', self._POOLNAME] + _DEVICE_STRATEGY()
+        command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
         RUNNER(command_line)
 
     def testRename(self):

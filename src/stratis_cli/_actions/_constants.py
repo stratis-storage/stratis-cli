@@ -15,8 +15,8 @@
 General constants.
 """
 
-SERVICE = 'org.storage.stratis1'
-TOP_OBJECT = '/org/storage/stratis1'
+SERVICE = "org.storage.stratis1"
+TOP_OBJECT = "/org/storage/stratis1"
 
 SECTOR_SIZE = 512
 

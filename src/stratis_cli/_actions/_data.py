@@ -30,16 +30,14 @@ from .._errors import StratisCliValueError
 from ._constants import DBUS_TIMEOUT_SECONDS
 
 SPECS = {
-    "org.freedesktop.DBus.ObjectManager":
-    """
+    "org.freedesktop.DBus.ObjectManager": """
 <interface name="org.freedesktop.DBus.ObjectManager">
 <method name="GetManagedObjects">
 <arg name="objpath_interfaces_and_properties" type="a{oa{sa{sv}}}" direction="out"/>
 </method>
 </interface>
 """,
-    "org.storage.stratis1.Manager":
-    """
+    "org.storage.stratis1.Manager": """
 <interface name="org.storage.stratis1.Manager">
 <method name="ConfigureSimulator">
 <arg name="denominator" type="u" direction="in"/>
@@ -65,8 +63,7 @@ SPECS = {
 </property>
 </interface>
 """,
-    "org.storage.stratis1.pool":
-    """
+    "org.storage.stratis1.pool": """
 <interface name="org.storage.stratis1.pool">
 <method name="AddCacheDevs">
 <arg name="devices" type="as" direction="in"/>
@@ -128,8 +125,7 @@ SPECS = {
 </property>
 </interface>
 """,
-    "org.storage.stratis1.filesystem":
-    """
+    "org.storage.stratis1.filesystem": """
 <interface name="org.storage.stratis1.filesystem">
 <method name="SetName">
 <arg name="name" type="s" direction="in"/>
@@ -157,8 +153,7 @@ SPECS = {
 </property>
 </interface>
 """,
-    "org.storage.stratis1.blockdev":
-    """
+    "org.storage.stratis1.blockdev": """
 <interface name="org.storage.stratis1.blockdev">
 <method name="SetUserInfo">
 <arg name="id" type="s" direction="in"/>
@@ -197,11 +192,11 @@ SPECS = {
 """,
 }
 
-_MANAGER_INTERFACE = 'org.storage.stratis1.Manager'
+_MANAGER_INTERFACE = "org.storage.stratis1.Manager"
 
-_FILESYSTEM_INTERFACE = 'org.storage.stratis1.filesystem'
-_POOL_INTERFACE = 'org.storage.stratis1.pool'
-_BLOCKDEV_INTERFACE = 'org.storage.stratis1.blockdev'
+_FILESYSTEM_INTERFACE = "org.storage.stratis1.filesystem"
+_POOL_INTERFACE = "org.storage.stratis1.pool"
+_BLOCKDEV_INTERFACE = "org.storage.stratis1.blockdev"
 
 
 def interface_name_to_common_name(interface_name):
@@ -227,8 +222,7 @@ def interface_name_to_common_name(interface_name):
 
 try:
     filesystem_spec = ET.fromstring(SPECS[_FILESYSTEM_INTERFACE])
-    Filesystem = make_class("Filesystem", filesystem_spec,
-                            DBUS_TIMEOUT_SECONDS)
+    Filesystem = make_class("Filesystem", filesystem_spec, DBUS_TIMEOUT_SECONDS)
     MOFilesystem = managed_object_class("MOFilesystem", filesystem_spec)
     filesystems = mo_query_builder(filesystem_spec)
 
@@ -241,13 +235,15 @@ try:
     MODev = managed_object_class("MODev", blockdev_spec)
     devs = mo_query_builder(blockdev_spec)
 
-    Manager = make_class("Manager", ET.fromstring(SPECS[_MANAGER_INTERFACE]),
-                         DBUS_TIMEOUT_SECONDS)
+    Manager = make_class(
+        "Manager", ET.fromstring(SPECS[_MANAGER_INTERFACE]), DBUS_TIMEOUT_SECONDS
+    )
 
     ObjectManager = make_class(
         "ObjectManager",
-        ET.fromstring(SPECS['org.freedesktop.DBus.ObjectManager']),
-        DBUS_TIMEOUT_SECONDS)
+        ET.fromstring(SPECS["org.freedesktop.DBus.ObjectManager"]),
+        DBUS_TIMEOUT_SECONDS,
+    )
 
 except DPClientGenerationError as err:
     raise StratisCliGenerationError(

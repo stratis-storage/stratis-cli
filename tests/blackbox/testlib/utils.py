@@ -27,8 +27,9 @@ def rs(length=4):
     :param length: Length of random string
     :return: String
     """
-    return '{0}'.format(''.join(
-        random.choice(string.ascii_uppercase) for _ in range(length)))
+    return "{0}".format(
+        "".join(random.choice(string.ascii_uppercase) for _ in range(length))
+    )
 
 
 def size_representation(size, units):
@@ -59,7 +60,7 @@ def process_exists(name):
     Walk the process table looking for executable 'name', returns pid if one
     found, else return None
     """
-    for p in [pid for pid in os.listdir('/proc') if pid.isdigit()]:
+    for p in [pid for pid in os.listdir("/proc") if pid.isdigit()]:
         try:
             exe_name = os.readlink(os.path.join("/proc/", p, "exe"))
         except OSError:
@@ -88,15 +89,15 @@ def exec_command(cmd, expected_exit_code=0):
     :param expected_exit_code: Integer exit code, will assert if not met
     :return: (std out text, std err text)
     """
-    process = Popen(
-        cmd, stdout=PIPE, stderr=PIPE, close_fds=True, env=os.environ)
+    process = Popen(cmd, stdout=PIPE, stderr=PIPE, close_fds=True, env=os.environ)
     result = process.communicate()
     stdout_text = bytes(result[0]).decode("utf-8")
     stderr_text = bytes(result[1]).decode("utf-8")
 
     if expected_exit_code != process.returncode:
-        print("cmd = %s [%d != %d]" % (str(cmd), expected_exit_code,
-                                       process.returncode))
+        print(
+            "cmd = %s [%d != %d]" % (str(cmd), expected_exit_code, process.returncode)
+        )
         print("STDOUT= %s" % stdout_text)
         print("STDERR= %s" % stderr_text)
 

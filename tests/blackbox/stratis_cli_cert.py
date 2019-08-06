@@ -22,8 +22,14 @@ import time
 import unittest
 from subprocess import Popen, PIPE
 
-from testlib.utils import (exec_command, process_exists, file_create,
-                           file_signature, rs, stratis_link)
+from testlib.utils import (
+    exec_command,
+    process_exists,
+    file_create,
+    file_signature,
+    rs,
+    stratis_link,
+)
 from testlib.stratis import StratisCli, STRATIS_CLI, fs_n, p_n
 
 DISKS = []
@@ -45,7 +51,7 @@ class StratisCertify(unittest.TestCase):
 
         # The daemon should already be running, if not lets starts it and wait
         # a bit
-        if process_exists('stratisd') is None:
+        if process_exists("stratisd") is None:
             exec_command(["systemctl", "start", "stratisd"])
             time.sleep(20)
 
@@ -84,12 +90,12 @@ class StratisCertify(unittest.TestCase):
         :return:
         """
         process = Popen(
-            [STRATIS_CLI, "pool", "create",
-             p_n(), DISKS[0]],
+            [STRATIS_CLI, "pool", "create", p_n(), DISKS[0]],
             stdout=PIPE,
             stderr=PIPE,
             close_fds=True,
-            env=os.environ)
+            env=os.environ,
+        )
         time.sleep(0.05)
         process.send_signal(2)
         result = process.communicate()
@@ -116,18 +122,14 @@ class StratisCertify(unittest.TestCase):
 
         self.assertEqual(StratisCli.pool_list(), StratisCli.pool_list(False))
         self.assertEqual(StratisCli.fs_list(), StratisCli.fs_list(False))
-        self.assertEqual(StratisCli.blockdev_list(),
-                         StratisCli.blockdev_list(False))
+        self.assertEqual(StratisCli.blockdev_list(), StratisCli.blockdev_list(False))
 
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument(
-        "--disk",
-        action="append",
-        dest="DISKS",
-        help="disks to use",
-        required=True)
+        "--disk", action="append", dest="DISKS", help="disks to use", required=True
+    )
     disks, args = ap.parse_known_args()
     DISKS = disks.DISKS
     print("Using block device(s) for tests: %s" % DISKS)

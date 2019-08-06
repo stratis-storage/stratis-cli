@@ -30,10 +30,11 @@ from ._formatting import print_table
 from ._util import get_objects
 
 
-class PhysicalActions():
+class PhysicalActions:
     """
     Actions on the physical aspects of a pool.
     """
+
     # pylint: disable=too-few-public-methods
 
     @staticmethod
@@ -45,17 +46,22 @@ class PhysicalActions():
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
-        (modevs, path_to_name) = get_objects(namespace, "pool_name",
-                                             managed_objects, devs, MODev)
+        (modevs, path_to_name) = get_objects(
+            namespace, "pool_name", managed_objects, devs, MODev
+        )
 
-        tables = [[
-            path_to_name[modev.Pool()],
-            modev.Devnode(),
-            str(Range(modev.TotalPhysicalSize(), SECTOR_SIZE)),
-            BLOCK_DEV_STATE_TO_NAME(modev.State(), True),
-            BLOCK_DEV_TIER_TO_NAME(modev.Tier(), True)
-        ] for modev in modevs]
+        tables = [
+            [
+                path_to_name[modev.Pool()],
+                modev.Devnode(),
+                str(Range(modev.TotalPhysicalSize(), SECTOR_SIZE)),
+                BLOCK_DEV_STATE_TO_NAME(modev.State(), True),
+                BLOCK_DEV_TIER_TO_NAME(modev.Tier(), True),
+            ]
+            for modev in modevs
+        ]
         print_table(
             ["Pool Name", "Device Node", "Physical Size", "State", "Tier"],
             sorted(tables, key=lambda entry: (entry[0], entry[1])),
-            ['<', '<', '>', '>', '>'])
+            ["<", "<", ">", ">", ">"],
+        )

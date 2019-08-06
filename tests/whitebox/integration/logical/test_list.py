@@ -32,8 +32,9 @@ class ListTestCase(SimTestCase):
     """
     Test listing a volume for a non-existant pool.
     """
-    _MENU = ['--propagate', 'filesystem', 'list']
-    _POOLNAME = 'deadpool'
+
+    _MENU = ["--propagate", "filesystem", "list"]
+    _POOLNAME = "deadpool"
 
     def testList(self):
         """
@@ -50,16 +51,16 @@ class List2TestCase(SimTestCase):
     """
     Test listing volumes in an existing pool with no volumes.
     """
-    _MENU = ['--propagate', 'filesystem', 'list']
-    _POOLNAME = 'deadpool'
+
+    _MENU = ["--propagate", "filesystem", "list"]
+    _POOLNAME = "deadpool"
 
     def setUp(self):
         """
         Start the stratisd daemon with the simulator.
         """
         super().setUp()
-        command_line = ['pool', 'create'] + [self._POOLNAME
-                                             ] + _DEVICE_STRATEGY()
+        command_line = ["pool", "create"] + [self._POOLNAME] + _DEVICE_STRATEGY()
         RUNNER(command_line)
 
     def testList(self):
@@ -70,24 +71,24 @@ class List2TestCase(SimTestCase):
         RUNNER(command_line)
 
 
-@unittest.skip(
-    "Temporarily unable to create multiple filesystems at same time")
+@unittest.skip("Temporarily unable to create multiple filesystems at same time")
 class List3TestCase(SimTestCase):
     """
     Test listing volumes in an existing pool with some volumes.
     """
-    _MENU = ['--propagate', 'filesystem', 'list']
-    _POOLNAME = 'deadpool'
-    _VOLUMES = ['livery', 'liberty', 'library']
+
+    _MENU = ["--propagate", "filesystem", "list"]
+    _POOLNAME = "deadpool"
+    _VOLUMES = ["livery", "liberty", "library"]
 
     def setUp(self):
         """
         Start the stratisd daemon with the simulator.
         """
         super().setUp()
-        command_line = ['pool', 'create', self._POOLNAME] + _DEVICE_STRATEGY()
+        command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
         RUNNER(command_line)
-        command_line = ['filesystem', 'create', self._POOLNAME] + self._VOLUMES
+        command_line = ["filesystem", "create", self._POOLNAME] + self._VOLUMES
         RUNNER(command_line)
 
     def testList(self):
@@ -102,41 +103,36 @@ class List4TestCase(SimTestCase):
     """
     Test listing volumes in an existing pool with some volumes.
     """
-    _POOLNAME = 'deadpool'
-    _VOLUMES = ['livery', 'liberty', 'library']
+
+    _POOLNAME = "deadpool"
+    _VOLUMES = ["livery", "liberty", "library"]
 
     def setUp(self):
         """
         Start the stratisd daemon with the simulator.
         """
         super().setUp()
-        command_line = ['pool', 'create', self._POOLNAME] + _DEVICE_STRATEGY()
+        command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
         RUNNER(command_line)
 
-        command_line = [
-            'filesystem', 'create', self._POOLNAME, self._VOLUMES[0]
-        ]
+        command_line = ["filesystem", "create", self._POOLNAME, self._VOLUMES[0]]
         RUNNER(command_line)
-        command_line = [
-            'filesystem', 'create', self._POOLNAME, self._VOLUMES[1]
-        ]
+        command_line = ["filesystem", "create", self._POOLNAME, self._VOLUMES[1]]
         RUNNER(command_line)
-        command_line = [
-            'filesystem', 'create', self._POOLNAME, self._VOLUMES[2]
-        ]
+        command_line = ["filesystem", "create", self._POOLNAME, self._VOLUMES[2]]
         RUNNER(command_line)
 
     def testList(self):
         """
         Listing multiple volumes in a non-empty pool should succeed.
         """
-        command_line = ['--propagate', 'filesystem', 'list', self._POOLNAME]
+        command_line = ["--propagate", "filesystem", "list", self._POOLNAME]
         RUNNER(command_line)
 
         # Also should work when no pool name is given
-        command_line = ['--propagate', 'filesystem']
+        command_line = ["--propagate", "filesystem"]
         RUNNER(command_line)
 
         # Also should work using 'fs' alias
-        command_line = ['--propagate', 'fs']
+        command_line = ["--propagate", "fs"]
         RUNNER(command_line)

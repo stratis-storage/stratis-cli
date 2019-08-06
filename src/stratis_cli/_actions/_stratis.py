@@ -22,7 +22,7 @@ from ._constants import TOP_OBJECT
 from ._data import Manager
 
 
-class StratisActions():
+class StratisActions:
     """
     Stratis actions.
     """

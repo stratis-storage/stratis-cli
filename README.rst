@@ -85,5 +85,5 @@ Internal Software Architecture
 
 Python Coding Style
 -------------------
-``stratis`` conforms to PEP-8 style guidelines as enforced by the ``yapf``
+``stratis`` conforms to PEP-8 style guidelines as enforced by the ``black``
 formatting tool.

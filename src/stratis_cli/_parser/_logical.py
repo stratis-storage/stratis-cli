@@ -18,82 +18,84 @@ Definition of filesystem actions to display in the CLI.
 from .._actions import LogicalActions
 
 LOGICAL_SUBCMDS = [
-    ('create',
-     dict(
-         help='Create filesystems in a pool',
-         args=[
-             ('pool_name', dict(
-                 action='store',
-                 help='pool name',
-             )),
-             ('fs_name',
-              dict(
-                  help='Create filesystems in this pool using the given names',
-                  nargs='+',
-              )),
-         ],
-         func=LogicalActions.create_volumes)),
-    ('snapshot',
-     dict(
-         help='Snapshot the named filesystem in a pool',
-         args=[
-             ('pool_name', dict(
-                 action='store',
-                 help='pool name',
-             )),
-             ('origin_name', dict(
-                 action='store',
-                 help='origin name',
-             )),
-             ('snapshot_name', dict(
-                 action='store',
-                 help='snapshot name',
-             )),
-         ],
-         func=LogicalActions.snapshot_filesystem)),
-    ('list',
-     dict(
-         help="List filesystems",
-         args=[
-             ('pool_name',
-              dict(action='store', default=None, nargs="?", help='Pool name')),
-         ],
-         func=LogicalActions.list_volumes)),
-    ('destroy',
-     dict(
-         help='Destroy filesystems in a pool',
-         args=[
-             ('pool_name', dict(
-                 action='store',
-                 help='pool name',
-             )),
-             ('fs_name',
-              dict(
-                  help='Destroy the named filesystems in this pool',
-                  nargs='+',
-              )),
-         ],
-         func=LogicalActions.destroy_volumes)),
-    ('rename',
-     dict(
-         help='Rename a filesystem',
-         args=[
-             ('pool_name',
-              dict(
-                  action='store',
-                  help='Name of the pool the filesystem is part of',
-              )),
-             ('fs_name',
-              dict(
-                  action='store',
-                  help='Name of the filesystem to change',
-              )),
-             ('new_name',
-              dict(
-                  action='store',
-                  help='New name to give that filesystem',
-              )),
-         ],
-         func=LogicalActions.rename_fs,
-     )),
+    (
+        "create",
+        dict(
+            help="Create filesystems in a pool",
+            args=[
+                ("pool_name", dict(action="store", help="pool name")),
+                (
+                    "fs_name",
+                    dict(
+                        help="Create filesystems in this pool using the given names",
+                        nargs="+",
+                    ),
+                ),
+            ],
+            func=LogicalActions.create_volumes,
+        ),
+    ),
+    (
+        "snapshot",
+        dict(
+            help="Snapshot the named filesystem in a pool",
+            args=[
+                ("pool_name", dict(action="store", help="pool name")),
+                ("origin_name", dict(action="store", help="origin name")),
+                ("snapshot_name", dict(action="store", help="snapshot name")),
+            ],
+            func=LogicalActions.snapshot_filesystem,
+        ),
+    ),
+    (
+        "list",
+        dict(
+            help="List filesystems",
+            args=[
+                (
+                    "pool_name",
+                    dict(action="store", default=None, nargs="?", help="Pool name"),
+                )
+            ],
+            func=LogicalActions.list_volumes,
+        ),
+    ),
+    (
+        "destroy",
+        dict(
+            help="Destroy filesystems in a pool",
+            args=[
+                ("pool_name", dict(action="store", help="pool name")),
+                (
+                    "fs_name",
+                    dict(help="Destroy the named filesystems in this pool", nargs="+"),
+                ),
+            ],
+            func=LogicalActions.destroy_volumes,
+        ),
+    ),
+    (
+        "rename",
+        dict(
+            help="Rename a filesystem",
+            args=[
+                (
+                    "pool_name",
+                    dict(
+                        action="store",
+                        help="Name of the pool the filesystem is part of",
+                    ),
+                ),
+                (
+                    "fs_name",
+                    dict(action="store", help="Name of the filesystem to change"),
+                ),
+                (
+                    "new_name",
+                    dict(action="store", help="New name to give that filesystem"),
+                ),
+            ],
+            func=LogicalActions.rename_fs,
+        ),
+    ),
 ]
