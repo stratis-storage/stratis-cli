@@ -82,13 +82,13 @@ POOL_SUBCMDS = [
                  action='store',
                  help='Pool name',
              )),
-             ('device',
+             ('blockdevs',
               dict(
                   help='Block devices to add to the pool',
                   metavar='blockdev',
                   nargs='+')),
          ],
-         func=TopActions.add_data_device)),
+         func=TopActions.add_data_devices)),
     ('add-cache',
      dict(
          help="Add one or more blockdevs to an existing pool for use as cache",
@@ -97,11 +97,11 @@ POOL_SUBCMDS = [
                  action='store',
                  help='Pool name',
              )),
-             ('device',
+             ('blockdevs',
               dict(
                   help='Block devices to add to the pool as cache',
                   metavar='blockdev',
                   nargs='+')),
          ],
-         func=TopActions.add_cache_device)),
+         func=TopActions.add_cache_devices)),
 ]

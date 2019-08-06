@@ -117,9 +117,9 @@ class TopActions():
             raise StratisCliEngineError(rc, message)
 
     @staticmethod
-    def add_data_device(namespace):
+    def add_data_devices(namespace):
         """
-        Add a device to a pool.
+        Add specified data devices to a pool.
         """
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -129,14 +129,14 @@ class TopActions():
             }).require_unique_match(True).search(managed_objects))
 
         (_, rc, message) = Pool.Methods.AddDataDevs(
-            get_object(pool_object_path), {'devices': namespace.device})
+            get_object(pool_object_path), {'devices': namespace.blockdevs})
         if rc != StratisdErrors.OK:
             raise StratisCliEngineError(rc, message)
 
     @staticmethod
-    def add_cache_device(namespace):
+    def add_cache_devices(namespace):
         """
-        Add a device to a pool.
+        Add specified cache devices to a pool.
         """
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -146,6 +146,6 @@ class TopActions():
             }).require_unique_match(True).search(managed_objects))
 
         (_, rc, message) = Pool.Methods.AddCacheDevs(
-            get_object(pool_object_path), {'devices': namespace.device})
+            get_object(pool_object_path), {'devices': namespace.blockdevs})
         if rc != StratisdErrors.OK:
             raise StratisCliEngineError(rc, message)
