@@ -28,16 +28,16 @@ from .._misc import SimTestCase
 _DEVICE_STRATEGY = device_name_list(1)
 
 
-@unittest.skip(
-    "Temporarily unable to create multiple filesystems at same time")
+@unittest.skip("Temporarily unable to create multiple filesystems at same time")
 class DestroyTestCase(SimTestCase):
     """
     Test destroying a volume when the pool does not exist. In this case,
     an error should be raised, as the request is non-sensical.
     """
-    _MENU = ['--propagate', 'filesystem', 'destroy']
-    _POOLNAME = 'deadpool'
-    _VOLNAMES = ['oubliette', 'mnemosyne']
+
+    _MENU = ["--propagate", "filesystem", "destroy"]
+    _POOLNAME = "deadpool"
+    _VOLNAMES = ["oubliette", "mnemosyne"]
 
     def testDestroy(self):
         """
@@ -50,23 +50,23 @@ class DestroyTestCase(SimTestCase):
         self.assertIsInstance(cause, DbusClientUniqueResultError)
 
 
-@unittest.skip(
-    "Temporarily unable to create multiple filesystems at same time")
+@unittest.skip("Temporarily unable to create multiple filesystems at same time")
 class Destroy2TestCase(SimTestCase):
     """
     Test destroying a volume when the pool does exist but the volume does not.
     In this case, no error should be raised.
     """
-    _MENU = ['--propagate', 'filesystem', 'destroy']
-    _POOLNAME = 'deadpool'
-    _VOLNAMES = ['oubliette', 'mnemosyne']
+
+    _MENU = ["--propagate", "filesystem", "destroy"]
+    _POOLNAME = "deadpool"
+    _VOLNAMES = ["oubliette", "mnemosyne"]
 
     def setUp(self):
         """
         Start the stratisd daemon with the simulator.
         """
         super().setUp()
-        command_line = ['pool', 'create', self._POOLNAME] + _DEVICE_STRATEGY()
+        command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
         RUNNER(command_line)
 
     def testDestroy(self):
@@ -78,28 +78,27 @@ class Destroy2TestCase(SimTestCase):
         RUNNER(command_line)
 
 
-@unittest.skip(
-    "Temporarily unable to create multiple filesystems at same time")
+@unittest.skip("Temporarily unable to create multiple filesystems at same time")
 class Destroy3TestCase(SimTestCase):
     """
     Test destroying a volume when the pool does exist and the volume does as
     well. In this case, the volumes should all be destroyed, and no error
     raised as there is no data on the volumes.
     """
-    _MENU = ['--propagate', 'filesystem', 'destroy']
-    _POOLNAME = 'deadpool'
-    _VOLNAMES = ['oubliette', 'mnemosyne']
+
+    _MENU = ["--propagate", "filesystem", "destroy"]
+    _POOLNAME = "deadpool"
+    _VOLNAMES = ["oubliette", "mnemosyne"]
 
     def setUp(self):
         """
         Start the stratisd daemon with the simulator.
         """
         super().setUp()
-        command_line = ['pool', 'create', self._POOLNAME] + _DEVICE_STRATEGY()
+        command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
         RUNNER(command_line)
 
-        command_line = ['filesystem', 'create', self._POOLNAME] + \
-                self._VOLNAMES
+        command_line = ["filesystem", "create", self._POOLNAME] + self._VOLNAMES
         RUNNER(command_line)
 
     def testDestroy(self):

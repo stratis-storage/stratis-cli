@@ -30,8 +30,9 @@ class AddDataTestCase(SimTestCase):
     """
     Test adding devices to a non-existant pool.
     """
-    _MENU = ['--propagate', 'pool', 'add-data']
-    _POOLNAME = 'deadpool'
+
+    _MENU = ["--propagate", "pool", "add-data"]
+    _POOLNAME = "deadpool"
 
     def testAdd(self):
         """
@@ -48,8 +49,9 @@ class AddCacheTestCase(SimTestCase):
     """
     Test adding devices to a non-existant pool.
     """
-    _MENU = ['--propagate', 'pool', 'add-cache']
-    _POOLNAME = 'deadpool'
+
+    _MENU = ["--propagate", "pool", "add-cache"]
+    _POOLNAME = "deadpool"
 
     def testAdd(self):
         """

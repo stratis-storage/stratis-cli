@@ -29,20 +29,21 @@ class StratisTestCase(SimTestCase):
     """
     Test meta information about stratisd.
     """
-    _MENU = ['--propagate', 'daemon']
+
+    _MENU = ["--propagate", "daemon"]
 
     def testStratisVersion(self):
         """
         Getting version should just succeed.
         """
-        command_line = self._MENU + ['version']
+        command_line = self._MENU + ["version"]
         RUNNER(command_line)
 
     def testStratisRedundancy(self):
         """
         Getting redundancy should just succeed.
         """
-        command_line = self._MENU + ['redundancy']
+        command_line = self._MENU + ["redundancy"]
         RUNNER(command_line)
 
     def testStratisNoOptions(self):
@@ -57,7 +58,7 @@ class StratisTestCase(SimTestCase):
         Exactly one option should be set, so this should fail,
         but only because redundancy accepts no arguments.
         """
-        command_line = self._MENU + ['redundancy', 'version']
+        command_line = self._MENU + ["redundancy", "version"]
         with self.assertRaises(SystemExit):
             RUNNER(command_line)
 
@@ -71,7 +72,7 @@ class PropagateTestCase(unittest.TestCase):
         """
         If propagate is set, the expected exception will propagate.
         """
-        command_line = ['--propagate', 'daemon', 'version']
+        command_line = ["--propagate", "daemon", "version"]
         with self.assertRaises(StratisCliActionError) as context:
             RUNNER(command_line)
         cause = context.exception.__cause__
@@ -81,6 +82,6 @@ class PropagateTestCase(unittest.TestCase):
         """
         If propagate is not set, the exception will be SystemExit.
         """
-        command_line = ['daemon', 'version']
+        command_line = ["daemon", "version"]
         with self.assertRaises(SystemExit):
             RUNNER(command_line)

@@ -18,8 +18,7 @@ import datetime
 import os
 import time
 
-from .utils import (exec_command, rs, umount_mdv, stratis_link,
-                    size_representation)
+from .utils import exec_command, rs, umount_mdv, stratis_link, size_representation
 
 # Some packaged systems might place this in /usr/sbin
 STRATIS_CLI = os.getenv("STRATIS_CLI", "/usr/bin/stratis")
@@ -97,7 +96,8 @@ class StratisCli:
             if name.startswith(TEST_PREF):
                 rc[name] = dict(
                     SIZE=size_representation(size, size_units),
-                    USED=size_representation(used, used_units))
+                    USED=size_representation(used, used_units),
+                )
         return rc
 
     @staticmethod
@@ -121,16 +121,17 @@ class StratisCli:
 
         rc = {}
         for l in lines:
-            pool_name, name, used, used_units, month, day, year, hr_min, \
-                sym_link, uuid = l.split()
+            pool_name, name, used, used_units, month, day, year, hr_min, sym_link, uuid = (
+                l.split()
+            )
 
             if not pool_name.startswith(TEST_PREF):
                 continue
 
             created = "%s %s %s %s" % (month, day, year, hr_min)
             ts = time.mktime(
-                datetime.datetime.strptime(created,
-                                           "%b %d %Y %H:%M").timetuple())
+                datetime.datetime.strptime(created, "%b %d %Y %H:%M").timetuple()
+            )
 
             rc[name] = dict(
                 POOL_NAME=pool_name,
@@ -138,7 +139,8 @@ class StratisCli:
                 UUID=uuid,
                 SYM_LINK=sym_link,
                 CREATED=created,
-                CREATED_TS=ts)
+                CREATED_TS=ts,
+            )
 
         return rc
 
@@ -169,7 +171,8 @@ class StratisCli:
                     POOL_NAME=pool_name,
                     SIZE=size_representation(size, size_units),
                     STATE=state,
-                    TIER=tier)
+                    TIER=tier,
+                )
 
         return rc
 
@@ -288,8 +291,7 @@ class StratisCli:
         :return: None
         """
         if pool_name.startswith(TEST_PREF):
-            exec_command(
-                [STRATIS_CLI, "fs", "rename", pool_name, old_name, new_name])
+            exec_command([STRATIS_CLI, "fs", "rename", pool_name, old_name, new_name])
 
             assert not os.path.exists(stratis_link(pool_name, old_name))
             assert os.path.exists(stratis_link(pool_name, new_name))
@@ -304,10 +306,9 @@ class StratisCli:
         :return: None
         """
         if pool_name.startswith(TEST_PREF):
-            exec_command([
-                STRATIS_CLI, "fs", "snapshot", pool_name, fs_name,
-                snapshot_name
-            ])
+            exec_command(
+                [STRATIS_CLI, "fs", "snapshot", pool_name, fs_name, snapshot_name]
+            )
 
             # Check symlink
             full_path = stratis_link(pool_name, snapshot_name)

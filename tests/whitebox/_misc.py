@@ -26,7 +26,7 @@ import unittest
 from stratis_cli import run
 
 try:
-    _STRATISD = os.environ['STRATISD']
+    _STRATISD = os.environ["STRATISD"]
 except KeyError:
     message = "STRATISD environment variable must be set to absolute path of stratisd executable"
     sys.exit(message)
@@ -40,16 +40,17 @@ def device_name_list(min_devices=0, max_devices=10):
 
     def the_func():
         return [
-            "/dev/%s" % ''.join(
-                random.choice(string.ascii_uppercase + string.digits)
-                for _ in range(4))
+            "/dev/%s"
+            % "".join(
+                random.choice(string.ascii_uppercase + string.digits) for _ in range(4)
+            )
             for _ in range(random.randrange(min_devices, max_devices + 1))
         ]
 
     return the_func
 
 
-class _Service():
+class _Service:
     """
     Handle starting and stopping the Rust service.
     """
@@ -58,7 +59,7 @@ class _Service():
         """
         Start the stratisd daemon with the simulator.
         """
-        self._stratisd = subprocess.Popen([os.path.join(_STRATISD), '--sim'])
+        self._stratisd = subprocess.Popen([os.path.join(_STRATISD), "--sim"])
         time.sleep(1)
 
     def tearDown(self):

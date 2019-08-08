@@ -19,8 +19,14 @@ from ._data import MOPool
 from ._data import pools
 
 
-def get_objects(namespace, pool_name_key, managed_objects, search_function,
-                constructor):
+def get_objects(
+    # pylint: disable=bad-continuation
+    namespace,
+    pool_name_key,
+    managed_objects,
+    search_function,
+    constructor,
+):
     """
     Get objects specified by namespace and designated pool_name_key.
     If no pool name key is specified in the namespace, get objects for all
@@ -41,20 +47,23 @@ def get_objects(namespace, pool_name_key, managed_objects, search_function,
     pool_name = getattr(namespace, pool_name_key, None)
     if pool_name is not None:
         (parent_pool_object_path, _) = next(
-            pools(props={
-                'Name': pool_name
-            }).require_unique_match(True).search(managed_objects))
+            pools(props={"Name": pool_name})
+            .require_unique_match(True)
+            .search(managed_objects)
+        )
 
         properties = {"Pool": parent_pool_object_path}
         path_to_name = {parent_pool_object_path: namespace.pool_name}
     else:
         properties = {}
-        path_to_name = dict((path, MOPool(info).Name())
-                            for path, info in pools().search(managed_objects))
+        path_to_name = dict(
+            (path, MOPool(info).Name())
+            for path, info in pools().search(managed_objects)
+        )
 
     objects = [
-        constructor(info) for _, info in search_function(props=properties, )
-        .search(managed_objects)
+        constructor(info)
+        for _, info in search_function(props=properties).search(managed_objects)
     ]
 
     return (objects, path_to_name)

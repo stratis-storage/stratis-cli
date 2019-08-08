@@ -32,7 +32,7 @@ from ._data import pools
 from ._formatting import print_table
 
 
-class TopActions():
+class TopActions:
     """
     Top level actions.
     """
@@ -47,11 +47,13 @@ class TopActions():
         proxy = get_object(TOP_OBJECT)
 
         (_, rc, message) = Manager.Methods.CreatePool(
-            proxy, {
-                'name': namespace.pool_name,
-                'redundancy': (True, 0),
-                'devices': namespace.blockdevs
-            })
+            proxy,
+            {
+                "name": namespace.pool_name,
+                "redundancy": (True, 0),
+                "devices": namespace.blockdevs,
+            },
+        )
 
         if rc != StratisdErrors.OK:
             raise StratisCliEngineError(rc, message)
@@ -67,14 +69,19 @@ class TopActions():
 
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
         mopools = (MOPool(info) for _, info in pools().search(managed_objects))
-        tables = [[
-            mopool.Name(),
-            str(Range(mopool.TotalPhysicalSize(), SECTOR_SIZE)),
-            str(Range(mopool.TotalPhysicalUsed(), SECTOR_SIZE)),
-        ] for mopool in mopools]
-        print_table(['Name', 'Total Physical Size', 'Total Physical Used'],
-                    sorted(tables, key=lambda entry: entry[0]),
-                    ['<', '>', '>'])
+        tables = [
+            [
+                mopool.Name(),
+                str(Range(mopool.TotalPhysicalSize(), SECTOR_SIZE)),
+                str(Range(mopool.TotalPhysicalUsed(), SECTOR_SIZE)),
+            ]
+            for mopool in mopools
+        ]
+        print_table(
+            ["Name", "Total Physical Size", "Total Physical Used"],
+            sorted(tables, key=lambda entry: entry[0]),
+            ["<", ">", ">"],
+        )
 
     @staticmethod
     def destroy_pool(namespace):
@@ -88,12 +95,14 @@ class TopActions():
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
         (pool_object_path, _) = next(
-            pools(props={
-                'Name': namespace.pool_name
-            }).require_unique_match(True).search(managed_objects))
+            pools(props={"Name": namespace.pool_name})
+            .require_unique_match(True)
+            .search(managed_objects)
+        )
 
-        (_, rc, message) = \
-           Manager.Methods.DestroyPool(proxy, {'pool': pool_object_path})
+        (_, rc, message) = Manager.Methods.DestroyPool(
+            proxy, {"pool": pool_object_path}
+        )
 
         if rc != StratisdErrors.OK:
             raise StratisCliEngineError(rc, message)
@@ -106,12 +115,14 @@ class TopActions():
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
         (pool_object_path, _) = next(
-            pools(props={
-                'Name': namespace.current
-            }).require_unique_match(True).search(managed_objects))
+            pools(props={"Name": namespace.current})
+            .require_unique_match(True)
+            .search(managed_objects)
+        )
 
         (_, rc, message) = Pool.Methods.SetName(
-            get_object(pool_object_path), {'name': namespace.new})
+            get_object(pool_object_path), {"name": namespace.new}
+        )
 
         if rc != StratisdErrors.OK:
             raise StratisCliEngineError(rc, message)
@@ -124,12 +135,14 @@ class TopActions():
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
         (pool_object_path, _) = next(
-            pools(props={
-                'Name': namespace.pool_name
-            }).require_unique_match(True).search(managed_objects))
+            pools(props={"Name": namespace.pool_name})
+            .require_unique_match(True)
+            .search(managed_objects)
+        )
 
         (_, rc, message) = Pool.Methods.AddDataDevs(
-            get_object(pool_object_path), {'devices': namespace.blockdevs})
+            get_object(pool_object_path), {"devices": namespace.blockdevs}
+        )
         if rc != StratisdErrors.OK:
             raise StratisCliEngineError(rc, message)
 
@@ -141,11 +154,13 @@ class TopActions():
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
         (pool_object_path, _) = next(
-            pools(props={
-                'Name': namespace.pool_name
-            }).require_unique_match(True).search(managed_objects))
+            pools(props={"Name": namespace.pool_name})
+            .require_unique_match(True)
+            .search(managed_objects)
+        )
 
         (_, rc, message) = Pool.Methods.AddCacheDevs(
-            get_object(pool_object_path), {'devices': namespace.blockdevs})
+            get_object(pool_object_path), {"devices": namespace.blockdevs}
+        )
         if rc != StratisdErrors.OK:
             raise StratisCliEngineError(rc, message)

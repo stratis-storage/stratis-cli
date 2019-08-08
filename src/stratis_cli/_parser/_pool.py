@@ -18,90 +18,90 @@ Definition of pool actions to display in the CLI.
 from .._actions import TopActions
 
 POOL_SUBCMDS = [
-    ('create',
-     dict(
-         help='Create a pool',
-         args=[
-             ('pool_name', dict(
-                 action='store',
-                 help='Name of new pool',
-             )),
-             ('blockdevs',
-              dict(
-                  help='Create the pool using these block devs',
-                  nargs='+',
-              )),
-             ('--redundancy',
-              dict(
-                  action='store',
-                  choices=['none'],
-                  default='none',
-                  help="Redundancy level for this pool",
-              )),
-         ],
-         func=TopActions.create_pool,
-     )),
-    ('list',
-     dict(
-         help="List pools",
-         description="Lists Stratis pools that exist on the system",
-         func=TopActions.list_pools,
-     )),
-    ('destroy',
-     dict(
-         help='Destroy a pool',
-         args=[
-             ('pool_name', dict(
-                 action='store',
-                 help='pool name',
-             )),
-         ],
-         func=TopActions.destroy_pool,
-     )),
-    ('rename',
-     dict(
-         help='Rename a pool',
-         args=[
-             ('current', dict(
-                 action='store',
-                 help='Current pool name',
-             )),
-             ('new', dict(
-                 action='store',
-                 help='New pool name',
-             )),
-         ],
-         func=TopActions.rename_pool,
-     )),
-    ('add-data',
-     dict(
-         help=
-         "Add one or more blockdevs to an existing pool for use as data storage",
-         args=[
-             ('pool_name', dict(
-                 action='store',
-                 help='Pool name',
-             )),
-             ('blockdevs',
-              dict(
-                  help='Block devices to add to the pool',
-                  metavar='blockdev',
-                  nargs='+')),
-         ],
-         func=TopActions.add_data_devices)),
-    ('add-cache',
-     dict(
-         help="Add one or more blockdevs to an existing pool for use as cache",
-         args=[
-             ('pool_name', dict(
-                 action='store',
-                 help='Pool name',
-             )),
-             ('blockdevs',
-              dict(
-                  help='Block devices to add to the pool as cache',
-                  metavar='blockdev',
-                  nargs='+')),
-         ],
-         func=TopActions.add_cache_devices)),
+    (
+        "create",
+        dict(
+            help="Create a pool",
+            args=[
+                ("pool_name", dict(action="store", help="Name of new pool")),
+                (
+                    "blockdevs",
+                    dict(help="Create the pool using these block devs", nargs="+"),
+                ),
+                (
+                    "--redundancy",
+                    dict(
+                        action="store",
+                        choices=["none"],
+                        default="none",
+                        help="Redundancy level for this pool",
+                    ),
+                ),
+            ],
+            func=TopActions.create_pool,
+        ),
+    ),
+    (
+        "list",
+        dict(
+            help="List pools",
+            description="Lists Stratis pools that exist on the system",
+            func=TopActions.list_pools,
+        ),
+    ),
+    (
+        "destroy",
+        dict(
+            help="Destroy a pool",
+            args=[("pool_name", dict(action="store", help="pool name"))],
+            func=TopActions.destroy_pool,
+        ),
+    ),
+    (
+        "rename",
+        dict(
+            help="Rename a pool",
+            args=[
+                ("current", dict(action="store", help="Current pool name")),
+                ("new", dict(action="store", help="New pool name")),
+            ],
+            func=TopActions.rename_pool,
+        ),
+    ),
+    (
+        "add-data",
+        dict(
+            help="Add one or more blockdevs to an existing pool for use as data storage",
+            args=[
+                ("pool_name", dict(action="store", help="Pool name")),
+                (
+                    "blockdevs",
+                    dict(
+                        help="Block devices to add to the pool",
+                        metavar="blockdev",
+                        nargs="+",
+                    ),
+                ),
+            ],
+            func=TopActions.add_data_devices,
+        ),
+    ),
+    (
+        "add-cache",
+        dict(
+            help="Add one or more blockdevs to an existing pool for use as cache",
+            args=[
+                ("pool_name", dict(action="store", help="Pool name")),
+                (
+                    "blockdevs",
+                    dict(
+                        help="Block devices to add to the pool as cache",
+                        metavar="blockdev",
+                        nargs="+",
+                    ),
+                ),
+            ],
+            func=TopActions.add_cache_devices,
+        ),
+    ),
 ]

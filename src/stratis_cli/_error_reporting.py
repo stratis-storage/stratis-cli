@@ -30,7 +30,8 @@ _DBUS_INTERFACE_MSG = (
     "The version of stratis you are running expects a different "
     "D-Bus interface than the one stratisd provides. Most likely "
     "you are running a version that requires a newer version of "
-    "stratisd than you are running.")
+    "stratisd than you are running."
+)
 
 
 def get_errors(exc):
@@ -63,11 +64,9 @@ def interpret_errors(errors):
         # Inspect top-most error after StratisCliActionError
         error = errors[1]
 
-        if isinstance(error,
-                      DbusClientUniqueResultError) and error.result == []:
+        if isinstance(error, DbusClientUniqueResultError) and error.result == []:
             fmt_str = "Most likely you specified a %s which does not exist."
-            return fmt_str % interface_name_to_common_name(
-                error.interface_name)
+            return fmt_str % interface_name_to_common_name(error.interface_name)
 
         if isinstance(error, DbusClientMissingSearchPropertiesError):
             return _DBUS_INTERFACE_MSG
@@ -75,23 +74,29 @@ def interpret_errors(errors):
             return _DBUS_INTERFACE_MSG
 
         if isinstance(error, StratisCliEngineError):
-            fmt_str = ("stratisd failed to perform the operation that you "
-                       "requested. It returned the following information via "
-                       "the D-Bus: %s.")
+            fmt_str = (
+                "stratisd failed to perform the operation that you "
+                "requested. It returned the following information via "
+                "the D-Bus: %s."
+            )
             return fmt_str % error
 
         # Inspect lowest error
         error = errors[-1]
-        if isinstance(error, dbus.exceptions.DBusException) and \
-            error.get_dbus_name() == \
-            'org.freedesktop.DBus.Error.AccessDenied':
+        if (
+            # pylint: disable=bad-continuation
+            isinstance(error, dbus.exceptions.DBusException)
+            and error.get_dbus_name() == "org.freedesktop.DBus.Error.AccessDenied"
+        ):
             return "Most likely stratis has insufficient permissions for the action requested."
         # We have observed two causes of this problem. The first is that
         # stratisd is not running at all. The second is that stratisd has not
         # yet established its D-Bus service.
-        if isinstance(error, dbus.exceptions.DBusException) and \
-            error.get_dbus_name() == \
-            'org.freedesktop.DBus.Error.NameHasNoOwner':
+        if (
+            # pylint: disable=bad-continuation
+            isinstance(error, dbus.exceptions.DBusException)
+            and error.get_dbus_name() == "org.freedesktop.DBus.Error.NameHasNoOwner"
+        ):
             return "Most likely stratis is unable to connect to the stratisd D-Bus service."
 
         return None
@@ -116,7 +121,8 @@ def handle_error(err):
         exit_msg = (
             "stratis encountered an unexpected error during execution. "
             "Please report the error and include in your report the stack "
-            "trace shown below.")
+            "trace shown below."
+        )
         print(exit_msg, os.linesep, file=sys.stderr, flush=True)
         raise err
 

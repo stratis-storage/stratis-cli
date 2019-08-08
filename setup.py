@@ -1,6 +1,7 @@
 import os
 import sys
 import setuptools
+
 if sys.version_info[0] < 3:
     from codecs import open
 
@@ -15,30 +16,37 @@ with open(local_file("src/stratis_cli/_version.py")) as o:
     exec(o.read())
 
 setuptools.setup(
-    name='stratis-cli',
+    name="stratis-cli",
     version=__version__,
-    author='Anne Mulhern',
-    author_email='amulhern@redhat.com',
-    description='prototype stratis cli',
-    long_description=open(README, encoding='utf-8').read(),
-    platforms=['Linux'],
-    license='Apache 2.0',
+    author="Anne Mulhern",
+    author_email="amulhern@redhat.com",
+    description="prototype stratis cli",
+    long_description=open(README, encoding="utf-8").read(),
+    platforms=["Linux"],
+    license="Apache 2.0",
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha', 'Environment :: Console',
-        'Intended Audience :: Developers',
-        'Intended Audience :: System Administrators',
-        'License :: OSI Approved :: Apache Software License',
-        'Operating System :: POSIX :: Linux', 'Programming Language :: Python',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: Implementation :: CPython',
-        'Programming Language :: Python :: Implementation :: PyPy',
-        'Topic :: Software Development :: Libraries',
-        'Topic :: System :: Filesystems', 'Topic :: Systems Administration'
+        "Development Status :: 2 - Pre-Alpha",
+        "Environment :: Console",
+        "Intended Audience :: Developers",
+        "Intended Audience :: System Administrators",
+        "License :: OSI Approved :: Apache Software License",
+        "Operating System :: POSIX :: Linux",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: Implementation :: CPython",
+        "Programming Language :: Python :: Implementation :: PyPy",
+        "Topic :: Software Development :: Libraries",
+        "Topic :: System :: Filesystems",
+        "Topic :: Systems Administration",
     ],
     install_requires=[
-        'dbus-client-gen>=0.4', 'dbus-python-client-gen>=0.6',
-        'justbytes==0.11', 'python-dateutil', 'wcwidth'
+        "dbus-client-gen>=0.4",
+        "dbus-python-client-gen>=0.6",
+        "justbytes==0.11",
+        "python-dateutil",
+        "wcwidth",
     ],
     package_dir={"": "src"},
     packages=setuptools.find_packages("src"),
-    scripts=['bin/stratis'])
+    scripts=["bin/stratis"],
+)

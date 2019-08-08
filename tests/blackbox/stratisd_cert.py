@@ -22,8 +22,14 @@ import time
 import unittest
 from subprocess import Popen, PIPE
 
-from testlib.utils import (exec_command, process_exists, file_create,
-                           file_signature, rs, stratis_link)
+from testlib.utils import (
+    exec_command,
+    process_exists,
+    file_create,
+    file_signature,
+    rs,
+    stratis_link,
+)
 from testlib.stratis import StratisCli, STRATIS_CLI, fs_n, p_n
 
 DISKS = []
@@ -45,7 +51,7 @@ class StratisCertify(unittest.TestCase):
 
         # The daemon should already be running, if not lets starts it and wait
         # a bit
-        if process_exists('stratisd') is None:
+        if process_exists("stratisd") is None:
             exec_command(["systemctl", "start", "stratisd"])
             time.sleep(20)
 
@@ -202,9 +208,7 @@ class StratisCertify(unittest.TestCase):
             # mount the fs
             mount_path = os.path.join(os.path.sep + "mnt", rs(16))
             os.mkdir(mount_path)
-            exec_command(
-                ["mount",
-                 stratis_link(pool_name, fs_name), mount_path])
+            exec_command(["mount", stratis_link(pool_name, fs_name), mount_path])
 
             files = {}
             total_size = 0
@@ -229,11 +233,8 @@ class StratisCertify(unittest.TestCase):
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument(
-        "--disk",
-        action="append",
-        dest="DISKS",
-        help="disks to use",
-        required=True)
+        "--disk", action="append", dest="DISKS", help="disks to use", required=True
+    )
     disks, args = ap.parse_known_args()
     DISKS = disks.DISKS
     print("Using block device(s) for tests: %s" % DISKS)

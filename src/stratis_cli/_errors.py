@@ -46,8 +46,10 @@ class StratisCliValueError(StratisCliRuntimeError):
         self._param = param
 
     def __str__(self):
-        return "value '%s' for parameter %s is unacceptable" % (self._value,
-                                                                self._param)
+        return "value '%s' for parameter %s is unacceptable" % (
+            self._value,
+            self._param,
+        )
 
 
 class StratisCliEngineError(StratisCliRuntimeError):
@@ -87,8 +89,10 @@ class StratisCliActionError(StratisCliRuntimeError):
         self.namespace = namespace
 
     def __str__(self):
-        fmt_str = ("Action selected by command-line arguments %s which were "
-                   "parsed to %s failed")
+        fmt_str = (
+            "Action selected by command-line arguments %s which were "
+            "parsed to %s failed"
+        )
         return fmt_str % (self.command_line_args, self.namespace)
 
 

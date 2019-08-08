@@ -18,12 +18,17 @@ Definition of block device actions to display in the CLI.
 from .._actions import PhysicalActions
 
 PHYSICAL_SUBCMDS = [
-    ('list',
-     dict(
-         help="List information about blockdevs in the pool",
-         args=[
-             ('pool_name',
-              dict(action='store', default=None, nargs="?", help='Pool name')),
-         ],
-         func=PhysicalActions.list_pool)),
+    (
+        "list",
+        dict(
+            help="List information about blockdevs in the pool",
+            args=[
+                (
+                    "pool_name",
+                    dict(action="store", default=None, nargs="?", help="Pool name"),
+                )
+            ],
+            func=PhysicalActions.list_pool,
+        ),
+    )
 ]
