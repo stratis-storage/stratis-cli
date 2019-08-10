@@ -32,7 +32,6 @@ from ._data import Filesystem
 from ._data import filesystems
 from ._data import pools
 from ._formatting import print_table
-from ._util import get_objects
 
 
 class LogicalActions:
@@ -74,9 +73,20 @@ class LogicalActions:
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
-        mofilesystems = get_objects(
-            pool_name, managed_objects, filesystems, MOFilesystem
-        )
+        mofilesystems = [
+            MOFilesystem(info)
+            for _, info in filesystems(
+                props=None
+                if pool_name is None
+                else {
+                    "Pool": next(
+                        pools(props={"Name": pool_name})
+                        .require_unique_match(True)
+                        .search(managed_objects)
+                    )[0]
+                }
+            ).search(managed_objects)
+        ]
 
         path_to_name = dict(
             (path, MOPool(info).Name())

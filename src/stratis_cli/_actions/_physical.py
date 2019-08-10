@@ -29,7 +29,6 @@ from ._data import MODev
 from ._data import MOPool
 from ._data import ObjectManager
 from ._formatting import print_table
-from ._util import get_objects
 
 
 class PhysicalActions:
@@ -52,7 +51,20 @@ class PhysicalActions:
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
-        modevs = get_objects(pool_name, managed_objects, devs, MODev)
+        modevs = [
+            MODev(info)
+            for _, info in devs(
+                props=None
+                if pool_name is None
+                else {
+                    "Pool": next(
+                        pools(props={"Name": pool_name})
+                        .require_unique_match(True)
+                        .search(managed_objects)
+                    )[0]
+                }
+            ).search(managed_objects)
+        ]
 
         path_to_name = dict(
             (path, MOPool(info).Name())
