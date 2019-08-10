@@ -24,7 +24,9 @@ from ._connection import get_object
 from ._constants import SECTOR_SIZE
 from ._constants import TOP_OBJECT
 from ._data import devs
+from ._data import pools
 from ._data import MODev
+from ._data import MOPool
 from ._data import ObjectManager
 from ._formatting import print_table
 from ._util import get_objects
@@ -43,11 +45,20 @@ class PhysicalActions:
         List devices. If a pool is specified in the namespace, list devices
         for that pool. Otherwise, list all devices for all pools.
         """
+        # This method is invoked as the default for "stratis blockdev";
+        # the namespace may not have a pool_name field.
+        pool_name = getattr(namespace, "pool_name", None)
+
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
-        (modevs, path_to_name) = get_objects(
-            getattr(namespace, "pool_name", None), managed_objects, devs, MODev
+        modevs = get_objects(pool_name, managed_objects, devs, MODev)
+
+        path_to_name = dict(
+            (path, MOPool(info).Name())
+            for path, info in pools(
+                props=None if pool_name is None else {"Name": pool_name}
+            ).search(managed_objects)
         )
 
         tables = [

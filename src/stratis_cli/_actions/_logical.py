@@ -25,6 +25,7 @@ from .._stratisd_constants import StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._data import MOFilesystem
+from ._data import MOPool
 from ._data import ObjectManager
 from ._data import Pool
 from ._data import Filesystem
@@ -66,14 +67,22 @@ class LogicalActions:
         """
         List the volumes in a pool.
         """
+        # This method is invoked as the default for "stratis filesystem";
+        # the namespace may not have a pool_name field.
+        pool_name = getattr(namespace, "pool_name", None)
+
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
-        (mofilesystems, path_to_name) = get_objects(
-            getattr(namespace, "pool_name", None),
-            managed_objects,
-            filesystems,
-            MOFilesystem,
+        mofilesystems = get_objects(
+            pool_name, managed_objects, filesystems, MOFilesystem
+        )
+
+        path_to_name = dict(
+            (path, MOPool(info).Name())
+            for path, info in pools(
+                props=None if pool_name is None else {"Name": pool_name}
+            ).search(managed_objects)
         )
 
         tables = [

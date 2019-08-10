@@ -15,7 +15,6 @@
 Shared utilities.
 """
 
-from ._data import MOPool
 from ._data import pools
 
 
@@ -28,9 +27,7 @@ def get_objects(
 ):
     """
     Get objects restricted by optional pool_name. If pool name is None get
-    objects for all pools. Returns objects of interest and also a map from
-    pool object path to name for all the pools which have objects in the
-    returned list of objects.
+    objects for all pools. Returns objects of interest.
 
     :param pool_name: specifying pool
     :type pool_name: str or None
@@ -39,28 +36,22 @@ def get_objects(
     :type search_function: dict -> (dict -> list of str * dict)
     :param constructor: function to wrap dict info about a given object
 
-    :returns: objects of interest and a map from pool object path to name
-    :rtype: list * dict
+    :returns: objects of interest
+    :rtype: list
     """
-    if pool_name is not None:
-        (parent_pool_object_path, _) = next(
-            pools(props={"Name": pool_name})
-            .require_unique_match(True)
-            .search(managed_objects)
-        )
+    properties = (
+        None
+        if pool_name is None
+        else {
+            "Pool": next(
+                pools(props={"Name": pool_name})
+                .require_unique_match(True)
+                .search(managed_objects)
+            )[0]
+        }
+    )
 
-        properties = {"Pool": parent_pool_object_path}
-        path_to_name = {parent_pool_object_path: namespace.pool_name}
-    else:
-        properties = {}
-        path_to_name = dict(
-            (path, MOPool(info).Name())
-            for path, info in pools().search(managed_objects)
-        )
-
-    objects = [
+    return [
         constructor(info)
         for _, info in search_function(props=properties).search(managed_objects)
     ]
-
-    return (objects, path_to_name)
