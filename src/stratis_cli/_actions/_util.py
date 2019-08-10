@@ -39,19 +39,17 @@ def get_objects(
     :returns: objects of interest
     :rtype: list
     """
-    properties = (
-        None
-        if pool_name is None
-        else {
-            "Pool": next(
-                pools(props={"Name": pool_name})
-                .require_unique_match(True)
-                .search(managed_objects)
-            )[0]
-        }
-    )
-
     return [
         constructor(info)
-        for _, info in search_function(props=properties).search(managed_objects)
+        for _, info in search_function(
+            props=None
+            if pool_name is None
+            else {
+                "Pool": next(
+                    pools(props={"Name": pool_name})
+                    .require_unique_match(True)
+                    .search(managed_objects)
+                )[0]
+            }
+        ).search(managed_objects)
     ]
