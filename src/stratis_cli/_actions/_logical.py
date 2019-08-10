@@ -70,7 +70,10 @@ class LogicalActions:
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
         (mofilesystems, path_to_name) = get_objects(
-            namespace, "pool_name", managed_objects, filesystems, MOFilesystem
+            getattr(namespace, "pool_name", None),
+            managed_objects,
+            filesystems,
+            MOFilesystem,
         )
 
         tables = [

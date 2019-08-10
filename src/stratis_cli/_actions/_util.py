@@ -21,21 +21,19 @@ from ._data import pools
 
 def get_objects(
     # pylint: disable=bad-continuation
-    namespace,
-    pool_name_key,
+    pool_name,
     managed_objects,
     search_function,
     constructor,
 ):
     """
-    Get objects specified by namespace and designated pool_name_key.
-    If no pool name key is specified in the namespace, get objects for all
-    pools. Returns objects of interest and also a map from pool object path
-    to name for all the pools which have objects in the returned list of
-    objects.
+    Get objects restricted by optional pool_name. If pool name is None get
+    objects for all pools. Returns objects of interest and also a map from
+    pool object path to name for all the pools which have objects in the
+    returned list of objects.
 
-    :param Namesapce namespace: the parser namespace
-    :param str pool_name_key: the key in the namespace for the pool name
+    :param pool_name: specifying pool
+    :type pool_name: str or None
     :param dict managed_objects: the result of a GetManagedObjects call
     :param search_function: function that finds objects of a given type
     :type search_function: dict -> (dict -> list of str * dict)
@@ -44,7 +42,6 @@ def get_objects(
     :returns: objects of interest and a map from pool object path to name
     :rtype: list * dict
     """
-    pool_name = getattr(namespace, pool_name_key, None)
     if pool_name is not None:
         (parent_pool_object_path, _) = next(
             pools(props={"Name": pool_name})

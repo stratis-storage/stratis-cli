@@ -47,7 +47,7 @@ class PhysicalActions:
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
         (modevs, path_to_name) = get_objects(
-            namespace, "pool_name", managed_objects, devs, MODev
+            getattr(namespace, "pool_name", None), managed_objects, devs, MODev
         )
 
         tables = [
