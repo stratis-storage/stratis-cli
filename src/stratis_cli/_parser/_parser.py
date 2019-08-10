@@ -90,7 +90,7 @@ ROOT_SUBCOMMANDS = [
         dict(
             help="Commands related to block devices that make up the pool",
             subcmds=PHYSICAL_SUBCMDS,
-            func=PhysicalActions.list_pool,
+            func=PhysicalActions.list_devices,
         ),
     ),
     (

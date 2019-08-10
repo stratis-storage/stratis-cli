@@ -40,7 +40,7 @@ class PhysicalActions:
     # pylint: disable=too-few-public-methods
 
     @staticmethod
-    def list_pool(namespace):
+    def list_devices(namespace):
         """
         List devices. If a pool is specified in the namespace, list devices
         for that pool. Otherwise, list all devices for all pools.
