@@ -129,10 +129,56 @@ class List4TestCase(SimTestCase):
         command_line = ["--propagate", "filesystem", "list", self._POOLNAME]
         RUNNER(command_line)
 
-        # Also should work when no pool name is given
-        command_line = ["--propagate", "filesystem"]
+
+class List5TestCase(SimTestCase):
+    """
+    Test correctness of alternative list options.
+    """
+
+    _POOLNAMES = ["deadpool", "otherpool", "emptypool"]
+    _VOLUMES = ["livery", "liberty", "library"]
+    _MENU = ["--propagate", "filesystem", "list"]
+
+    def setUp(self):
+        """
+        Start the stratisd daemon with the simulator.
+        """
+        super().setUp()
+        command_line = ["pool", "create", self._POOLNAMES[0]] + _DEVICE_STRATEGY()
         RUNNER(command_line)
 
-        # Also should work using 'fs' alias
+        command_line = ["filesystem", "create", self._POOLNAMES[0], self._VOLUMES[0]]
+        RUNNER(command_line)
+        command_line = ["filesystem", "create", self._POOLNAMES[0], self._VOLUMES[1]]
+        RUNNER(command_line)
+        command_line = ["pool", "create", self._POOLNAMES[1]] + _DEVICE_STRATEGY()
+        RUNNER(command_line)
+        command_line = ["filesystem", "create", self._POOLNAMES[1], self._VOLUMES[2]]
+        RUNNER(command_line)
+        command_line = ["pool", "create", self._POOLNAMES[2]] + _DEVICE_STRATEGY()
+        RUNNER(command_line)
+
+    def testListOne(self):
+        """
+        Specifying a pool name should yield only filesystems for that pool.
+        """
+        command_line = self._MENU + [self._POOLNAMES[1]]
+        RUNNER(command_line)
+
+    def testListNoPool(self):
+        """
+        If pool name is not specified, all filesystems for all pools should
+        be listed.
+        """
+        command_line = self._MENU
+        RUNNER(command_line)
+
+    def testListDefault(self):
+        """
+        filesystem or fs subcommand should default to listing all pools.
+        """
+        command_line = self._MENU[:-1]
+        RUNNER(command_line)
+
         command_line = ["--propagate", "fs"]
         RUNNER(command_line)
