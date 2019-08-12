@@ -14,6 +14,7 @@
 """
 XML interface specifications.
 """
+from os import environ
 
 import sys
 
@@ -27,6 +28,7 @@ from dbus_python_client_gen import make_class
 from dbus_python_client_gen import DPClientGenerationError
 
 from .._errors import StratisCliGenerationError
+from .._errors import StratisCliEnvironmentError
 
 from ._constants import BLOCKDEV_INTERFACE
 from ._constants import FILESYSTEM_INTERFACE
@@ -208,13 +210,32 @@ DBUS_TIMEOUT_SECONDS = 120
 
 
 try:
+
+    timeout = environ.get("STRATIS_DBUS_TIMEOUT", DBUS_TIMEOUT_SECONDS * 1000)
+
+    try:
+
+        timeout = int(timeout)
+
+    except:
+        raise StratisCliEnvironmentError("The timeout value is not an integer.")
+
+    # Ensure the integer is not too large
+    if timeout > (1 << 31) - 1:
+        raise StratisCliEnvironmentError(
+            "The timeout value you provided exceeds the largest acceptable value, 2147483647."
+        )
+
+    # Convert from milliseconds to seconds
+    timeout = timeout / 1000
+
     filesystem_spec = ET.fromstring(SPECS[FILESYSTEM_INTERFACE])
-    Filesystem = make_class("Filesystem", filesystem_spec, DBUS_TIMEOUT_SECONDS)
+    Filesystem = make_class("Filesystem", filesystem_spec, timeout)
     MOFilesystem = managed_object_class("MOFilesystem", filesystem_spec)
     filesystems = mo_query_builder(filesystem_spec)
 
     pool_spec = ET.fromstring(SPECS[POOL_INTERFACE])
-    Pool = make_class("Pool", pool_spec, DBUS_TIMEOUT_SECONDS)
+    Pool = make_class("Pool", pool_spec, timeout)
     MOPool = managed_object_class("MOPool", pool_spec)
     pools = mo_query_builder(pool_spec)
 
@@ -222,14 +243,12 @@ try:
     MODev = managed_object_class("MODev", blockdev_spec)
     devs = mo_query_builder(blockdev_spec)
 
-    Manager = make_class(
-        "Manager", ET.fromstring(SPECS[_MANAGER_INTERFACE]), DBUS_TIMEOUT_SECONDS
-    )
+    Manager = make_class("Manager", ET.fromstring(SPECS[_MANAGER_INTERFACE]), timeout)
 
     ObjectManager = make_class(
         "ObjectManager",
         ET.fromstring(SPECS["org.freedesktop.DBus.ObjectManager"]),
-        DBUS_TIMEOUT_SECONDS,
+        timeout,
     )
 
 # Do not expect to get coverage on Generation errors.
