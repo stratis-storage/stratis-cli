@@ -125,7 +125,7 @@ def print_table(column_headings, row_entries, alignment, file=sys.stdout):
         print(file=file)
 
 
-def main():
+def main():  # pragma: no cover
     """
     A function that prints out some tables.
     To be used for a visual check of correctness of formatting.
@@ -191,5 +191,5 @@ def main():
     print_table(table[0], table[1:], ["<", "<", "<", "<", "<", "<"])
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     main()
