@@ -37,3 +37,9 @@ docs:
 
 dbus-tests:
 	py.test-3 ${PYTEST_OPTS} ./tests/whitebox
+
+dbus-tests-coverage:
+	python3 -m coverage --version
+	python3 -m coverage run --timid --branch -m pytest ./tests/whitebox
+	python3 -m coverage report -m --fail-under=82 --show-missing --include="./src/*"
+	python3 -m coverage html --include="./src/*"
