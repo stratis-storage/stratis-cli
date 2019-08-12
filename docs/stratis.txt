@@ -75,6 +75,16 @@ daemon redundancy::
 daemon version::
        Show the Stratis service's version.
 
+ENVIRONMENT VARIABLES
+---------------------
+STRATIS_DBUS_TIMEOUT::
+	 Sets a timeout for any Stratis D-Bus call. If this environment variable is
+	 not set, a default value of 120 seconds is used for the timeout.
+	 The accepted STRATIS_DBUS_TIMEOUT environment variable values are:
+         1. an integer between 0 (inclusive) and 1073741823 (inclusive),
+         which represents the timeout length in milliseconds
+         2. -1, which represents the libdbus default timeout
+
 EXAMPLES
 --------
 .Creating a Stratis pool
