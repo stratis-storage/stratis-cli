@@ -100,3 +100,9 @@ class StratisCliGenerationError(StratisCliError):
     """
     Exception that occurs during generation of classes.
     """
+
+
+class StratisCliEnvironmentError(StratisCliError):
+    """
+    Exception that occurs during processing of environment variables.
+    """

@@ -75,6 +75,11 @@ daemon redundancy::
 daemon version::
        Show the Stratis service's version.
 
+OPTIONAL COMMAND TIMEOUT
+-------------------------
+STRATIS_DBUS_TIMEOUT="[timeout_length_in_milliseconds]" [stratis_command]::
+	If this feature is not used, then the command will timeout in 120 seconds by default.
+
 EXAMPLES
 --------
 .Creating a Stratis pool
@@ -85,6 +90,9 @@ stratis pool create mypool /dev/sdb /dev/sdc
 ====
 stratis filesystem create mypool data1
 ====
+.Adding a timeout length in milliseconds to a Stratis command
+====
+STRATIS_DBUS_TIMEOUT="8000" stratis pool list
 
 SEE ALSO
 --------
