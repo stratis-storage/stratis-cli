@@ -73,7 +73,7 @@ class LogicalActions:
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
-        mofilesystems = [
+        mofilesystems = (
             MOFilesystem(info)
             for _, info in filesystems(
                 props=None
@@ -86,7 +86,7 @@ class LogicalActions:
                     )[0]
                 }
             ).search(managed_objects)
-        ]
+        )
 
         path_to_name = dict(
             (path, MOPool(info).Name())

@@ -51,7 +51,7 @@ class PhysicalActions:
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
-        modevs = [
+        modevs = (
             MODev(info)
             for _, info in devs(
                 props=None
@@ -64,7 +64,7 @@ class PhysicalActions:
                     )[0]
                 }
             ).search(managed_objects)
-        ]
+        )
 
         path_to_name = dict(
             (path, MOPool(info).Name())
