@@ -21,7 +21,7 @@ import time
 import unittest
 
 from testlib.utils import exec_command, process_exists
-from testlib.stratis import StratisCli, fs_n, p_n
+from testlib.stratis import StratisCli
 
 DISKS = []
 
@@ -57,20 +57,6 @@ class StratisCertify(unittest.TestCase):
         """
         StratisCli.destroy_all()
         self.assertEqual(0, len(StratisCli.pool_list()))
-
-    def test_no_list_listings(self):
-        """
-        Test that commands that optionally take a list work both ways.
-        :return: None
-        """
-        pool_name = p_n()
-        fs_name = fs_n()
-        StratisCli.pool_create(pool_name, block_devices=DISKS)
-        StratisCli.fs_create(pool_name, fs_name)
-
-        self.assertEqual(StratisCli.pool_list(), StratisCli.pool_list(False))
-        self.assertEqual(StratisCli.fs_list(), StratisCli.fs_list(False))
-        self.assertEqual(StratisCli.blockdev_list(), StratisCli.blockdev_list(False))
 
 
 if __name__ == "__main__":
