@@ -22,8 +22,8 @@ import time
 import unittest
 from subprocess import Popen, PIPE
 
-from testlib.utils import exec_command, process_exists
-from testlib.stratis import StratisCli, STRATIS_CLI, fs_n, p_n
+from .testlib.utils import exec_command, process_exists
+from .testlib.stratis import StratisCli, STRATIS_CLI, fs_n, p_n
 
 DISKS = []
 
