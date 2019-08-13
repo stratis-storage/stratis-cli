@@ -58,13 +58,6 @@ class StratisCertify(unittest.TestCase):
         StratisCli.destroy_all()
         self.assertEqual(0, len(StratisCli.pool_list()))
 
-    def test_daemon_redundancy(self):
-        """
-        Test daemon redundancy returns expected values.
-        :return:
-        """
-        self.assertEqual(("NONE", 0), StratisCli.daemon_redundancy())
-
     def test_no_list_listings(self):
         """
         Test that commands that optionally take a list work both ways.

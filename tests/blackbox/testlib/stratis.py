@@ -67,16 +67,6 @@ class StratisCli:
         return stdout.strip()
 
     @staticmethod
-    def daemon_redundancy():
-        """
-        Returns what redundancy the daemon supports
-        :return: (Desc, int)
-        """
-        stdout, _ = exec_command([STRATIS_CLI, "daemon", "redundancy"])
-        parsed = stdout.strip().replace(" ", "").split(":")
-        return parsed[0], int(parsed[1])
-
-    @staticmethod
     def pool_list(specify_list=True):
         """
         Query the pools
