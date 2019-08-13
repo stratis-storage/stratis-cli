@@ -20,7 +20,6 @@ import os
 import sys
 import time
 import unittest
-from subprocess import Popen, PIPE
 
 from testlib.utils import (
     exec_command,
@@ -30,7 +29,7 @@ from testlib.utils import (
     rs,
     stratis_link,
 )
-from testlib.stratis import StratisCli, STRATIS_CLI, fs_n, p_n
+from testlib.stratis import StratisCli, fs_n, p_n
 
 DISKS = []
 

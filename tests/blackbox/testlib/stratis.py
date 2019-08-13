@@ -44,6 +44,10 @@ def fs_n():
 
 
 class StratisCli:
+    """
+    Wrappers around stratis cli command-line calls.
+    """
+
     @staticmethod
     def cli_version():
         """
@@ -80,6 +84,7 @@ class StratisCli:
         :return: A dict,  Key being the pool name, the value being a dict with
                           keys [SIZE, USED]
         """
+        # pylint: disable=too-many-locals
         cmd = [STRATIS_CLI, "pool"]
         if specify_list:
             cmd.append("list")
@@ -109,6 +114,7 @@ class StratisCli:
                           keys [POOL_NAME, USED_SIZE, UUID, SYM_LINK, CREATED,
                                 CREATED_TS]
         """
+        # pylint: disable=too-many-locals
         cmd = [STRATIS_CLI, "fs"]
         if specify_list:
             cmd.append("list")
@@ -250,7 +256,7 @@ class StratisCli:
             StratisCli.fs_destroy(fs["POOL_NAME"], name)
 
         # Remove Pools
-        for name in StratisCli.pool_list().keys():
+        for name in StratisCli.pool_list():
             StratisCli.pool_destroy(name)
 
     @staticmethod
