@@ -12,7 +12,14 @@ arg_map = {
         "--disable=invalid-name",
         "--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}'",
     ],
-    "tests": [
+    "tests/blackbox": [
+        "--reports=no",
+        "--disable=I",
+        "--disable=duplicate-code",
+        "--disable=invalid-name",
+        "--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}'",
+    ],
+    "tests/whitebox": [
         "--reports=no",
         "--disable=I",
         "--disable=duplicate-code",

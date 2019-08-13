@@ -22,15 +22,8 @@ import time
 import unittest
 from subprocess import Popen, PIPE
 
-from testlib.utils import (
-    exec_command,
-    process_exists,
-    file_create,
-    file_signature,
-    rs,
-    stratis_link,
-)
-from testlib.stratis import StratisCli, STRATIS_CLI, fs_n, p_n
+from .testlib.utils import exec_command, process_exists
+from .testlib.stratis import StratisCli, STRATIS_CLI, fs_n, p_n
 
 DISKS = []
 
@@ -75,7 +68,7 @@ class StratisCertify(unittest.TestCase):
         self.assertEqual(("NONE", 0), StratisCli.daemon_redundancy())
 
     @unittest.expectedFailure
-    def test_no_args(self):
+    def test_no_args(self):  # pylint: disable=no-self-use
         """
         Ref. https://github.com/stratis-storage/stratis-cli/issues/248
         :return: None
