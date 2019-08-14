@@ -21,7 +21,7 @@ import sys
 import time
 import unittest
 
-from .testlib.utils import (
+from testlib.utils import (
     exec_command,
     process_exists,
     file_create,
@@ -29,7 +29,7 @@ from .testlib.utils import (
     rs,
     stratis_link,
 )
-from .testlib.stratis import StratisCli, fs_n, p_n
+from testlib.stratis import StratisCli, fs_n, p_n
 
 DISKS = []
 
