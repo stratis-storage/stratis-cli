@@ -16,11 +16,9 @@ Tests of the stratis CLI.
 """
 
 import argparse
-import os
 import sys
 import time
 import unittest
-from subprocess import Popen, PIPE
 
 from testlib.utils import exec_command, process_exists
 from testlib.stratis import StratisCli, STRATIS_CLI, fs_n, p_n
@@ -75,33 +73,6 @@ class StratisCertify(unittest.TestCase):
         """
         exec_command([STRATIS_CLI], 2)
         exec_command([STRATIS_CLI, "daemon"], 2)
-
-    def test_signal_interruption(self):
-        """
-        Send a signal in the middle of a command to ensure that we don't get
-        a stack trace, ref. https://bugzilla.redhat.com/show_bug.cgi?id=1686652
-        :return:
-        """
-        process = Popen(
-            [STRATIS_CLI, "pool", "create", p_n(), DISKS[0]],
-            stdout=PIPE,
-            stderr=PIPE,
-            close_fds=True,
-            env=os.environ,
-        )
-        time.sleep(0.05)
-        process.send_signal(2)
-        result = process.communicate()
-        stdout_text = ""
-        stderr_text = ""
-        if result[0]:
-            stdout_text = bytes(result[0]).decode("utf-8")
-        if result[1]:
-            stderr_text = bytes(result[1]).decode("utf-8")
-
-        self.assertTrue("Traceback" not in stdout_text)
-        self.assertTrue("Traceback" not in stderr_text)
-        self.assertNotEqual(process.returncode, 0)
 
     def test_no_list_listings(self):
         """
