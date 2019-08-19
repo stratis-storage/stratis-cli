@@ -26,12 +26,16 @@ import sys
 # available in every distribution due to the non-local nature of its
 # installation mechanism, which builds functions dynamically from tables
 # made available online at www.unicode.org.
+
+# Disable coverage for conditional import. We do not want to make our
+# coverage result dependent on whether wcwidth is available or not, as our
+# tests might be run, and succeed either with or without.
 try:
     from wcwidth import wcswidth
 
-    maybe_wcswidth = wcswidth
+    maybe_wcswidth = wcswidth  # pragma: no cover
 except ImportError:
-    maybe_wcswidth = len
+    maybe_wcswidth = len  # pragma: no cover
 
 
 def _get_column_len(column_width, entry_len, entry_width):

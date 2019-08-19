@@ -31,13 +31,15 @@ from ._pool import POOL_SUBCMDS
 PRINT_HELP = lambda parser: lambda _: parser.print_help()
 
 
-def add_args(parser, args=None):
+def _add_args(parser, args):
     """
     Call subcommand.add_argument() based on args list.
+
+    :param parser: the parser being build
+    :param list args: a data structure representing the arguments to be added
     """
-    if args is not None:
-        for name, arg in args:
-            parser.add_argument(name, **arg)
+    for name, arg in args:
+        parser.add_argument(name, **arg)
 
 
 def add_subcommand(subparser, cmd):
@@ -55,7 +57,7 @@ def add_subcommand(subparser, cmd):
         for subcmd in subcmds:
             add_subcommand(subparsers, subcmd)
 
-    add_args(parser, info.get("args", []))
+    _add_args(parser, info.get("args", []))
 
     parser.set_defaults(func=info.get("func", PRINT_HELP(parser)))
 
@@ -124,7 +126,7 @@ def gen_parser():
     # version is special, it has explicit support in argparse
     parser.add_argument("--version", action="version", version=__version__)
 
-    add_args(parser, GEN_ARGS)
+    _add_args(parser, GEN_ARGS)
 
     subparsers = parser.add_subparsers(title="subcommands")
 

@@ -245,11 +245,14 @@ try:
         DBUS_TIMEOUT_SECONDS,
     )
 
-except DPClientGenerationError as err:
+# Do not expect to get coverage on Generation errors.
+# These can only occurs if the XML data in _SPECS is ill-formed; we have
+# complete control over that data and can expect it to be valid.
+except DPClientGenerationError as err:  # pragma: no cover
     raise StratisCliGenerationError(
         "Failed to generate some class needed for invoking dbus-python methods"
     ) from err
-except DbusClientGenerationError as err:
+except DbusClientGenerationError as err:  # pragma: no cover
     raise StratisCliGenerationError(
         "Failed to generate some class needed for examining D-Bus data"
     ) from err
