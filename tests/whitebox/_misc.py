@@ -23,6 +23,8 @@ import sys
 import time
 import unittest
 
+import psutil  # pylint: disable=wrong-import-order
+
 from stratis_cli import run
 
 try:
@@ -81,6 +83,15 @@ class SimTestCase(unittest.TestCase):
     """
     A SimTestCase must always start and stop stratisd (simulator vesion).
     """
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        Assert that there are no other stratisd processes running.
+        """
+        assert not any(
+            psutil.Process(p).name() == "stratisd" for p in psutil.pids()
+        ), "Evidently a stratisd process is already running."
 
     def setUp(self):
         """
