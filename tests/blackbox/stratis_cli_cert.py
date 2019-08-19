@@ -26,6 +26,16 @@ from testlib.stratis import StratisCli
 DISKS = []
 
 
+def _clean_up():
+    """
+    Try to clean up after a test failure.
+
+    :return: None
+    """
+    StratisCli.destroy_all()
+    assert StratisCli.pool_list() == []
+
+
 class StratisCertify(unittest.TestCase):
     """
     Unit tests for Stratis
@@ -38,7 +48,7 @@ class StratisCertify(unittest.TestCase):
         the configuration empty.
         :return: None
         """
-        self.addCleanup(self._clean_up)
+        self.addCleanup(_clean_up)
 
         # The daemon should already be running, if not lets starts it and wait
         # a bit
@@ -47,16 +57,7 @@ class StratisCertify(unittest.TestCase):
             time.sleep(20)
 
         StratisCli.destroy_all()
-        self.assertEqual(0, len(StratisCli.pool_list()))
-
-    def _clean_up(self):
-        """
-        If an exception in raised in setUp, tearDown will not be called, thus
-        we will place our cleanup in a method which is called after tearDown
-        :return: None
-        """
-        StratisCli.destroy_all()
-        self.assertEqual(0, len(StratisCli.pool_list()))
+        assert StratisCli.pool_list() == []
 
 
 if __name__ == "__main__":
