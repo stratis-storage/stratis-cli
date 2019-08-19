@@ -43,15 +43,15 @@ class StratisCertify(unittest.TestCase):
 
     def setUp(self):
         """
-        Ensure we are ready, which includes stratisd process is up and running
-        and we have an empty configuration.  If not we will attempt to make
-        the configuration empty.
+        Setup for an individual test.
+        * Register a cleanup action, to be run if the test fails.
+        * Ensure that stratisd is running via systemd.
+        * Use the running stratisd instance to destroy any existing
+        Stratis filesystems, pools, etc.
         :return: None
         """
         self.addCleanup(_clean_up)
 
-        # The daemon should already be running, if not lets starts it and wait
-        # a bit
         if process_exists("stratisd") is None:
             exec_command(["systemctl", "start", "stratisd"])
             time.sleep(20)
