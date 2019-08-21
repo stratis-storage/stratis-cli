@@ -18,7 +18,6 @@
 Entry script for stratis CLI.
 """
 
-from stratis_cli import StratisCliEnvironmentError
 try:
 
     import sys
@@ -37,5 +36,3 @@ try:
 
 except KeyboardInterrupt:
     sys.exit("Received KeyboardInterrupt")
-except StratisCliEnvironmentError:
-    sys.exit("FIXME: Wrong input.")
