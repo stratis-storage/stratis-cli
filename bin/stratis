@@ -13,7 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
 Entry script for stratis CLI.
 """
@@ -23,6 +22,7 @@ try:
     import sys
 
     from stratis_cli import run
+
 
     def main():
         """
@@ -36,4 +36,3 @@ try:
 
 except KeyboardInterrupt:
     sys.exit("Received KeyboardInterrupt")
-    
