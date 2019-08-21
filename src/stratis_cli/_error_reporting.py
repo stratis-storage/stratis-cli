@@ -124,9 +124,16 @@ def interpret_errors(errors):
         ):
             return "Most likely stratis is unable to connect to the stratisd D-Bus service."
 
-        return None
+        # The goal is to have an explanation for every error chain. If there is
+        # none, then this will rapidly be fixed, so it will be difficult to
+        # maintain coverage for this branch.
+        return None  # pragma: no cover
+
+    # This indicates that an exception has occurred while an explanation was
+    # being constructed. This would be hard to cause, since the code is
+    # written in order to make that impossible.
     # pylint: disable=broad-except
-    except Exception:
+    except Exception:  # pragma: no cover
         return None
 
 
@@ -142,7 +149,10 @@ def handle_error(err):
 
     explanation = interpret_errors(errors)
 
-    if explanation is None:
+    # The goal is to have an explanation for every error chain. If there is
+    # none, then this will rapidly be fixed, so it will be difficult to
+    # maintain coverage for this branch.
+    if explanation is None:  # pragma: no cover
         exit_msg = (
             "stratis encountered an unexpected error during execution. "
             "Please report the error and include in your report the stack "
