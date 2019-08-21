@@ -19,5 +19,3 @@ SERVICE = "org.storage.stratis1"
 TOP_OBJECT = "/org/storage/stratis1"
 
 SECTOR_SIZE = 512
-
-DBUS_TIMEOUT_SECONDS = 120

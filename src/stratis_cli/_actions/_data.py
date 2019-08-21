@@ -27,8 +27,6 @@ from dbus_python_client_gen import DPClientGenerationError
 from .._errors import StratisCliGenerationError
 from .._errors import StratisCliValueError
 
-from ._constants import DBUS_TIMEOUT_SECONDS
-
 SPECS = {
     "org.freedesktop.DBus.ObjectManager": """
 <interface name="org.freedesktop.DBus.ObjectManager">
@@ -197,6 +195,8 @@ _MANAGER_INTERFACE = "org.storage.stratis1.Manager"
 _FILESYSTEM_INTERFACE = "org.storage.stratis1.filesystem"
 _POOL_INTERFACE = "org.storage.stratis1.pool"
 _BLOCKDEV_INTERFACE = "org.storage.stratis1.blockdev"
+
+DBUS_TIMEOUT_SECONDS = 120
 
 
 def interface_name_to_common_name(interface_name):
