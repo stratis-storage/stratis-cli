@@ -42,6 +42,8 @@ class KeyboardInterruptTestCase(SimTestCase):
             """
             raise KeyboardInterrupt()
 
+        from stratis_cli._actions import _data
+
         # pylint: disable=protected-access
         stratis_cli._actions._data.Manager.Properties.Version.Get = (
             raise_keyboard_interrupt

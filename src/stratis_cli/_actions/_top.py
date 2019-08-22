@@ -24,11 +24,6 @@ from .._stratisd_constants import StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._constants import SECTOR_SIZE
-from ._data import Manager
-from ._data import MOPool
-from ._data import ObjectManager
-from ._data import Pool
-from ._data import pools
 from ._formatting import print_table
 
 
@@ -44,6 +39,8 @@ class TopActions:
 
         :raises StratisCliEngineError:
         """
+        from ._data import Manager
+
         proxy = get_object(TOP_OBJECT)
 
         (_, rc, message) = Manager.Methods.CreatePool(
@@ -65,6 +62,10 @@ class TopActions:
 
         :raises StratisCliEngineError:
         """
+        from ._data import MOPool
+        from ._data import ObjectManager
+        from ._data import pools
+
         proxy = get_object(TOP_OBJECT)
 
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -92,6 +93,10 @@ class TopActions:
 
         :raises StratisCliEngineError:
         """
+        from ._data import Manager
+        from ._data import ObjectManager
+        from ._data import pools
+
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
         (pool_object_path, _) = next(
@@ -112,6 +117,10 @@ class TopActions:
         """
         Rename a pool.
         """
+        from ._data import ObjectManager
+        from ._data import Pool
+        from ._data import pools
+
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
         (pool_object_path, _) = next(
@@ -132,6 +141,10 @@ class TopActions:
         """
         Add specified data devices to a pool.
         """
+        from ._data import ObjectManager
+        from ._data import Pool
+        from ._data import pools
+
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
         (pool_object_path, _) = next(
@@ -151,6 +164,10 @@ class TopActions:
         """
         Add specified cache devices to a pool.
         """
+        from ._data import ObjectManager
+        from ._data import Pool
+        from ._data import pools
+
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
         (pool_object_path, _) = next(
