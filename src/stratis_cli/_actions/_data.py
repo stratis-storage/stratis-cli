@@ -25,7 +25,10 @@ from dbus_python_client_gen import make_class
 from dbus_python_client_gen import DPClientGenerationError
 
 from .._errors import StratisCliGenerationError
-from .._errors import StratisCliValueError
+
+from ._constants import BLOCKDEV_INTERFACE
+from ._constants import FILESYSTEM_INTERFACE
+from ._constants import POOL_INTERFACE
 
 SPECS = {
     "org.freedesktop.DBus.ObjectManager": """
@@ -192,46 +195,21 @@ SPECS = {
 
 _MANAGER_INTERFACE = "org.storage.stratis1.Manager"
 
-_FILESYSTEM_INTERFACE = "org.storage.stratis1.filesystem"
-_POOL_INTERFACE = "org.storage.stratis1.pool"
-_BLOCKDEV_INTERFACE = "org.storage.stratis1.blockdev"
-
 DBUS_TIMEOUT_SECONDS = 120
 
 
-def interface_name_to_common_name(interface_name):
-    """
-    Maps a D-Bus interface name to the common name that identifies the type
-    of stratisd thing that the interface represents.
-
-    :param str interface_name: the interface name
-    :returns: a common name
-    :rtype: str
-    """
-    if interface_name == _BLOCKDEV_INTERFACE:
-        return "block device"
-
-    if interface_name == _FILESYSTEM_INTERFACE:
-        return "filesystem"
-
-    if interface_name == _POOL_INTERFACE:
-        return "pool"
-
-    raise StratisCliValueError(interface_name, "interface_name")
-
-
 try:
-    filesystem_spec = ET.fromstring(SPECS[_FILESYSTEM_INTERFACE])
+    filesystem_spec = ET.fromstring(SPECS[FILESYSTEM_INTERFACE])
     Filesystem = make_class("Filesystem", filesystem_spec, DBUS_TIMEOUT_SECONDS)
     MOFilesystem = managed_object_class("MOFilesystem", filesystem_spec)
     filesystems = mo_query_builder(filesystem_spec)
 
-    pool_spec = ET.fromstring(SPECS[_POOL_INTERFACE])
+    pool_spec = ET.fromstring(SPECS[POOL_INTERFACE])
     Pool = make_class("Pool", pool_spec, DBUS_TIMEOUT_SECONDS)
     MOPool = managed_object_class("MOPool", pool_spec)
     pools = mo_query_builder(pool_spec)
 
-    blockdev_spec = ET.fromstring(SPECS[_BLOCKDEV_INTERFACE])
+    blockdev_spec = ET.fromstring(SPECS[BLOCKDEV_INTERFACE])
     MODev = managed_object_class("MODev", blockdev_spec)
     devs = mo_query_builder(blockdev_spec)
 

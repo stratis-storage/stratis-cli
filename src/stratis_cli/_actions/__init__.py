@@ -15,7 +15,9 @@
 Package mediating dbus actions.
 """
 
-from ._data import interface_name_to_common_name
+from ._constants import BLOCKDEV_INTERFACE
+from ._constants import FILESYSTEM_INTERFACE
+from ._constants import POOL_INTERFACE
 from ._logical import LogicalActions
 from ._physical import PhysicalActions
 from ._stratis import StratisActions

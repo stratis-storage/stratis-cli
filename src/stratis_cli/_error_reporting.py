@@ -23,8 +23,12 @@ from dbus_client_gen import DbusClientMissingPropertyError
 from dbus_client_gen import DbusClientMissingSearchPropertiesError
 from dbus_client_gen import DbusClientUniqueResultError
 
-from ._actions import interface_name_to_common_name
+from ._actions import BLOCKDEV_INTERFACE
+from ._actions import FILESYSTEM_INTERFACE
+from ._actions import POOL_INTERFACE
+
 from ._errors import StratisCliEngineError
+from ._errors import StratisCliValueError
 
 _DBUS_INTERFACE_MSG = (
     "The version of stratis you are running expects a different "
@@ -32,6 +36,27 @@ _DBUS_INTERFACE_MSG = (
     "you are running a version that requires a newer version of "
     "stratisd than you are running."
 )
+
+
+def _interface_name_to_common_name(interface_name):
+    """
+    Maps a D-Bus interface name to the common name that identifies the type
+    of stratisd thing that the interface represents.
+
+    :param str interface_name: the interface name
+    :returns: a common name
+    :rtype: str
+    """
+    if interface_name == BLOCKDEV_INTERFACE:
+        return "block device"
+
+    if interface_name == FILESYSTEM_INTERFACE:
+        return "filesystem"
+
+    if interface_name == POOL_INTERFACE:
+        return "pool"
+
+    raise StratisCliValueError(interface_name, "interface_name")
 
 
 def get_errors(exc):
@@ -66,7 +91,7 @@ def interpret_errors(errors):
 
         if isinstance(error, DbusClientUniqueResultError) and error.result == []:
             fmt_str = "Most likely you specified a %s which does not exist."
-            return fmt_str % interface_name_to_common_name(error.interface_name)
+            return fmt_str % _interface_name_to_common_name(error.interface_name)
 
         if isinstance(error, DbusClientMissingSearchPropertiesError):
             return _DBUS_INTERFACE_MSG

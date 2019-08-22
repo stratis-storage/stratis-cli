@@ -19,3 +19,7 @@ SERVICE = "org.storage.stratis1"
 TOP_OBJECT = "/org/storage/stratis1"
 
 SECTOR_SIZE = 512
+
+FILESYSTEM_INTERFACE = "org.storage.stratis1.filesystem"
+POOL_INTERFACE = "org.storage.stratis1.pool"
+BLOCKDEV_INTERFACE = "org.storage.stratis1.blockdev"
