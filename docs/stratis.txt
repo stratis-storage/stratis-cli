@@ -20,8 +20,16 @@ and the filesystems allocated from the pool.
 Stratis creates a *pool* from one or more block devices (*blockdevs*), and
 then enables multiple *filesystems* to be created from the pool.
 
-If the block device is already in use, its signature has to be erased using
-*wipefs -a <blockdev>* before trying to add it to a pool.
+Stratis may refuse to use a block device for any of the following reasons:
+1. The block device could already be in use, in which case its signature must
+be erased using *wipefs -a <blockdev>* before it can be added to a pool.
+2. The block device could be a DM-multipath device, in which case
+*wipefs -a <blockdev>* can also be used, albeit cautiously, as this will
+erase the multipath configuration and cause potentially unwanted side effects.
+
+To determine which case it is, use *multipath -l* to display the current
+multipath configuration gathered from sysfs and the device mapper. If there is
+an entry for the block device in question, then it is a multipath device.
 
 GLOBAL OPTIONS
 --------------
