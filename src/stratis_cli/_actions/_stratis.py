@@ -19,7 +19,6 @@ from .._stratisd_constants import RedundancyCodes
 
 from ._connection import get_object
 from ._constants import TOP_OBJECT
-from ._data import Manager
 
 
 class StratisActions:
@@ -40,4 +39,6 @@ class StratisActions:
         """
         List the stratisd version.
         """
+        from ._data import Manager
+
         print("%s" % Manager.Properties.Version.Get(get_object(TOP_OBJECT)))

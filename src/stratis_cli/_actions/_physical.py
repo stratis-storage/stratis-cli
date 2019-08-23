@@ -23,11 +23,6 @@ from .._stratisd_constants import BLOCK_DEV_TIER_TO_NAME
 from ._connection import get_object
 from ._constants import SECTOR_SIZE
 from ._constants import TOP_OBJECT
-from ._data import devs
-from ._data import pools
-from ._data import MODev
-from ._data import MOPool
-from ._data import ObjectManager
 from ._formatting import print_table
 
 
@@ -44,6 +39,12 @@ class PhysicalActions:
         List devices. If a pool is specified in the namespace, list devices
         for that pool. Otherwise, list all devices for all pools.
         """
+        from ._data import devs
+        from ._data import pools
+        from ._data import MODev
+        from ._data import MOPool
+        from ._data import ObjectManager
+
         # This method is invoked as the default for "stratis blockdev";
         # the namespace may not have a pool_name field.
         pool_name = getattr(namespace, "pool_name", None)
