@@ -28,11 +28,7 @@ from dbus_python_client_gen import make_class
 from dbus_python_client_gen import DPClientGenerationError
 
 from .._errors import StratisCliGenerationError
-<<<<<<< HEAD
-=======
 from .._errors import StratisCliEnvironmentError
-from .._errors import StratisCliValueError
->>>>>>> Defined and raised a new StratisCli exception.
 
 from ._constants import BLOCKDEV_INTERFACE
 from ._constants import FILESYSTEM_INTERFACE
@@ -220,15 +216,6 @@ DBUS_TIMEOUT_SECONDS = 120
 #    supplied by libdbus (handled by dbus-python)
 
 try:
-<<<<<<< HEAD
-    filesystem_spec = ET.fromstring(SPECS[FILESYSTEM_INTERFACE])
-    Filesystem = make_class("Filesystem", filesystem_spec, DBUS_TIMEOUT_SECONDS)
-    MOFilesystem = managed_object_class("MOFilesystem", filesystem_spec)
-    filesystems = mo_query_builder(filesystem_spec)
-
-    pool_spec = ET.fromstring(SPECS[POOL_INTERFACE])
-    Pool = make_class("Pool", pool_spec, DBUS_TIMEOUT_SECONDS)
-=======
 
     # Read in environment variable
     timeout = environ.get("STRATIS_DBUS_TIMEOUT", DBUS_TIMEOUT_SECONDS * 1000)
@@ -247,14 +234,13 @@ try:
     # Convert from milliseconds to seconds
     timeout = timeout / 1000
 
-    filesystem_spec = ET.fromstring(SPECS[_FILESYSTEM_INTERFACE])
+    filesystem_spec = ET.fromstring(SPECS[FILESYSTEM_INTERFACE])
     Filesystem = make_class("Filesystem", filesystem_spec, timeout)
     MOFilesystem = managed_object_class("MOFilesystem", filesystem_spec)
     filesystems = mo_query_builder(filesystem_spec)
 
-    pool_spec = ET.fromstring(SPECS[_POOL_INTERFACE])
+    pool_spec = ET.fromstring(SPECS[POOL_INTERFACE])
     Pool = make_class("Pool", pool_spec, timeout)
->>>>>>> Get environment variable and pass into make_class function.
     MOPool = managed_object_class("MOPool", pool_spec)
     pools = mo_query_builder(pool_spec)
 
