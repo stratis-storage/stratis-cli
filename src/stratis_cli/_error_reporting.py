@@ -29,6 +29,8 @@ from ._actions import POOL_INTERFACE
 
 from ._errors import StratisCliEngineError
 from ._errors import StratisCliUnknownInterfaceError
+from ._errors import StratisCliEnvironmentError
+from ._errors import StratisCliValueError
 
 _DBUS_INTERFACE_MSG = (
     "The version of stratis you are running expects a different "
@@ -124,6 +126,13 @@ def interpret_errors(errors):
                 "stratisd failed to perform the operation that you "
                 "requested. It returned the following information via "
                 "the D-Bus: %s."
+            )
+            return fmt_str % error
+
+        if isinstance(error, StratisCliEnvironmentError):
+            fmt_str = (
+                "%s Please refer to the Stratis CLI documentation to "
+                "find out which timeout values are acceptable."
             )
             return fmt_str % error
 
