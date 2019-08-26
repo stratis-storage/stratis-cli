@@ -38,7 +38,9 @@ _DBUS_INTERFACE_MSG = (
 )
 
 
-def _interface_name_to_common_name(interface_name):
+# pylint: disable=fixme
+# FIXME: remove no coverage pragma when adequate testing for CLI output exists.
+def _interface_name_to_common_name(interface_name):  # pragma: no cover
     """
     Maps a D-Bus interface name to the common name that identifies the type
     of stratisd thing that the interface represents.
@@ -89,16 +91,35 @@ def interpret_errors(errors):
         # Inspect top-most error after StratisCliActionError
         error = errors[1]
 
-        if isinstance(error, DbusClientUniqueResultError) and error.result == []:
+        # pylint: disable=fixme
+        # FIXME: remove no coverage pragma when adequate testing for CLI
+        # output exists.
+        if (
+            # pylint: disable=bad-continuation
+            isinstance(error, DbusClientUniqueResultError)
+            and error.result == []
+        ):  # pragma: no cover
             fmt_str = "Most likely you specified a %s which does not exist."
             return fmt_str % _interface_name_to_common_name(error.interface_name)
 
-        if isinstance(error, DbusClientMissingSearchPropertiesError):
+        # These errors can only arise if there is a bug in the way automatically
+        # generated code is constructed, or if the introspection data from
+        # which the auto-generated code is constructed does not match the
+        # daemon interface. This situation is unlikely and difficult to
+        # elicit in a test.
+        if isinstance(
+            # pylint: disable=bad-continuation
+            error,
+            DbusClientMissingSearchPropertiesError,
+        ):  # pragma: no cover
             return _DBUS_INTERFACE_MSG
-        if isinstance(error, DbusClientMissingPropertyError):
+        if isinstance(error, DbusClientMissingPropertyError):  # pragma: no cover
             return _DBUS_INTERFACE_MSG
 
-        if isinstance(error, StratisCliEngineError):
+        # pylint: disable=fixme
+        # FIXME: remove no coverage pragma when adequate testing for CLI
+        # output exists.
+        if isinstance(error, StratisCliEngineError):  # pragma: no cover
             fmt_str = (
                 "stratisd failed to perform the operation that you "
                 "requested. It returned the following information via "
@@ -108,11 +129,15 @@ def interpret_errors(errors):
 
         # Inspect lowest error
         error = errors[-1]
+
+        # pylint: disable=fixme
+        # FIXME: remove no coverage pragma when adequate testing for CLI
+        # output exists.
         if (
             # pylint: disable=bad-continuation
             isinstance(error, dbus.exceptions.DBusException)
             and error.get_dbus_name() == "org.freedesktop.DBus.Error.AccessDenied"
-        ):
+        ):  # pragma: no cover
             return "Most likely stratis has insufficient permissions for the action requested."
         # We have observed two causes of this problem. The first is that
         # stratisd is not running at all. The second is that stratisd has not
@@ -124,9 +149,16 @@ def interpret_errors(errors):
         ):
             return "Most likely stratis is unable to connect to the stratisd D-Bus service."
 
-        return None
+        # The goal is to have an explanation for every error chain. If there is
+        # none, then this will rapidly be fixed, so it will be difficult to
+        # maintain coverage for this branch.
+        return None  # pragma: no cover
+
+    # This indicates that an exception has occurred while an explanation was
+    # being constructed. This would be hard to cause, since the code is
+    # written in order to make that impossible.
     # pylint: disable=broad-except
-    except Exception:
+    except Exception:  # pragma: no cover
         return None
 
 
@@ -142,7 +174,10 @@ def handle_error(err):
 
     explanation = interpret_errors(errors)
 
-    if explanation is None:
+    # The goal is to have an explanation for every error chain. If there is
+    # none, then this will rapidly be fixed, so it will be difficult to
+    # maintain coverage for this branch.
+    if explanation is None:  # pragma: no cover
         exit_msg = (
             "stratis encountered an unexpected error during execution. "
             "Please report the error and include in your report the stack "
