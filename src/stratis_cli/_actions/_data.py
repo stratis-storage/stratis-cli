@@ -221,7 +221,7 @@ try:
     timeout = environ.get("STRATIS_DBUS_TIMEOUT", DBUS_TIMEOUT_SECONDS * 1000)
 
     # Ensure the string can be converted to an integer
-    #if not str(timeout).isdigit():
+    # if not str(timeout).isdigit():
     #    raise StratisCliEnvironmentError("The timeout value is not an integer.")
 
     try:
@@ -230,9 +230,7 @@ try:
         timeout = int(timeout)
 
     except:
-        raise StratisCliEnvironmentError(
-            "The timeout value is not an integer."
-        )
+        raise StratisCliEnvironmentError("The timeout value is not an integer.")
 
     # Ensure the integer is not too large
     if timeout > (1 << 31) - 1:
