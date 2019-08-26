@@ -93,9 +93,16 @@ def interpret_errors(errors):
             fmt_str = "Most likely you specified a %s which does not exist."
             return fmt_str % _interface_name_to_common_name(error.interface_name)
 
-        if isinstance(error, DbusClientMissingSearchPropertiesError):
+        # These errors can only arise if there is a bug in the way automatically
+        # generated code is constructed, or if the introspection data from
+        # which the auto-generated code is constructed does not match the
+        # daemon interface. This situation is unlikely and difficult to
+        # elicit in a test.
+        if isinstance(
+            error, DbusClientMissingSearchPropertiesError
+        ):  # pragma: no cover
             return _DBUS_INTERFACE_MSG
-        if isinstance(error, DbusClientMissingPropertyError):
+        if isinstance(error, DbusClientMissingPropertyError):  # pragma: no cover
             return _DBUS_INTERFACE_MSG
 
         if isinstance(error, StratisCliEngineError):
