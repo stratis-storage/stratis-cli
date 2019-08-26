@@ -38,7 +38,9 @@ _DBUS_INTERFACE_MSG = (
 )
 
 
-def _interface_name_to_common_name(interface_name):
+# pylint: disable=fixme
+# FIXME: remove no coverage pragma when adequate testing for CLI output exists.
+def _interface_name_to_common_name(interface_name):  # pragma: no cover
     """
     Maps a D-Bus interface name to the common name that identifies the type
     of stratisd thing that the interface represents.
@@ -89,7 +91,14 @@ def interpret_errors(errors):
         # Inspect top-most error after StratisCliActionError
         error = errors[1]
 
-        if isinstance(error, DbusClientUniqueResultError) and error.result == []:
+        # pylint: disable=fixme
+        # FIXME: remove no coverage pragma when adequate testing for CLI
+        # output exists.
+        if (
+            # pylint: disable=bad-continuation
+            isinstance(error, DbusClientUniqueResultError)
+            and error.result == []
+        ):  # pragma: no cover
             fmt_str = "Most likely you specified a %s which does not exist."
             return fmt_str % _interface_name_to_common_name(error.interface_name)
 
@@ -99,13 +108,18 @@ def interpret_errors(errors):
         # daemon interface. This situation is unlikely and difficult to
         # elicit in a test.
         if isinstance(
-            error, DbusClientMissingSearchPropertiesError
+            # pylint: disable=bad-continuation
+            error,
+            DbusClientMissingSearchPropertiesError,
         ):  # pragma: no cover
             return _DBUS_INTERFACE_MSG
         if isinstance(error, DbusClientMissingPropertyError):  # pragma: no cover
             return _DBUS_INTERFACE_MSG
 
-        if isinstance(error, StratisCliEngineError):
+        # pylint: disable=fixme
+        # FIXME: remove no coverage pragma when adequate testing for CLI
+        # output exists.
+        if isinstance(error, StratisCliEngineError):  # pragma: no cover
             fmt_str = (
                 "stratisd failed to perform the operation that you "
                 "requested. It returned the following information via "
@@ -115,11 +129,15 @@ def interpret_errors(errors):
 
         # Inspect lowest error
         error = errors[-1]
+
+        # pylint: disable=fixme
+        # FIXME: remove no coverage pragma when adequate testing for CLI
+        # output exists.
         if (
             # pylint: disable=bad-continuation
             isinstance(error, dbus.exceptions.DBusException)
             and error.get_dbus_name() == "org.freedesktop.DBus.Error.AccessDenied"
-        ):
+        ):  # pragma: no cover
             return "Most likely stratis has insufficient permissions for the action requested."
         # We have observed two causes of this problem. The first is that
         # stratisd is not running at all. The second is that stratisd has not
