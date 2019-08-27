@@ -78,7 +78,13 @@ daemon version::
 OPTIONAL COMMAND TIMEOUT
 -------------------------
 STRATIS_DBUS_TIMEOUT="[timeout_length_in_milliseconds]" [stratis_command]::
-	If this feature is not used, then the command will timeout in 120 seconds by default.
+	 Accepted STRATIS_DBUS_TIMEOUT environment variable values are:
+         1. an integer between 0 (inclusive) and INT_MAX (inclusive),
+         which represents the timeout length in milliseconds
+         2. any negative integer, which represents a sane default that was
+         supplied by libdbus (handled by dbus-python)
+	 If this feature is not used, then the command will timeout in 120	 
+	 seconds by default.
 
 EXAMPLES
 --------

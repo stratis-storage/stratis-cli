@@ -209,24 +209,12 @@ _MANAGER_INTERFACE = "org.storage.stratis1.Manager"
 DBUS_TIMEOUT_SECONDS = 120
 
 
-# Accepted STRATIS_DBUS_TIMEOUT environment variable values are:
-# 1. an integer between 0 (inclusive) and INT_MAX (inclusive),
-#    which represents the timeout length in milliseconds
-# 2. any negative integer, which represents a sane default that was
-#    supplied by libdbus (handled by dbus-python)
-
 try:
 
-    # Read in environment variable
     timeout = environ.get("STRATIS_DBUS_TIMEOUT", DBUS_TIMEOUT_SECONDS * 1000)
-
-    # Ensure the string can be converted to an integer
-    # if not str(timeout).isdigit():
-    #    raise StratisCliEnvironmentError("The timeout value is not an integer.")
 
     try:
 
-        # Convert the string to an integer
         timeout = int(timeout)
 
     except:
