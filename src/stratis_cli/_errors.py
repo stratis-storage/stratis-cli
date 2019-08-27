@@ -30,26 +30,28 @@ class StratisCliRuntimeError(StratisCliError):
     """
 
 
-class StratisCliValueError(StratisCliRuntimeError):
+# This exception is only raised in the unlikely event that the introspection
+# data contains an unknown interface or that there is a bug in the
+# dbus-client-gen library. In either case, these problems will be fixed
+# immediately. There is no reason to require coverage for this error.
+class StratisCliUnknownInterfaceError(StratisCliRuntimeError):  # pragma: no cover
     """
-    Error raised when a parameter has an unacceptable value.
+    Error raised when code encounters an unexpected D-Bus interface name.
     """
 
-    def __init__(self, value, param):
+    def __init__(self, interface_name):
         """ Initializer.
 
-            :param object value: the value
-            :param str param: the parameter
+            :param str interface_name: the unexpected interface name
         """
         # pylint: disable=super-init-not-called
-        self._value = value
-        self._param = param
+        self._interface_name = interface_name
 
-    def __str__(self):
-        return "value '%s' for parameter %s is unacceptable" % (
-            self._value,
-            self._param,
-        )
+    # pylint: disable=fixme
+    # FIXME: remove no coverage pragma when adequate testing for CLI output
+    # exists.
+    def __str__(self):  # pragma: no cover
+        return "unexpected interface name %s" % self._interface_name
 
 
 class StratisCliEngineError(StratisCliRuntimeError):
@@ -67,7 +69,10 @@ class StratisCliEngineError(StratisCliRuntimeError):
         self.rc = rc
         self.message = message
 
-    def __str__(self):
+    # pylint: disable=fixme
+    # FIXME: remove no coverage pragma when adequate testing for CLI output
+    # exists.
+    def __str__(self):  # pragma: no cover
         return "%s: %s" % (STRATISD_ERROR_TO_NAME(self.rc), self.message)
 
 
@@ -88,7 +93,10 @@ class StratisCliActionError(StratisCliRuntimeError):
         self.command_line_args = command_line_args
         self.namespace = namespace
 
-    def __str__(self):
+    # pylint: disable=fixme
+    # FIXME: remove no coverage pragma when adequate testing for CLI output
+    # exists.
+    def __str__(self):  # pragma: no cover
         fmt_str = (
             "Action selected by command-line arguments %s which were "
             "parsed to %s failed"
