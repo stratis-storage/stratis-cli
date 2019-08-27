@@ -30,29 +30,24 @@ class StratisCliRuntimeError(StratisCliError):
     """
 
 
-class StratisCliValueError(StratisCliRuntimeError):
+class StratisCliUnknownInterfaceError(StratisCliRuntimeError):
     """
-    Error raised when a parameter has an unacceptable value.
+    Error raised when code encounters an unexpected D-Bus interface name.
     """
 
-    def __init__(self, value, param):
+    def __init__(self, interface_name):
         """ Initializer.
 
-            :param object value: the value
-            :param str param: the parameter
+            :param str interface_name: the unexpected interface name
         """
         # pylint: disable=super-init-not-called
-        self._value = value
-        self._param = param
+        self._interface_name = interface_name
 
     # pylint: disable=fixme
     # FIXME: remove no coverage pragma when adequate testing for CLI output
     # exists.
     def __str__(self):  # pragma: no cover
-        return "value '%s' for parameter %s is unacceptable" % (
-            self._value,
-            self._param,
-        )
+        return "unexpected interface name %s" % self._interface_name
 
 
 class StratisCliEngineError(StratisCliRuntimeError):

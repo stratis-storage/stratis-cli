@@ -28,7 +28,7 @@ from ._actions import FILESYSTEM_INTERFACE
 from ._actions import POOL_INTERFACE
 
 from ._errors import StratisCliEngineError
-from ._errors import StratisCliValueError
+from ._errors import StratisCliUnknownInterfaceError
 
 _DBUS_INTERFACE_MSG = (
     "The version of stratis you are running expects a different "
@@ -58,7 +58,7 @@ def _interface_name_to_common_name(interface_name):  # pragma: no cover
     if interface_name == POOL_INTERFACE:
         return "pool"
 
-    raise StratisCliValueError(interface_name, "interface_name")
+    raise StratisCliUnknownInterfaceError(interface_name)
 
 
 def get_errors(exc):
