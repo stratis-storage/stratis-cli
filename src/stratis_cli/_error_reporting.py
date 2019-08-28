@@ -30,7 +30,6 @@ from ._actions import POOL_INTERFACE
 from ._errors import StratisCliEngineError
 from ._errors import StratisCliUnknownInterfaceError
 from ._errors import StratisCliEnvironmentError
-from ._errors import StratisCliValueError
 
 _DBUS_INTERFACE_MSG = (
     "The version of stratis you are running expects a different "
