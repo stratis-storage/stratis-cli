@@ -130,9 +130,7 @@ def interpret_errors(errors):
             return fmt_str % error
 
         if isinstance(error, StratisCliEnvironmentError):
-            fmt_str = (
-                "%s"
-            )
+            fmt_str = "%s"
             return fmt_str % error
 
         # Inspect lowest error

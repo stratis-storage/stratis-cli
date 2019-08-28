@@ -222,7 +222,9 @@ try:
 
     # Ensure the integer is not too large
     if timeout > (1 << 31) - 1:
-        raise StratisCliEnvironmentError("The timeout value you provided exceeds the largest acceptable value, 2147483647.")
+        raise StratisCliEnvironmentError(
+            "The timeout value you provided exceeds the largest acceptable value, 2147483647."
+        )
 
     # Convert from milliseconds to seconds
     timeout = timeout / 1000
