@@ -131,8 +131,7 @@ def interpret_errors(errors):
 
         if isinstance(error, StratisCliEnvironmentError):
             fmt_str = (
-                "%s Please refer to the Stratis CLI documentation to "
-                "find out which timeout values are acceptable."
+                "%s"
             )
             return fmt_str % error
 
