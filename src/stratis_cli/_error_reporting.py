@@ -91,14 +91,11 @@ def interpret_errors(errors):
         # Inspect top-most error after StratisCliActionError
         error = errors[1]
 
-        # pylint: disable=fixme
-        # FIXME: remove no coverage pragma when adequate testing for CLI
-        # output exists.
         if (
             # pylint: disable=bad-continuation
             isinstance(error, DbusClientUniqueResultError)
             and error.result == []
-        ):  # pragma: no cover
+        ):
             fmt_str = "Most likely you specified a %s which does not exist."
             return fmt_str % _interface_name_to_common_name(error.interface_name)
 
