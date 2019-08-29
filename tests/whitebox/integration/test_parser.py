@@ -29,15 +29,11 @@ class ParserTestCase(unittest.TestCase):
     during an action.
     """
 
-    @unittest.expectedFailure
     def testStratisNoSubcommand(self):
         """
         If missing subcommand, or missing "daemon" subcommand return exit code
         of 2. There can't be a missing subcommand for "blockdev", "pool", or
         "filesystem" subcommand, since these default to "list" if no subcommand.
-
-        This fails at this time, see issue:
-        https://github.com/stratis-storage/stratis-cli/issues/248
         """
         for command_line in [[], ["daemon"]]:
             for prefix in [[], ["--propagate"]]:

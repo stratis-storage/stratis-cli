@@ -28,7 +28,7 @@ from ._logical import LOGICAL_SUBCMDS
 from ._physical import PHYSICAL_SUBCMDS
 from ._pool import POOL_SUBCMDS
 
-PRINT_HELP = lambda parser: lambda _: parser.print_help()
+PRINT_HELP = lambda parser: lambda _: parser.error("missing sub-command")
 
 
 def _add_args(parser, args):
