@@ -46,22 +46,6 @@ class StratisTestCase(SimTestCase):
         command_line = self._MENU + ["redundancy"]
         RUNNER(command_line)
 
-    def testStratisNoOptions(self):
-        """
-        Exactly one option should be set, this should succeed, but print help.
-        """
-        command_line = self._MENU
-        RUNNER(command_line)
-
-    def testStratisTwoOptions(self):
-        """
-        Exactly one option should be set, so this should fail,
-        but only because redundancy accepts no arguments.
-        """
-        command_line = self._MENU + ["redundancy", "version"]
-        with self.assertRaises(SystemExit):
-            RUNNER(command_line)
-
 
 class PropagateTestCase(unittest.TestCase):
     """
