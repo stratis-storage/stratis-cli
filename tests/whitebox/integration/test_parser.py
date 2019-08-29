@@ -25,20 +25,46 @@ class ParserTestCase(unittest.TestCase):
     Test parser behavior
     """
 
-    _MENU = ["--propagate", "daemon"]
+    @unittest.expectedFailure
+    def testStratisNoSubcommand(self):
+        """
+        If missing subcommand, or missing "daemon" subcommand return exit code
+        of 2. There can't be a missing subcommand for "blockdev", "pool", or
+        "filesystem" subcommand, since these default to "list" if no subcommand.
 
-    def testStratisNoOptions(self):
+        This fails at this time, see issue:
+        https://github.com/stratis-storage/stratis-cli/issues/248
         """
-        Exactly one option should be set, this should succeed, but print help.
-        """
-        command_line = self._MENU
-        RUNNER(command_line)
+        for command_line in [[], ["daemon"]]:
+            with self.assertRaises(SystemExit) as context:
+                RUNNER(command_line)
+            exit_code = context.exception.code
+            self.assertEqual(exit_code, 2)
 
     def testStratisTwoOptions(self):
         """
         Exactly one option should be set, so this should fail,
         but only because redundancy accepts no arguments.
         """
-        command_line = self._MENU + ["redundancy", "version"]
-        with self.assertRaises(SystemExit):
+        command_line = ["daemon", "redundancy", "version"]
+        with self.assertRaises(SystemExit) as context:
             RUNNER(command_line)
+        exit_code = context.exception.code
+        self.assertEqual(exit_code, 2)
+
+    def testStratisBadSubcommand(self):
+        """
+        If an unknown subcommand return exit code of 2.
+        """
+        for command_line in [
+            # pylint: disable=bad-continuation
+            ["notasub"],
+            ["daemon", "notasub"],
+            ["pool", "notasub"],
+            ["blockdev", "notasub"],
+            ["filesystem", "notasub"],
+        ]:
+            with self.assertRaises(SystemExit) as context:
+                RUNNER(command_line)
+            exit_code = context.exception.code
+            self.assertEqual(exit_code, 2)
