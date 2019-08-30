@@ -85,3 +85,20 @@ class PropagateTestCase(unittest.TestCase):
         command_line = ["daemon", "version"]
         with self.assertRaises(SystemExit):
             RUNNER(command_line)
+
+
+class ErrorHandlingTestCase(SimTestCase):
+    """
+    Test error-handling behavior when --propagate is not set.
+    """
+
+    def testErrorOnMissingPool(self):
+        """
+        Test that listing a non-existent pool results in early exit.
+        """
+        command_line = ["pool", "list", "not_existing"]
+        with self.assertRaises(SystemExit) as context:
+            RUNNER(command_line)
+        exit_code = context.exception.code
+        self.assertNotEqual(exit_code, 0)
+        self.assertIsNotNone(exit_code)
