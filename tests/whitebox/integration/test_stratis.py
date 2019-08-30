@@ -92,11 +92,20 @@ class ErrorHandlingTestCase(SimTestCase):
     Test error-handling behavior when --propagate is not set.
     """
 
-    def testErrorOnMissingPool(self):
+    def testErrorOnMissingFilesystem(self):
         """
-        Test that listing a non-existent pool results in early exit.
+        Test that listing filesystems for a non-existent pool results in early
+        exit.
         """
-        command_line = ["pool", "list", "not_existing"]
+        command_line = ["filesystem", "list", "not_existing"]
+
+        # if exceptions are propagated then a Stratis error is caught
+        with self.assertRaises(StratisCliActionError):
+            RUNNER(["--propagate"] + command_line)
+
+        # If instead the exception chain is handed off to handle_error,
+        # the exception is recognized, an error message is generated,
+        # and the program exits with the message via SystemExit.
         with self.assertRaises(SystemExit) as context:
             RUNNER(command_line)
         exit_code = context.exception.code
