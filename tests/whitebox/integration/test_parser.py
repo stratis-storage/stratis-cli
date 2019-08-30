@@ -22,7 +22,11 @@ from ._misc import RUNNER
 
 class ParserTestCase(unittest.TestCase):
     """
-    Test parser behavior
+    Test parser behavior. The behavior should be identical, regardless of
+    whether the "--propagate" flag is set. That is, stratis should never produce
+    exception chains because of parser errors. The exception chains should only
+    be produced when the "--propagate" flag is set and when an error occurs
+    during an action.
     """
 
     @unittest.expectedFailure
@@ -36,21 +40,23 @@ class ParserTestCase(unittest.TestCase):
         https://github.com/stratis-storage/stratis-cli/issues/248
         """
         for command_line in [[], ["daemon"]]:
-            with self.assertRaises(SystemExit) as context:
-                RUNNER(command_line)
-            exit_code = context.exception.code
-            self.assertEqual(exit_code, 2)
+            for prefix in [[], ["--propagate"]]:
+                with self.assertRaises(SystemExit) as context:
+                    RUNNER(prefix + command_line)
+                exit_code = context.exception.code
+                self.assertEqual(exit_code, 2)
 
     def testStratisTwoOptions(self):
         """
         Exactly one option should be set, so this should fail,
         but only because redundancy accepts no arguments.
         """
-        command_line = ["daemon", "redundancy", "version"]
-        with self.assertRaises(SystemExit) as context:
-            RUNNER(command_line)
-        exit_code = context.exception.code
-        self.assertEqual(exit_code, 2)
+        for prefix in [[], ["--propagate"]]:
+            command_line = ["daemon", "redundancy", "version"]
+            with self.assertRaises(SystemExit) as context:
+                RUNNER(prefix + command_line)
+            exit_code = context.exception.code
+            self.assertEqual(exit_code, 2)
 
     def testStratisBadSubcommand(self):
         """
@@ -64,7 +70,8 @@ class ParserTestCase(unittest.TestCase):
             ["blockdev", "notasub"],
             ["filesystem", "notasub"],
         ]:
-            with self.assertRaises(SystemExit) as context:
-                RUNNER(command_line)
-            exit_code = context.exception.code
-            self.assertEqual(exit_code, 2)
+            for prefix in [[], ["--propagate"]]:
+                with self.assertRaises(SystemExit) as context:
+                    RUNNER(prefix + command_line)
+                exit_code = context.exception.code
+                self.assertEqual(exit_code, 2)
