@@ -210,7 +210,9 @@ DBUS_TIMEOUT_SECONDS = 120
 
 
 def get_timeout(input_string):
-    """Turn input string into float timeout value"""
+    """
+    Turn an input string into a float timeout value.
+    """
     try:
 
         timeout_int = int(input_string)
