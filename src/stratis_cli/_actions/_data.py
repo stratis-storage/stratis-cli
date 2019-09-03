@@ -212,6 +212,11 @@ DBUS_TIMEOUT_SECONDS = 120
 def get_timeout(input_string):
     """
     Turn an input string into a float timeout value.
+
+    :param input_string: the input string
+    :type input_string: str
+    :raises StratisCliEnvironmentError:
+    :returns: float
     """
     try:
 
