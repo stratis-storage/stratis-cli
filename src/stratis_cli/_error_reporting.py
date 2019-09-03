@@ -29,7 +29,6 @@ from ._actions import POOL_INTERFACE
 
 from ._errors import StratisCliEngineError
 from ._errors import StratisCliUnknownInterfaceError
-from ._errors import StratisCliEnvironmentError
 
 _DBUS_INTERFACE_MSG = (
     "The version of stratis you are running expects a different "
@@ -123,10 +122,6 @@ def interpret_errors(errors):
                 "requested. It returned the following information via "
                 "the D-Bus: %s."
             )
-            return fmt_str % error
-
-        if isinstance(error, StratisCliEnvironmentError):
-            fmt_str = "%s"
             return fmt_str % error
 
         # Inspect lowest error
