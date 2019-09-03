@@ -44,7 +44,10 @@ def run():
             # Keyboard Interrupt is recaught at the outermost possible layer.
             # It is outside the regular execution of the program, so it is
             # handled only there; it is just reraised here.
-            except KeyboardInterrupt as err:
+            # The same holds for SystemExit, except that it must be allowed
+            # to propagate to the interpreter, i.e., it should not be recaught
+            # anywhere.
+            except (KeyboardInterrupt, SystemExit) as err:
                 raise err
             except BaseException as err:
                 raise StratisCliActionError(command_line_args, result) from err
