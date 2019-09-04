@@ -21,9 +21,19 @@ import time
 import unittest
 
 from testlib.utils import exec_command, process_exists
-from testlib.stratis import StratisCli, fs_n, p_n
+from testlib.stratis import StratisCli
 
 DISKS = []
+
+
+def _clean_up():
+    """
+    Try to clean up after a test failure.
+
+    :return: None
+    """
+    StratisCli.destroy_all()
+    assert StratisCli.pool_list() == []
 
 
 class StratisCertify(unittest.TestCase):
@@ -33,51 +43,21 @@ class StratisCertify(unittest.TestCase):
 
     def setUp(self):
         """
-        Ensure we are ready, which includes stratisd process is up and running
-        and we have an empty configuration.  If not we will attempt to make
-        the configuration empty.
+        Setup for an individual test.
+        * Register a cleanup action, to be run if the test fails.
+        * Ensure that stratisd is running via systemd.
+        * Use the running stratisd instance to destroy any existing
+        Stratis filesystems, pools, etc.
         :return: None
         """
-        self.addCleanup(self._clean_up)
+        self.addCleanup(_clean_up)
 
-        # The daemon should already be running, if not lets starts it and wait
-        # a bit
         if process_exists("stratisd") is None:
             exec_command(["systemctl", "start", "stratisd"])
             time.sleep(20)
 
         StratisCli.destroy_all()
-        self.assertEqual(0, len(StratisCli.pool_list()))
-
-    def _clean_up(self):
-        """
-        If an exception in raised in setUp, tearDown will not be called, thus
-        we will place our cleanup in a method which is called after tearDown
-        :return: None
-        """
-        StratisCli.destroy_all()
-        self.assertEqual(0, len(StratisCli.pool_list()))
-
-    def test_daemon_redundancy(self):
-        """
-        Test daemon redundancy returns expected values.
-        :return:
-        """
-        self.assertEqual(("NONE", 0), StratisCli.daemon_redundancy())
-
-    def test_no_list_listings(self):
-        """
-        Test that commands that optionally take a list work both ways.
-        :return: None
-        """
-        pool_name = p_n()
-        fs_name = fs_n()
-        StratisCli.pool_create(pool_name, block_devices=DISKS)
-        StratisCli.fs_create(pool_name, fs_name)
-
-        self.assertEqual(StratisCli.pool_list(), StratisCli.pool_list(False))
-        self.assertEqual(StratisCli.fs_list(), StratisCli.fs_list(False))
-        self.assertEqual(StratisCli.blockdev_list(), StratisCli.blockdev_list(False))
+        assert StratisCli.pool_list() == []
 
 
 if __name__ == "__main__":

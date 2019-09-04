@@ -18,6 +18,7 @@ Test command-line argument parsing.
 import unittest
 
 from ._misc import RUNNER
+from ._misc import SimTestCase
 
 
 class ParserTestCase(unittest.TestCase):
@@ -71,3 +72,18 @@ class ParserTestCase(unittest.TestCase):
                     RUNNER(prefix + command_line)
                 exit_code = context.exception.code
                 self.assertEqual(exit_code, 2)
+
+
+class ParserSimTestCase(SimTestCase):
+    """
+    Parser tests which require the sim engine to be running.
+    """
+
+    def testStratisListDefault(self):
+        """
+        Verify that pool, filesystem, and blockdev subcommands execute
+        without any additional command.
+        """
+        for subcommand in [["pool"], ["filesystem"], ["blockdev"]]:
+            for prefix in [[], ["--propagate"]]:
+                self.assertEqual(RUNNER(prefix + subcommand), 0)

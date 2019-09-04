@@ -67,27 +67,14 @@ class StratisCli:
         return stdout.strip()
 
     @staticmethod
-    def daemon_redundancy():
-        """
-        Returns what redundancy the daemon supports
-        :return: (Desc, int)
-        """
-        stdout, _ = exec_command([STRATIS_CLI, "daemon", "redundancy"])
-        parsed = stdout.strip().replace(" ", "").split(":")
-        return parsed[0], int(parsed[1])
-
-    @staticmethod
-    def pool_list(specify_list=True):
+    def pool_list():
         """
         Query the pools
-        :param specify_list: Use pool list syntax
         :return: A dict,  Key being the pool name, the value being a dict with
                           keys [SIZE, USED]
         """
         # pylint: disable=too-many-locals
-        cmd = [STRATIS_CLI, "pool"]
-        if specify_list:
-            cmd.append("list")
+        cmd = [STRATIS_CLI, "pool", "list"]
         std_out, _ = exec_command(cmd)
         lines = std_out.splitlines()
 
@@ -106,18 +93,15 @@ class StratisCli:
         return rc
 
     @staticmethod
-    def fs_list(specify_list=True):
+    def fs_list():
         """
         Query the file systems
-        :param specify_list: Use fs list syntax
         :return: A dict,  Key being the fs name, the value being a dict with
                           keys [POOL_NAME, USED_SIZE, UUID, SYM_LINK, CREATED,
                                 CREATED_TS]
         """
         # pylint: disable=too-many-locals
-        cmd = [STRATIS_CLI, "fs"]
-        if specify_list:
-            cmd.append("list")
+        cmd = [STRATIS_CLI, "fs", "list"]
 
         std_out, _ = exec_command(cmd)
         lines = std_out.splitlines()
@@ -151,16 +135,13 @@ class StratisCli:
         return rc
 
     @staticmethod
-    def blockdev_list(specify_list=True):
+    def blockdev_list():
         """
         Query the block devs
-        :param specify_list: Use blockdev list syntax
         :return: A dict, Key is the device node, the value being a dict with
                          keys [POOL_NAME, SIZE, STATE, TIER]
         """
-        cmd = [STRATIS_CLI, "blockdev"]
-        if specify_list:
-            cmd.append("list")
+        cmd = [STRATIS_CLI, "blockdev", "list"]
 
         std_out, _ = exec_command(cmd)
         lines = std_out.splitlines()
