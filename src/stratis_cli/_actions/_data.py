@@ -209,18 +209,18 @@ _MANAGER_INTERFACE = "org.storage.stratis1.Manager"
 DBUS_TIMEOUT_SECONDS = 120
 
 
-def get_timeout(input_string):
+def get_timeout(value):
     """
-    Turn an input string into a float timeout value.
+    Turn an input str or int into a float timeout value.
 
-    :param input_string: the input string
-    :type input_string: str
+    :param value: the input str or int
+    :type value: str or int
     :raises StratisCliEnvironmentError:
     :returns: float
     """
     try:
 
-        timeout_int = int(input_string)
+        timeout_int = int(value)
 
     except ValueError:
         raise StratisCliEnvironmentError(
@@ -230,7 +230,7 @@ def get_timeout(input_string):
     # Ensure the integer is not too small
     if timeout_int < -1:
         raise StratisCliEnvironmentError(
-            "The timeout value you provided exceeds the smallest acceptable value, -1."
+            "The timeout value you provided is smaller than the smallest acceptable value, -1."
         )
 
     # Ensure the integer is not too large
@@ -247,9 +247,9 @@ def get_timeout(input_string):
 
 try:
 
-    timeout_string = environ.get("STRATIS_DBUS_TIMEOUT", DBUS_TIMEOUT_SECONDS * 1000)
+    timeout = environ.get("STRATIS_DBUS_TIMEOUT", DBUS_TIMEOUT_SECONDS * 1000)
 
-    timeout = get_timeout(timeout_string)
+    timeout = get_timeout(timeout)
 
     filesystem_spec = ET.fromstring(SPECS[FILESYSTEM_INTERFACE])
     Filesystem = make_class("Filesystem", filesystem_spec, timeout)
