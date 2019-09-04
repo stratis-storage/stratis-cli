@@ -102,7 +102,6 @@ def exec_command(cmd, expected_exit_code=0):
         print("STDERR= %s" % stderr_text)
 
     assert expected_exit_code == process.returncode
-    assert stderr_text == ""
     return stdout_text, stderr_text
 
 
