@@ -70,3 +70,22 @@ class TimeoutTestCase(unittest.TestCase):
             get_timeout(test_value)
         except StratisCliEnvironmentError as e:
             self.assertIsInstance(e, StratisCliEnvironmentError)
+
+    def testTimeoutNegative(self):
+        """
+        Should succeed because the timeout value is -1.
+        """
+        test_value = -2
+
+        try:
+            get_timeout(test_value)
+        except StratisCliEnvironmentError as e:
+            self.assertIsInstance(e, StratisCliEnvironmentError)
+
+    def testTimeoutGetTimeoutReturnsCorrectValue(self):
+        """
+        Should succeed because the timeout value is -1.
+        """
+        test_value = 2000
+
+        self.assertEqual(get_timeout(test_value), 2.0)
