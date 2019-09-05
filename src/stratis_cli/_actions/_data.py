@@ -239,7 +239,7 @@ def _get_timeout(value):
         )
 
     # Ensure the integer is not too large
-    if timeout_int > (1 << 15) - 1:
+    if timeout_int > (1 << 30) - 1:
         raise StratisCliEnvironmentError(
             "The timeout value you provided exceeds the largest acceptable value, 32767."
         )

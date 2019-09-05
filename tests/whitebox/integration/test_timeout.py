@@ -32,14 +32,14 @@ class TimeoutTestCase(unittest.TestCase):
         Should fail because the timeout value is too large.
         """
         with self.assertRaises(StratisCliEnvironmentError):
-            _get_timeout("2147483648")
+            _get_timeout("1073741824")
 
     def testTimeoutTooLargeInt(self):
         """
         Should fail because the timeout value is too large.
         """
         with self.assertRaises(StratisCliEnvironmentError):
-            _get_timeout(2147483648)
+            _get_timeout(1073741824)
 
     def testTimeoutTooSmallStr(self):
         """
