@@ -40,4 +40,3 @@ except KeyboardInterrupt:
 
 except StratisCliEnvironmentError:
     sys.exit("Received StratisCliEnvironmentError")
-    
