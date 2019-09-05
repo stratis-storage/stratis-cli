@@ -19,7 +19,7 @@ import unittest
 
 from stratis_cli._errors import StratisCliEnvironmentError
 
-from stratis_cli._actions._data import get_timeout
+from stratis_cli._actions._data import _get_timeout
 
 
 class TimeoutTestCase(unittest.TestCase):
@@ -31,85 +31,71 @@ class TimeoutTestCase(unittest.TestCase):
         """
         Should fail because the timeout value is too large.
         """
-        try:
-            get_timeout("2147483648")
-        except StratisCliEnvironmentError as e:
-            self.assertIsInstance(e, StratisCliEnvironmentError)
+        with self.assertRaises(StratisCliEnvironmentError):
+            _get_timeout("2147483648")
 
     def testTimeoutTooLargeInt(self):
         """
         Should fail because the timeout value is too large.
         """
-        try:
-            get_timeout(2147483648)
-        except StratisCliEnvironmentError as e:
-            self.assertIsInstance(e, StratisCliEnvironmentError)
+        with self.assertRaises(StratisCliEnvironmentError):
+            _get_timeout(2147483648)
 
-    def testTimeoutTooSmallString(self):
+    def testTimeoutTooSmallStr(self):
         """
         Should fail because the timeout value is too small.
         """
-        try:
-            get_timeout("-2")
-        except StratisCliEnvironmentError as e:
-            self.assertIsInstance(e, StratisCliEnvironmentError)
+        with self.assertRaises(StratisCliEnvironmentError):
+            _get_timeout("-2")
 
     def testTimeoutTooSmallInt(self):
         """
         Should fail because the timeout value is too small.
         """
-        try:
-            get_timeout(-2)
-        except StratisCliEnvironmentError as e:
-            self.assertIsInstance(e, StratisCliEnvironmentError)
+        with self.assertRaises(StratisCliEnvironmentError):
+            _get_timeout(-2)
 
-    def testTimeoutFloatString(self):
+    def testTimeoutFloatStr(self):
         """
         Should fail because the timeout value is a float.
         """
-        try:
-            get_timeout("2.0")
-        except StratisCliEnvironmentError as e:
-            self.assertIsInstance(e, StratisCliEnvironmentError)
+        with self.assertRaises(StratisCliEnvironmentError):
+            _get_timeout("2.0")
 
     def testTimeoutFloatFloat(self):
         """
         Should fail because the timeout value is a float.
         """
-        try:
-            get_timeout(2.0)
-        except StratisCliEnvironmentError as e:
-            self.assertIsInstance(e, StratisCliEnvironmentError)
+        with self.assertRaises(StratisCliEnvironmentError):
+            _get_timeout(2.0)
 
-    def testTimeoutNotInteger(self):
+    def testTimeoutNotInt(self):
         """
         Should fail because the timeout value is not an integer.
         """
-        try:
-            get_timeout("hello")
-        except StratisCliEnvironmentError as e:
-            self.assertIsInstance(e, StratisCliEnvironmentError)
+        with self.assertRaises(StratisCliEnvironmentError):
+            _get_timeout("hello")
 
-    def testTimeoutCorrectReturnValueString1000(self):
+    def testTimeoutCorrectReturnValueStr1000(self):
         """
         An input value of "1000" should return 1.0.
         """
-        self.assertEqual(get_timeout("1000"), 1.0)
+        self.assertEqual(_get_timeout("1000"), 1.0)
 
     def testTimeoutCorrectReturnValueInt1000(self):
         """
         An input value of 1000 should return 1.0.
         """
-        self.assertEqual(get_timeout(1000), 1.0)
+        self.assertEqual(_get_timeout(1000), 1.0)
 
-    def testTimeoutCorrectReturnValueString0(self):
+    def testTimeoutCorrectReturnValueStr0(self):
         """
         An input value of "0" should return 0.
         """
-        self.assertEqual(get_timeout("0"), 0)
+        self.assertEqual(_get_timeout("0"), 0)
 
     def testTimeoutCorrectReturnValueInt0(self):
         """
         An input value of 0 should return 0.
         """
-        self.assertEqual(get_timeout(0), 0)
+        self.assertEqual(_get_timeout(0), 0)
