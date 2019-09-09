@@ -34,6 +34,16 @@ from testlib.stratis import StratisCli, fs_n, p_n
 DISKS = []
 
 
+def _clean_up():
+    """
+    Try to clean up after a test failure.
+
+    :return: None
+    """
+    StratisCli.destroy_all()
+    assert StratisCli.pool_list() == []
+
+
 class StratisCertify(unittest.TestCase):
     """
     Unit tests for Stratis
@@ -41,30 +51,21 @@ class StratisCertify(unittest.TestCase):
 
     def setUp(self):
         """
-        Ensure we are ready, which includes stratisd process is up and running
-        and we have an empty configuration.  If not we will attempt to make
-        the configuration empty.
+        Setup for an individual test.
+        * Register a cleanup action, to be run if the test fails.
+        * Ensure that stratisd is running via systemd.
+        * Use the running stratisd instance to destroy any existing
+        Stratis filesystems, pools, etc.
         :return: None
         """
-        self.addCleanup(self._clean_up)
+        self.addCleanup(_clean_up)
 
-        # The daemon should already be running, if not lets starts it and wait
-        # a bit
         if process_exists("stratisd") is None:
             exec_command(["systemctl", "start", "stratisd"])
             time.sleep(20)
 
         StratisCli.destroy_all()
-        self.assertEqual(0, len(StratisCli.pool_list()))
-
-    def _clean_up(self):
-        """
-        If an exception in raised in setUp, tearDown will not be called, thus
-        we will place our cleanup in a method which is called after tearDown
-        :return: None
-        """
-        StratisCli.destroy_all()
-        self.assertEqual(0, len(StratisCli.pool_list()))
+        assert StratisCli.pool_list() == []
 
     def test_pool_create(self):
         """
