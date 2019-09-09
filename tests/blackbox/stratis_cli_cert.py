@@ -20,20 +20,10 @@ import sys
 import time
 import unittest
 
-from testlib.utils import exec_command, process_exists
-from testlib.stratis import StratisCli
+from testlib.utils import exec_command, exec_test_command, process_exists
+from testlib.stratis import STRATIS_CLI, StratisCli, clean_up
 
 DISKS = []
-
-
-def _clean_up():
-    """
-    Try to clean up after a test failure.
-
-    :return: None
-    """
-    StratisCli.destroy_all()
-    assert StratisCli.pool_list() == []
 
 
 class StratisCertify(unittest.TestCase):
@@ -50,7 +40,7 @@ class StratisCertify(unittest.TestCase):
         Stratis filesystems, pools, etc.
         :return: None
         """
-        self.addCleanup(_clean_up)
+        self.addCleanup(clean_up)
 
         if process_exists("stratisd") is None:
             exec_command(["systemctl", "start", "stratisd"])
@@ -59,13 +49,24 @@ class StratisCertify(unittest.TestCase):
         StratisCli.destroy_all()
         assert StratisCli.pool_list() == []
 
+    def test_stratisd_version(self):
+        """
+        Test getting the daemon version.
+        """
+        exit_code, stdout, stderr = exec_test_command(
+            [STRATIS_CLI, "daemon", "version"]
+        )
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(stderr, "")
+        self.assertNotEqual(stdout, "")
+
 
 if __name__ == "__main__":
-    ap = argparse.ArgumentParser()
-    ap.add_argument(
+    ARGUMENT_PARSER = argparse.ArgumentParser()
+    ARGUMENT_PARSER.add_argument(
         "--disk", action="append", dest="DISKS", help="disks to use", required=True
     )
-    disks, args = ap.parse_known_args()
-    DISKS = disks.DISKS
+    PARSED_ARGS, OTHER_ARGS = ARGUMENT_PARSER.parse_known_args()
+    DISKS = PARSED_ARGS.DISKS
     print("Using block device(s) for tests: %s" % DISKS)
-    unittest.main(argv=sys.argv[:1] + args)
+    unittest.main(argv=sys.argv[:1] + OTHER_ARGS)

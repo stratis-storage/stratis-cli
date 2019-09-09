@@ -14,11 +14,9 @@
 """
 Wrapper around stratis CLI
 """
-import datetime
 import os
-import time
 
-from .utils import exec_command, rs, umount_mdv, stratis_link, size_representation
+from .utils import exec_command, random_string, umount_mdv, stratis_link
 
 # Some packaged systems might place this in /usr/sbin
 STRATIS_CLI = os.getenv("STRATIS_CLI", "/usr/bin/stratis")
@@ -32,7 +30,7 @@ def p_n():
     Return a random pool name
     :return: Random String
     """
-    return TEST_PREF + "pool" + rs()
+    return TEST_PREF + "pool" + random_string()
 
 
 def fs_n():
@@ -40,7 +38,7 @@ def fs_n():
     Return a random FS name
     :return: Random String
     """
-    return TEST_PREF + "fs" + rs()
+    return TEST_PREF + "fs" + random_string()
 
 
 class StratisCli:
@@ -49,137 +47,32 @@ class StratisCli:
     """
 
     @staticmethod
-    def cli_version():
-        """
-        Returns version of command line
-        :return: String representation of version
-        """
-        stdout, _ = exec_command([STRATIS_CLI, "--version"])
-        return stdout.strip()
-
-    @staticmethod
-    def daemon_version():
-        """
-        Returns the version of daemon
-        :return: String representation of version
-        """
-        stdout, _ = exec_command([STRATIS_CLI, "daemon", "version"])
-        return stdout.strip()
-
-    @staticmethod
     def pool_list():
         """
         Query the pools
-        :return: A dict,  Key being the pool name, the value being a dict with
-                          keys [SIZE, USED]
+        :return: A list of pool names.
         """
-        # pylint: disable=too-many-locals
-        cmd = [STRATIS_CLI, "pool", "list"]
-        std_out, _ = exec_command(cmd)
-        lines = std_out.splitlines()
+        lines = exec_command([STRATIS_CLI, "pool", "list"]).splitlines()[1:]
 
-        header = lines.pop(0).strip().replace(" ", "")
-        assert header == "NameTotalPhysicalSizeTotalPhysicalUsed"
-
-        rc = {}
-        for l in lines:
-            name, size, size_units, used, used_units = l.split()
-
-            if name.startswith(TEST_PREF):
-                rc[name] = dict(
-                    SIZE=size_representation(size, size_units),
-                    USED=size_representation(used, used_units),
-                )
-        return rc
+        return [
+            fields[0]
+            for fields in [line.split() for line in lines]
+            if fields[0].startswith(TEST_PREF)
+        ]
 
     @staticmethod
     def fs_list():
         """
         Query the file systems
-        :return: A dict,  Key being the fs name, the value being a dict with
-                          keys [POOL_NAME, USED_SIZE, UUID, SYM_LINK, CREATED,
-                                CREATED_TS]
+        :return: A dict,  Key being the fs name, the value being its pool name.
         """
-        # pylint: disable=too-many-locals
-        cmd = [STRATIS_CLI, "fs", "list"]
+        lines = exec_command([STRATIS_CLI, "fs", "list"]).splitlines()[1:]
 
-        std_out, _ = exec_command(cmd)
-        lines = std_out.splitlines()
-
-        header = lines.pop(0).strip().replace(" ", "")
-        assert header == "PoolNameNameUsedCreatedDeviceUUID"
-
-        rc = {}
-        for l in lines:
-            pool_name, name, used, used_units, month, day, year, hr_min, sym_link, uuid = (
-                l.split()
-            )
-
-            if not pool_name.startswith(TEST_PREF):
-                continue
-
-            created = "%s %s %s %s" % (month, day, year, hr_min)
-            ts = time.mktime(
-                datetime.datetime.strptime(created, "%b %d %Y %H:%M").timetuple()
-            )
-
-            rc[name] = dict(
-                POOL_NAME=pool_name,
-                USED_SIZE=size_representation(used, used_units),
-                UUID=uuid,
-                SYM_LINK=sym_link,
-                CREATED=created,
-                CREATED_TS=ts,
-            )
-
-        return rc
-
-    @staticmethod
-    def blockdev_list():
-        """
-        Query the block devs
-        :return: A dict, Key is the device node, the value being a dict with
-                         keys [POOL_NAME, SIZE, STATE, TIER]
-        """
-        cmd = [STRATIS_CLI, "blockdev", "list"]
-
-        std_out, _ = exec_command(cmd)
-        lines = std_out.splitlines()
-
-        header = lines.pop(0).strip().replace(" ", "")
-        assert header == "PoolNameDeviceNodePhysicalSizeStateTier"
-
-        rc = {}
-        for l in lines:
-            pool_name, device_node, size, size_units, state, tier = l.split()
-
-            if pool_name.startswith(TEST_PREF):
-                rc[device_node] = dict(
-                    POOL_NAME=pool_name,
-                    SIZE=size_representation(size, size_units),
-                    STATE=state,
-                    TIER=tier,
-                )
-
-        return rc
-
-    @staticmethod
-    def pool_create(name, block_devices):
-        """
-        Creates a pool
-        :param name: Name of pool
-        :param block_devices: List of block devices to use
-        :return: None
-        """
-        exec_command([STRATIS_CLI, "pool", "create", name] + block_devices)
-
-        # Work around for
-        # https://bugzilla.redhat.com/show_bug.cgi?id=1687002
-        umount_mdv()
-
-        full_path = stratis_link(name)
-        assert os.path.exists(full_path)
-        assert os.path.isdir(full_path)
+        return dict(
+            (fields[1], fields[0])
+            for fields in [line.split() for line in lines]
+            if fields[0].startswith(TEST_PREF)
+        )
 
     @staticmethod
     def pool_destroy(name):
@@ -192,39 +85,6 @@ class StratisCli:
             exec_command([STRATIS_CLI, "pool", "destroy", name])
 
     @staticmethod
-    def pool_rename(old_name, new_name):
-        """
-        Renames a pool
-        :param old_name:    Current pool name
-        :param new_name:    New pool name
-        :return: None
-        """
-        if old_name.startswith(TEST_PREF) and new_name.startswith(TEST_PREF):
-            exec_command([STRATIS_CLI, "pool", "rename", old_name, new_name])
-
-            old_path = stratis_link(old_name)
-            new_path = stratis_link(new_name)
-            assert not os.path.exists(old_path)
-            assert os.path.exists(new_path)
-            assert os.path.isdir(new_path)
-
-    @staticmethod
-    def pool_add(pool_name, option, devices):
-        """
-        Adds one or more devices to a pool
-        :param pool_name: Name of pool
-        :param option: String, either ["add-cache", "add-data"]
-        :param devices: List of devices to add
-        :return: None
-        """
-        if pool_name.startswith(TEST_PREF):
-            exec_command([STRATIS_CLI, "pool", option, pool_name] + devices)
-            blockdevs = StratisCli.blockdev_list()
-            for b in devices:
-                assert b in blockdevs
-                assert blockdevs[b]["POOL_NAME"] == pool_name
-
-    @staticmethod
     def destroy_all():
         """
         Destroys all Stratis FS and pools!
@@ -233,27 +93,12 @@ class StratisCli:
         umount_mdv()
 
         # Remove FS
-        for name, fs in StratisCli.fs_list().items():
-            StratisCli.fs_destroy(fs["POOL_NAME"], name)
+        for name, pool_name in StratisCli.fs_list().items():
+            StratisCli.fs_destroy(pool_name, name)
 
         # Remove Pools
         for name in StratisCli.pool_list():
             StratisCli.pool_destroy(name)
-
-    @staticmethod
-    def fs_create(pool_name, fs_name):
-        """
-        Create a FS
-        :param pool_name: Pool to allocate FS from
-        :param fs_name: FS name
-        :return: None
-        """
-        if pool_name.startswith(TEST_PREF) and fs_name.startswith(TEST_PREF):
-            exec_command([STRATIS_CLI, "fs", "create", pool_name, fs_name])
-
-            # Check symlink
-            full_path = stratis_link(pool_name, fs_name)
-            assert os.path.exists(full_path)
 
     @staticmethod
     def fs_destroy(pool_name, fs_name):
@@ -268,35 +113,12 @@ class StratisCli:
             full_path = stratis_link(pool_name, fs_name)
             assert os.path.exists(full_path) is False
 
-    @staticmethod
-    def fs_rename(pool_name, old_name, new_name):
-        """
-        Rename a FS
-        :param pool_name: Pool which contains the FS
-        :param old_name: Existing FS name
-        :param new_name: New FS name
-        :return: None
-        """
-        if pool_name.startswith(TEST_PREF):
-            exec_command([STRATIS_CLI, "fs", "rename", pool_name, old_name, new_name])
 
-            assert not os.path.exists(stratis_link(pool_name, old_name))
-            assert os.path.exists(stratis_link(pool_name, new_name))
+def clean_up():
+    """
+    Try to clean up after a test failure.
 
-    @staticmethod
-    def fs_ss_create(pool_name, fs_name, snapshot_name):
-        """
-        Create a Snap shot
-        :param pool_name: Pool which contains FS to snapshot
-        :param fs_name: File system to snap shot
-        :param snapshot_name: Name of snap shot
-        :return: None
-        """
-        if pool_name.startswith(TEST_PREF):
-            exec_command(
-                [STRATIS_CLI, "fs", "snapshot", pool_name, fs_name, snapshot_name]
-            )
-
-            # Check symlink
-            full_path = stratis_link(pool_name, snapshot_name)
-            assert os.path.exists(full_path)
+    :return: None
+    """
+    StratisCli.destroy_all()
+    assert StratisCli.pool_list() == []

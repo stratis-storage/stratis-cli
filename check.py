@@ -15,20 +15,16 @@ arg_map = {
     "tests/blackbox/stratisd_cert.py": [
         "--reports=no",
         "--disable=I",
-        "--disable=invalid-name",
         "--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}'",
     ],
     "tests/blackbox/stratis_cli_cert.py": [
         "--reports=no",
         "--disable=I",
-        "--disable=invalid-name",
         "--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}'",
     ],
     "tests/blackbox/testlib": [
         "--reports=no",
         "--disable=I",
-        "--disable=duplicate-code",
-        "--disable=invalid-name",
         "--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}'",
     ],
     "tests/whitebox": [

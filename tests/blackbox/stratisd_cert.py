@@ -16,20 +16,12 @@ Tests of stratisd via the Stratis CLI.
 """
 
 import argparse
-import os
 import sys
 import time
 import unittest
 
-from testlib.utils import (
-    exec_command,
-    process_exists,
-    file_create,
-    file_signature,
-    rs,
-    stratis_link,
-)
-from testlib.stratis import StratisCli, fs_n, p_n
+from testlib.utils import exec_command, exec_test_command, process_exists
+from testlib.stratis import StratisCli, clean_up
 
 DISKS = []
 
@@ -41,200 +33,50 @@ class StratisCertify(unittest.TestCase):
 
     def setUp(self):
         """
-        Ensure we are ready, which includes stratisd process is up and running
-        and we have an empty configuration.  If not we will attempt to make
-        the configuration empty.
+        Setup for an individual test.
+        * Register a cleanup action, to be run if the test fails.
+        * Ensure that stratisd is running via systemd.
+        * Use the running stratisd instance to destroy any existing
+        Stratis filesystems, pools, etc.
         :return: None
         """
-        self.addCleanup(self._clean_up)
+        self.addCleanup(clean_up)
 
-        # The daemon should already be running, if not lets starts it and wait
-        # a bit
         if process_exists("stratisd") is None:
             exec_command(["systemctl", "start", "stratisd"])
             time.sleep(20)
 
         StratisCli.destroy_all()
-        self.assertEqual(0, len(StratisCli.pool_list()))
+        assert StratisCli.pool_list() == []
 
-    def _clean_up(self):
+    def test_get_managed_objects(self):
         """
-        If an exception in raised in setUp, tearDown will not be called, thus
-        we will place our cleanup in a method which is called after tearDown
-        :return: None
+        Test that GetManagedObjects returns a string w/out failure.
         """
-        StratisCli.destroy_all()
-        self.assertEqual(0, len(StratisCli.pool_list()))
-
-    def test_pool_create(self):
-        """
-        Test pool create.
-        :return: None
-        """
-        pool_name = p_n()
-        StratisCli.pool_create(pool_name, [DISKS[0]])
-        pools = StratisCli.pool_list()
-        self.assertTrue(pool_name in pools)
-        self.assertEqual(1, len(pools))
-
-    def test_pool_rename(self):
-        """
-        Test pool rename
-        :return:
-        """
-        pool_name = p_n()
-        new_name = p_n()
-        StratisCli.pool_create(pool_name, [DISKS[0]])
-        self.assertTrue(pool_name in StratisCli.pool_list())
-        StratisCli.pool_rename(pool_name, new_name)
-        pl = StratisCli.pool_list()
-        self.assertEqual(len(pl), 1)
-        self.assertTrue(new_name in pl)
-
-    def test_pool_destroy(self):
-        """
-        Test destroying a pool
-        :return: None
-        """
-        pool_name = p_n()
-        StratisCli.pool_create(pool_name, [DISKS[0]])
-        StratisCli.pool_destroy(pool_name)
-        pools = StratisCli.pool_list()
-        self.assertFalse(pool_name in pools)
-        self.assertEqual(0, len(pools))
-
-    def test_pool_add_data(self):
-        """
-        Test adding a data device to a pool.
-        :return: None
-        """
-        pool_name = p_n()
-        StratisCli.pool_create(pool_name, [DISKS[0]])
-        StratisCli.pool_add(pool_name, "add-data", DISKS[1:])
-        block_devs = StratisCli.blockdev_list()
-
-        for d in DISKS:
-            self.assertTrue(d in block_devs)
-
-    def test_pool_add_cache(self):
-        """
-        Test adding cache to a pool
-        :return: None
-        """
-        pool_name = p_n()
-        StratisCli.pool_create(pool_name, [DISKS[0]])
-        StratisCli.pool_add(pool_name, "add-cache", DISKS[1:])
-        block_devs = StratisCli.blockdev_list()
-
-        for d in DISKS:
-            self.assertTrue(d in block_devs)
-
-    def test_fs_create(self):
-        """
-        Test creating a FS
-        :return: None
-        """
-        pool_name = p_n()
-        fs_name = fs_n()
-        StratisCli.pool_create(pool_name, [DISKS[0]])
-        StratisCli.fs_create(pool_name, fs_name)
-        fs = StratisCli.fs_list()
-        self.assertTrue(fs_name in fs.keys())
-        self.assertEqual(1, len(fs))
-        self.assertEqual(fs[fs_name]["POOL_NAME"], pool_name)
-
-    def test_fs_destroy(self):
-        """
-        Test destroying a FS
-        :return:
-        """
-        pool_name = p_n()
-        fs_name = fs_n()
-        fs_too = fs_n()
-        StratisCli.pool_create(pool_name, [DISKS[0]])
-        StratisCli.fs_create(pool_name, fs_name)
-        StratisCli.fs_create(pool_name, fs_too)
-        StratisCli.fs_destroy(pool_name, fs_name)
-
-        fs = StratisCli.fs_list()
-        self.assertEqual(1, len(fs))
-        self.assertFalse(fs_n in fs)
-        self.assertTrue(fs_too in fs)
-
-    def test_block_dev_list(self):
-        """
-        Test block device listing
-        :return:
-        """
-        pool_name = p_n()
-        StratisCli.pool_create(pool_name, [DISKS[0]])
-
-        block_devs = StratisCli.blockdev_list()
-        self.assertTrue(DISKS[0] in block_devs)
-        self.assertEqual(1, len(block_devs))
-        self.assertEqual(pool_name, block_devs[DISKS[0]]["POOL_NAME"])
-
-    def test_fs_rename(self):
-        """
-        Test renaming a FS
-        :return: None
-        """
-        pool_name = p_n()
-        fs_name = fs_n()
-        fs_new_name = fs_n()
-        StratisCli.pool_create(pool_name, [DISKS[0]])
-        StratisCli.fs_create(pool_name, fs_name)
-        StratisCli.fs_rename(pool_name, fs_name, fs_new_name)
-
-        fs = StratisCli.fs_list()
-        self.assertTrue(fs_new_name in fs.keys())
-        self.assertFalse(fs_name in fs.keys())
-        self.assertEqual(1, len(fs))
-
-    def test_simple_data_io(self):
-        """
-        Create a pool and fs, create some files on it and validate them to
-        ensure very basic data path is working.
-        :return: None
-        """
-        mount_path = None
-        try:
-            pool_name = p_n()
-            fs_name = fs_n()
-            StratisCli.pool_create(pool_name, block_devices=DISKS)
-            StratisCli.fs_create(pool_name, fs_name)
-
-            # mount the fs
-            mount_path = os.path.join(os.path.sep + "mnt", rs(16))
-            os.mkdir(mount_path)
-            exec_command(["mount", stratis_link(pool_name, fs_name), mount_path])
-
-            files = {}
-            total_size = 0
-            # Do some simple IO to it, creating at most about ~100MiB data
-            while total_size < 1024 * 1024 * 100:
-                fn, signature, size = file_create(mount_path)
-                total_size += size
-                files[fn] = signature
-
-            # Validate them
-            for name, signature in files.items():
-                self.assertTrue(file_signature(name), signature)
-
-        finally:
-            # Make sure we un-mount the fs before we bail as we can't clean up
-            # Stratis when the FS is mounted.
-            if mount_path:
-                exec_command(["umount", mount_path])
-                os.rmdir(mount_path)
+        exit_code, stdout, stderr = exec_test_command(
+            [
+                "busctl",
+                "call",
+                "org.storage.stratis1",
+                "/org/storage/stratis1",
+                "org.freedesktop.DBus.ObjectManager",
+                "GetManagedObjects",
+                "--verbose",
+                "--no-pager",
+                "--timeout=1200",
+            ]
+        )
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(stderr, "")
+        self.assertNotEqual(stdout, "")
 
 
 if __name__ == "__main__":
-    ap = argparse.ArgumentParser()
-    ap.add_argument(
+    ARGUMENT_PARSER = argparse.ArgumentParser()
+    ARGUMENT_PARSER.add_argument(
         "--disk", action="append", dest="DISKS", help="disks to use", required=True
     )
-    disks, args = ap.parse_known_args()
-    DISKS = disks.DISKS
+    PARSED_ARGS, OTHER_ARGS = ARGUMENT_PARSER.parse_known_args()
+    DISKS = PARSED_ARGS.DISKS
     print("Using block device(s) for tests: %s" % DISKS)
-    unittest.main(argv=sys.argv[:1] + args)
+    unittest.main(argv=sys.argv[:1] + OTHER_ARGS)
