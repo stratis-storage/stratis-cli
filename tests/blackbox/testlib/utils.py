@@ -14,7 +14,6 @@
 """
 Utility functions for blackbox testing.
 """
-import hashlib
 import os
 import random
 import string
@@ -103,44 +102,3 @@ def exec_command(cmd, expected_exit_code=0):
 
     assert expected_exit_code == process.returncode
     return stdout_text, stderr_text
-
-
-def md5(t):
-    """
-    Generate a md5 signature for t
-    :param t: Data to calculate signature for
-    :return: md5 signature
-    """
-    h = hashlib.md5()
-    h.update(t.encode("utf-8"))
-    return h.hexdigest()
-
-
-# Generate a random buffer once for creating files to speed things up.
-RAND_DATA = rs(1024 * 1024 * 8)
-
-
-def file_create(directory):
-    """
-    Create a random sized file in the specified directory
-    :param directory: Directory to create file in
-    :return: (file name, file signature, file size)
-    """
-    file_name = os.path.join(directory, rs(12))
-    file_size = random.randint(512, len(RAND_DATA))
-    file_data = RAND_DATA[:file_size]
-    signature = md5(file_data)
-    with open(file_name, "w") as f:
-        f.write(file_data)
-    return file_name, signature, file_size
-
-
-def file_signature(file_name):
-    """
-    Return md5 signature for file name
-    :param file_name: File to return md5sum for
-    :return: md5 for file
-    """
-    with open(file_name, "r") as f:
-        file_data = f.read()
-    return md5(file_data)
