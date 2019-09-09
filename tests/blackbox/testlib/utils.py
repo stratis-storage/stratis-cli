@@ -92,3 +92,20 @@ def exec_command(cmd, expected_exit_code=0):
 
     assert expected_exit_code == process.returncode
     return stdout_text, stderr_text
+
+
+def exec_test_command(cmd):
+    """
+    Executes the specified test command
+    :param cmd: Command and arguments as list
+    :type cmd: list of str
+    :returns: (exit code, std out text, std err text)
+    :rtype: triple of int * str * str
+    """
+    process = Popen(cmd, stdout=PIPE, stderr=PIPE, close_fds=True, env=os.environ)
+    result = process.communicate()
+    return (
+        process.returncode,
+        bytes(result[0]).decode("utf-8"),
+        bytes(result[1]).decode("utf-8"),
+    )
