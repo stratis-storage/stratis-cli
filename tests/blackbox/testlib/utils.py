@@ -81,21 +81,16 @@ def exec_command(cmd):
     :rtype: str
     :raises AssertionError: if exit code is non-zero
     """
-    process = Popen(cmd, stdout=PIPE, stderr=PIPE, close_fds=True, env=os.environ)
-    result = process.communicate()
-    stdout_text = bytes(result[0]).decode("utf-8")
-    stderr_text = bytes(result[1]).decode("utf-8")
+    exit_code, stdout_text, stderr_text = exec_test_command(cmd)
 
     expected_exit_code = 0
 
-    if expected_exit_code != process.returncode:
-        print(
-            "cmd = %s [%d != %d]" % (str(cmd), expected_exit_code, process.returncode)
-        )
+    if expected_exit_code != exit_code:
+        print("cmd = %s [%d != %d]" % (str(cmd), expected_exit_code, exit_code))
         print("STDOUT= %s" % stdout_text)
         print("STDERR= %s" % stderr_text)
 
-    assert expected_exit_code == process.returncode
+    assert expected_exit_code == exit_code
     return stdout_text
 
 
