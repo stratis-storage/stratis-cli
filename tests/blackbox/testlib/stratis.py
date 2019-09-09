@@ -52,7 +52,7 @@ class StratisCli:
         Query the pools
         :return: A list of pool names.
         """
-        lines = exec_command([STRATIS_CLI, "pool", "list"])[0].splitlines()[1:]
+        lines = exec_command([STRATIS_CLI, "pool", "list"]).splitlines()[1:]
 
         return [
             fields[0]
@@ -66,7 +66,7 @@ class StratisCli:
         Query the file systems
         :return: A dict,  Key being the fs name, the value being its pool name.
         """
-        lines = exec_command([STRATIS_CLI, "fs", "list"])[0].splitlines()[1:]
+        lines = exec_command([STRATIS_CLI, "fs", "list"]).splitlines()[1:]
 
         return dict(
             (fields[1], fields[0])

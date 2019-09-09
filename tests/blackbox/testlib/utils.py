@@ -71,17 +71,22 @@ def umount_mdv():
                 exec_command(["umount", mp])
 
 
-def exec_command(cmd, expected_exit_code=0):
+def exec_command(cmd):
     """
-    Executes the specified command
-    :param cmd: Command and arguments as list
-    :param expected_exit_code: Integer exit code, will assert if not met
-    :return: (std out text, std err text)
+    Executes the specified infrastructure command.
+
+    :param cmd: command to execute
+    :type cmd: list of str
+    :returns: standard output
+    :rtype: str
+    :raises AssertionError: if exit code is non-zero
     """
     process = Popen(cmd, stdout=PIPE, stderr=PIPE, close_fds=True, env=os.environ)
     result = process.communicate()
     stdout_text = bytes(result[0]).decode("utf-8")
     stderr_text = bytes(result[1]).decode("utf-8")
+
+    expected_exit_code = 0
 
     if expected_exit_code != process.returncode:
         print(
@@ -91,7 +96,7 @@ def exec_command(cmd, expected_exit_code=0):
         print("STDERR= %s" % stderr_text)
 
     assert expected_exit_code == process.returncode
-    return stdout_text, stderr_text
+    return stdout_text
 
 
 def exec_test_command(cmd):
