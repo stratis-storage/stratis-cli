@@ -20,7 +20,7 @@ import sys
 import time
 import unittest
 
-from testlib.utils import exec_command, process_exists
+from testlib.utils import exec_command, exec_test_command, process_exists
 from testlib.stratis import StratisCli, clean_up
 
 DISKS = []
@@ -48,6 +48,27 @@ class StratisCertify(unittest.TestCase):
 
         StratisCli.destroy_all()
         assert StratisCli.pool_list() == []
+
+    def test_get_managed_objects(self):
+        """
+        Test that GetManagedObjects returns a string w/out failure.
+        """
+        exit_code, stdout, stderr = exec_test_command(
+            [
+                "busctl",
+                "call",
+                "org.storage.stratis1",
+                "/org/storage/stratis1",
+                "org.freedesktop.DBus.ObjectManager",
+                "GetManagedObjects",
+                "--verbose",
+                "--no-pager",
+                "--timeout=1200",
+            ]
+        )
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(stderr, "")
+        self.assertNotEqual(stdout, "")
 
 
 if __name__ == "__main__":
