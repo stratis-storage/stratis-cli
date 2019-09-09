@@ -14,11 +14,9 @@
 """
 Wrapper around stratis CLI
 """
-import datetime
 import os
-import time
 
-from .utils import exec_command, rs, umount_mdv, stratis_link, size_representation
+from .utils import exec_command, rs, umount_mdv, stratis_link
 
 # Some packaged systems might place this in /usr/sbin
 STRATIS_CLI = os.getenv("STRATIS_CLI", "/usr/bin/stratis")
@@ -52,69 +50,29 @@ class StratisCli:
     def pool_list():
         """
         Query the pools
-        :return: A dict,  Key being the pool name, the value being a dict with
-                          keys [SIZE, USED]
+        :return: A list of pool names.
         """
-        # pylint: disable=too-many-locals
-        cmd = [STRATIS_CLI, "pool", "list"]
-        std_out, _ = exec_command(cmd)
-        lines = std_out.splitlines()
+        lines = exec_command([STRATIS_CLI, "pool", "list"])[0].splitlines()[1:]
 
-        header = lines.pop(0).strip().replace(" ", "")
-        assert header == "NameTotalPhysicalSizeTotalPhysicalUsed"
-
-        rc = {}
-        for l in lines:
-            name, size, size_units, used, used_units = l.split()
-
-            if name.startswith(TEST_PREF):
-                rc[name] = dict(
-                    SIZE=size_representation(size, size_units),
-                    USED=size_representation(used, used_units),
-                )
-        return rc
+        return [
+            fields[0]
+            for fields in [line.split() for line in lines]
+            if fields[0].startswith(TEST_PREF)
+        ]
 
     @staticmethod
     def fs_list():
         """
         Query the file systems
-        :return: A dict,  Key being the fs name, the value being a dict with
-                          keys [POOL_NAME, USED_SIZE, UUID, SYM_LINK, CREATED,
-                                CREATED_TS]
+        :return: A dict,  Key being the fs name, the value being its pool name.
         """
-        # pylint: disable=too-many-locals
-        cmd = [STRATIS_CLI, "fs", "list"]
+        lines = exec_command([STRATIS_CLI, "fs", "list"])[0].splitlines()[1:]
 
-        std_out, _ = exec_command(cmd)
-        lines = std_out.splitlines()
-
-        header = lines.pop(0).strip().replace(" ", "")
-        assert header == "PoolNameNameUsedCreatedDeviceUUID"
-
-        rc = {}
-        for l in lines:
-            pool_name, name, used, used_units, month, day, year, hr_min, sym_link, uuid = (
-                l.split()
-            )
-
-            if not pool_name.startswith(TEST_PREF):
-                continue
-
-            created = "%s %s %s %s" % (month, day, year, hr_min)
-            ts = time.mktime(
-                datetime.datetime.strptime(created, "%b %d %Y %H:%M").timetuple()
-            )
-
-            rc[name] = dict(
-                POOL_NAME=pool_name,
-                USED_SIZE=size_representation(used, used_units),
-                UUID=uuid,
-                SYM_LINK=sym_link,
-                CREATED=created,
-                CREATED_TS=ts,
-            )
-
-        return rc
+        return dict(
+            (fields[1], fields[0])
+            for fields in [line.split() for line in lines]
+            if fields[0].startswith(TEST_PREF)
+        )
 
     @staticmethod
     def pool_destroy(name):
@@ -135,8 +93,8 @@ class StratisCli:
         umount_mdv()
 
         # Remove FS
-        for name, fs in StratisCli.fs_list().items():
-            StratisCli.fs_destroy(fs["POOL_NAME"], name)
+        for name, pool_name in StratisCli.fs_list().items():
+            StratisCli.fs_destroy(pool_name, name)
 
         # Remove Pools
         for name in StratisCli.pool_list():

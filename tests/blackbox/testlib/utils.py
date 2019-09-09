@@ -31,16 +31,6 @@ def rs(length=4):
     )
 
 
-def size_representation(size, units):
-    """
-    Convert size and units to a string
-    :param size: Size to convert (numeric as a string from CLI output)
-    :param units: Unit designator
-    :return: String with size and units
-    """
-    return size + units
-
-
 def stratis_link(pool_name, fs_name=None):
     """
     Generate the stratis symlink for the pool and optionally for FS
