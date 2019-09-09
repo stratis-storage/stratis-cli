@@ -112,3 +112,13 @@ class StratisCli:
             exec_command([STRATIS_CLI, "fs", "destroy", pool_name, fs_name])
             full_path = stratis_link(pool_name, fs_name)
             assert os.path.exists(full_path) is False
+
+
+def clean_up():
+    """
+    Try to clean up after a test failure.
+
+    :return: None
+    """
+    StratisCli.destroy_all()
+    assert StratisCli.pool_list() == []

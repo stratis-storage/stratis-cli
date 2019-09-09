@@ -21,19 +21,9 @@ import time
 import unittest
 
 from testlib.utils import exec_command, process_exists
-from testlib.stratis import StratisCli
+from testlib.stratis import StratisCli, clean_up
 
 DISKS = []
-
-
-def _clean_up():
-    """
-    Try to clean up after a test failure.
-
-    :return: None
-    """
-    StratisCli.destroy_all()
-    assert StratisCli.pool_list() == []
 
 
 class StratisCertify(unittest.TestCase):
@@ -50,7 +40,7 @@ class StratisCertify(unittest.TestCase):
         Stratis filesystems, pools, etc.
         :return: None
         """
-        self.addCleanup(_clean_up)
+        self.addCleanup(clean_up)
 
         if process_exists("stratisd") is None:
             exec_command(["systemctl", "start", "stratisd"])
