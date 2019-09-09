@@ -51,11 +51,11 @@ class StratisCertify(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    ap = argparse.ArgumentParser()
-    ap.add_argument(
+    ARGUMENT_PARSER = argparse.ArgumentParser()
+    ARGUMENT_PARSER.add_argument(
         "--disk", action="append", dest="DISKS", help="disks to use", required=True
     )
-    disks, args = ap.parse_known_args()
-    DISKS = disks.DISKS
+    PARSED_ARGS, OTHER_ARGS = ARGUMENT_PARSER.parse_known_args()
+    DISKS = PARSED_ARGS.DISKS
     print("Using block device(s) for tests: %s" % DISKS)
-    unittest.main(argv=sys.argv[:1] + args)
+    unittest.main(argv=sys.argv[:1] + OTHER_ARGS)
