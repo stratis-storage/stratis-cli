@@ -20,7 +20,7 @@ import string
 from subprocess import Popen, PIPE
 
 
-def rs(length=4):
+def random_string(length=4):
     """
     Generates a random string
     :param length: Length of random string
@@ -38,10 +38,10 @@ def stratis_link(pool_name, fs_name=None):
     :param fs_name:
     :return: Full path and name to symlink
     """
-    fp = os.path.join(os.path.sep + "stratis", pool_name)
+    fs_path = os.path.join(os.path.sep + "stratis", pool_name)
     if fs_name:
-        fp = os.path.join(fp, fs_name)
-    return fp
+        fs_path = os.path.join(fs_path, fs_name)
+    return fs_path
 
 
 def process_exists(name):
@@ -49,13 +49,13 @@ def process_exists(name):
     Walk the process table looking for executable 'name', returns pid if one
     found, else return None
     """
-    for p in [pid for pid in os.listdir("/proc") if pid.isdigit()]:
+    for pid in [pid for pid in os.listdir("/proc") if pid.isdigit()]:
         try:
-            exe_name = os.readlink(os.path.join("/proc/", p, "exe"))
+            exe_name = os.readlink(os.path.join("/proc/", pid, "exe"))
         except OSError:
             continue
         if exe_name and exe_name.endswith(os.path.join("/", name)):
-            return p
+            return pid
     return None
 
 
@@ -64,11 +64,11 @@ def umount_mdv():
     Locate and umount any stratis mdv mounts
     :return: None
     """
-    with open("/proc/self/mounts", "r") as f:
-        for l in f.readlines():
-            if "/stratis/.mdv-" in l:
-                mp = l.split()[1]
-                exec_command(["umount", mp])
+    with open("/proc/self/mounts", "r") as mounts:
+        for line in mounts.readlines():
+            if "/stratis/.mdv-" in line:
+                mountpoint = line.split()[1]
+                exec_command(["umount", mountpoint])
 
 
 def exec_command(cmd):

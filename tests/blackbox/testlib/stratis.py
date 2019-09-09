@@ -16,7 +16,7 @@ Wrapper around stratis CLI
 """
 import os
 
-from .utils import exec_command, rs, umount_mdv, stratis_link
+from .utils import exec_command, random_string, umount_mdv, stratis_link
 
 # Some packaged systems might place this in /usr/sbin
 STRATIS_CLI = os.getenv("STRATIS_CLI", "/usr/bin/stratis")
@@ -30,7 +30,7 @@ def p_n():
     Return a random pool name
     :return: Random String
     """
-    return TEST_PREF + "pool" + rs()
+    return TEST_PREF + "pool" + random_string()
 
 
 def fs_n():
@@ -38,7 +38,7 @@ def fs_n():
     Return a random FS name
     :return: Random String
     """
-    return TEST_PREF + "fs" + rs()
+    return TEST_PREF + "fs" + random_string()
 
 
 class StratisCli:
