@@ -38,5 +38,5 @@ try:
 except KeyboardInterrupt:
     sys.exit("Received KeyboardInterrupt")
 
-except StratisCliEnvironmentError:
-    sys.exit("Received StratisCliEnvironmentError")
+except StratisCliEnvironmentError as err:
+    sys.exit("Value of STRATIS_DBUS_TIMEOUT invalid: %s" % str(err))

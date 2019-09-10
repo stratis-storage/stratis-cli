@@ -27,8 +27,8 @@ from dbus_client_gen import DbusClientGenerationError
 from dbus_python_client_gen import make_class
 from dbus_python_client_gen import DPClientGenerationError
 
-from .._errors import StratisCliGenerationError
 from .._errors import StratisCliEnvironmentError
+from .._errors import StratisCliGenerationError
 
 from ._constants import BLOCKDEV_INTERFACE
 from ._constants import FILESYSTEM_INTERFACE
@@ -207,6 +207,7 @@ SPECS = {
 _MANAGER_INTERFACE = "org.storage.stratis1.Manager"
 
 DBUS_TIMEOUT_SECONDS = 120
+MAXIMUM_DBUS_TIMEOUT_MS = 1073741823
 
 
 def _get_timeout(value):
@@ -239,9 +240,11 @@ def _get_timeout(value):
         )
 
     # Ensure the integer is not too large
-    if timeout_int > (1 << 30) - 1:
+    if timeout_int > MAXIMUM_DBUS_TIMEOUT_MS:
         raise StratisCliEnvironmentError(
-            "The timeout value you provided exceeds the largest acceptable value, 32767."
+            "The timeout value you provided exceeds the largest acceptable value, "
+            + str(MAXIMUM_DBUS_TIMEOUT_MS)
+            + "."
         )
 
     # Convert from milliseconds to seconds

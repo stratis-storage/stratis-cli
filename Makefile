@@ -39,9 +39,13 @@ api-docs:
 dbus-tests:
 	py.test-3 ${PYTEST_OPTS} ./tests/whitebox/integration
 
+unittest-tests:
+	py.test-3 ${PYTEST_OPTS} ./tests/whitebox/unittest
+
 coverage:
 	python3 -m coverage --version
 	python3 -m coverage run --timid --branch -m pytest ./tests/whitebox/integration
+	python3 -m coverage run --timid --branch -a -m pytest ./tests/whitebox/unittest
 	python3 -m coverage run --timid --branch -a -m pytest ./tests/whitebox/monkey_patching/test_keyboard_interrupt.py
 	python3 -m coverage html --include="./src/*"
 	python3 -m coverage report -m --fail-under=93 --show-missing --include="./src/*"
