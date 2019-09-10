@@ -18,7 +18,6 @@ Test 'timeout'.
 import unittest
 
 from stratis_cli._errors import StratisCliEnvironmentError
-
 from stratis_cli._actions._data import _get_timeout
 
 
