@@ -32,9 +32,9 @@ upload-release:
 	python setup.py register sdist upload
 
 .PHONY: docs
-docs:
-	sphinx-apidoc-3 -P -F -o src/stratis_cli src/stratis_cli
-	sphinx-build-3 -b html src/stratis_cli docs/_build/html
+api-docs:
+	sphinx-apidoc-3 -P -F -o api src/stratis_cli
+	sphinx-build-3 -b html api api/_build/html
 
 dbus-tests:
 	py.test-3 ${PYTEST_OPTS} ./tests/whitebox/integration

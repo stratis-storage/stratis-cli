@@ -52,17 +52,13 @@ coverage.xml
 *.log
 
 # documentation
-docs/_build/
+api
 docs/*.8
 
 # PyBuilder
 target/
 
 .hypothesis
-
-doc/cli
-doc/tests
-doc/_build
 
 # vi
 *.swp
