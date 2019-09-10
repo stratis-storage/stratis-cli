@@ -108,8 +108,7 @@ def print_table(column_headings, row_entries, alignment, file=sys.stdout):
 
     Precondition: all(wcswidth(h) != -1 for h in column_headings)
                   all(wcswidth(i) != -1 for row in rows for item in row)
-                  (in other words, no items to be printed contain
-                   unprintable characters)
+                  (i.e., no items to be printed contain unprintable characters)
     """
     column_widths = [0] * len(column_headings)
     cell_widths = []
