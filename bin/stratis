@@ -22,6 +22,7 @@ try:
     import sys
 
     from stratis_cli import run
+    from stratis_cli._errors import StratisCliEnvironmentError
 
 
     def main():
@@ -36,3 +37,6 @@ try:
 
 except KeyboardInterrupt:
     sys.exit("Received KeyboardInterrupt")
+
+except StratisCliEnvironmentError as err:
+    sys.exit("Value of STRATIS_DBUS_TIMEOUT invalid: %s" % str(err))

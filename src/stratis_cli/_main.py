@@ -18,6 +18,7 @@ Highest level runner.
 import justbytes as jb
 
 from ._errors import StratisCliActionError
+from ._errors import StratisCliEnvironmentError
 from ._error_reporting import handle_error
 from ._parser import gen_parser
 
@@ -47,7 +48,7 @@ def run():
             # The same holds for SystemExit, except that it must be allowed
             # to propagate to the interpreter, i.e., it should not be recaught
             # anywhere.
-            except (KeyboardInterrupt, SystemExit) as err:
+            except (KeyboardInterrupt, SystemExit, StratisCliEnvironmentError) as err:
                 raise err
             except BaseException as err:
                 raise StratisCliActionError(command_line_args, result) from err
