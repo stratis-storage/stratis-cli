@@ -21,7 +21,7 @@ import time
 import unittest
 
 from testlib.utils import exec_command, exec_test_command, process_exists
-from testlib.stratis import StratisCli, clean_up
+from testlib.dbus import StratisDbus, clean_up
 
 DISKS = []
 
@@ -46,8 +46,8 @@ class StratisCertify(unittest.TestCase):
             exec_command(["systemctl", "start", "stratisd"])
             time.sleep(20)
 
-        StratisCli.destroy_all()
-        assert StratisCli.pool_list() == []
+        StratisDbus.destroy_all()
+        assert StratisDbus.pool_list() == []
 
     def test_get_managed_objects(self):
         """

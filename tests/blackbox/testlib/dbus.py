@@ -195,3 +195,13 @@ class StratisDbus:
         # Remove Pools
         for name in StratisDbus.pool_list():
             StratisDbus.pool_destroy(name)
+
+
+def clean_up():
+    """
+    Try to clean up after a test failure.
+
+    :return: None
+    """
+    StratisDbus.destroy_all()
+    assert StratisDbus.pool_list() == []
