@@ -52,3 +52,6 @@ coverage:
 
 keyboard-interrupt-test:
 	py.test-3 ${PYTEST_OPTS} ./tests/whitebox/monkey_patching/test_keyboard_interrupt.py
+
+test-travis:
+	$(TOX) -c tox.ini -e test
