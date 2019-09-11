@@ -242,9 +242,8 @@ def _get_timeout(value):
     # Ensure the integer is not too large
     if timeout_int > MAXIMUM_DBUS_TIMEOUT_MS:
         raise StratisCliEnvironmentError(
-            "The timeout value you provided exceeds the largest acceptable value, "
-            + str(MAXIMUM_DBUS_TIMEOUT_MS)
-            + "."
+            "The timeout value you provided exceeds the largest acceptable value, %s."
+            % MAXIMUM_DBUS_TIMEOUT_MS
         )
 
     # Convert from milliseconds to seconds

@@ -15,3 +15,4 @@
 Top level of CLI.
 """
 from ._main import run
+from ._errors import StratisCliEnvironmentError
