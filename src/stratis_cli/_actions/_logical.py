@@ -56,15 +56,22 @@ class LogicalActions:
             .search(managed_objects)
         )
 
-        fs_names = {
-            MOFilesystem(info).Name(): path
-            for (path, info) in filesystems().search(managed_objects)
-        }
-        unchanged = [name for name in namespace.fs_name if name in fs_names]
+        requested_names = frozenset(namespace.fs_name)
 
-        if unchanged == []:
-            changed = [name for name in namespace.fs_name if name not in fs_names]
-            raise StratisPartialChangeError("create", changed, unchanged)
+        names = frozenset(
+            MOFilesystem(info).Name()
+            for (_, info) in filesystems(props={"Pool": pool_object_path}).search(
+                managed_objects
+            )
+        )
+        already_names = requested_names.intersection(names)
+
+        if already_names != frozenset():
+            raise StratisPartialChangeError(
+                "create",
+                list(requested_names.difference(already_names)),
+                list(already_names),
+            )
 
         (_, rc, message) = Pool.Methods.CreateFilesystems(
             get_object(pool_object_path), {"specs": namespace.fs_name}
@@ -155,23 +162,27 @@ class LogicalActions:
             .require_unique_match(True)
             .search(managed_objects)
         )
+
+        requested_names = frozenset(namespace.fs_name)
+
+        pool_filesystems = {
+            MOFilesystem(info).Name(): op
+            for (op, info) in filesystems(props={"Pool": pool_object_path}).search(
+                managed_objects
+            )
+        }
+        already_removed = requested_names.difference(frozenset(pool_filesystems.keys()))
+
+        if already_removed != frozenset():
+            raise StratisPartialChangeError(
+                "destroy",
+                requested_names.difference(already_removed),
+                list(already_removed),
+            )
+
         fs_object_paths = [
-            op
-            for name in namespace.fs_name
-            for (op, _) in filesystems(
-                props={"Name": name, "Pool": pool_object_path}
-            ).search(managed_objects)
+            op for (name, op) in pool_filesystems if name in requested_names
         ]
-
-        fs_names = [
-            MOFilesystem(info).Name()
-            for (_, info) in filesystems().search(managed_objects)
-        ]
-        unchanged = [name for name in namespace.fs_name if name not in fs_names]
-
-        if unchanged == []:
-            changed = [name for name in namespace.fs_name if name in fs_names]
-            raise StratisPartialChangeError("destroy", changed, unchanged)
 
         (_, rc, message) = Pool.Methods.DestroyFilesystems(
             get_object(pool_object_path), {"filesystems": fs_object_paths}
