@@ -41,7 +41,11 @@ def value_to_name(klass):
         """
         try:
             the_str = str(klass(num)).rsplit(".")[-1].replace("_", " ")
-        except ValueError:
+
+        # This branch is taken only if the constants defined here do not
+        # match those defined in stratisd. We should remedy such a situation
+        # very rapidly.
+        except ValueError:  # pragma: no cover
             the_str = (
                 "???"
                 if terse_unknown
