@@ -19,8 +19,8 @@ from justbytes import Range
 from dateutil import parser as date_parser
 
 from .._errors import StratisCliEngineError
-from .._errors import StratisNoChangeError
-from .._errors import StratisPartialChangeError
+from .._errors import StratisCliNoChangeError
+from .._errors import StratisCliPartialChangeError
 
 from .._stratisd_constants import StratisdErrors
 
@@ -67,7 +67,7 @@ class LogicalActions:
         already_names = requested_names.intersection(names)
 
         if already_names != frozenset():
-            raise StratisPartialChangeError(
+            raise StratisCliPartialChangeError(
                 "create",
                 list(requested_names.difference(already_names)),
                 list(already_names),
@@ -174,7 +174,7 @@ class LogicalActions:
         already_removed = requested_names.difference(frozenset(pool_filesystems.keys()))
 
         if already_removed != frozenset():
-            raise StratisPartialChangeError(
+            raise StratisCliPartialChangeError(
                 "destroy",
                 requested_names.difference(already_removed),
                 list(already_removed),
@@ -227,7 +227,7 @@ class LogicalActions:
 
         if not changed:
             resource = namespace.snapshot_name
-            raise StratisNoChangeError("snapshot", resource)
+            raise StratisCliNoChangeError("snapshot", resource)
 
     @staticmethod
     def rename_fs(namespace):
@@ -261,4 +261,4 @@ class LogicalActions:
 
         if not changed:
             resource = namespace.new_name
-            raise StratisNoChangeError("rename", resource)
+            raise StratisCliNoChangeError("rename", resource)

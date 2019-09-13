@@ -18,9 +18,9 @@ Miscellaneous top-level actions.
 from justbytes import Range
 
 from .._errors import StratisCliEngineError
-from .._errors import StratisInUseError
-from .._errors import StratisNoChangeError
-from .._errors import StratisPartialChangeError
+from .._errors import StratisCliInUseError
+from .._errors import StratisCliNoChangeError
+from .._errors import StratisCliPartialChangeError
 
 from .._stratisd_constants import BlockDevTiers
 from .._stratisd_constants import StratisdErrors
@@ -61,7 +61,7 @@ class TopActions:
 
         if not changed:
             resource = namespace.pool_name
-            raise StratisNoChangeError("create", resource)
+            raise StratisCliNoChangeError("create", resource)
 
     @staticmethod
     def list_pools(_):
@@ -124,7 +124,7 @@ class TopActions:
 
         if not changed:
             resource = namespace.pool_name
-            raise StratisNoChangeError("destroy", resource)
+            raise StratisCliNoChangeError("destroy", resource)
 
     @staticmethod
     def rename_pool(namespace):
@@ -152,7 +152,7 @@ class TopActions:
 
         if not changed:
             resource = namespace.new
-            raise StratisNoChangeError("rename", resource)
+            raise StratisCliNoChangeError("rename", resource)
 
     @staticmethod
     def add_data_devices(namespace):
@@ -184,7 +184,7 @@ class TopActions:
         )
         already_cache = blockdevs.intersection(cache)
         if already_cache != frozenset():
-            raise StratisInUseError(list(already_cache), BlockDevTiers.Data)
+            raise StratisCliInUseError(list(already_cache), BlockDevTiers.Data)
 
         data = frozenset(
             str(MODev(info).Devnode())
@@ -196,7 +196,7 @@ class TopActions:
 
         if already_data != frozenset():
             new_data = blockdevs.difference(already_data)
-            raise StratisPartialChangeError(
+            raise StratisCliPartialChangeError(
                 "add-data", list(new_data), list(already_data)
             )
 
@@ -237,7 +237,7 @@ class TopActions:
         already_data = blockdevs.intersection(data)
 
         if already_data != frozenset():
-            raise StratisInUseError(list(already_data), BlockDevTiers.Cache)
+            raise StratisCliInUseError(list(already_data), BlockDevTiers.Cache)
 
         cache = frozenset(
             str(MODev(info).Devnode())
@@ -249,7 +249,7 @@ class TopActions:
 
         if already_cache != frozenset():
             new_cache = blockdevs.difference(already_cache)
-            raise StratisPartialChangeError(
+            raise StratisCliPartialChangeError(
                 "add-cache", list(new_cache), list(already_cache)
             )
 

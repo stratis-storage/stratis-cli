@@ -28,13 +28,72 @@ class StratisCliError(Exception):
 
 class StratisCliRuntimeError(StratisCliError):
     """
-    Exception raised during runtime.
+    Exception raised while an action is being performed and as a result of
+    the requested action.
     """
 
 
-class StratisNoChangeError(StratisCliError):
+class StratisCliPartialChangeError(StratisCliRuntimeError):
     """
-    Raised if there was a failure due to no changed state in stratisd's engine.
+    Raised if a request made of stratisd must result in a partial or no change
+    since some or all of the post-condition for the request already holds.
+
+    Invariant: self.unchanged_resources != []
+    """
+
+    def __init__(self, command, changed_resources, unchanged_resources):
+        """ Initializer.
+
+            :param str command: the command run that caused the error
+            :param changed_resources: the target resources that would change
+            :type changed_resources: list of str
+            :param unchanged_resources: the target resources that would not change
+            :type unchanged_resources: list of str
+
+            Precondition: unchanged_resources != []
+        """
+        # pylint: disable=super-init-not-called
+        self.command = command
+        self.changed_resources = changed_resources
+        self.unchanged_resources = unchanged_resources
+
+    def partial(self):
+        """
+        Returns True if some partial change would be effected, but False if
+        no change at all would be effected.
+
+        :returns: True if raised due to a partial change, otherwise False
+        :rtype: bool
+        """
+        return self.changed_resources != []
+
+    def __str__(self):
+        if len(self.unchanged_resources) > 1:
+            msg = "The '%s' action has no effect for resources %s" % (
+                self.command,
+                self.unchanged_resources,
+            )
+        else:
+            msg = "The '%s' action has no effect for resource %s" % (
+                self.command,
+                self.unchanged_resources[0],
+            )
+
+        if self.changed_resources != []:
+            if len(self.changed_resources) > 1:
+                msg += " but does for resources %s" % self.changed_resources
+            else:
+                msg += " but does for resource %s" % self.changed_resources[0]
+
+        return msg
+
+
+class StratisCliNoChangeError(StratisCliPartialChangeError):
+    """
+    Raised if a request made of stratisd must result in no change since the
+    post-condition of the request is already entirely satisfied. This is
+    a special case of StratisCliPartialChangeError, where the change requested
+    is so simple that it can only succeed or fail.
     """
 
     def __init__(self, command, resource):
@@ -43,45 +102,10 @@ class StratisNoChangeError(StratisCliError):
             :param str command: the executed command
             :param str resource: the target resource
         """
-        # pylint: disable=super-init-not-called
-        self.command = command
-        self.resource = resource
-
-    def __str__(self):
-        return "The command '%s' has already been completed for resource '%s'" % (
-            self.command,
-            self.resource,
-        )
+        StratisCliPartialChangeError.__init__(self, command, [], [resource])
 
 
-class StratisPartialChangeError(StratisCliError):
-    """
-    Raised if there was a failure due to partially changed state in stratisd's engine.
-    """
-
-    def __init__(self, command, changed_resources, unchanged_resources):
-        """ Initializer.
-
-            :param str command: the command run that caused the error
-            :param list of str changed_resources: the target resources that would change
-            :param list of str unchanged_resources: the target resources that would not change
-        """
-        # pylint: disable=super-init-not-called
-        self.command = command
-        self.changed_resources = changed_resources
-        self.unchanged_resources = unchanged_resources
-
-    def __str__(self):
-        msg = "The command '%s' has already been completed for resources %s " % (
-            self.command,
-            self.unchanged_resources,
-        )
-        if self.changed_resources != []:
-            msg += "but not yet for resources %s" % self.changed_resources
-        return msg
-
-
-class StratisInUseError(StratisCliError):
+class StratisCliInUseError(StratisCliRuntimeError):
     """
     Raised if a block device is added as both a blockdev and a cachedev
     """
