@@ -28,10 +28,9 @@ from ._actions import FILESYSTEM_INTERFACE
 from ._actions import POOL_INTERFACE
 
 from ._errors import StratisCliEngineError
+from ._errors import StratisCliInUseError
+from ._errors import StratisCliPartialChangeError
 from ._errors import StratisCliUnknownInterfaceError
-from ._errors import StratisInUseError
-from ._errors import StratisNoChangeError
-from ._errors import StratisPartialChangeError
 
 _DBUS_INTERFACE_MSG = (
     "The version of stratis you are running expects a different "
@@ -126,15 +125,15 @@ def interpret_errors(errors):
                 "the D-Bus: %s."
             )
             return fmt_str % error
-        if isinstance(error, StratisNoChangeError):
-            fmt_str = "stratis-cli issued a command that had no effect: %s"
+        if isinstance(error, StratisCliPartialChangeError):
+            if error.partial():
+                fmt_str = (
+                    "You issued a command that would have had a partial effect: %s"
+                )
+            else:
+                fmt_str = "You issued a command that would have had no effect: %s"
             return fmt_str % error
-        if isinstance(error, StratisPartialChangeError):
-            fmt_str = (
-                "stratis-cli issued a command that could not be completely applied: %s"
-            )
-            return fmt_str % error
-        if isinstance(error, StratisInUseError):
+        if isinstance(error, StratisCliInUseError):
             fmt_str = (
                 "stratis-cli issued a command that added a blockdev to both tiers: %s"
             )
