@@ -146,6 +146,20 @@ def interpret_errors(errors):
         ):
             return "Most likely stratis is unable to connect to the stratisd D-Bus service."
 
+        # pylint: disable=fixme
+        # FIXME: remove no coverage pragma when adequate testing for CLI
+        # output exists.
+        if (
+            # pylint: disable=bad-continuation
+            isinstance(error, dbus.exceptions.DBusException)
+            and error.get_dbus_name() == "org.freedesktop.DBus.Error.NoReply"
+        ):  # pragma: no cover
+            fmt_str = (
+                "stratis attempted communication with the daemon, stratisd, "
+                "over the D-Bus, but stratisd did not respond in the allowed time."
+            )
+            return fmt_str % error
+
         # The goal is to have an explanation for every error chain. If there is
         # none, then this will rapidly be fixed, so it will be difficult to
         # maintain coverage for this branch.
