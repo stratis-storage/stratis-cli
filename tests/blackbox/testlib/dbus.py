@@ -51,13 +51,9 @@ class StratisDbus:
         Query the pools
         :return: A list of pool names.
         """
-        objects = StratisDbus._get_managed_objects().items()
-        if objects is None:
-            objects = {}
-
         pool_objects = [
             obj_data[StratisDbus._POOL_IFACE]
-            for _, obj_data in objects
+            for _, obj_data in StratisDbus._get_managed_objects().items()
             if StratisDbus._POOL_IFACE in obj_data
         ]
 
@@ -70,29 +66,25 @@ class StratisDbus:
         :param name: Name of pool to destroy
         :return: None
         """
-        objects = StratisDbus._get_managed_objects().items()
-        if objects is None:
-            objects = {}
-
         pool_objects = {
             path: obj_data[StratisDbus._POOL_IFACE]
-            for path, obj_data in objects
+            for path, obj_data in StratisDbus._get_managed_objects().items()
             if StratisDbus._POOL_IFACE in obj_data
         }
 
-        pool_object_path = [
+        pool_object_paths = [
             path
             for path, pool_obj in pool_objects.items()
             if pool_obj["Name"] == pool_name
-        ].pop()
-        if pool_object_path is None:
+        ]
+        if pool_object_paths == []:
             return None
 
         iface = dbus.Interface(
             StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, StratisDbus._TOP_OBJECT),
             StratisDbus._MNGR_IFACE,
         )
-        iface.DestroyPool(pool_object_path)
+        iface.DestroyPool(pool_object_paths[0])
 
         return None
 
@@ -105,8 +97,6 @@ class StratisDbus:
                                 CREATED_TS]
         """
         objects = StratisDbus._get_managed_objects().items()
-        if objects is None:
-            objects = {}
 
         fs_objects = [
             obj_data[StratisDbus._FS_IFACE]
@@ -120,18 +110,10 @@ class StratisDbus:
             if StratisDbus._POOL_IFACE in obj_data
         }
 
-        result = {}
-        for fs_object in fs_objects:
-            created = fs_object["Created"]
-            values = {
-                "POOL_NAME": pool_path_to_name[fs_object["Pool"]],
-                "USED_SIZE": fs_object["Used"],
-                "UUID": fs_object["Uuid"],
-                "SYM_LINK": fs_object["Devnode"],
-                "CREATED": created,
-                "CREATED_TS": created,
-            }
-            result[fs_object["Name"]] = values
+        result = {
+            fs_object["Name"]: pool_path_to_name[fs_object["Pool"]]
+            for fs_object in fs_objects
+        }
 
         return result
 
@@ -144,8 +126,6 @@ class StratisDbus:
         :return: None
         """
         objects = StratisDbus._get_managed_objects().items()
-        if objects is None:
-            objects = {}
 
         pool_objects = {
             path: obj_data[StratisDbus._POOL_IFACE]
@@ -158,12 +138,12 @@ class StratisDbus:
             if StratisDbus._FS_IFACE in obj_data
         }
 
-        pool_object_path = [
+        pool_object_paths = [
             path
             for path, pool_obj in pool_objects.items()
             if pool_obj["Name"] == pool_name
-        ].pop()
-        if pool_object_path is None:
+        ]
+        if pool_object_paths == []:
             return None
 
         fs_object_paths = [
@@ -173,7 +153,7 @@ class StratisDbus:
             return None
 
         iface = dbus.Interface(
-            StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, pool_object_path),
+            StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, pool_object_paths[0]),
             StratisDbus._POOL_IFACE,
         )
         iface.DestroyFilesystems(fs_object_paths)
