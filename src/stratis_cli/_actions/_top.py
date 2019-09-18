@@ -52,7 +52,7 @@ class TopActions:
             },
         )
 
-        if rc != StratisdErrors.OK:
+        if rc != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(rc, message)
 
     @staticmethod
@@ -109,6 +109,8 @@ class TopActions:
             proxy, {"pool": pool_object_path}
         )
 
+        # This branch can be covered, since the engine will return an error
+        # if the pool can not be destroyed because it has filesystems.
         if rc != StratisdErrors.OK:
             raise StratisCliEngineError(rc, message)
 
@@ -133,7 +135,7 @@ class TopActions:
             get_object(pool_object_path), {"name": namespace.new}
         )
 
-        if rc != StratisdErrors.OK:
+        if rc != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(rc, message)
 
     @staticmethod
@@ -156,7 +158,7 @@ class TopActions:
         (_, rc, message) = Pool.Methods.AddDataDevs(
             get_object(pool_object_path), {"devices": namespace.blockdevs}
         )
-        if rc != StratisdErrors.OK:
+        if rc != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(rc, message)
 
     @staticmethod
@@ -179,5 +181,5 @@ class TopActions:
         (_, rc, message) = Pool.Methods.AddCacheDevs(
             get_object(pool_object_path), {"devices": namespace.blockdevs}
         )
-        if rc != StratisdErrors.OK:
+        if rc != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(rc, message)

@@ -55,7 +55,7 @@ class LogicalActions:
             get_object(pool_object_path), {"specs": namespace.fs_name}
         )
 
-        if rc != StratisdErrors.OK:
+        if rc != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(rc, message)
 
     @staticmethod
@@ -150,7 +150,7 @@ class LogicalActions:
             get_object(pool_object_path), {"filesystems": fs_object_paths}
         )
 
-        if rc != StratisdErrors.OK:
+        if rc != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(rc, message)
 
     @staticmethod
@@ -184,7 +184,7 @@ class LogicalActions:
             {"origin": origin_fs_object_path, "snapshot_name": namespace.snapshot_name},
         )
 
-        if rc != StratisdErrors.OK:
+        if rc != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(rc, message)
 
     @staticmethod
@@ -214,5 +214,5 @@ class LogicalActions:
             get_object(fs_object_path), {"name": namespace.new_name}
         )
 
-        if rc != StratisdErrors.OK:
+        if rc != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(rc, message)
