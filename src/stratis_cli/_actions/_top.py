@@ -184,7 +184,7 @@ class TopActions:
         )
         already_cache = blockdevs.intersection(cache)
         if already_cache != frozenset():
-            raise StratisCliInUseError(list(already_cache), BlockDevTiers.Data)
+            raise StratisCliInUseError(already_cache, BlockDevTiers.Data)
 
         data = frozenset(
             str(MODev(info).Devnode())
@@ -196,9 +196,7 @@ class TopActions:
 
         if already_data != frozenset():
             new_data = blockdevs.difference(already_data)
-            raise StratisCliPartialChangeError(
-                "add-data", list(new_data), list(already_data)
-            )
+            raise StratisCliPartialChangeError("add-data", new_data, already_data)
 
         (_, rc, message) = Pool.Methods.AddDataDevs(
             get_object(pool_object_path), {"devices": namespace.blockdevs}
@@ -237,7 +235,7 @@ class TopActions:
         already_data = blockdevs.intersection(data)
 
         if already_data != frozenset():
-            raise StratisCliInUseError(list(already_data), BlockDevTiers.Cache)
+            raise StratisCliInUseError(already_data, BlockDevTiers.Cache)
 
         cache = frozenset(
             str(MODev(info).Devnode())
@@ -249,9 +247,7 @@ class TopActions:
 
         if already_cache != frozenset():
             new_cache = blockdevs.difference(already_cache)
-            raise StratisCliPartialChangeError(
-                "add-cache", list(new_cache), list(already_cache)
-            )
+            raise StratisCliPartialChangeError("add-cache", new_cache, already_cache)
 
         (_, rc, message) = Pool.Methods.AddCacheDevs(
             get_object(pool_object_path), {"devices": namespace.blockdevs}
