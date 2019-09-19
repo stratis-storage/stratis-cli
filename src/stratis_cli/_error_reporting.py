@@ -135,7 +135,8 @@ def interpret_errors(errors):
             return fmt_str % error
         if isinstance(error, StratisCliInUseError):
             fmt_str = (
-                "stratis-cli issued a command that added a blockdev to both tiers: %s"
+                "You issued a command that would have resulted in "
+                "including a block device in both cache and data tiers: %s"
             )
             return fmt_str % error
 
