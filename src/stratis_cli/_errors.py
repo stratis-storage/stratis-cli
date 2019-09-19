@@ -126,19 +126,26 @@ class StratisCliInUseError(StratisCliRuntimeError):
         self.added_as = added_as
 
     def __str__(self):
-        if self.added_as == BlockDevTiers.Data:
-            already_added = BlockDevTiers.Cache
-        else:
-            already_added = BlockDevTiers.Data
+        (target_blockdev_tier, already_blockdev_tier) = (
+            BLOCK_DEV_TIER_TO_NAME(self.added_as),
+            BLOCK_DEV_TIER_TO_NAME(
+                BlockDevTiers.Data
+                if self.added_as == BlockDevTiers.Cache
+                else BlockDevTiers.Cache
+            ),
+        )
+
+        if len(self.blockdevs) > 1:
+            return (
+                "The resources %s would be added to the %s tier but are already "
+                "in use in the %s tier"
+                % (self.blockdevs, target_blockdev_tier, already_blockdev_tier)
+            )
 
         return (
-            "The resources %s would be added to the %s tier but have already been "
-            "added to the %s tier"
-            % (
-                self.blockdevs,
-                BLOCK_DEV_TIER_TO_NAME(self.added_as),
-                BLOCK_DEV_TIER_TO_NAME(already_added),
-            )
+            "The resource %s would be added to the %s tier but is already "
+            "in use in the %s tier"
+            % (self.blockdevs[0], target_blockdev_tier, already_blockdev_tier)
         )
 
 
