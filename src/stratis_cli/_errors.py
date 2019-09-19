@@ -38,7 +38,7 @@ class StratisCliPartialChangeError(StratisCliRuntimeError):
     Raised if a request made of stratisd must result in a partial or no change
     since some or all of the post-condition for the request already holds.
 
-    Invariant: self.unchanged_resources != []
+    Invariant: self.unchanged_resources != frozenset()
     """
 
     def __init__(self, command, changed_resources, unchanged_resources):
@@ -46,11 +46,11 @@ class StratisCliPartialChangeError(StratisCliRuntimeError):
 
             :param str command: the command run that caused the error
             :param changed_resources: the target resources that would change
-            :type changed_resources: list of str
+            :type changed_resources: frozenset of str
             :param unchanged_resources: the target resources that would not change
-            :type unchanged_resources: list of str
+            :type unchanged_resources: frozenset of str
 
-            Precondition: unchanged_resources != []
+            Precondition: unchanged_resources != frozenset()
         """
         # pylint: disable=super-init-not-called
         self.command = command
@@ -65,25 +65,25 @@ class StratisCliPartialChangeError(StratisCliRuntimeError):
         :returns: True if raised due to a partial change, otherwise False
         :rtype: bool
         """
-        return self.changed_resources != []
+        return self.changed_resources != frozenset()
 
     def __str__(self):
         if len(self.unchanged_resources) > 1:
             msg = "The '%s' action has no effect for resources %s" % (
                 self.command,
-                self.unchanged_resources,
+                list(self.unchanged_resources),
             )
         else:
             msg = "The '%s' action has no effect for resource %s" % (
                 self.command,
-                self.unchanged_resources[0],
+                list(self.unchanged_resources)[0],
             )
 
-        if self.changed_resources != []:
+        if self.changed_resources != frozenset():
             if len(self.changed_resources) > 1:
-                msg += " but does for resources %s" % self.changed_resources
+                msg += " but does for resources %s" % list(self.changed_resources)
             else:
-                msg += " but does for resource %s" % self.changed_resources[0]
+                msg += " but does for resource %s" % list(self.changed_resources)[0]
 
         return msg
 
@@ -102,7 +102,9 @@ class StratisCliNoChangeError(StratisCliPartialChangeError):
             :param str command: the executed command
             :param str resource: the target resource
         """
-        StratisCliPartialChangeError.__init__(self, command, [], [resource])
+        StratisCliPartialChangeError.__init__(
+            self, command, frozenset(), frozenset([resource])
+        )
 
 
 class StratisCliInUseError(StratisCliRuntimeError):
@@ -115,11 +117,11 @@ class StratisCliInUseError(StratisCliRuntimeError):
         """ Initializer.
 
             :param blockdevs: the blockdevs that would be added in both tiers
-            :type blockdevs: list of str
+            :type blockdevs: frozenset of str
             :param added_as: what tier the devices were to be added to
             :type added_as: _stratisd_constants.BlockDevTiers
 
-            Precondition: blockdevs != []
+            Precondition: blockdevs != frozenset()
         """
         # pylint: disable=super-init-not-called
         self.blockdevs = blockdevs
@@ -139,13 +141,13 @@ class StratisCliInUseError(StratisCliRuntimeError):
             return (
                 "The block devices %s would be added to the %s tier but are "
                 "already in use in the %s tier"
-                % (self.blockdevs, target_blockdev_tier, already_blockdev_tier)
+                % (list(self.blockdevs), target_blockdev_tier, already_blockdev_tier)
             )
 
         return (
             "The block device %s would be added to the %s tier but is already "
             "in use in the %s tier"
-            % (self.blockdevs[0], target_blockdev_tier, already_blockdev_tier)
+            % (list(self.blockdevs)[0], target_blockdev_tier, already_blockdev_tier)
         )
 
 

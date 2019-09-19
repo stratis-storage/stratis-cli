@@ -68,9 +68,7 @@ class LogicalActions:
 
         if already_names != frozenset():
             raise StratisCliPartialChangeError(
-                "create",
-                list(requested_names.difference(already_names)),
-                list(already_names),
+                "create", requested_names.difference(already_names), already_names
             )
 
         (_, rc, message) = Pool.Methods.CreateFilesystems(
@@ -175,9 +173,7 @@ class LogicalActions:
 
         if already_removed != frozenset():
             raise StratisCliPartialChangeError(
-                "destroy",
-                requested_names.difference(already_removed),
-                list(already_removed),
+                "destroy", requested_names.difference(already_removed), already_removed
             )
 
         fs_object_paths = [
