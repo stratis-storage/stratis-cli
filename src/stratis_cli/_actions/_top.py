@@ -229,17 +229,18 @@ class TopActions:
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        (pool_object_path, _) = next(
-            pools(props={"Name": namespace.pool_name})
-            .require_unique_match(True)
-            .search(managed_objects)
-        )
 
         blockdevs = frozenset(namespace.blockdevs)
 
         _check_opposite_tier(managed_objects, blockdevs, BlockDevTiers.Cache)
 
         _check_same_tier(managed_objects, blockdevs, BlockDevTiers.Data)
+
+        (pool_object_path, _) = next(
+            pools(props={"Name": namespace.pool_name})
+            .require_unique_match(True)
+            .search(managed_objects)
+        )
 
         (_, rc, message) = Pool.Methods.AddDataDevs(
             get_object(pool_object_path), {"devices": namespace.blockdevs}
@@ -262,17 +263,18 @@ class TopActions:
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        (pool_object_path, _) = next(
-            pools(props={"Name": namespace.pool_name})
-            .require_unique_match(True)
-            .search(managed_objects)
-        )
 
         blockdevs = frozenset(namespace.blockdevs)
 
         _check_opposite_tier(managed_objects, blockdevs, BlockDevTiers.Data)
 
         _check_same_tier(managed_objects, blockdevs, BlockDevTiers.Cache)
+
+        (pool_object_path, _) = next(
+            pools(props={"Name": namespace.pool_name})
+            .require_unique_match(True)
+            .search(managed_objects)
+        )
 
         (_, rc, message) = Pool.Methods.AddCacheDevs(
             get_object(pool_object_path), {"devices": namespace.blockdevs}
