@@ -222,8 +222,7 @@ class LogicalActions:
             raise StratisCliEngineError(rc, message)
 
         if not changed:
-            resource = namespace.snapshot_name
-            raise StratisCliNoChangeError("snapshot", resource)
+            raise StratisCliNoChangeError("snapshot", namespace.snapshot_name)
 
     @staticmethod
     def rename_fs(namespace):
@@ -256,5 +255,4 @@ class LogicalActions:
             raise StratisCliEngineError(rc, message)
 
         if not changed:
-            resource = namespace.new_name
-            raise StratisCliNoChangeError("rename", resource)
+            raise StratisCliNoChangeError("rename", namespace.new_name)
