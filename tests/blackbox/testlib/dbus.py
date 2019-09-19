@@ -14,9 +14,47 @@
 """
 DBus methods for blackbox testing.
 """
+import os
+
 import dbus
 
-from .utils import umount_mdv
+from .utils import umount_mdv, TEST_PREF
+
+
+# This method is based off of the STRATIS_DBUS_TIMEOUT environment variable parsing
+# function in src/stratis_cli/_actions/_data.py
+def _get_timeout(value):
+    """
+    Turn an input str or int into a float timeout value.
+
+    :param value: the input str or int
+    :type value: str or int
+    :raises ValueError:
+    :returns: float
+    """
+
+    maximum_dbus_timeout_ms = 1073741823
+
+    # Ensure the input str is not a float
+    if isinstance(value, float):
+        raise ValueError(
+            "The timeout value provided is a float; it should be an integer."
+        )
+
+    try:
+        timeout_int = int(value)
+    except ValueError:
+        raise ValueError("The timeout value provided is not an integer.")
+
+    # Ensure the integer is not too large
+    if timeout_int > maximum_dbus_timeout_ms:
+        raise ValueError(
+            "The timeout value provided exceeds the largest acceptable value, %s."
+            % maximum_dbus_timeout_ms
+        )
+
+    # Convert from milliseconds to seconds
+    return timeout_int / 1000
 
 
 class StratisDbus:
@@ -31,6 +69,11 @@ class StratisDbus:
     _POOL_IFACE = "org.storage.stratis1.pool"
     _FS_IFACE = "org.storage.stratis1.filesystem"
 
+    _DBUS_TIMEOUT_SECONDS = 120
+    _TIMEOUT = _get_timeout(
+        os.environ.get("STRATIS_DBUS_TIMEOUT", _DBUS_TIMEOUT_SECONDS * 1000)
+    )
+
     @staticmethod
     def _get_managed_objects():
         """
@@ -43,7 +86,7 @@ class StratisDbus:
             StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, StratisDbus._TOP_OBJECT),
             StratisDbus._OBJECT_MANAGER,
         )
-        return object_manager.GetManagedObjects()
+        return object_manager.GetManagedObjects(timeout=StratisDbus._TIMEOUT)
 
     @staticmethod
     def pool_list():
@@ -55,6 +98,7 @@ class StratisDbus:
             obj_data[StratisDbus._POOL_IFACE]
             for _, obj_data in StratisDbus._get_managed_objects().items()
             if StratisDbus._POOL_IFACE in obj_data
+            and obj_data[StratisDbus._POOL_IFACE]["Name"].startswith(TEST_PREF)
         ]
 
         return [pool_obj["Name"] for pool_obj in pool_objects]
@@ -75,7 +119,7 @@ class StratisDbus:
         pool_object_paths = [
             path
             for path, pool_obj in pool_objects.items()
-            if pool_obj["Name"] == pool_name
+            if pool_obj["Name"] == pool_name and pool_obj["Name"].startswith(TEST_PREF)
         ]
         if pool_object_paths == []:
             return None
@@ -84,7 +128,7 @@ class StratisDbus:
             StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, StratisDbus._TOP_OBJECT),
             StratisDbus._MNGR_IFACE,
         )
-        iface.DestroyPool(pool_object_paths[0])
+        iface.DestroyPool(pool_object_paths[0], timeout=StratisDbus._TIMEOUT)
 
         return None
 
@@ -100,6 +144,7 @@ class StratisDbus:
             obj_data[StratisDbus._FS_IFACE]
             for _, obj_data in objects
             if StratisDbus._FS_IFACE in obj_data
+            and obj_data[StratisDbus._FS_IFACE]["Name"].startswith(TEST_PREF)
         ]
 
         pool_path_to_name = {
@@ -145,7 +190,9 @@ class StratisDbus:
             return None
 
         fs_object_paths = [
-            path for path, fs_obj in fs_objects.items() if fs_obj["Name"] == fs_name
+            path
+            for path, fs_obj in fs_objects.items()
+            if fs_obj["Name"] == fs_name and fs_obj["Name"].startswith(TEST_PREF)
         ]
         if fs_object_paths == []:
             return None
@@ -154,7 +201,7 @@ class StratisDbus:
             StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, pool_object_paths[0]),
             StratisDbus._POOL_IFACE,
         )
-        iface.DestroyFilesystems(fs_object_paths)
+        iface.DestroyFilesystems(fs_object_paths, timeout=StratisDbus._TIMEOUT)
 
         return None
 
