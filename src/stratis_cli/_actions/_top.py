@@ -31,6 +31,64 @@ from ._constants import SECTOR_SIZE
 from ._formatting import print_table
 
 
+def _check_opposite_tier(managed_objects, to_be_added, other_tier):
+    """
+    Check whether specified blockdevs are already in the other tier.
+
+    :param managed_objects: the result of a GetManagedObjects call
+    :type managed_objects: dict of str * dict
+    :param to_be_added: the blockdevs to be added
+    :type to_be_added: frozenset of str
+    :param other_tier: the other tier, not the one requested
+    :type other_tier: _stratisd_constants.BlockDevTiers
+    :raises StratisCliInUseError: if blockdevs are used by other tier
+    """
+    from ._data import MODev
+    from ._data import devs
+
+    others = frozenset(
+        str(MODev(info).Devnode())
+        for (_, info) in devs(props={"Tier": other_tier}).search(managed_objects)
+    )
+    already_others = to_be_added.intersection(others)
+    if already_others != frozenset():
+        raise StratisCliInUseError(
+            already_others,
+            BlockDevTiers.Data
+            if other_tier == BlockDevTiers.Cache
+            else BlockDevTiers.Cache,
+        )
+
+
+def _check_same_tier(managed_objects, to_be_added, this_tier):
+    """
+    Check whether specified blockdevs are already in the tier to which they
+    are to be added.
+
+    :param managed_objects: the result of a GetManagedObjects call
+    :type managed_objects: dict of str * dict
+    :param to_be_added: the blockdevs to be added
+    :type to_be_added: frozenset of str
+    :param other_tier: the tier requested
+    :type other_tier: _stratisd_constants.BlockDevTiers
+    :raises StratisCliPartialChangeError: if blockdevs are used by this tier
+    """
+    from ._data import MODev
+    from ._data import devs
+
+    these = frozenset(
+        str(MODev(info).Devnode())
+        for (_, info) in devs(props={"Tier": this_tier}).search(managed_objects)
+    )
+    already_these = to_be_added.intersection(these)
+    if already_these != frozenset():
+        raise StratisCliPartialChangeError(
+            "add to cache" if this_tier == BlockDevTiers.Cache else "add to data",
+            to_be_added.difference(already_these),
+            already_these,
+        )
+
+
 class TopActions:
     """
     Top level actions.
@@ -156,11 +214,8 @@ class TopActions:
         """
         Add specified data devices to a pool.
         """
-        # pylint: disable=too-many-locals
-        from ._data import MODev
         from ._data import ObjectManager
         from ._data import Pool
-        from ._data import devs
         from ._data import pools
 
         proxy = get_object(TOP_OBJECT)
@@ -173,28 +228,9 @@ class TopActions:
 
         blockdevs = frozenset(namespace.blockdevs)
 
-        cache = frozenset(
-            str(MODev(info).Devnode())
-            for (_, info) in devs(props={"Tier": BlockDevTiers.Cache}).search(
-                managed_objects
-            )
-        )
-        already_cache = blockdevs.intersection(cache)
-        if already_cache != frozenset():
-            raise StratisCliInUseError(already_cache, BlockDevTiers.Data)
+        _check_opposite_tier(managed_objects, blockdevs, BlockDevTiers.Cache)
 
-        data = frozenset(
-            str(MODev(info).Devnode())
-            for (_, info) in devs(props={"Tier": BlockDevTiers.Data}).search(
-                managed_objects
-            )
-        )
-        already_data = blockdevs.intersection(data)
-
-        if already_data != frozenset():
-            raise StratisCliPartialChangeError(
-                "add-data", blockdevs.difference(already_data), already_data
-            )
+        _check_same_tier(managed_objects, blockdevs, BlockDevTiers.Data)
 
         (_, rc, message) = Pool.Methods.AddDataDevs(
             get_object(pool_object_path), {"devices": namespace.blockdevs}
@@ -207,11 +243,8 @@ class TopActions:
         """
         Add specified cache devices to a pool.
         """
-        # pylint: disable=too-many-locals
-        from ._data import MODev
         from ._data import ObjectManager
         from ._data import Pool
-        from ._data import devs
         from ._data import pools
 
         proxy = get_object(TOP_OBJECT)
@@ -224,29 +257,9 @@ class TopActions:
 
         blockdevs = frozenset(namespace.blockdevs)
 
-        data = frozenset(
-            str(MODev(info).Devnode())
-            for (_, info) in devs(props={"Tier": BlockDevTiers.Data}).search(
-                managed_objects
-            )
-        )
-        already_data = blockdevs.intersection(data)
+        _check_opposite_tier(managed_objects, blockdevs, BlockDevTiers.Data)
 
-        if already_data != frozenset():
-            raise StratisCliInUseError(already_data, BlockDevTiers.Cache)
-
-        cache = frozenset(
-            str(MODev(info).Devnode())
-            for (_, info) in devs(props={"Tier": BlockDevTiers.Cache}).search(
-                managed_objects
-            )
-        )
-        already_cache = blockdevs.intersection(cache)
-
-        if already_cache != frozenset():
-            raise StratisCliPartialChangeError(
-                "add-cache", blockdevs.difference(already_cache), already_cache
-            )
+        _check_same_tier(managed_objects, blockdevs, BlockDevTiers.Cache)
 
         (_, rc, message) = Pool.Methods.AddCacheDevs(
             get_object(pool_object_path), {"devices": namespace.blockdevs}
