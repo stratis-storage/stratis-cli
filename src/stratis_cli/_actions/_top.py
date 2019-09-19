@@ -60,8 +60,7 @@ class TopActions:
             raise StratisCliEngineError(rc, message)
 
         if not changed:
-            resource = namespace.pool_name
-            raise StratisCliNoChangeError("create", resource)
+            raise StratisCliNoChangeError("create", namespace.pool_name)
 
     @staticmethod
     def list_pools(_):
@@ -123,8 +122,7 @@ class TopActions:
             raise StratisCliEngineError(rc, message)
 
         if not changed:
-            resource = namespace.pool_name
-            raise StratisCliNoChangeError("destroy", resource)
+            raise StratisCliNoChangeError("destroy", namespace.pool_name)
 
     @staticmethod
     def rename_pool(namespace):
@@ -151,8 +149,7 @@ class TopActions:
             raise StratisCliEngineError(rc, message)
 
         if not changed:
-            resource = namespace.new
-            raise StratisCliNoChangeError("rename", resource)
+            raise StratisCliNoChangeError("rename", namespace.new)
 
     @staticmethod
     def add_data_devices(namespace):
@@ -195,8 +192,9 @@ class TopActions:
         already_data = blockdevs.intersection(data)
 
         if already_data != frozenset():
-            new_data = blockdevs.difference(already_data)
-            raise StratisCliPartialChangeError("add-data", new_data, already_data)
+            raise StratisCliPartialChangeError(
+                "add-data", blockdevs.difference(already_data), already_data
+            )
 
         (_, rc, message) = Pool.Methods.AddDataDevs(
             get_object(pool_object_path), {"devices": namespace.blockdevs}
@@ -246,8 +244,9 @@ class TopActions:
         already_cache = blockdevs.intersection(cache)
 
         if already_cache != frozenset():
-            new_cache = blockdevs.difference(already_cache)
-            raise StratisCliPartialChangeError("add-cache", new_cache, already_cache)
+            raise StratisCliPartialChangeError(
+                "add-cache", blockdevs.difference(already_cache), already_cache
+            )
 
         (_, rc, message) = Pool.Methods.AddCacheDevs(
             get_object(pool_object_path), {"devices": namespace.blockdevs}
