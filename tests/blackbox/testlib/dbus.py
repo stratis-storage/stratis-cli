@@ -92,9 +92,7 @@ class StratisDbus:
     def fs_list():
         """
         Query the file systems
-        :return: A dict,  Key being the fs name, the value being a dict with
-                          keys [POOL_NAME, USED_SIZE, UUID, SYM_LINK, CREATED,
-                                CREATED_TS]
+        :return: A dict,  Key being the fs name, the value being the pool name
         """
         objects = StratisDbus._get_managed_objects().items()
 
@@ -169,8 +167,8 @@ class StratisDbus:
         umount_mdv()
 
         # Remove FS
-        for name, filesystem in StratisDbus.fs_list().items():
-            StratisDbus.fs_destroy(filesystem["POOL_NAME"], name)
+        for name, pool_name in StratisDbus.fs_list().items():
+            StratisDbus.fs_destroy(pool_name, name)
 
         # Remove Pools
         for name in StratisDbus.pool_list():
