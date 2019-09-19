@@ -137,13 +137,13 @@ class StratisCliInUseError(StratisCliRuntimeError):
 
         if len(self.blockdevs) > 1:
             return (
-                "The resources %s would be added to the %s tier but are already "
-                "in use in the %s tier"
+                "The block devices %s would be added to the %s tier but are "
+                "already in use in the %s tier"
                 % (self.blockdevs, target_blockdev_tier, already_blockdev_tier)
             )
 
         return (
-            "The resource %s would be added to the %s tier but is already "
+            "The block device %s would be added to the %s tier but is already "
             "in use in the %s tier"
             % (self.blockdevs[0], target_blockdev_tier, already_blockdev_tier)
         )
