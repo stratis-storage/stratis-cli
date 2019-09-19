@@ -100,6 +100,7 @@ class TopActions:
         Create a stratis pool.
 
         :raises StratisCliEngineError:
+        :raises StratisCliNoChangeError:
         """
         from ._data import Manager
 
@@ -157,6 +158,7 @@ class TopActions:
         If no pool exists, the method succeeds.
 
         :raises StratisCliEngineError:
+        :raises StratisCliNoChangeError:
         """
         from ._data import Manager
         from ._data import ObjectManager
@@ -186,6 +188,9 @@ class TopActions:
     def rename_pool(namespace):
         """
         Rename a pool.
+
+        :raises StratisCliEngineError:
+        :raises StratisCliNoChangeError:
         """
         from ._data import ObjectManager
         from ._data import Pool
@@ -213,6 +218,10 @@ class TopActions:
     def add_data_devices(namespace):
         """
         Add specified data devices to a pool.
+
+        :raises StratisCliEngineError:
+        :raises StratisCliInUseError:
+        :raises StratisCliPartialChangeError:
         """
         from ._data import ObjectManager
         from ._data import Pool
@@ -242,6 +251,10 @@ class TopActions:
     def add_cache_devices(namespace):
         """
         Add specified cache devices to a pool.
+
+        :raises StratisCliEngineError:
+        :raises StratisCliInUseError:
+        :raises StratisCliPartialChangeError:
         """
         from ._data import ObjectManager
         from ._data import Pool

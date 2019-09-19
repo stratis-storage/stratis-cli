@@ -40,6 +40,7 @@ class LogicalActions:
         Create volumes in a pool.
 
         :raises StratisCliEngineError:
+        :raises StratisCliPartialChangeError:
         """
         # pylint: disable=too-many-locals
         from ._data import MOFilesystem
@@ -144,6 +145,7 @@ class LogicalActions:
         Destroy volumes in a pool.
 
         :raises StratisCliEngineError:
+        :raises StratisCliPartialChangeError:
         """
         # pylint: disable=too-many-locals
         from ._data import MOFilesystem
@@ -193,6 +195,7 @@ class LogicalActions:
         Snapshot filesystem in a pool.
 
         :raises StratisCliEngineError:
+        :raises StratisCliNoChangeError:
         """
         from ._data import ObjectManager
         from ._data import Pool
@@ -228,6 +231,9 @@ class LogicalActions:
     def rename_fs(namespace):
         """
         Rename a filesystem.
+
+        :raises StratisCliEngineError:
+        :raises StratisCliNoChangeError:
         """
         from ._data import ObjectManager
         from ._data import Filesystem
