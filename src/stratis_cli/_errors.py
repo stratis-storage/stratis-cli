@@ -107,15 +107,17 @@ class StratisCliNoChangeError(StratisCliPartialChangeError):
 
 class StratisCliInUseError(StratisCliRuntimeError):
     """
-    Raised if a block device is added as both a blockdev and a cachedev
+    Raised if a request made of stratisd must result in a device being
+    included in both data and cache tiers.
     """
 
     def __init__(self, blockdevs, added_as):
         """ Initializer.
 
-            :param list of str blockdevs: the blockdevs that would be added in both tiers
-            :param _stratisd_constants.BlockDevTiers added_as: whether the action causing the
-            error on the cache or data tier
+            :param blockdevs: the blockdevs that would be added in both tiers
+            :type blockdevs: list of str
+            :param added_as: what tier the devices were to be added to
+            :type added_as: _stratisd_constants.BlockDevTiers
         """
         # pylint: disable=super-init-not-called
         self.blockdevs = blockdevs
