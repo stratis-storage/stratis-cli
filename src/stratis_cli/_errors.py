@@ -118,6 +118,8 @@ class StratisCliInUseError(StratisCliRuntimeError):
             :type blockdevs: list of str
             :param added_as: what tier the devices were to be added to
             :type added_as: _stratisd_constants.BlockDevTiers
+
+            Precondition: blockdevs != []
         """
         # pylint: disable=super-init-not-called
         self.blockdevs = blockdevs
