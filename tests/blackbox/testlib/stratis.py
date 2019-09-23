@@ -16,29 +16,10 @@ Wrapper around stratis CLI
 """
 import os
 
-from .utils import exec_command, random_string, umount_mdv, stratis_link
+from .utils import exec_command, umount_mdv, stratis_link, TEST_PREF
 
 # Some packaged systems might place this in /usr/sbin
 STRATIS_CLI = os.getenv("STRATIS_CLI", "/usr/bin/stratis")
-
-# Name prefix, so that we hopefully don't destroy any end user data by mistake!
-TEST_PREF = os.getenv("STRATIS_UT_PREFIX", "STRATI$_DE$TROY_ME!_")
-
-
-def p_n():
-    """
-    Return a random pool name
-    :return: Random String
-    """
-    return TEST_PREF + "pool" + random_string()
-
-
-def fs_n():
-    """
-    Return a random FS name
-    :return: Random String
-    """
-    return TEST_PREF + "fs" + random_string()
 
 
 class StratisCli:
