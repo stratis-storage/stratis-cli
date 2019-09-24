@@ -18,6 +18,7 @@ Miscellaneous top-level actions.
 from justbytes import Range
 
 from .._errors import StratisCliEngineError
+from .._errors import StratisCliIncoherenceError
 from .._errors import StratisCliInUseError
 from .._errors import StratisCliNoChangeError
 from .._errors import StratisCliPartialChangeError
@@ -220,6 +221,7 @@ class TopActions:
         Add specified data devices to a pool.
 
         :raises StratisCliEngineError:
+        :raises StratisCliIncoherenceError:
         :raises StratisCliInUseError:
         :raises StratisCliPartialChangeError:
         """
@@ -242,11 +244,20 @@ class TopActions:
             .search(managed_objects)
         )
 
-        (_, rc, message) = Pool.Methods.AddDataDevs(
+        ((added, _), rc, message) = Pool.Methods.AddDataDevs(
             get_object(pool_object_path), {"devices": namespace.blockdevs}
         )
         if rc != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(rc, message)
+
+        if not added:
+            raise StratisCliIncoherenceError(
+                (
+                    "Expected to add the specified blockdevs to the data tier "
+                    "in pool %s but stratisd reports that it took no action"
+                )
+                % namespace.pool_name
+            )
 
     @staticmethod
     def add_cache_devices(namespace):
@@ -254,6 +265,7 @@ class TopActions:
         Add specified cache devices to a pool.
 
         :raises StratisCliEngineError:
+        :raises StratisCliIncoherenceError:
         :raises StratisCliInUseError:
         :raises StratisCliPartialChangeError:
         """
@@ -276,8 +288,17 @@ class TopActions:
             .search(managed_objects)
         )
 
-        (_, rc, message) = Pool.Methods.AddCacheDevs(
+        ((added, _), rc, message) = Pool.Methods.AddCacheDevs(
             get_object(pool_object_path), {"devices": namespace.blockdevs}
         )
         if rc != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(rc, message)
+
+        if not added:
+            raise StratisCliIncoherenceError(
+                (
+                    "Expected to add the specified blockdevs to the cache tier "
+                    "in pool %s but stratisd reports that it took no action"
+                )
+                % namespace.pool_name
+            )

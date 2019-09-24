@@ -19,6 +19,7 @@ from justbytes import Range
 from dateutil import parser as date_parser
 
 from .._errors import StratisCliEngineError
+from .._errors import StratisCliIncoherenceError
 from .._errors import StratisCliNoChangeError
 from .._errors import StratisCliPartialChangeError
 
@@ -40,6 +41,7 @@ class LogicalActions:
         Create volumes in a pool.
 
         :raises StratisCliEngineError:
+        :raises StratisCliIncoherenceError:
         :raises StratisCliPartialChangeError:
         """
         # pylint: disable=too-many-locals
@@ -72,12 +74,21 @@ class LogicalActions:
                 "create", requested_names.difference(already_names), already_names
             )
 
-        (_, rc, message) = Pool.Methods.CreateFilesystems(
+        ((created, _), rc, message) = Pool.Methods.CreateFilesystems(
             get_object(pool_object_path), {"specs": namespace.fs_name}
         )
 
         if rc != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(rc, message)
+
+        if not created:
+            raise StratisCliIncoherenceError(
+                (
+                    "Expected to create the specified filesystems in pool %s "
+                    "but stratisd reports that it took no action"
+                )
+                % namespace.pool_name
+            )
 
     @staticmethod
     def list_volumes(namespace):
@@ -145,6 +156,7 @@ class LogicalActions:
         Destroy volumes in a pool.
 
         :raises StratisCliEngineError:
+        :raises StratisCliIncoherenceError:
         :raises StratisCliPartialChangeError:
         """
         # pylint: disable=too-many-locals
@@ -182,12 +194,21 @@ class LogicalActions:
             op for (name, op) in pool_filesystems if name in requested_names
         ]
 
-        (_, rc, message) = Pool.Methods.DestroyFilesystems(
+        ((destroyed, _), rc, message) = Pool.Methods.DestroyFilesystems(
             get_object(pool_object_path), {"filesystems": fs_object_paths}
         )
 
         if rc != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(rc, message)
+
+        if not destroyed:
+            raise StratisCliIncoherenceError(
+                (
+                    "Expected to destroy the specified filesystems in pool %s "
+                    "but stratisd reports that it took no action"
+                )
+                % namespace.pool_name
+            )
 
     @staticmethod
     def snapshot_filesystem(namespace):
