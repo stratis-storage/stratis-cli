@@ -107,6 +107,16 @@ class StratisCliNoChangeError(StratisCliPartialChangeError):
         )
 
 
+class StratisCliIncoherenceError(StratisCliRuntimeError):
+    """
+    Raised if there was a disagreement about state between the CLI
+    and the daemon. This can happen if the information derived from
+    the GetManagedObjects() result does not correspond with the daemon's
+    state. This is a very unlikely event, but could occur if two processes
+    were issuing instructions to stratisd at the same time.
+    """
+
+
 class StratisCliInUseError(StratisCliRuntimeError):
     """
     Raised if a request made of stratisd must result in a device being
