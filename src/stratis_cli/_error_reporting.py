@@ -181,7 +181,7 @@ def handle_error(err):
     :param Exception err: an exception
     """
 
-    errors = [error for error in get_errors(err)]
+    errors = list(get_errors(err))
 
     explanation = interpret_errors(errors)
 
