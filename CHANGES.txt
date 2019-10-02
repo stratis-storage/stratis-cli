@@ -1,9 +1,9 @@
-stratis-cli 1.0.5 (UNRELEASED)
-==============================
+stratis-cli 1.1.0
+=================
 Python auto-formatter: black (18.9b0)
 
 New dependency requirements:
-  - dbus-python-client-gen: 0.6
+  - dbus-python-client-gen: 0.7
 
 - Add a STRATIS_DBUS_TIMEOUT environment variable:
   https://github.com/stratis-storage/stratis-cli/issues/252
@@ -34,6 +34,9 @@ New dependency requirements:
   https://github.com/stratis-storage/stratis-cli/pull/318
 
 - Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/353
+  https://github.com/stratis-storage/stratis-cli/pull/352
+  https://github.com/stratis-storage/stratis-cli/pull/351
   https://github.com/stratis-storage/stratis-cli/pull/348
   https://github.com/stratis-storage/stratis-cli/pull/346
   https://github.com/stratis-storage/stratis-cli/pull/341
