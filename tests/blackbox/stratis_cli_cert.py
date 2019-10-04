@@ -20,10 +20,38 @@ import sys
 import time
 import unittest
 
-from testlib.utils import exec_command, exec_test_command, process_exists
+from testlib.utils import exec_command, exec_test_command, process_exists, p_n, fs_n
 from testlib.stratis import STRATIS_CLI, StratisCli, clean_up
 
 DISKS = []
+
+
+def make_test_pool():
+    """
+    Create a test pool that will later get destroyed
+    :return: Name of the created pool
+    """
+    pool_name = p_n()
+    assert (exec_test_command([STRATIS_CLI, "pool", "create", pool_name, DISKS[0]]))[
+        0
+    ] == 0
+    return pool_name
+
+
+def make_test_filesystem(pool_name):
+    """
+    Create a test filesystem that will later get destroyed
+    :param pool_name: Name of a test pool
+    :return: Name of the created filesystem
+    """
+    filesystem_name = fs_n()
+    assert (
+        exec_test_command(
+            [STRATIS_CLI, "filesystem", "create", pool_name, filesystem_name]
+        )[0]
+        == 0
+    )
+    return filesystem_name
 
 
 class StratisCertify(unittest.TestCase):
@@ -49,16 +77,218 @@ class StratisCertify(unittest.TestCase):
         StratisCli.destroy_all()
         assert StratisCli.pool_list() == []
 
+    def unittest_command(  # pylint: disable=bad-continuation
+        self, args, exp_exit_code, exp_stderr_is_empty, exp_stdout_is_empty
+    ):
+        """
+        Execute a test command and make assertions about the exit code, stderr, and stdout
+        :param list args: The arguments needed to execute the Stratis command being tested
+        :type args: List of str
+        :param exp_exit_code: The expected exit code, 0, 1, or 2
+        :param bool exp_stderr_is_empty: True if stderr is expected to be empty, otherwise False
+        :param bool exp_stdout_is_empty: True if stdout is expected to be empty, otherwise False
+        :return: None
+        """
+        exit_code, stdout, stderr = exec_test_command(args)
+
+        self.assertEqual(exit_code, exp_exit_code)
+
+        if exp_stderr_is_empty:
+            self.assertEqual(stderr, "")
+        else:
+            self.assertNotEqual(stderr, "")
+
+        if exp_stdout_is_empty:
+            self.assertEqual(stdout, "")
+        else:
+            self.assertNotEqual(stdout, "")
+
     def test_stratisd_version(self):
         """
         Test getting the daemon version.
         """
-        exit_code, stdout, stderr = exec_test_command(
-            [STRATIS_CLI, "daemon", "version"]
+        self.unittest_command([STRATIS_CLI, "daemon", "version"], 0, True, False)
+
+    def test_stratisd_redundancy(self):
+        """
+        Test listing the redundancy levels that the Stratis service supports.
+        """
+        self.unittest_command([STRATIS_CLI, "daemon", "redundancy"], 0, True, False)
+
+    def test_pool_list_empty(self):
+        """
+        Test listing a non-existent pool.
+        """
+        self.unittest_command([STRATIS_CLI, "pool", "list"], 0, True, False)
+
+    def test_filesystem_list_empty(self):
+        """
+        Test listing an non-existent filesystem.
+        """
+        self.unittest_command([STRATIS_CLI, "filesystem", "list"], 0, True, False)
+
+    def test_pool_create(self):
+        """
+        Test creating a pool.
+        """
+        pool_name = p_n()
+        self.unittest_command(
+            [STRATIS_CLI, "pool", "create", pool_name, DISKS[0]], 0, True, True
         )
-        self.assertEqual(exit_code, 0)
-        self.assertEqual(stderr, "")
-        self.assertNotEqual(stdout, "")
+
+    def test_pool_list_not_empty(self):
+        """
+        Test listing an existent pool.
+        """
+        make_test_pool()
+        self.unittest_command([STRATIS_CLI, "pool", "list"], 0, True, False)
+
+    def test_blockdev_list(self):
+        """
+        Test listing a blockdev.
+        """
+        self.unittest_command([STRATIS_CLI, "blockdev", "list"], 0, True, False)
+
+    def test_pool_create_same_name(self):
+        """
+        Test creating a pool that already exists.
+        """
+        self.unittest_command(
+            [STRATIS_CLI, "pool", "create", make_test_pool(), DISKS[0]], 1, False, True
+        )
+
+    def test_pool_add_cache(self):
+        """
+        Test adding cache to a pool.
+        """
+        self.unittest_command(
+            [STRATIS_CLI, "pool", "add-cache", make_test_pool(), DISKS[1]], 0, 1, True
+        )
+
+    def test_pool_destroy(self):
+        """
+        Test destroying a pool.
+        """
+        self.unittest_command(
+            [STRATIS_CLI, "pool", "destroy", make_test_pool()], 0, True, True
+        )
+
+    def test_filesystem_create(self):
+        """
+        Test creating a filesystem.
+        """
+        filesystem_name = fs_n()
+        self.unittest_command(
+            [STRATIS_CLI, "filesystem", "create", make_test_pool(), filesystem_name],
+            0,
+            True,
+            True,
+        )
+
+    def test_pool_add_data(self):
+        """
+        Test adding data to a pool.
+        """
+        pool_name = make_test_pool()
+        self.unittest_command(
+            [STRATIS_CLI, "pool", "add-data", pool_name, DISKS[1]], 0, True, True
+        )
+
+    def test_filesystem_list_not_empty(self):
+        """
+        Test listing an existent filesystem.
+        """
+        pool_name = make_test_pool()
+        make_test_filesystem(pool_name)
+        self.unittest_command([STRATIS_CLI, "filesystem", "list"], 0, True, False)
+
+    def test_filesystem_create_same_name(self):
+        """
+        Test creating a filesystem that already exists.
+        """
+        pool_name = make_test_pool()
+        filesystem_name = make_test_filesystem(pool_name)
+        self.unittest_command(
+            [STRATIS_CLI, "filesystem", "create", pool_name, filesystem_name],
+            1,
+            False,
+            True,
+        )
+
+    def test_filesystem_rename(self):
+        """
+        Test renaming a filesystem to a new name.
+        """
+        pool_name = make_test_pool()
+        filesystem_name = make_test_filesystem(pool_name)
+        fs_name_rename = fs_n()
+        self.unittest_command(
+            [
+                STRATIS_CLI,
+                "filesystem",
+                "rename",
+                pool_name,
+                filesystem_name,
+                fs_name_rename,
+            ],
+            0,
+            True,
+            True,
+        )
+
+    def test_filesystem_rename_same_name(self):
+        """
+        Test renaming a filesystem to the same name.
+        """
+        pool_name = make_test_pool()
+        filesystem_name = make_test_filesystem(pool_name)
+        self.unittest_command(
+            [
+                STRATIS_CLI,
+                "filesystem",
+                "rename",
+                pool_name,
+                filesystem_name,
+                filesystem_name,
+            ],
+            0,
+            True,
+            True,
+        )
+
+    def test_filesystem_snapshot(self):
+        """
+        Test snapshotting a filesystem.
+        """
+        pool_name = make_test_pool()
+        filesystem_name = make_test_filesystem(pool_name)
+        snapshot_name = fs_n()
+        self.unittest_command(
+            [
+                STRATIS_CLI,
+                "filesystem",
+                "snapshot",
+                pool_name,
+                filesystem_name,
+                snapshot_name,
+            ],
+            0,
+            True,
+            True,
+        )
+
+    def test_filesystem_destroy(self):
+        """
+        Test destroying a filesystem.
+        """
+        pool_name = make_test_pool()
+        filesystem_name = make_test_filesystem(pool_name)
+        self.unittest_command(
+            [STRATIS_CLI, "filesystem", "destroy", pool_name, filesystem_name],
+            0,
+            True,
+            True,
+        )
 
 
 if __name__ == "__main__":
