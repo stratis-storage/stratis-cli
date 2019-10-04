@@ -82,7 +82,6 @@ class StratisCertify(unittest.TestCase):
     ):
         """
         Execute a test command and make assertions about the exit code, stderr, and stdout
-        :param self: A test object
         :param list args: The arguments needed to execute the Stratis command being tested
         :type args: List of str
         :param exp_exit_code: The expected exit code, 0, 1, or 2
