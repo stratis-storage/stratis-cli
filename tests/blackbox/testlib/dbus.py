@@ -89,6 +89,28 @@ class StratisDbus:
         return object_manager.GetManagedObjects(timeout=StratisDbus._TIMEOUT)
 
     @staticmethod
+    def stratisd_version():
+        """
+        Get stratisd version
+        """
+        versions = [
+            obj_data[StratisDbus._MNGR_IFACE]["Version"]
+            for _, obj_data in StratisDbus._get_managed_objects().items()
+            if StratisDbus._MNGR_IFACE in obj_data
+        ]
+
+        return versions[0]
+
+    @staticmethod
+    def stratisd_redundancy():
+        """
+        Get stratisd redundancy
+        """
+        redundancy = "NONE = 0"
+
+        return redundancy
+
+    @staticmethod
     def pool_list():
         """
         Query the pools
@@ -102,6 +124,35 @@ class StratisDbus:
         ]
 
         return [pool_obj["Name"] for pool_obj in pool_objects]
+
+    @staticmethod
+    def pool_create(pool_name, devices):
+        """
+        Create a pool
+        :return: Name of created pool
+        """
+        pool_objects = {
+            path: obj_data[StratisDbus._POOL_IFACE]
+            for path, obj_data in StratisDbus._get_managed_objects().items()
+            if StratisDbus._POOL_IFACE in obj_data
+            and obj_data[StratisDbus._POOL_IFACE]["Name"].startswith(TEST_PREF)
+        }
+
+        pool_object_paths = [
+            path
+            for path, pool_obj in pool_objects.items()
+            if pool_obj["Name"] == pool_name
+        ]
+        if pool_object_paths == []:
+            return None
+
+        iface = dbus.Interface(
+            StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, StratisDbus._TOP_OBJECT),
+            StratisDbus._MNGR_IFACE,
+        )
+        iface.CreatePool(pool_name, [0, 0], devices, timeout=StratisDbus._TIMEOUT)
+
+        return pool_name
 
     @staticmethod
     def pool_destroy(pool_name):
@@ -159,6 +210,49 @@ class StratisDbus:
             fs_object["Name"]: pool_path_to_name[fs_object["Pool"]]
             for fs_object in fs_objects
         }
+
+    @staticmethod
+    def filesystem_create(pool_name, fs_name):
+        """
+        Create a filesystem
+        :return: Name of created filesystem
+        """
+        objects = StratisDbus._get_managed_objects().items()
+
+        pool_objects = {
+            path: obj_data[StratisDbus._POOL_IFACE]
+            for path, obj_data in objects
+            if StratisDbus._POOL_IFACE in obj_data
+            and obj_data[StratisDbus._POOL_IFACE]["Name"].startswith(TEST_PREF)
+        }
+        fs_objects = {
+            path: obj_data[StratisDbus._FS_IFACE]
+            for path, obj_data in objects
+            if StratisDbus._FS_IFACE in obj_data
+            and obj_data[StratisDbus._FS_IFACE]["Name"].startswith(TEST_PREF)
+        }
+
+        pool_object_paths = [
+            path
+            for path, pool_obj in pool_objects.items()
+            if pool_obj["Name"] == pool_name
+        ]
+        if pool_object_paths == []:
+            return None
+
+        fs_object_paths = [
+            path for path, fs_obj in fs_objects.items() if fs_obj["Name"] == fs_name
+        ]
+        if fs_object_paths == []:
+            return None
+
+        iface = dbus.Interface(
+            StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, pool_object_paths[0]),
+            StratisDbus._POOL_IFACE,
+        )
+        iface.CreateFilesystems(fs_object_paths, timeout=StratisDbus._TIMEOUT)
+
+        return fs_name
 
     @staticmethod
     def fs_destroy(pool_name, fs_name):
