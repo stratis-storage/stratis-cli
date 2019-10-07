@@ -129,7 +129,23 @@ class StratisCertify(unittest.TestCase):
         """
         pool_name = p_n()
         # pylint: disable-msg=too-many-function-args
-        self.assertNotEqual(StratisDbus.pool_create(pool_name, DISKS), [])
+        self.assertEqual(StratisDbus.pool_create(pool_name, DISKS), 0)
+
+    def test_pool_add_cache(self):
+        """
+        Test adding cache to a pool.
+        """
+        pool_name = p_n()
+        assert StratisDbus.pool_create(pool_name, DISKS)
+        self.assertEqual(StratisDbus.pool_add_cache(pool_name, DISKS), 0)
+
+    def test_pool_add_data(self):
+        """
+        Test adding data to a pool.
+        """
+        pool_name = p_n()
+        assert StratisDbus.pool_create(pool_name, DISKS)
+        self.assertEqual(StratisDbus.pool_add_data(pool_name, DISKS), 0)
 
     def test_pool_list_not_empty(self):
         """
@@ -144,14 +160,14 @@ class StratisCertify(unittest.TestCase):
         """
         pool_name = make_test_pool()
         # pylint: disable-msg=too-many-function-args
-        self.assertNotEqual(StratisDbus.pool_create(pool_name, DISKS), [])
+        self.assertEqual(StratisDbus.pool_create(pool_name, DISKS), 0)
 
     def test_pool_destroy(self):
         """
         Test destroying a pool.
         """
         pool_name = make_test_pool()
-        StratisDbus.pool_destroy(pool_name)
+        self.assertEqual(StratisDbus.pool_destroy(pool_name), 0)
         self.assertEqual(StratisDbus.fs_list(), {})
 
     def test_filesystem_create(self):
@@ -160,8 +176,46 @@ class StratisCertify(unittest.TestCase):
         """
         pool_name = make_test_pool()
         filesystem_name = fs_n()
-        self.assertNotEqual(
-            StratisDbus.filesystem_create(pool_name, filesystem_name), []
+        self.assertEqual(StratisDbus.filesystem_create(pool_name, filesystem_name), 0)
+
+    def test_filesystem_rename(self):
+        """
+        Test renaming a filesystem.
+        """
+        pool_name = make_test_pool()
+        filesystem_name = fs_n()
+        filesystem_name_rename = fs_n()
+        assert StratisDbus.filesystem_create(pool_name, filesystem_name)
+        self.assertEqual(
+            StratisDbus.filesystem_rename(
+                pool_name, filesystem_name, filesystem_name_rename
+            ),
+            0,
+        )
+
+    def test_filesystem_rename_same_name(self):
+        """
+        Test renaming a filesystem.
+        """
+        pool_name = make_test_pool()
+        filesystem_name = fs_n()
+        assert StratisDbus.filesystem_create(pool_name, filesystem_name)
+        self.assertEqual(
+            StratisDbus.filesystem_rename(pool_name, filesystem_name, filesystem_name),
+            0,
+        )
+
+    def test_filesystem_snapshot(self):
+        """
+        Test snapshotting a filesystem.
+        """
+        pool_name = make_test_pool()
+        filesystem_name = fs_n()
+        snapshot_name = fs_n()
+        assert StratisDbus.filesystem_create(pool_name, filesystem_name)
+        self.assertEqual(
+            StratisDbus.filesystem_snapshot(pool_name, filesystem_name, snapshot_name),
+            0,
         )
 
     def test_filesystem_list_not_empty(self):
@@ -188,7 +242,7 @@ class StratisCertify(unittest.TestCase):
         """
         pool_name = make_test_pool()
         filesystem_name = make_test_filesystem(pool_name)
-        StratisDbus.fs_destroy(pool_name, filesystem_name)
+        self.assertEqual(StratisDbus.fs_destroy(pool_name, filesystem_name), 0)
         self.assertEqual(StratisDbus.fs_list(), {})
 
 
