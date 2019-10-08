@@ -117,6 +117,12 @@ class StratisCertify(unittest.TestCase):
         """
         self.assertEqual(StratisDbus.pool_list(), [])
 
+    def test_blockdev_list(self):
+        """
+        Test listing a blockdev.
+        """
+        self.assertEqual(StratisDbus.pool_list(), [])
+
     def test_filesystem_list_empty(self):
         """
         Test listing an non-existent filesystem.
