@@ -68,6 +68,7 @@ class StratisDbus:
     _MNGR_IFACE = "org.storage.stratis1.Manager"
     _POOL_IFACE = "org.storage.stratis1.pool"
     _FS_IFACE = "org.storage.stratis1.filesystem"
+    _BLKDEV_IFACE = "org.storage.stratis1.blockdev"
 
     _DBUS_TIMEOUT_SECONDS = 120
     _TIMEOUT = _get_timeout(
@@ -124,6 +125,21 @@ class StratisDbus:
         ]
 
         return [pool_obj["Name"] for pool_obj in pool_objects]
+
+    @staticmethod
+    def blockdev_list(pools):
+        """
+        Query the blockdevs
+        :return: A list of blockdev names.
+        """
+        blockdev_objects = [
+            obj_data[StratisDbus._BLKDEV_IFACE]
+            for _, obj_data in StratisDbus._get_managed_objects().items()
+            if StratisDbus._BLKDEV_IFACE in obj_data
+            and obj_data[StratisDbus._BLKDEV_IFACE]["Name"].startswith(TEST_PREF)
+        ]
+
+        return [blockdev_obj["Name"] for blockdev_obj in blockdev_objects]
 
     @staticmethod
     def pool_create(pool_name, devices):
