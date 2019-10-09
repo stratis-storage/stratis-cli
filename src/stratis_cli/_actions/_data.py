@@ -141,7 +141,7 @@ SPECS = {
 <interface name="org.storage.stratis1.filesystem">
 <method name="SetName">
 <arg name="name" type="s" direction="in"/>
-<arg name="action" type="b" direction="out"/>
+<arg name="action" type="(bs)" direction="out"/>
 <arg name="return_code" type="q" direction="out"/>
 <arg name="return_string" type="s" direction="out"/>
 </method>
@@ -169,7 +169,7 @@ SPECS = {
 <interface name="org.storage.stratis1.blockdev">
 <method name="SetUserInfo">
 <arg name="id" type="s" direction="in"/>
-<arg name="changed" type="b" direction="out"/>
+<arg name="result" type="(bs)" direction="out"/>
 <arg name="return_code" type="q" direction="out"/>
 <arg name="return_string" type="s" direction="out"/>
 </method>
