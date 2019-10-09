@@ -127,7 +127,7 @@ class StratisDbus:
         return [pool_obj["Name"] for pool_obj in pool_objects]
 
     @staticmethod
-    def blockdev_list(pools):
+    def blockdev_list():
         """
         Query the blockdevs
         :return: A list of blockdev names.
