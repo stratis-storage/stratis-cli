@@ -15,6 +15,8 @@
 Test 'create'.
 """
 
+import unittest
+
 from stratis_cli._errors import StratisCliActionError
 from stratis_cli._errors import StratisCliEngineError
 
@@ -43,7 +45,7 @@ class CreateTestCase(SimTestCase):
         with self.assertRaises(SystemExit):
             RUNNER(command_line)
 
-
+@unittest.skip("Idempotency means that this will no longer return an error")
 class Create3TestCase(SimTestCase):
     """
     Test 'create' on name collision.
