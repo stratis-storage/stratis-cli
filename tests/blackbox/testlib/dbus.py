@@ -145,8 +145,6 @@ class StratisDbus:
     def pool_create(pool_name, devices):
         """
         Create a pool
-        :return: Name of created pool
-        :return: return_code of D-Bus call
         """
         pool_objects = {
             path: obj_data[StratisDbus._POOL_IFACE]
@@ -167,18 +165,15 @@ class StratisDbus:
             StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, StratisDbus._TOP_OBJECT),
             StratisDbus._MNGR_IFACE,
         )
-        return_code = iface.CreatePool(
+        return iface.CreatePool(
             pool_name, [0, 0], devices, timeout=StratisDbus._TIMEOUT
         )
-
-        return return_code
 
     @staticmethod
     def pool_destroy(pool_name):
         """
         Destroy a pool
         :param name: Name of pool to destroy
-        :return: return_code of D-Bus call
         """
         pool_objects = {
             path: obj_data[StratisDbus._POOL_IFACE]
@@ -199,11 +194,7 @@ class StratisDbus:
             StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, StratisDbus._TOP_OBJECT),
             StratisDbus._MNGR_IFACE,
         )
-        return_code = iface.DestroyPool(
-            pool_object_paths[0], timeout=StratisDbus._TIMEOUT
-        )
-
-        return return_code
+        return iface.DestroyPool(pool_object_paths[0], timeout=StratisDbus._TIMEOUT)
 
     @staticmethod
     def fs_list():
@@ -236,7 +227,6 @@ class StratisDbus:
     def pool_add_cache(pool_name, devices):
         """
         Adding cache to a pool
-        :return: return_code of D-Bus call
         """
         objects = StratisDbus._get_managed_objects().items()
 
@@ -259,15 +249,12 @@ class StratisDbus:
             StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, pool_object_paths[0]),
             StratisDbus._POOL_IFACE,
         )
-        return_code = iface.AddCacheDevs(devices, timeout=StratisDbus._TIMEOUT)
-
-        return return_code
+        return iface.AddCacheDevs(devices, timeout=StratisDbus._TIMEOUT)
 
     @staticmethod
     def pool_add_data(pool_name, devices):
         """
         Adding data to a pool
-        :return: return_code of D-Bus call
         """
         objects = StratisDbus._get_managed_objects().items()
 
@@ -290,15 +277,12 @@ class StratisDbus:
             StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, pool_object_paths[0]),
             StratisDbus._POOL_IFACE,
         )
-        return_code = iface.AddDataDevs(devices, timeout=StratisDbus._TIMEOUT)
-
-        return return_code
+        return iface.AddDataDevs(devices, timeout=StratisDbus._TIMEOUT)
 
     @staticmethod
     def filesystem_create(pool_name, fs_name):
         """
         Create a filesystem
-        :return: return_code of D-Bus call
         """
         objects = StratisDbus._get_managed_objects().items()
 
@@ -333,11 +317,7 @@ class StratisDbus:
             StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, pool_object_paths[0]),
             StratisDbus._POOL_IFACE,
         )
-        return_code = iface.CreateFilesystems(
-            fs_object_paths, timeout=StratisDbus._TIMEOUT
-        )
-
-        return return_code
+        return iface.CreateFilesystems(fs_object_paths, timeout=StratisDbus._TIMEOUT)
 
     @staticmethod
     def fs_destroy(pool_name, fs_name):
@@ -345,7 +325,6 @@ class StratisDbus:
         Destroy a FS
         :param pool_name:  Pool which contains the FS
         :param fs_name: Name of FS to destroy
-        :return: return_code of D-Bus call
         """
         objects = StratisDbus._get_managed_objects().items()
 
@@ -380,17 +359,12 @@ class StratisDbus:
             StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, pool_object_paths[0]),
             StratisDbus._POOL_IFACE,
         )
-        return_code = iface.DestroyFilesystems(
-            fs_object_paths, timeout=StratisDbus._TIMEOUT
-        )
-
-        return return_code
+        return iface.DestroyFilesystems(fs_object_paths, timeout=StratisDbus._TIMEOUT)
 
     @staticmethod
     def filesystem_rename(pool_name, fs_name, fs_name_rename):
         """
         Rename a filesystem
-        :return: return_code of D-Bus call
         """
         objects = StratisDbus._get_managed_objects().items()
 
@@ -425,15 +399,12 @@ class StratisDbus:
             StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, pool_object_paths[0]),
             StratisDbus._POOL_IFACE,
         )
-        return_code = iface.SetName(fs_name_rename, timeout=StratisDbus._TIMEOUT)
-
-        return return_code
+        return iface.SetName(fs_name_rename, timeout=StratisDbus._TIMEOUT)
 
     @staticmethod
     def filesystem_snapshot(pool_name, filesystem_name, snapshot_name):
         """
         Snapshot a filesystem
-        :return: return_code of D-Bus call
         """
         objects = StratisDbus._get_managed_objects().items()
 
@@ -456,11 +427,9 @@ class StratisDbus:
             StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, pool_object_paths[0]),
             StratisDbus._POOL_IFACE,
         )
-        return_code = iface.SnapshotFilesystem(
+        return iface.SnapshotFilesystem(
             filesystem_name, snapshot_name, timeout=StratisDbus._TIMEOUT
         )
-
-        return return_code
 
     @staticmethod
     def destroy_all():
