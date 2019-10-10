@@ -20,9 +20,9 @@ import sys
 import time
 import unittest
 
-from testlib.utils import exec_command, exec_test_command, process_exists, p_n, fs_n
 from testlib.dbus import StratisDbus, clean_up
 from testlib.stratis import STRATIS_CLI
+from testlib.utils import exec_command, exec_test_command, process_exists, p_n, fs_n
 
 DISKS = []
 
@@ -134,8 +134,7 @@ class StratisCertify(unittest.TestCase):
         Test creating a pool.
         """
         pool_name = p_n()
-        # pylint: disable-msg=too-many-function-args
-        self.assertEqual(StratisDbus.pool_create(pool_name, DISKS), 0)
+        self.assertEqual(StratisDbus.pool_create(pool_name, DISKS)[1], 0)
 
     def test_pool_add_cache(self):
         """
@@ -143,7 +142,7 @@ class StratisCertify(unittest.TestCase):
         """
         pool_name = p_n()
         assert StratisDbus.pool_create(pool_name, DISKS)
-        self.assertEqual(StratisDbus.pool_add_cache(pool_name, DISKS), 0)
+        self.assertEqual(StratisDbus.pool_add_cache(pool_name, DISKS)[1], 0)
 
     def test_pool_add_data(self):
         """
@@ -151,7 +150,7 @@ class StratisCertify(unittest.TestCase):
         """
         pool_name = p_n()
         assert StratisDbus.pool_create(pool_name, DISKS)
-        self.assertEqual(StratisDbus.pool_add_data(pool_name, DISKS), 0)
+        self.assertEqual(StratisDbus.pool_add_data(pool_name, DISKS)[1], 0)
 
     def test_pool_list_not_empty(self):
         """
@@ -165,15 +164,14 @@ class StratisCertify(unittest.TestCase):
         Test creating a pool that already exists.
         """
         pool_name = make_test_pool()
-        # pylint: disable-msg=too-many-function-args
-        self.assertEqual(StratisDbus.pool_create(pool_name, DISKS), 0)
+        self.assertEqual(StratisDbus.pool_create(pool_name, DISKS)[1], 0)
 
     def test_pool_destroy(self):
         """
         Test destroying a pool.
         """
         pool_name = make_test_pool()
-        self.assertEqual(StratisDbus.pool_destroy(pool_name), 0)
+        self.assertEqual(StratisDbus.pool_destroy(pool_name)[1], 0)
         self.assertEqual(StratisDbus.fs_list(), {})
 
     def test_filesystem_create(self):
@@ -182,7 +180,9 @@ class StratisCertify(unittest.TestCase):
         """
         pool_name = make_test_pool()
         filesystem_name = fs_n()
-        self.assertEqual(StratisDbus.filesystem_create(pool_name, filesystem_name), 0)
+        self.assertEqual(
+            StratisDbus.filesystem_create(pool_name, filesystem_name)[1], 0
+        )
 
     def test_filesystem_rename(self):
         """
@@ -195,7 +195,7 @@ class StratisCertify(unittest.TestCase):
         self.assertEqual(
             StratisDbus.filesystem_rename(
                 pool_name, filesystem_name, filesystem_name_rename
-            ),
+            )[1],
             0,
         )
 
@@ -207,7 +207,9 @@ class StratisCertify(unittest.TestCase):
         filesystem_name = fs_n()
         assert StratisDbus.filesystem_create(pool_name, filesystem_name)
         self.assertEqual(
-            StratisDbus.filesystem_rename(pool_name, filesystem_name, filesystem_name),
+            StratisDbus.filesystem_rename(pool_name, filesystem_name, filesystem_name)[
+                1
+            ],
             0,
         )
 
@@ -220,7 +222,9 @@ class StratisCertify(unittest.TestCase):
         snapshot_name = fs_n()
         assert StratisDbus.filesystem_create(pool_name, filesystem_name)
         self.assertEqual(
-            StratisDbus.filesystem_snapshot(pool_name, filesystem_name, snapshot_name),
+            StratisDbus.filesystem_snapshot(pool_name, filesystem_name, snapshot_name)[
+                1
+            ],
             0,
         )
 
@@ -248,7 +252,7 @@ class StratisCertify(unittest.TestCase):
         """
         pool_name = make_test_pool()
         filesystem_name = make_test_filesystem(pool_name)
-        self.assertEqual(StratisDbus.fs_destroy(pool_name, filesystem_name), 0)
+        self.assertEqual(StratisDbus.fs_destroy(pool_name, filesystem_name)[1], 0)
         self.assertEqual(StratisDbus.fs_list(), {})
 
 
