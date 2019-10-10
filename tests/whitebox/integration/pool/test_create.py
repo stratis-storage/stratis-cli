@@ -62,10 +62,10 @@ class Create3TestCase(SimTestCase):
 
     def testCreate(self):
         """
-        Create should fail trying to create new pool with same name as previous.
+        Create should not fail trying to create new pool with same name as previous.
         """
         command_line = self._MENU + [self._POOLNAME] + _DEVICE_STRATEGY()
         with self.assertRaises(StratisCliActionError) as context:
             RUNNER(command_line)
         cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliEngineError)
+        self.assertNotIsInstance(cause, StratisCliEngineError)

@@ -154,7 +154,7 @@ class StratisCertify(unittest.TestCase):
         Test creating a pool that already exists.
         """
         self.unittest_command(
-            [STRATIS_CLI, "pool", "create", make_test_pool(), DISKS[0]], 1, False, True
+            [STRATIS_CLI, "pool", "create", make_test_pool(), DISKS[0]], 0, True, True
         )
 
     def test_pool_add_cache(self):
@@ -210,8 +210,8 @@ class StratisCertify(unittest.TestCase):
         filesystem_name = make_test_filesystem(pool_name)
         self.unittest_command(
             [STRATIS_CLI, "filesystem", "create", pool_name, filesystem_name],
-            1,
-            False,
+            0,
+            True,
             True,
         )
 
