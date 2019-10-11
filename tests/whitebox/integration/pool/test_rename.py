@@ -18,6 +18,7 @@ Test 'rename'.
 from dbus_client_gen import DbusClientUniqueResultError
 
 from stratis_cli._errors import StratisCliActionError
+from stratis_cli._errors import StratisCliNoChangeError
 
 from .._misc import RUNNER
 from .._misc import SimTestCase
@@ -82,10 +83,13 @@ class Rename2TestCase(SimTestCase):
 
     def testSameName(self):
         """
-        This should succeed, because renaming to self makes sense.
+        This should fail, because this performs no action.
         """
         command_line = self._MENU + [self._POOLNAME, self._POOLNAME]
-        RUNNER(command_line)
+        with self.assertRaises(StratisCliActionError) as context:
+            RUNNER(command_line)
+        cause = context.exception.__cause__
+        self.assertIsInstance(cause, StratisCliNoChangeError)
 
     def testNonExistentPool(self):
         """

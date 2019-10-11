@@ -19,6 +19,9 @@ from justbytes import Range
 from dateutil import parser as date_parser
 
 from .._errors import StratisCliEngineError
+from .._errors import StratisCliIncoherenceError
+from .._errors import StratisCliNoChangeError
+from .._errors import StratisCliPartialChangeError
 
 from .._stratisd_constants import StratisdErrors
 
@@ -38,9 +41,14 @@ class LogicalActions:
         Create volumes in a pool.
 
         :raises StratisCliEngineError:
+        :raises StratisCliIncoherenceError:
+        :raises StratisCliPartialChangeError:
         """
+        # pylint: disable=too-many-locals
+        from ._data import MOFilesystem
         from ._data import ObjectManager
         from ._data import Pool
+        from ._data import filesystems
         from ._data import pools
 
         proxy = get_object(TOP_OBJECT)
@@ -51,12 +59,36 @@ class LogicalActions:
             .search(managed_objects)
         )
 
-        (_, rc, message) = Pool.Methods.CreateFilesystems(
+        requested_names = frozenset(namespace.fs_name)
+
+        names = frozenset(
+            MOFilesystem(info).Name()
+            for (_, info) in filesystems(props={"Pool": pool_object_path}).search(
+                managed_objects
+            )
+        )
+        already_names = requested_names.intersection(names)
+
+        if already_names != frozenset():
+            raise StratisCliPartialChangeError(
+                "create", requested_names.difference(already_names), already_names
+            )
+
+        ((created, _), rc, message) = Pool.Methods.CreateFilesystems(
             get_object(pool_object_path), {"specs": namespace.fs_name}
         )
 
         if rc != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(rc, message)
+
+        if not created:
+            raise StratisCliIncoherenceError(
+                (
+                    "Expected to create the specified filesystems in pool %s "
+                    "but stratisd reports that it took no action"
+                )
+                % namespace.pool_name
+            )
 
     @staticmethod
     def list_volumes(namespace):
@@ -124,7 +156,11 @@ class LogicalActions:
         Destroy volumes in a pool.
 
         :raises StratisCliEngineError:
+        :raises StratisCliIncoherenceError:
+        :raises StratisCliPartialChangeError:
         """
+        # pylint: disable=too-many-locals
+        from ._data import MOFilesystem
         from ._data import ObjectManager
         from ._data import Pool
         from ._data import filesystems
@@ -138,20 +174,41 @@ class LogicalActions:
             .require_unique_match(True)
             .search(managed_objects)
         )
+
+        requested_names = frozenset(namespace.fs_name)
+
+        pool_filesystems = {
+            MOFilesystem(info).Name(): op
+            for (op, info) in filesystems(props={"Pool": pool_object_path}).search(
+                managed_objects
+            )
+        }
+        already_removed = requested_names.difference(frozenset(pool_filesystems.keys()))
+
+        if already_removed != frozenset():
+            raise StratisCliPartialChangeError(
+                "destroy", requested_names.difference(already_removed), already_removed
+            )
+
         fs_object_paths = [
-            op
-            for name in namespace.fs_name
-            for (op, _) in filesystems(
-                props={"Name": name, "Pool": pool_object_path}
-            ).search(managed_objects)
+            op for (name, op) in pool_filesystems.items() if name in requested_names
         ]
 
-        (_, rc, message) = Pool.Methods.DestroyFilesystems(
+        ((destroyed, _), rc, message) = Pool.Methods.DestroyFilesystems(
             get_object(pool_object_path), {"filesystems": fs_object_paths}
         )
 
         if rc != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(rc, message)
+
+        if not destroyed:
+            raise StratisCliIncoherenceError(
+                (
+                    "Expected to destroy the specified filesystems in pool %s "
+                    "but stratisd reports that it took no action"
+                )
+                % namespace.pool_name
+            )
 
     @staticmethod
     def snapshot_filesystem(namespace):
@@ -159,6 +216,7 @@ class LogicalActions:
         Snapshot filesystem in a pool.
 
         :raises StratisCliEngineError:
+        :raises StratisCliNoChangeError:
         """
         from ._data import ObjectManager
         from ._data import Pool
@@ -179,7 +237,7 @@ class LogicalActions:
             .search(managed_objects)
         )
 
-        (_, rc, message) = Pool.Methods.SnapshotFilesystem(
+        ((changed, _), rc, message) = Pool.Methods.SnapshotFilesystem(
             get_object(pool_object_path),
             {"origin": origin_fs_object_path, "snapshot_name": namespace.snapshot_name},
         )
@@ -187,10 +245,16 @@ class LogicalActions:
         if rc != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(rc, message)
 
+        if not changed:
+            raise StratisCliNoChangeError("snapshot", namespace.snapshot_name)
+
     @staticmethod
     def rename_fs(namespace):
         """
         Rename a filesystem.
+
+        :raises StratisCliEngineError:
+        :raises StratisCliNoChangeError:
         """
         from ._data import ObjectManager
         from ._data import Filesystem
@@ -210,9 +274,12 @@ class LogicalActions:
             .search(managed_objects)
         )
 
-        (_, rc, message) = Filesystem.Methods.SetName(
+        ((changed, _), rc, message) = Filesystem.Methods.SetName(
             get_object(fs_object_path), {"name": namespace.new_name}
         )
 
         if rc != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(rc, message)
+
+        if not changed:
+            raise StratisCliNoChangeError("rename", namespace.new_name)

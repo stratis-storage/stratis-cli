@@ -28,6 +28,9 @@ from ._actions import FILESYSTEM_INTERFACE
 from ._actions import POOL_INTERFACE
 
 from ._errors import StratisCliEngineError
+from ._errors import StratisCliIncoherenceError
+from ._errors import StratisCliInUseError
+from ._errors import StratisCliPartialChangeError
 from ._errors import StratisCliUnknownInterfaceError
 
 _DBUS_INTERFACE_MSG = (
@@ -74,6 +77,7 @@ def get_errors(exc):
 
 
 # pylint: disable=too-many-return-statements
+# pylint: disable=too-many-branches
 def interpret_errors(errors):
     """
     Laboriously add best guesses at the cause of the error, based on
@@ -121,6 +125,26 @@ def interpret_errors(errors):
                 "stratisd failed to perform the operation that you "
                 "requested. It returned the following information via "
                 "the D-Bus: %s."
+            )
+            return fmt_str % error
+        if isinstance(error, StratisCliPartialChangeError):
+            if error.partial():
+                fmt_str = (
+                    "You issued a command that would have had a partial effect: %s"
+                )
+            else:
+                fmt_str = "You issued a command that would have had no effect: %s"
+            return fmt_str % error
+        if isinstance(error, StratisCliInUseError):
+            fmt_str = (
+                "You issued a command that would have resulted in "
+                "including a block device in both cache and data tiers: %s"
+            )
+            return fmt_str % error
+        if isinstance(error, StratisCliIncoherenceError):
+            fmt_str = (
+                "It should have been possible to complete the command that "
+                "you issued, but stratisd reported that it did nothing: %s"
             )
             return fmt_str % error
 

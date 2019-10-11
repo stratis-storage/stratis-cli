@@ -18,13 +18,76 @@ Miscellaneous top-level actions.
 from justbytes import Range
 
 from .._errors import StratisCliEngineError
+from .._errors import StratisCliIncoherenceError
+from .._errors import StratisCliInUseError
+from .._errors import StratisCliNoChangeError
+from .._errors import StratisCliPartialChangeError
 
+from .._stratisd_constants import BlockDevTiers
 from .._stratisd_constants import StratisdErrors
 
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._constants import SECTOR_SIZE
 from ._formatting import print_table
+
+
+def _check_opposite_tier(managed_objects, to_be_added, other_tier):
+    """
+    Check whether specified blockdevs are already in the other tier.
+
+    :param managed_objects: the result of a GetManagedObjects call
+    :type managed_objects: dict of str * dict
+    :param to_be_added: the blockdevs to be added
+    :type to_be_added: frozenset of str
+    :param other_tier: the other tier, not the one requested
+    :type other_tier: _stratisd_constants.BlockDevTiers
+    :raises StratisCliInUseError: if blockdevs are used by other tier
+    """
+    from ._data import MODev
+    from ._data import devs
+
+    others = frozenset(
+        str(MODev(info).Devnode())
+        for (_, info) in devs(props={"Tier": other_tier}).search(managed_objects)
+    )
+    already_others = to_be_added.intersection(others)
+    if already_others != frozenset():
+        raise StratisCliInUseError(
+            already_others,
+            BlockDevTiers.Data
+            if other_tier == BlockDevTiers.Cache
+            else BlockDevTiers.Cache,
+        )
+
+
+def _check_same_tier(managed_objects, to_be_added, this_tier):
+    """
+    Check whether specified blockdevs are already in the tier to which they
+    are to be added.
+
+    :param managed_objects: the result of a GetManagedObjects call
+    :type managed_objects: dict of str * dict
+    :param to_be_added: the blockdevs to be added
+    :type to_be_added: frozenset of str
+    :param other_tier: the tier requested
+    :type other_tier: _stratisd_constants.BlockDevTiers
+    :raises StratisCliPartialChangeError: if blockdevs are used by this tier
+    """
+    from ._data import MODev
+    from ._data import devs
+
+    these = frozenset(
+        str(MODev(info).Devnode())
+        for (_, info) in devs(props={"Tier": this_tier}).search(managed_objects)
+    )
+    already_these = to_be_added.intersection(these)
+    if already_these != frozenset():
+        raise StratisCliPartialChangeError(
+            "add to cache" if this_tier == BlockDevTiers.Cache else "add to data",
+            to_be_added.difference(already_these),
+            already_these,
+        )
 
 
 class TopActions:
@@ -38,12 +101,13 @@ class TopActions:
         Create a stratis pool.
 
         :raises StratisCliEngineError:
+        :raises StratisCliNoChangeError:
         """
         from ._data import Manager
 
         proxy = get_object(TOP_OBJECT)
 
-        (_, rc, message) = Manager.Methods.CreatePool(
+        ((changed, (_, _)), rc, message) = Manager.Methods.CreatePool(
             proxy,
             {
                 "name": namespace.pool_name,
@@ -54,6 +118,9 @@ class TopActions:
 
         if rc != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(rc, message)
+
+        if not changed:
+            raise StratisCliNoChangeError("create", namespace.pool_name)
 
     @staticmethod
     def list_pools(_):
@@ -92,6 +159,7 @@ class TopActions:
         If no pool exists, the method succeeds.
 
         :raises StratisCliEngineError:
+        :raises StratisCliNoChangeError:
         """
         from ._data import Manager
         from ._data import ObjectManager
@@ -105,7 +173,7 @@ class TopActions:
             .search(managed_objects)
         )
 
-        (_, rc, message) = Manager.Methods.DestroyPool(
+        ((changed, _), rc, message) = Manager.Methods.DestroyPool(
             proxy, {"pool": pool_object_path}
         )
 
@@ -114,10 +182,16 @@ class TopActions:
         if rc != StratisdErrors.OK:
             raise StratisCliEngineError(rc, message)
 
+        if not changed:
+            raise StratisCliNoChangeError("destroy", namespace.pool_name)
+
     @staticmethod
     def rename_pool(namespace):
         """
         Rename a pool.
+
+        :raises StratisCliEngineError:
+        :raises StratisCliNoChangeError:
         """
         from ._data import ObjectManager
         from ._data import Pool
@@ -131,17 +205,25 @@ class TopActions:
             .search(managed_objects)
         )
 
-        (_, rc, message) = Pool.Methods.SetName(
+        ((changed, _), rc, message) = Pool.Methods.SetName(
             get_object(pool_object_path), {"name": namespace.new}
         )
 
         if rc != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(rc, message)
 
+        if not changed:
+            raise StratisCliNoChangeError("rename", namespace.new)
+
     @staticmethod
     def add_data_devices(namespace):
         """
         Add specified data devices to a pool.
+
+        :raises StratisCliEngineError:
+        :raises StratisCliIncoherenceError:
+        :raises StratisCliInUseError:
+        :raises StratisCliPartialChangeError:
         """
         from ._data import ObjectManager
         from ._data import Pool
@@ -149,22 +231,43 @@ class TopActions:
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
+
+        blockdevs = frozenset(namespace.blockdevs)
+
+        _check_opposite_tier(managed_objects, blockdevs, BlockDevTiers.Cache)
+
+        _check_same_tier(managed_objects, blockdevs, BlockDevTiers.Data)
+
         (pool_object_path, _) = next(
             pools(props={"Name": namespace.pool_name})
             .require_unique_match(True)
             .search(managed_objects)
         )
 
-        (_, rc, message) = Pool.Methods.AddDataDevs(
+        ((added, _), rc, message) = Pool.Methods.AddDataDevs(
             get_object(pool_object_path), {"devices": namespace.blockdevs}
         )
         if rc != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(rc, message)
+
+        if not added:
+            raise StratisCliIncoherenceError(
+                (
+                    "Expected to add the specified blockdevs to the data tier "
+                    "in pool %s but stratisd reports that it took no action"
+                )
+                % namespace.pool_name
+            )
 
     @staticmethod
     def add_cache_devices(namespace):
         """
         Add specified cache devices to a pool.
+
+        :raises StratisCliEngineError:
+        :raises StratisCliIncoherenceError:
+        :raises StratisCliInUseError:
+        :raises StratisCliPartialChangeError:
         """
         from ._data import ObjectManager
         from ._data import Pool
@@ -172,14 +275,30 @@ class TopActions:
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
+
+        blockdevs = frozenset(namespace.blockdevs)
+
+        _check_opposite_tier(managed_objects, blockdevs, BlockDevTiers.Data)
+
+        _check_same_tier(managed_objects, blockdevs, BlockDevTiers.Cache)
+
         (pool_object_path, _) = next(
             pools(props={"Name": namespace.pool_name})
             .require_unique_match(True)
             .search(managed_objects)
         )
 
-        (_, rc, message) = Pool.Methods.AddCacheDevs(
+        ((added, _), rc, message) = Pool.Methods.AddCacheDevs(
             get_object(pool_object_path), {"devices": namespace.blockdevs}
         )
         if rc != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(rc, message)
+
+        if not added:
+            raise StratisCliIncoherenceError(
+                (
+                    "Expected to add the specified blockdevs to the cache tier "
+                    "in pool %s but stratisd reports that it took no action"
+                )
+                % namespace.pool_name
+            )

@@ -15,6 +15,8 @@
 Error heirarchy for stratis cli.
 """
 
+from ._stratisd_constants import BlockDevTiers
+from ._stratisd_constants import BLOCK_DEV_TIER_TO_NAME
 from ._stratisd_constants import STRATISD_ERROR_TO_NAME
 
 
@@ -26,8 +28,137 @@ class StratisCliError(Exception):
 
 class StratisCliRuntimeError(StratisCliError):
     """
-    Exception raised during runtime.
+    Exception raised while an action is being performed and as a result of
+    the requested action.
     """
+
+
+class StratisCliPartialChangeError(StratisCliRuntimeError):
+    """
+    Raised if a request made of stratisd must result in a partial or no change
+    since some or all of the post-condition for the request already holds.
+
+    Invariant: self.unchanged_resources != frozenset()
+    """
+
+    def __init__(self, command, changed_resources, unchanged_resources):
+        """ Initializer.
+
+            :param str command: the command run that caused the error
+            :param changed_resources: the target resources that would change
+            :type changed_resources: frozenset of str
+            :param unchanged_resources: the target resources that would not change
+            :type unchanged_resources: frozenset of str
+
+            Precondition: unchanged_resources != frozenset()
+        """
+        # pylint: disable=super-init-not-called
+        self.command = command
+        self.changed_resources = changed_resources
+        self.unchanged_resources = unchanged_resources
+
+    def partial(self):
+        """
+        Returns True if some partial change would be effected, but False if
+        no change at all would be effected.
+
+        :returns: True if raised due to a partial change, otherwise False
+        :rtype: bool
+        """
+        return self.changed_resources != frozenset()
+
+    def __str__(self):
+        if len(self.unchanged_resources) > 1:
+            msg = "The '%s' action has no effect for resources %s" % (
+                self.command,
+                list(self.unchanged_resources),
+            )
+        else:
+            msg = "The '%s' action has no effect for resource %s" % (
+                self.command,
+                list(self.unchanged_resources)[0],
+            )
+
+        if self.changed_resources != frozenset():
+            if len(self.changed_resources) > 1:
+                msg += " but does for resources %s" % list(self.changed_resources)
+            else:
+                msg += " but does for resource %s" % list(self.changed_resources)[0]
+
+        return msg
+
+
+class StratisCliNoChangeError(StratisCliPartialChangeError):
+    """
+    Raised if a request made of stratisd must result in no change since the
+    post-condition of the request is already entirely satisfied. This is
+    a special case of StratisCliPartialChangeError, where the change requested
+    is so simple that it can only succeed or fail.
+    """
+
+    def __init__(self, command, resource):
+        """ Initializer.
+
+            :param str command: the executed command
+            :param str resource: the target resource
+        """
+        StratisCliPartialChangeError.__init__(
+            self, command, frozenset(), frozenset([resource])
+        )
+
+
+class StratisCliIncoherenceError(StratisCliRuntimeError):
+    """
+    Raised if there was a disagreement about state between the CLI
+    and the daemon. This can happen if the information derived from
+    the GetManagedObjects() result does not correspond with the daemon's
+    state. This is a very unlikely event, but could occur if two processes
+    were issuing instructions to stratisd at the same time.
+    """
+
+
+class StratisCliInUseError(StratisCliRuntimeError):
+    """
+    Raised if a request made of stratisd must result in a device being
+    included in both data and cache tiers.
+    """
+
+    def __init__(self, blockdevs, added_as):
+        """ Initializer.
+
+            :param blockdevs: the blockdevs that would be added in both tiers
+            :type blockdevs: frozenset of str
+            :param added_as: what tier the devices were to be added to
+            :type added_as: _stratisd_constants.BlockDevTiers
+
+            Precondition: blockdevs != frozenset()
+        """
+        # pylint: disable=super-init-not-called
+        self.blockdevs = blockdevs
+        self.added_as = added_as
+
+    def __str__(self):
+        (target_blockdev_tier, already_blockdev_tier) = (
+            BLOCK_DEV_TIER_TO_NAME(self.added_as),
+            BLOCK_DEV_TIER_TO_NAME(
+                BlockDevTiers.Data
+                if self.added_as == BlockDevTiers.Cache
+                else BlockDevTiers.Cache
+            ),
+        )
+
+        if len(self.blockdevs) > 1:
+            return (
+                "The block devices %s would be added to the %s tier but are "
+                "already in use in the %s tier"
+                % (list(self.blockdevs), target_blockdev_tier, already_blockdev_tier)
+            )
+
+        return (
+            "The block device %s would be added to the %s tier but is already "
+            "in use in the %s tier"
+            % (list(self.blockdevs)[0], target_blockdev_tier, already_blockdev_tier)
+        )
 
 
 # This exception is only raised in the unlikely event that the introspection
