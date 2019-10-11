@@ -251,8 +251,8 @@ class StratisCertify(unittest.TestCase):
                 filesystem_name,
                 filesystem_name,
             ],
-            0,
-            True,
+            1,
+            False,
             True,
         )
 
