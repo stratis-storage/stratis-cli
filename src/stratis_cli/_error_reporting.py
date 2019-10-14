@@ -88,9 +88,6 @@ def interpret_errors(errors):
     :type errors: list of Exception
     :returns: None if no interpretation found, otherwise str
     """
-    # pylint: disable=fixme
-    # TODO: This method is extremely rudimentary. It should not be extended
-    # using exactly the structure it has now.
     try:
         # Inspect top-most error after StratisCliActionError
         error = errors[1]
