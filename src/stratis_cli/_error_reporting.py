@@ -78,7 +78,7 @@ def get_errors(exc):
 
 # pylint: disable=too-many-return-statements
 # pylint: disable=too-many-branches
-def interpret_errors(errors):
+def _interpret_errors(errors):
     """
     Laboriously add best guesses at the cause of the error, based on
     developer knowledge and possibly further information that is gathered
@@ -89,9 +89,9 @@ def interpret_errors(errors):
     :returns: None if no interpretation found, otherwise str
     """
     # pylint: disable=fixme
-    # TODO: This method is extremely rudimentary. It should not be extended
-    # using exactly the structure it has now.
-    try:
+    # FIXME: remove no coverage pragma when adequate testing for CLI output
+    # exists.
+    try:  # pragma: no cover
         # Inspect top-most error after StratisCliActionError
         error = errors[1]
 
@@ -117,10 +117,7 @@ def interpret_errors(errors):
         if isinstance(error, DbusClientMissingPropertyError):  # pragma: no cover
             return _DBUS_INTERFACE_MSG
 
-        # pylint: disable=fixme
-        # FIXME: remove no coverage pragma when adequate testing for CLI
-        # output exists.
-        if isinstance(error, StratisCliEngineError):  # pragma: no cover
+        if isinstance(error, StratisCliEngineError):
             fmt_str = (
                 "stratisd failed to perform the operation that you "
                 "requested. It returned the following information via "
@@ -157,14 +154,11 @@ def interpret_errors(errors):
         # Inspect lowest error
         error = errors[-1]
 
-        # pylint: disable=fixme
-        # FIXME: remove no coverage pragma when adequate testing for CLI
-        # output exists.
         if (
             # pylint: disable=bad-continuation
             isinstance(error, dbus.exceptions.DBusException)
             and error.get_dbus_name() == "org.freedesktop.DBus.Error.AccessDenied"
-        ):  # pragma: no cover
+        ):
             return "Most likely stratis has insufficient permissions for the action requested."
         # We have observed two causes of this problem. The first is that
         # stratisd is not running at all. The second is that stratisd has not
@@ -176,14 +170,11 @@ def interpret_errors(errors):
         ):
             return "Most likely stratis is unable to connect to the stratisd D-Bus service."
 
-        # pylint: disable=fixme
-        # FIXME: remove no coverage pragma when adequate testing for CLI
-        # output exists.
         if (
             # pylint: disable=bad-continuation
             isinstance(error, dbus.exceptions.DBusException)
             and error.get_dbus_name() == "org.freedesktop.DBus.Error.NoReply"
-        ):  # pragma: no cover
+        ):
             fmt_str = (
                 "stratis attempted communication with the daemon, stratisd, "
                 "over the D-Bus, but stratisd did not respond in the allowed time."
@@ -213,7 +204,7 @@ def handle_error(err):
 
     errors = list(get_errors(err))
 
-    explanation = interpret_errors(errors)
+    explanation = _interpret_errors(errors)
 
     # The goal is to have an explanation for every error chain. If there is
     # none, then this will rapidly be fixed, so it will be difficult to
