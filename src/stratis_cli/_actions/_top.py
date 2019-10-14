@@ -250,7 +250,7 @@ class TopActions:
         if rc != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(rc, message)
 
-        if not added:
+        if not added:  # pragma: no cover
             raise StratisCliIncoherenceError(
                 (
                     "Expected to add the specified blockdevs to the data tier "
@@ -294,7 +294,7 @@ class TopActions:
         if rc != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(rc, message)
 
-        if not added:
+        if not added:  # pragma: no cover
             raise StratisCliIncoherenceError(
                 (
                     "Expected to add the specified blockdevs to the cache tier "

@@ -67,7 +67,10 @@ class StratisCliPartialChangeError(StratisCliRuntimeError):
         """
         return self.changed_resources != frozenset()
 
-    def __str__(self):
+    # pylint: disable=fixme
+    # FIXME: remove no coverage pragma when adequate testing for CLI output
+    # exists.
+    def __str__(self):  # pragma: no cover
         if len(self.unchanged_resources) > 1:
             msg = "The '%s' action has no effect for resources %s" % (
                 self.command,
@@ -137,7 +140,10 @@ class StratisCliInUseError(StratisCliRuntimeError):
         self.blockdevs = blockdevs
         self.added_as = added_as
 
-    def __str__(self):
+    # pylint: disable=fixme
+    # FIXME: remove no coverage pragma when adequate testing for CLI output
+    # exists.
+    def __str__(self):  # pragma: no cover
         (target_blockdev_tier, already_blockdev_tier) = (
             BLOCK_DEV_TIER_TO_NAME(self.added_as),
             BLOCK_DEV_TIER_TO_NAME(

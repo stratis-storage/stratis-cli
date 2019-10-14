@@ -81,7 +81,7 @@ class LogicalActions:
         if rc != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(rc, message)
 
-        if not created:
+        if not created:  # pragma: no cover
             raise StratisCliIncoherenceError(
                 (
                     "Expected to create the specified filesystems in pool %s "
@@ -201,7 +201,7 @@ class LogicalActions:
         if rc != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(rc, message)
 
-        if not destroyed:
+        if not destroyed:  # pragma: no cover
             raise StratisCliIncoherenceError(
                 (
                     "Expected to destroy the specified filesystems in pool %s "

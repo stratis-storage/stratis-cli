@@ -141,7 +141,13 @@ def interpret_errors(errors):
                 "including a block device in both cache and data tiers: %s"
             )
             return fmt_str % error
-        if isinstance(error, StratisCliIncoherenceError):
+        # An incoherence error should be pretty untestable. It can arise
+        # * in the case of a stratisd bug. We would expect to fix that very
+        # soon, so should not have a test in that case.
+        # * in the case where another client of stratisd is running and alters
+        # state while a command is being executed. This could be tested for,
+        # but only with considerable difficulty, so we choose not to test.
+        if isinstance(error, StratisCliIncoherenceError):  # pragma: no cover
             fmt_str = (
                 "It should have been possible to complete the command that "
                 "you issued, but stratisd reported that it did nothing: %s"
