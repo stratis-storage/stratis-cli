@@ -78,7 +78,7 @@ def get_errors(exc):
 
 # pylint: disable=too-many-return-statements
 # pylint: disable=too-many-branches
-def interpret_errors(errors):
+def _interpret_errors(errors):
     """
     Laboriously add best guesses at the cause of the error, based on
     developer knowledge and possibly further information that is gathered
@@ -204,7 +204,7 @@ def handle_error(err):
 
     errors = list(get_errors(err))
 
-    explanation = interpret_errors(errors)
+    explanation = _interpret_errors(errors)
 
     # The goal is to have an explanation for every error chain. If there is
     # none, then this will rapidly be fixed, so it will be difficult to
