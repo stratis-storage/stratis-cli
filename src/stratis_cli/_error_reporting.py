@@ -88,7 +88,10 @@ def interpret_errors(errors):
     :type errors: list of Exception
     :returns: None if no interpretation found, otherwise str
     """
-    try:
+    # pylint: disable=fixme
+    # FIXME: remove no coverage pragma when adequate testing for CLI output
+    # exists.
+    try:  # pragma: no cover
         # Inspect top-most error after StratisCliActionError
         error = errors[1]
 
@@ -114,10 +117,7 @@ def interpret_errors(errors):
         if isinstance(error, DbusClientMissingPropertyError):  # pragma: no cover
             return _DBUS_INTERFACE_MSG
 
-        # pylint: disable=fixme
-        # FIXME: remove no coverage pragma when adequate testing for CLI
-        # output exists.
-        if isinstance(error, StratisCliEngineError):  # pragma: no cover
+        if isinstance(error, StratisCliEngineError):
             fmt_str = (
                 "stratisd failed to perform the operation that you "
                 "requested. It returned the following information via "
@@ -154,14 +154,11 @@ def interpret_errors(errors):
         # Inspect lowest error
         error = errors[-1]
 
-        # pylint: disable=fixme
-        # FIXME: remove no coverage pragma when adequate testing for CLI
-        # output exists.
         if (
             # pylint: disable=bad-continuation
             isinstance(error, dbus.exceptions.DBusException)
             and error.get_dbus_name() == "org.freedesktop.DBus.Error.AccessDenied"
-        ):  # pragma: no cover
+        ):
             return "Most likely stratis has insufficient permissions for the action requested."
         # We have observed two causes of this problem. The first is that
         # stratisd is not running at all. The second is that stratisd has not
@@ -173,14 +170,11 @@ def interpret_errors(errors):
         ):
             return "Most likely stratis is unable to connect to the stratisd D-Bus service."
 
-        # pylint: disable=fixme
-        # FIXME: remove no coverage pragma when adequate testing for CLI
-        # output exists.
         if (
             # pylint: disable=bad-continuation
             isinstance(error, dbus.exceptions.DBusException)
             and error.get_dbus_name() == "org.freedesktop.DBus.Error.NoReply"
-        ):  # pragma: no cover
+        ):
             fmt_str = (
                 "stratis attempted communication with the daemon, stratisd, "
                 "over the D-Bus, but stratisd did not respond in the allowed time."
