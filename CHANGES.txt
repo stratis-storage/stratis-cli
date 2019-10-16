@@ -1,3 +1,20 @@
+stratis-cli 2.0.0 (UNRELEASED)
+==============================
+Python auto-formatter: black (18.9b0)
+
+New minimum stratisd version requirement: 2.0.0
+
+- Remove idempotent behavior on certain commands:
+  https://github.com/stratis-storage/project/issues/51
+  https://github.com/stratis-storage/stratis-cli/pull/358
+
+- Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/363
+  https://github.com/stratis-storage/stratis-cli/pull/362
+  https://github.com/stratis-storage/stratis-cli/pull/361
+  https://github.com/stratis-storage/stratis-cli/pull/357
+
+
 stratis-cli 1.1.0
 =================
 Python auto-formatter: black (18.9b0)
