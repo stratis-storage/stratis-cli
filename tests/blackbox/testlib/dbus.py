@@ -210,57 +210,23 @@ class StratisDbus:
         }
 
     @staticmethod
-    def pool_add_cache(pool_name, devices):
+    def pool_add_cache(pool_path, devices):
         """
         Add a block device as a cache device
         """
-        objects = StratisDbus._get_managed_objects().items()
-
-        pool_objects = {
-            path: obj_data[StratisDbus._POOL_IFACE]
-            for path, obj_data in objects
-            if StratisDbus._POOL_IFACE in obj_data
-            and obj_data[StratisDbus._POOL_IFACE]["Name"].startswith(TEST_PREF)
-        }
-
-        pool_object_paths = [
-            path
-            for path, pool_obj in pool_objects.items()
-            if pool_obj["Name"] == pool_name
-        ]
-        if pool_object_paths == []:
-            return None
-
         iface = dbus.Interface(
-            StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, pool_object_paths[0]),
+            StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, pool_path),
             StratisDbus._POOL_IFACE,
         )
         return iface.AddCacheDevs(devices, timeout=StratisDbus._TIMEOUT)
 
     @staticmethod
-    def pool_add_data(pool_name, devices):
+    def pool_add_data(pool_path, devices):
         """
         Add a disk to an existing pool
         """
-        objects = StratisDbus._get_managed_objects().items()
-
-        pool_objects = {
-            path: obj_data[StratisDbus._POOL_IFACE]
-            for path, obj_data in objects
-            if StratisDbus._POOL_IFACE in obj_data
-            and obj_data[StratisDbus._POOL_IFACE]["Name"].startswith(TEST_PREF)
-        }
-
-        pool_object_paths = [
-            path
-            for path, pool_obj in pool_objects.items()
-            if pool_obj["Name"] == pool_name
-        ]
-        if pool_object_paths == []:
-            return None
-
         iface = dbus.Interface(
-            StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, pool_object_paths[0]),
+            StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, pool_path),
             StratisDbus._POOL_IFACE,
         )
         return iface.AddDataDevs(devices, timeout=StratisDbus._TIMEOUT)
@@ -271,11 +237,11 @@ class StratisDbus:
         Create a filesystem
         """
         iface = dbus.Interface(
-            StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, StratisDbus._TOP_OBJECT),
+            StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, pool_object_path),
             StratisDbus._POOL_IFACE,
         )
 
-        return iface.CreateFilesystems([pool_object_path, fs_name], timeout=StratisDbus._TIMEOUT)
+        return iface.CreateFilesystems([fs_name], timeout=StratisDbus._TIMEOUT)
 
     @staticmethod
     def fs_destroy(pool_name, fs_name):
@@ -326,26 +292,12 @@ class StratisDbus:
         """
         objects = StratisDbus._get_managed_objects().items()
 
-        pool_objects = {
-            path: obj_data[StratisDbus._POOL_IFACE]
-            for path, obj_data in objects
-            if StratisDbus._POOL_IFACE in obj_data
-            and obj_data[StratisDbus._POOL_IFACE]["Name"].startswith(TEST_PREF)
-        }
         fs_objects = {
             path: obj_data[StratisDbus._FS_IFACE]
             for path, obj_data in objects
             if StratisDbus._FS_IFACE in obj_data
             and obj_data[StratisDbus._FS_IFACE]["Name"].startswith(TEST_PREF)
         }
-
-        pool_object_paths = [
-            path
-            for path, pool_obj in pool_objects.items()
-            if pool_obj["Name"] == pool_name
-        ]
-        if pool_object_paths == []:
-            return None
 
         fs_object_paths = [
             path for path, fs_obj in fs_objects.items() if fs_obj["Name"] == fs_name
@@ -354,39 +306,22 @@ class StratisDbus:
             return None
 
         iface = dbus.Interface(
-            StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, pool_object_paths[0]),
-            StratisDbus._POOL_IFACE,
+            StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, fs_object_paths[0]),
+            StratisDbus._FS_IFACE,
         )
         return iface.SetName(fs_name_rename, timeout=StratisDbus._TIMEOUT)
 
     @staticmethod
-    def filesystem_snapshot(pool_name, filesystem_name, snapshot_name):
+    def filesystem_snapshot(pool_object_path, filesystem_object_path, snapshot_name):
         """
         Snapshot a filesystem
         """
-        objects = StratisDbus._get_managed_objects().items()
-
-        pool_objects = {
-            path: obj_data[StratisDbus._POOL_IFACE]
-            for path, obj_data in objects
-            if StratisDbus._POOL_IFACE in obj_data
-            and obj_data[StratisDbus._POOL_IFACE]["Name"].startswith(TEST_PREF)
-        }
-
-        pool_object_paths = [
-            path
-            for path, pool_obj in pool_objects.items()
-            if pool_obj["Name"] == pool_name
-        ]
-        if pool_object_paths == []:
-            return None
-
         iface = dbus.Interface(
-            StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, pool_object_paths[0]),
+            StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, pool_object_path),
             StratisDbus._POOL_IFACE,
         )
         return iface.SnapshotFilesystem(
-            filesystem_name, snapshot_name, timeout=StratisDbus._TIMEOUT
+            filesystem_object_path, snapshot_name, timeout=StratisDbus._TIMEOUT
         )
 
     @staticmethod
