@@ -86,7 +86,7 @@ NOTES
 -----
 If a block device appears to be already in use, stratisd will refuse to
 claim it. To allow use with stratisd, any signature on the device must
-first be erased. Please carefully verify the identityand availability of
+first be erased. Please carefully verify the identity and availability of
 the device before taking such a step.
 
 EXAMPLES
