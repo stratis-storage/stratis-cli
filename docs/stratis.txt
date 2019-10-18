@@ -20,9 +20,6 @@ and the filesystems allocated from the pool.
 Stratis creates a *pool* from one or more block devices (*blockdevs*), and
 then enables multiple *filesystems* to be created from the pool.
 
-If the block device is already in use, its signature has to be erased using
-*wipefs -a <blockdev>* before trying to add it to a pool.
-
 GLOBAL OPTIONS
 --------------
 --version::
@@ -84,6 +81,13 @@ STRATIS_DBUS_TIMEOUT::
          1. an integer between 0 (inclusive) and 1073741823 (inclusive),
          which represents the timeout length in milliseconds
          2. -1, which represents the libdbus default timeout
+
+NOTES
+-----
+If a block device appears to be already in use, stratisd will refuse to
+claim it. To allow use with stratisd, any signature on the device must
+first be erased. Please carefully verify the identity and availability of
+the device before taking such a step.
 
 EXAMPLES
 --------
