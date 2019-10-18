@@ -251,17 +251,18 @@ class TopActions:
             .search(managed_objects)
         )
 
-        ((added, _), rc, message) = Pool.Methods.AddDataDevs(
-            get_object(pool_object_path), {"devices": namespace.blockdevs}
+        ((added, devs_added), rc, message) = Pool.Methods.AddDataDevs(
+            get_object(pool_object_path), {"devices": list(blockdevs)}
         )
         if rc != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(rc, message)
 
-        if not added:  # pragma: no cover
+        if not added or len(devs_added) < len(blockdevs):  # pragma: no cover
             raise StratisCliIncoherenceError(
                 (
                     "Expected to add the specified blockdevs to the data tier "
-                    "in pool %s but stratisd reports that it took no action"
+                    "in pool %s but stratisd reports that it did not actually "
+                    "add some or all of the blockdevs requested"
                 )
                 % namespace.pool_name
             )
@@ -296,17 +297,18 @@ class TopActions:
             .search(managed_objects)
         )
 
-        ((added, _), rc, message) = Pool.Methods.AddCacheDevs(
-            get_object(pool_object_path), {"devices": namespace.blockdevs}
+        ((added, devs_added), rc, message) = Pool.Methods.AddCacheDevs(
+            get_object(pool_object_path), {"devices": list(blockdevs)}
         )
         if rc != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(rc, message)
 
-        if not added:  # pragma: no cover
+        if not added or len(devs_added) < len(blockdevs):  # pragma: no cover
             raise StratisCliIncoherenceError(
                 (
                     "Expected to add the specified blockdevs to the cache tier "
-                    "in pool %s but stratisd reports that it took no action"
+                    "in pool %s but stratisd reports that it did not actually "
+                    "add some or all of the blockdevs requested"
                 )
                 % namespace.pool_name
             )

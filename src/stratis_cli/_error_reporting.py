@@ -146,8 +146,9 @@ def _interpret_errors(errors):
         # but only with considerable difficulty, so we choose not to test.
         if isinstance(error, StratisCliIncoherenceError):  # pragma: no cover
             fmt_str = (
-                "It should have been possible to complete the command that "
-                "you issued, but stratisd reported that it did nothing: %s"
+                "stratisd reported that it did not execute every action "
+                "that it would have been expected to execute as a result "
+                "of the command that you requested: %s"
             )
             return fmt_str % error
 
