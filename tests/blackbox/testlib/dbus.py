@@ -152,7 +152,10 @@ class StratisDbus:
             StratisDbus._MNGR_IFACE,
         )
         return iface.CreatePool(
-            pool_name, (dbus.Boolean(False), dbus.UInt16(0)), devices, timeout=StratisDbus._TIMEOUT
+            pool_name,
+            (dbus.Boolean(False), dbus.UInt16(0)),
+            devices,
+            timeout=StratisDbus._TIMEOUT,
         )
 
     @staticmethod
