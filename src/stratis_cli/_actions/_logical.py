@@ -75,18 +75,19 @@ class LogicalActions:
                 "create", requested_names.difference(already_names), already_names
             )
 
-        ((created, _), rc, message) = Pool.Methods.CreateFilesystems(
-            get_object(pool_object_path), {"specs": namespace.fs_name}
+        ((created, list_created), rc, message) = Pool.Methods.CreateFilesystems(
+            get_object(pool_object_path), {"specs": list(requested_names)}
         )
 
         if rc != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(rc, message)
 
-        if not created:  # pragma: no cover
+        if not created or len(list_created) < len(requested_names):  # pragma: no cover
             raise StratisCliIncoherenceError(
                 (
                     "Expected to create the specified filesystems in pool %s "
-                    "but stratisd reports that it took no action"
+                    "but stratisd reports that it did not actually create "
+                    "some or all of the filesystems requested"
                 )
                 % namespace.pool_name
             )
@@ -197,18 +198,22 @@ class LogicalActions:
             op for (name, op) in pool_filesystems.items() if name in requested_names
         ]
 
-        ((destroyed, _), rc, message) = Pool.Methods.DestroyFilesystems(
+        ((destroyed, list_destroyed), rc, message) = Pool.Methods.DestroyFilesystems(
             get_object(pool_object_path), {"filesystems": fs_object_paths}
         )
 
         if rc != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(rc, message)
 
-        if not destroyed:  # pragma: no cover
+        if not destroyed or len(list_destroyed) < len(
+            # pylint: disable=bad-continuation
+            fs_object_paths
+        ):  # pragma: no cover
             raise StratisCliIncoherenceError(
                 (
                     "Expected to destroy the specified filesystems in pool %s "
-                    "but stratisd reports that it took no action"
+                    "but stratisd reports that it did not actually destroy "
+                    "some or all of the filesystems requested"
                 )
                 % namespace.pool_name
             )
