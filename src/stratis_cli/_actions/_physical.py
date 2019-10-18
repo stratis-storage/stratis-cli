@@ -39,6 +39,7 @@ class PhysicalActions:
         List devices. If a pool is specified in the namespace, list devices
         for that pool. Otherwise, list all devices for all pools.
         """
+        # pylint: disable=import-outside-toplevel
         from ._data import devs
         from ._data import pools
         from ._data import MODev

@@ -39,6 +39,7 @@ class StratisActions:
         """
         List the stratisd version.
         """
+        # pylint: disable=import-outside-toplevel
         from ._data import Manager
 
         print("%s" % Manager.Properties.Version.Get(get_object(TOP_OBJECT)))
