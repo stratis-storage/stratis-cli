@@ -44,6 +44,7 @@ def _check_opposite_tier(managed_objects, to_be_added, other_tier):
     :type other_tier: _stratisd_constants.BlockDevTiers
     :raises StratisCliInUseError: if blockdevs are used by other tier
     """
+    # pylint: disable=import-outside-toplevel
     from ._data import MODev
     from ._data import devs
 
@@ -74,6 +75,7 @@ def _check_same_tier(managed_objects, to_be_added, this_tier):
     :type other_tier: _stratisd_constants.BlockDevTiers
     :raises StratisCliPartialChangeError: if blockdevs are used by this tier
     """
+    # pylint: disable=import-outside-toplevel
     from ._data import MODev
     from ._data import devs
 
@@ -103,6 +105,7 @@ class TopActions:
         :raises StratisCliEngineError:
         :raises StratisCliNoChangeError:
         """
+        # pylint: disable=import-outside-toplevel
         from ._data import Manager
 
         proxy = get_object(TOP_OBJECT)
@@ -129,6 +132,7 @@ class TopActions:
 
         :raises StratisCliEngineError:
         """
+        # pylint: disable=import-outside-toplevel
         from ._data import MOPool
         from ._data import ObjectManager
         from ._data import pools
@@ -161,6 +165,7 @@ class TopActions:
         :raises StratisCliEngineError:
         :raises StratisCliNoChangeError:
         """
+        # pylint: disable=import-outside-toplevel
         from ._data import Manager
         from ._data import ObjectManager
         from ._data import pools
@@ -193,6 +198,7 @@ class TopActions:
         :raises StratisCliEngineError:
         :raises StratisCliNoChangeError:
         """
+        # pylint: disable=import-outside-toplevel
         from ._data import ObjectManager
         from ._data import Pool
         from ._data import pools
@@ -225,6 +231,7 @@ class TopActions:
         :raises StratisCliInUseError:
         :raises StratisCliPartialChangeError:
         """
+        # pylint: disable=import-outside-toplevel
         from ._data import ObjectManager
         from ._data import Pool
         from ._data import pools
@@ -269,6 +276,7 @@ class TopActions:
         :raises StratisCliInUseError:
         :raises StratisCliPartialChangeError:
         """
+        # pylint: disable=import-outside-toplevel
         from ._data import ObjectManager
         from ._data import Pool
         from ._data import pools
