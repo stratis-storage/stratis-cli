@@ -289,7 +289,7 @@ class StratisDbus:
         return iface.DestroyFilesystems(fs_object_paths, timeout=StratisDbus._TIMEOUT)
 
     @staticmethod
-    def filesystem_rename(pool_name, fs_name, fs_name_rename):
+    def filesystem_rename(fs_name, fs_name_rename):
         """
         Rename a filesystem
         """
