@@ -133,6 +133,7 @@ class TopActions:
         :raises StratisCliEngineError:
         """
         # pylint: disable=import-outside-toplevel
+        from ._data import FetchProperties
         from ._data import MOPool
         from ._data import ObjectManager
         from ._data import pools
@@ -140,19 +141,31 @@ class TopActions:
         proxy = get_object(TOP_OBJECT)
 
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        mopools = (MOPool(info) for _, info in pools().search(managed_objects))
-        tables = [
-            [
-                mopool.Name(),
-                str(Range(mopool.TotalPhysicalSize(), SECTOR_SIZE)),
-                str(Range(mopool.TotalPhysicalUsed(), SECTOR_SIZE)),
-            ]
-            for mopool in mopools
+        pools_with_props = [
+            (
+                FetchProperties.Methods.GetAllProperties(get_object(objpath), {}),
+                MOPool(info),
+            )
+            for objpath, info in pools().search(managed_objects)
         ]
+
+        tables = []
+        for props, mopool in pools_with_props:
+            if "TotalPhysicalSize" in props:
+                (success, size_variant) = props["TotalPhysicalSize"]
+                if success:
+                    total_physical_size = str(Range(size_variant, SECTOR_SIZE))
+                else:
+                    total_physical_size = "ERROR: %s" % size_variant
+            else:
+                total_physical_size = "Property not found"
+
+            tables.append([mopool.Name(), total_physical_size])
+
         print_table(
-            ["Name", "Total Physical Size", "Total Physical Used"],
+            ["Name", "Total Physical Size"],
             sorted(tables, key=lambda entry: entry[0]),
-            ["<", ">", ">"],
+            ["<", ">"],
         )
 
     @staticmethod
