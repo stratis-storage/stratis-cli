@@ -17,7 +17,6 @@ Miscellaneous physical actions.
 
 from justbytes import Range
 
-from .._stratisd_constants import BLOCK_DEV_STATE_TO_NAME
 from .._stratisd_constants import BLOCK_DEV_TIER_TO_NAME
 
 from ._connection import get_object
@@ -41,7 +40,9 @@ class PhysicalActions:
         """
         # pylint: disable=import-outside-toplevel
         from ._data import devs
+        from ._data import _fetch_property
         from ._data import pools
+        from ._data import FetchProperties
         from ._data import MODev
         from ._data import MOPool
         from ._data import ObjectManager
@@ -53,9 +54,12 @@ class PhysicalActions:
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
-        modevs = (
-            MODev(info)
-            for _, info in devs(
+        modevs = [
+            (
+                FetchProperties.Methods.GetAllProperties(get_object(objpath), {}),
+                MODev(info),
+            )
+            for objpath, info in devs(
                 props=None
                 if pool_name is None
                 else {
@@ -66,7 +70,7 @@ class PhysicalActions:
                     )[0]
                 }
             ).search(managed_objects)
-        )
+        ]
 
         path_to_name = dict(
             (path, MOPool(info).Name())
@@ -79,14 +83,15 @@ class PhysicalActions:
             [
                 path_to_name[modev.Pool()],
                 modev.Devnode(),
-                str(Range(modev.TotalPhysicalSize(), SECTOR_SIZE)),
-                BLOCK_DEV_STATE_TO_NAME(modev.State(), True),
+                _fetch_property(
+                    "TotalPhysicalSize", props, lambda x: str(Range(x, SECTOR_SIZE))
+                ),
                 BLOCK_DEV_TIER_TO_NAME(modev.Tier(), True),
             ]
-            for modev in modevs
+            for (props, modev) in modevs
         ]
         print_table(
-            ["Pool Name", "Device Node", "Physical Size", "State", "Tier"],
+            ["Pool Name", "Device Node", "Physical Size", "Tier"],
             sorted(tables, key=lambda entry: (entry[0], entry[1])),
-            ["<", "<", ">", ">", ">"],
+            ["<", "<", ">", ">"],
         )
