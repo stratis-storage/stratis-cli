@@ -206,6 +206,8 @@ def _fetch_property(name, props, to_string):
     :type name: str
     :param props: dictionary of property names mapped to values
     :type props: dict of strs to (bool, object)
+    :param to_string: function expecting one object argument to convert to string
+    :type to_string: function(object) -> str
     :returns: str
     """
     if name in props:
