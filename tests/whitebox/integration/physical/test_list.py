@@ -16,12 +16,11 @@ Test 'list'.
 """
 
 from dbus_client_gen import DbusClientUniqueResultError
-
 from stratis_cli._errors import StratisCliActionError
 
-from .._misc import device_name_list
 from .._misc import RUNNER
 from .._misc import SimTestCase
+from .._misc import device_name_list
 
 _DEVICE_STRATEGY = device_name_list(1)
 

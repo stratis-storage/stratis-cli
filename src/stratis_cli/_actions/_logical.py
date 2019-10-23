@@ -15,16 +15,14 @@
 Miscellaneous logical actions.
 """
 
-from justbytes import Range
 from dateutil import parser as date_parser
+from justbytes import Range
 
 from .._errors import StratisCliEngineError
 from .._errors import StratisCliIncoherenceError
 from .._errors import StratisCliNoChangeError
 from .._errors import StratisCliPartialChangeError
-
 from .._stratisd_constants import StratisdErrors
-
 from ._connection import get_object
 from ._constants import FILESYSTEM_INTERFACE
 from ._constants import TOP_OBJECT

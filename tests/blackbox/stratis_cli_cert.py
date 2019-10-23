@@ -20,8 +20,13 @@ import sys
 import time
 import unittest
 
-from testlib.utils import exec_command, exec_test_command, process_exists, p_n, fs_n
-from testlib.stratis import STRATIS_CLI, clean_up
+from testlib.stratis import STRATIS_CLI
+from testlib.stratis import clean_up
+from testlib.utils import exec_command
+from testlib.utils import exec_test_command
+from testlib.utils import fs_n
+from testlib.utils import p_n
+from testlib.utils import process_exists
 
 DISKS = []
 

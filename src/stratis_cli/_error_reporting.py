@@ -18,7 +18,6 @@ import os
 import sys
 
 import dbus
-
 from dbus_client_gen import DbusClientMissingPropertyError
 from dbus_client_gen import DbusClientMissingSearchPropertiesError
 from dbus_client_gen import DbusClientUniqueResultError
@@ -26,7 +25,6 @@ from dbus_client_gen import DbusClientUniqueResultError
 from ._actions import BLOCKDEV_INTERFACE
 from ._actions import FILESYSTEM_INTERFACE
 from ._actions import POOL_INTERFACE
-
 from ._errors import StratisCliEngineError
 from ._errors import StratisCliIncoherenceError
 from ._errors import StratisCliInUseError

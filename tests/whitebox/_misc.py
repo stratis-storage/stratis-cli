@@ -24,7 +24,6 @@ import time
 import unittest
 
 import psutil  # pylint: disable=wrong-import-order
-
 from stratis_cli import run
 
 try:

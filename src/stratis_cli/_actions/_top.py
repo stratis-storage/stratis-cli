@@ -22,10 +22,8 @@ from .._errors import StratisCliIncoherenceError
 from .._errors import StratisCliInUseError
 from .._errors import StratisCliNoChangeError
 from .._errors import StratisCliPartialChangeError
-
 from .._stratisd_constants import BlockDevTiers
 from .._stratisd_constants import StratisdErrors
-
 from ._connection import get_object
 from ._constants import POOL_INTERFACE
 from ._constants import TOP_OBJECT

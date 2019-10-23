@@ -16,7 +16,9 @@ Wrapper around stratis CLI
 """
 import os
 
-from .utils import exec_command, umount_mdv, TEST_PREF
+from .utils import TEST_PREF
+from .utils import exec_command
+from .utils import umount_mdv
 
 # Some packaged systems might place this in /usr/sbin
 STRATIS_CLI = os.getenv("STRATIS_CLI", "/usr/bin/stratis")

@@ -18,7 +18,6 @@ Miscellaneous physical actions.
 from justbytes import Range
 
 from .._stratisd_constants import BLOCK_DEV_TIER_TO_NAME
-
 from ._connection import get_object
 from ._constants import BLOCKDEV_INTERFACE
 from ._constants import TOP_OBJECT

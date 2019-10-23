@@ -15,9 +15,9 @@
 Error heirarchy for stratis cli.
 """
 
-from ._stratisd_constants import BlockDevTiers
 from ._stratisd_constants import BLOCK_DEV_TIER_TO_NAME
 from ._stratisd_constants import STRATISD_ERROR_TO_NAME
+from ._stratisd_constants import BlockDevTiers
 
 
 class StratisCliError(Exception):

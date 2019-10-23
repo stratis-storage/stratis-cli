@@ -16,7 +16,6 @@ Test 'rename'.
 """
 
 from dbus_client_gen import DbusClientUniqueResultError
-
 from stratis_cli._errors import StratisCliActionError
 from stratis_cli._errors import StratisCliNoChangeError
 
