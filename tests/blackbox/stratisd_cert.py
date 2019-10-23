@@ -107,7 +107,7 @@ class StratisCertify(unittest.TestCase):
         """
         Test getting the daemon version.
         """
-        self.assertNotEqual(StratisDbus.stratisd_version(), [])
+        self.assertNotEqual(StratisDbus.stratisd_version(), "")
 
     def test_pool_list_empty(self):
         """
@@ -272,7 +272,7 @@ class StratisCertify(unittest.TestCase):
         fs_path = make_test_filesystem(pool_path, fs_name)
         assert fs_path is not None
 
-        self.assertNotEqual(StratisDbus.fs_list(), [])
+        self.assertNotEqual(StratisDbus.fs_list(), {})
 
     def test_filesystem_create_same_name(self):
         """
