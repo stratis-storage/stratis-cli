@@ -161,8 +161,8 @@ class StratisDbus:
         """
         Destroy a pool
         :param pool_name: The name of the pool to destroy
-        :return: The object path of the created pool, or None
-        :rtype: str, or None
+        :return: The object path of the DestroyPool call, or None
+        :rtype: The D-Bus types (bs), q, and s, or None
         """
         pool_objects = {
             path: obj_data[StratisDbus._POOL_IFACE]
