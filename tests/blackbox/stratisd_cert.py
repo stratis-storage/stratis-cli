@@ -31,7 +31,7 @@ DISKS = []
 def make_test_pool(pool_name):
     """
     Create a test pool that will later get destroyed
-    :param pool_name: Name of the pool to be created
+    :param str pool_name: Name of the pool to be created
     :return: Object path of the created pool or None
     """
     pool_disk = DISKS[0:1]
@@ -46,8 +46,8 @@ def make_test_pool(pool_name):
 def make_test_filesystem(pool_path, fs_name):
     """
     Create a test filesystem that will later get destroyed
-    :param pool_path: Object path of a test pool
-    :param fs_name: Name of the filesystem to be created
+    :param str pool_path: Object path of a test pool
+    :param str fs_name: Name of the filesystem to be created
     :return: Object path of the created filesystem or None
     """
     (
@@ -108,12 +108,6 @@ class StratisCertify(unittest.TestCase):
         Test getting the daemon version.
         """
         self.assertNotEqual(StratisDbus.stratisd_version(), [])
-
-    def test_stratisd_redundancy(self):
-        """
-        Test listing the redundancy levels that the Stratis service supports.
-        """
-        self.assertNotEqual(StratisDbus.stratisd_redundancy(), [])
 
     def test_pool_list_empty(self):
         """
@@ -182,11 +176,15 @@ class StratisCertify(unittest.TestCase):
         """
         Test creating a pool that already exists.
         """
+        pool_disks = DISKS[1:3]
+
         pool_name = p_n()
         pool_path = make_test_pool(pool_name)
         assert pool_path is not None
 
-        self.assertEqual(StratisDbus.pool_create(pool_name, DISKS)[1], dbus.UInt16(0))
+        self.assertEqual(
+            StratisDbus.pool_create(pool_name, pool_disks)[1], dbus.UInt16(0)
+        )
 
     def test_pool_destroy(self):
         """

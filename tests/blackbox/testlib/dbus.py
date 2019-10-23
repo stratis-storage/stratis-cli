@@ -93,6 +93,8 @@ class StratisDbus:
     def stratisd_version():
         """
         Get stratisd version
+        :return: The current stratisd version
+        :rtype: str
         """
         versions = [
             obj_data[StratisDbus._MNGR_IFACE]["Version"]
@@ -103,19 +105,11 @@ class StratisDbus:
         return versions[0]
 
     @staticmethod
-    def stratisd_redundancy():
-        """
-        Get stratisd redundancy
-        """
-        redundancy = "NONE = 0"
-
-        return redundancy
-
-    @staticmethod
     def pool_list():
         """
         Query the pools
-        :return: A list of pool names.
+        :return: A list of pool names
+        :rtype: List of str
         """
         pool_objects = [
             obj_data[StratisDbus._POOL_IFACE]
@@ -130,7 +124,8 @@ class StratisDbus:
     def blockdev_list():
         """
         Query the blockdevs
-        :return: A list of blockdev names.
+        :return: A list of blockdev names
+        :rtype: List of str
         """
         blockdev_objects = [
             obj_data[StratisDbus._BLKDEV_IFACE]
@@ -145,7 +140,10 @@ class StratisDbus:
     def pool_create(pool_name, devices):
         """
         Create a pool
-        :return: result, return_code, return_string of CreatePool call
+        :param pool_name: The name of the pool to create
+        :param str devices: A list of devices that can be used to create the pool
+        :return: The return values of the CreatePool call
+        :rtype: The D-Bus types (b(oao)), q, and s
         """
         iface = dbus.Interface(
             StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, StratisDbus._TOP_OBJECT),
@@ -162,7 +160,9 @@ class StratisDbus:
     def pool_destroy(pool_name):
         """
         Destroy a pool
-        :param name: Name of pool to destroy
+        :param pool_name: The name of the pool to destroy
+        :return: The object path of the created pool, or None
+        :rtype: str, or None
         """
         pool_objects = {
             path: obj_data[StratisDbus._POOL_IFACE]
@@ -190,6 +190,7 @@ class StratisDbus:
         """
         Query the file systems
         :return: A dict,  Key being the fs name, the value being the pool name
+        :rtype: dict mapping str to str
         """
         objects = StratisDbus._get_managed_objects().items()
 
@@ -216,6 +217,10 @@ class StratisDbus:
     def pool_add_cache(pool_path, devices):
         """
         Add a block device as a cache device
+        :param str pool_path: The object path of the pool to which the cache device will be added
+        :param str devices: A list of devices that can be added as a cache device
+        :return: The return values of the AddCacheDevs call
+        :rtype: The D-Bus types (bao), q, and s
         """
         iface = dbus.Interface(
             StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, pool_path),
@@ -227,6 +232,10 @@ class StratisDbus:
     def pool_add_data(pool_path, devices):
         """
         Add a disk to an existing pool
+        :param str pool_path: The object path of the pool to which the data device will be added
+        :param str devices: A list of devices that can be added as a data device
+        :return: The return values of the AddCacheDevs call
+        :rtype: The D-Bus types (bao), q, and s
         """
         iface = dbus.Interface(
             StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, pool_path),
@@ -238,6 +247,10 @@ class StratisDbus:
     def fs_create(pool_path, fs_name):
         """
         Create a filesystem
+        :param str pool_path: The object path of the pool in which the filesystem will be created
+        :param str fs_name: The name of the filesystem to create
+        :return: The return values of the CreateFilesystems call
+        :rtype: The D-Bus types (ba(os)), q, and s
         """
         iface = dbus.Interface(
             StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, pool_path),
@@ -249,9 +262,11 @@ class StratisDbus:
     @staticmethod
     def fs_destroy(pool_name, fs_name):
         """
-        Destroy a FS
-        :param pool_name:  Pool which contains the FS
-        :param fs_name: Name of FS to destroy
+        Destroy a filesystem
+        :param str pool_name: The name of the pool which contains the filesystem
+        :param str fs_name: The name of the filesystem to destroy
+        :return: The return values of the DestroyFilesystems call, or None
+        :rtype: The D-Bus types (bas), q, and s, or None
         """
         objects = StratisDbus._get_managed_objects().items()
 
@@ -292,6 +307,10 @@ class StratisDbus:
     def fs_rename(fs_name, fs_name_rename):
         """
         Rename a filesystem
+        :param str fs_name: The name of the filesystem to be renamed
+        :param str fs_name_rename: The new name that the snapshot will have
+        :return: The return values of the SetName call, or None
+        :rtype: The D-Bus types (bs), q, and s, or None
         """
         objects = StratisDbus._get_managed_objects().items()
 
@@ -318,6 +337,11 @@ class StratisDbus:
     def fs_snapshot(pool_path, fs_path, snapshot_name):
         """
         Snapshot a filesystem
+        :param str pool_path: The object path of the pool containing the fs
+        :param str fs_name: The object path of the filesystem to snapshot
+        :param str snapshot_name: The name of the snapshot to be made
+        :return: The return values of the SnapshotFilesystem call
+        :rtype: The D-Bus types (bo), q, and s
         """
         iface = dbus.Interface(
             StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, pool_path),
