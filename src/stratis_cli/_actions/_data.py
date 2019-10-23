@@ -198,6 +198,28 @@ DBUS_TIMEOUT_SECONDS = 120
 MAXIMUM_DBUS_TIMEOUT_MS = 1073741823
 
 
+def _fetch_property(name, props, to_string):
+    """
+    Get a string representation of a property fetched through FetchProperties interface
+
+    :param name: the name of the property
+    :type name: str
+    :param props: dictionary of property names mapped to values
+    :type props: dict of strs to (bool, object)
+    :returns: str
+    """
+    if name in props:
+        (success, variant) = props[name]
+        if success:
+            string_rep = to_string(variant)
+        else:
+            string_rep = "ERROR: %s" % variant
+    else:
+        string_rep = "Property not found"
+
+    return string_rep
+
+
 def _get_timeout(value):
     """
     Turn an input str or int into a float timeout value.

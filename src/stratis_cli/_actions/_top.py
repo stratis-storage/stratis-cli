@@ -133,6 +133,7 @@ class TopActions:
         :raises StratisCliEngineError:
         """
         # pylint: disable=import-outside-toplevel
+        from ._data import _fetch_property
         from ._data import FetchProperties
         from ._data import MOPool
         from ._data import ObjectManager
@@ -149,18 +150,15 @@ class TopActions:
             for objpath, info in pools().search(managed_objects)
         ]
 
-        tables = []
-        for props, mopool in pools_with_props:
-            if "TotalPhysicalSize" in props:
-                (success, size_variant) = props["TotalPhysicalSize"]
-                if success:
-                    total_physical_size = str(Range(size_variant, SECTOR_SIZE))
-                else:
-                    total_physical_size = "ERROR: %s" % size_variant
-            else:
-                total_physical_size = "Property not found"
-
-            tables.append([mopool.Name(), total_physical_size])
+        tables = [
+            (
+                mopool.Name(),
+                _fetch_property(
+                    "TotalPhysicalSize", props, lambda x: str(Range(x, SECTOR_SIZE))
+                ),
+            )
+            for props, mopool in pools_with_props
+        ]
 
         print_table(
             ["Name", "Total Physical Size"],
