@@ -27,8 +27,10 @@ from .._stratisd_constants import BlockDevTiers
 from .._stratisd_constants import StratisdErrors
 
 from ._connection import get_object
-from ._constants import TOP_OBJECT
+from ._constants import POOL_INTERFACE
 from ._constants import SECTOR_SIZE
+from ._constants import TOP_OBJECT
+from ._formatting import fetch_property
 from ._formatting import print_table
 
 
@@ -133,6 +135,7 @@ class TopActions:
         :raises StratisCliEngineError:
         """
         # pylint: disable=import-outside-toplevel
+        from ._data import FetchProperties
         from ._data import MOPool
         from ._data import ObjectManager
         from ._data import pools
@@ -140,19 +143,31 @@ class TopActions:
         proxy = get_object(TOP_OBJECT)
 
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        mopools = (MOPool(info) for _, info in pools().search(managed_objects))
-        tables = [
-            [
-                mopool.Name(),
-                str(Range(mopool.TotalPhysicalSize(), SECTOR_SIZE)),
-                str(Range(mopool.TotalPhysicalUsed(), SECTOR_SIZE)),
-            ]
-            for mopool in mopools
+        pools_with_props = [
+            (
+                FetchProperties.Methods.GetAllProperties(get_object(objpath), {}),
+                MOPool(info),
+            )
+            for objpath, info in pools().search(managed_objects)
         ]
+
+        tables = [
+            (
+                mopool.Name(),
+                fetch_property(
+                    POOL_INTERFACE,
+                    props,
+                    "TotalPhysicalSize",
+                    lambda x: str(Range(x, SECTOR_SIZE)),
+                ),
+            )
+            for props, mopool in pools_with_props
+        ]
+
         print_table(
-            ["Name", "Total Physical Size", "Total Physical Used"],
+            ["Name", "Total Physical Size"],
             sorted(tables, key=lambda entry: entry[0]),
-            ["<", ">", ">"],
+            ["<", ">"],
         )
 
     @staticmethod

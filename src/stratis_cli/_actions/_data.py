@@ -31,6 +31,7 @@ from .._errors import StratisCliEnvironmentError
 from .._errors import StratisCliGenerationError
 
 from ._constants import BLOCKDEV_INTERFACE
+from ._constants import FETCH_PROPERTIES_INTERFACE
 from ._constants import FILESYSTEM_INTERFACE
 from ._constants import POOL_INTERFACE
 
@@ -46,6 +47,17 @@ SPECS = {
 <interface name="org.freedesktop.DBus.ObjectManager">
 <method name="GetManagedObjects">
 <arg name="objpath_interfaces_and_properties" type="a{oa{sa{sv}}}" direction="out"/>
+</method>
+</interface>
+""",
+    "org.storage.stratis1.FetchProperties": """
+<interface name="org.storage.stratis1.FetchProperties">
+<method name="GetAllProperties">
+<arg name="property_hash" type="a{s(bv)}" direction="out"/>
+</method>
+<method name="GetProperties">
+<arg name="properties" type="as" direction="in"/>
+<arg name="property_hash" type="a{s(bv)}" direction="out"/>
 </method>
 </interface>
 """,
@@ -117,23 +129,8 @@ SPECS = {
 <property name="Name" type="s" access="read">
 <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="true"/>
 </property>
-<property name="TotalPhysicalSize" type="s" access="read">
-<annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="false"/>
-</property>
-<property name="TotalPhysicalUsed" type="s" access="read">
-<annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="false"/>
-</property>
 <property name="Uuid" type="s" access="read">
 <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const"/>
-</property>
-<property name="State" type="q" access="read">
-<annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="true"/>
-</property>
-<property name="ExtendState" type="q" access="read">
-<annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="true"/>
-</property>
-<property name="SpaceState" type="q" access="read">
-<annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="true"/>
 </property>
 </interface>
 """,
@@ -156,9 +153,6 @@ SPECS = {
 </property>
 <property name="Pool" type="o" access="read">
 <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const"/>
-</property>
-<property name="Used" type="s" access="read">
-<annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="false"/>
 </property>
 <property name="Uuid" type="s" access="read">
 <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const"/>
@@ -185,13 +179,7 @@ SPECS = {
 <property name="Pool" type="o" access="read">
 <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const"/>
 </property>
-<property name="State" type="q" access="read">
-<annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="true"/>
-</property>
 <property name="Tier" type="q" access="read">
-<annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="false"/>
-</property>
-<property name="TotalPhysicalSize" type="s" access="read">
 <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="false"/>
 </property>
 <property name="UserInfo" type="s" access="read">
@@ -255,6 +243,9 @@ try:
     timeout = _get_timeout(
         environ.get("STRATIS_DBUS_TIMEOUT", DBUS_TIMEOUT_SECONDS * 1000)
     )
+
+    fetch_properties_spec = ET.fromstring(SPECS[FETCH_PROPERTIES_INTERFACE])
+    FetchProperties = make_class("FetchProperties", fetch_properties_spec, timeout)
 
     filesystem_spec = ET.fromstring(SPECS[FILESYSTEM_INTERFACE])
     Filesystem = make_class("Filesystem", filesystem_spec, timeout)
