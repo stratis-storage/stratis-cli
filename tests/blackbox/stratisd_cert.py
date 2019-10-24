@@ -107,32 +107,42 @@ class StratisCertify(unittest.TestCase):
         """
         Test getting the daemon version.
         """
-        self.assertNotEqual(StratisDbus.stratisd_version(), "")
+        result = StratisDbus.stratisd_version()
+        self.assertIsInstance(result, str)
+        self.assertNotEqual(result, "")
 
     def test_pool_list_empty(self):
         """
         Test listing an non-existent pool.
         """
-        self.assertEqual(StratisDbus.pool_list(), [])
+        result = StratisDbus.pool_list()
+        self.assertIsInstance(result, list)
+        self.assertEqual(result, [])
 
     def test_blockdev_list(self):
         """
         Test listing a blockdev.
         """
-        self.assertEqual(StratisDbus.blockdev_list(), [])
+        result = StratisDbus.blockdev_list()
+        self.assertIsInstance(result, list)
+        self.assertEqual(result, [])
 
     def test_filesystem_list_empty(self):
         """
         Test listing an non-existent filesystem.
         """
-        self.assertEqual(StratisDbus.fs_list(), {})
+        result = StratisDbus.fs_list()
+        self.assertIsInstance(result, dict)
+        self.assertEqual(result, {})
 
     def test_pool_create(self):
         """
         Test creating a pool.
         """
         pool_name = p_n()
-        self.assertEqual(StratisDbus.pool_create(pool_name, DISKS)[1], dbus.UInt16(0))
+        result = StratisDbus.pool_create(pool_name, DISKS)
+        self.assertIsInstance(result[1], dbus.UInt16)
+        self.assertEqual(result[1], dbus.UInt16(0))
 
     def test_pool_add_cache(self):
         """
@@ -144,9 +154,9 @@ class StratisCertify(unittest.TestCase):
         pool_path = make_test_pool(pool_name)
         assert pool_path is not None
 
-        self.assertEqual(
-            StratisDbus.pool_add_cache(pool_path, cache_disks)[1], dbus.UInt16(0)
-        )
+        result = StratisDbus.pool_add_cache(pool_path, cache_disks)
+        self.assertIsInstance(result[1], dbus.UInt16)
+        self.assertEqual(result[1], dbus.UInt16(0))
 
     def test_pool_add_data(self):
         """
@@ -158,9 +168,9 @@ class StratisCertify(unittest.TestCase):
         pool_path = make_test_pool(pool_name)
         assert pool_path is not None
 
-        self.assertEqual(
-            StratisDbus.pool_add_data(pool_path, data_disks)[1], dbus.UInt16(0)
-        )
+        result = StratisDbus.pool_add_data(pool_path, data_disks)
+        self.assertIsInstance(result[1], dbus.UInt16)
+        self.assertEqual(result[1], dbus.UInt16(0))
 
     def test_pool_list_not_empty(self):
         """
@@ -170,7 +180,9 @@ class StratisCertify(unittest.TestCase):
         pool_path = make_test_pool(pool_name)
         assert pool_path is not None
 
-        self.assertNotEqual(StratisDbus.pool_list(), [])
+        result = StratisDbus.pool_list()
+        self.assertIsInstance(result, list)
+        self.assertNotEqual(result, [])
 
     def test_pool_create_same_name(self):
         """
@@ -182,9 +194,9 @@ class StratisCertify(unittest.TestCase):
         pool_path = make_test_pool(pool_name)
         assert pool_path is not None
 
-        self.assertEqual(
-            StratisDbus.pool_create(pool_name, pool_disks)[1], dbus.UInt16(0)
-        )
+        result = StratisDbus.pool_create(pool_name, pool_disks)
+        self.assertIsInstance(result[1], dbus.UInt16)
+        self.assertEqual(result[1], dbus.UInt16(0))
 
     def test_pool_destroy(self):
         """
@@ -194,7 +206,10 @@ class StratisCertify(unittest.TestCase):
         pool_path = make_test_pool(pool_name)
         assert pool_path is not None
 
-        self.assertEqual(StratisDbus.pool_destroy(pool_name)[1], dbus.UInt16(0))
+        result = StratisDbus.pool_destroy(pool_name)
+        self.assertIsInstance(result[1], dbus.UInt16)
+        self.assertEqual(result[1], dbus.UInt16(0))
+
         self.assertEqual(StratisDbus.fs_list(), {})
 
     def test_filesystem_create(self):
@@ -206,7 +221,10 @@ class StratisCertify(unittest.TestCase):
         assert pool_path is not None
 
         fs_name = fs_n()
-        self.assertEqual(StratisDbus.fs_create(pool_path, fs_name)[1], dbus.UInt16(0))
+
+        result = StratisDbus.fs_create(pool_path, fs_name)
+        self.assertIsInstance(result[1], dbus.UInt16)
+        self.assertEqual(result[1], dbus.UInt16(0))
 
     def test_filesystem_rename(self):
         """
@@ -222,10 +240,9 @@ class StratisCertify(unittest.TestCase):
 
         fs_name_rename = fs_n()
 
-        assert StratisDbus.fs_create(pool_path, fs_name)
-        self.assertEqual(
-            StratisDbus.fs_rename(fs_name, fs_name_rename)[1], dbus.UInt16(0)
-        )
+        result = StratisDbus.fs_rename(fs_name, fs_name_rename)
+        self.assertIsInstance(result[1], dbus.UInt16)
+        self.assertEqual(result[1], dbus.UInt16(0))
 
     def test_filesystem_rename_same_name(self):
         """
@@ -239,7 +256,9 @@ class StratisCertify(unittest.TestCase):
         fs_path = make_test_filesystem(pool_path, fs_name)
         assert fs_path is not None
 
-        self.assertEqual(StratisDbus.fs_rename(fs_name, fs_name)[1], dbus.UInt16(0))
+        result = StratisDbus.fs_rename(fs_name, fs_name)
+        self.assertIsInstance(result[1], dbus.UInt16)
+        self.assertEqual(result[1], dbus.UInt16(0))
 
     def test_filesystem_snapshot(self):
         """
@@ -255,10 +274,9 @@ class StratisCertify(unittest.TestCase):
 
         snapshot_name = fs_n()
 
-        self.assertEqual(
-            StratisDbus.fs_snapshot(pool_path, fs_path, snapshot_name)[1],
-            dbus.UInt16(0),
-        )
+        result = StratisDbus.fs_snapshot(pool_path, fs_path, snapshot_name)
+        self.assertIsInstance(result[1], dbus.UInt16)
+        self.assertEqual(result[1], dbus.UInt16(0))
 
     def test_filesystem_list_not_empty(self):
         """
@@ -272,7 +290,9 @@ class StratisCertify(unittest.TestCase):
         fs_path = make_test_filesystem(pool_path, fs_name)
         assert fs_path is not None
 
-        self.assertNotEqual(StratisDbus.fs_list(), {})
+        result = StratisDbus.fs_list()
+        self.assertIsInstance(result, dict)
+        self.assertNotEqual(result, {})
 
     def test_filesystem_create_same_name(self):
         """
@@ -286,7 +306,9 @@ class StratisCertify(unittest.TestCase):
         fs_path = make_test_filesystem(pool_path, fs_name)
         assert fs_path is not None
 
-        self.assertEqual(StratisDbus.fs_create(pool_path, fs_name)[1], dbus.UInt16(0))
+        result = StratisDbus.fs_create(pool_path, fs_name)
+        self.assertIsInstance(result[1], dbus.UInt16)
+        self.assertEqual(result[1], dbus.UInt16(0))
 
     def test_filesystem_destroy(self):
         """
@@ -300,7 +322,10 @@ class StratisCertify(unittest.TestCase):
         fs_path = make_test_filesystem(pool_path, fs_name)
         assert fs_path is not None
 
-        self.assertEqual(StratisDbus.fs_destroy(pool_name, fs_name)[1], dbus.UInt16(0))
+        result = StratisDbus.fs_destroy(pool_name, fs_name)
+        self.assertIsInstance(result[1], dbus.UInt16)
+        self.assertEqual(result[1], dbus.UInt16(0))
+
         self.assertEqual(StratisDbus.fs_list(), {})
 
 
