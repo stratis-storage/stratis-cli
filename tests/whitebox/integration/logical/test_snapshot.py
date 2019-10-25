@@ -18,6 +18,7 @@ Test 'snapshot'.
 from dbus_client_gen import DbusClientUniqueResultError
 
 from stratis_cli._errors import StratisCliActionError
+from stratis_cli._errors import StratisCliNoChangeError
 
 from .._misc import device_name_list
 from .._misc import RUNNER
@@ -28,8 +29,7 @@ _DEVICE_STRATEGY = device_name_list(1)
 
 class SnapshotTestCase(SimTestCase):
     """
-    Test creating a snapshot of a filesystem in a pool.  In this case
-    the snapshot should be created and no error raised.
+    Test creating a snapshot of a filesystem in a pool.
     """
 
     _MENU = ["--propagate", "filesystem", "snapshot"]
@@ -53,6 +53,16 @@ class SnapshotTestCase(SimTestCase):
         """
         command_line = self._MENU + [self._POOLNAME, self._FSNAME, self._SNAPNAME]
         RUNNER(command_line)
+
+    def testSameName(self):
+        """
+        Creation of the snapshot must fail, because this performs no action.
+        """
+        command_line = self._MENU + [self._POOLNAME, self._FSNAME, self._FSNAME]
+        with self.assertRaises(StratisCliActionError) as context:
+            RUNNER(command_line)
+        cause = context.exception.__cause__
+        self.assertIsInstance(cause, StratisCliNoChangeError)
 
 
 class Snapshot1TestCase(SimTestCase):
