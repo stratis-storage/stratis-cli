@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """
-Test 'snapshot'.
+Test 'rename'.
 """
 
 from dbus_client_gen import DbusClientUniqueResultError
@@ -27,15 +27,15 @@ from .._misc import SimTestCase
 _DEVICE_STRATEGY = device_name_list(1)
 
 
-class SnapshotTestCase(SimTestCase):
+class RenameTestCase(SimTestCase):
     """
-    Test creating a snapshot of a filesystem in a pool.
+    Test renaming a filesystem in a pool.
     """
 
-    _MENU = ["--propagate", "filesystem", "snapshot"]
+    _MENU = ["--propagate", "filesystem", "rename"]
     _POOLNAME = "deadpool"
-    _SNAPNAME = "snapfs"
     _FSNAME = "fs"
+    _RENAMEFSNAME = "renamefs"
 
     def setUp(self):
         """
@@ -44,19 +44,21 @@ class SnapshotTestCase(SimTestCase):
         super().setUp()
         command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
         RUNNER(command_line)
+
         command_line = ["filesystem", "create", self._POOLNAME, self._FSNAME]
         RUNNER(command_line)
 
-    def testSnapshot(self):
+    def testRename(self):
         """
-        Creation of the snapshot should succeed since origin pool/filesytem is available.
+        Renaming the filesystem should succeed,
+        because origin the pool and filesytem are available.
         """
-        command_line = self._MENU + [self._POOLNAME, self._FSNAME, self._SNAPNAME]
+        command_line = self._MENU + [self._POOLNAME, self._FSNAME, self._RENAMEFSNAME]
         RUNNER(command_line)
 
     def testSameName(self):
         """
-        Creation of the snapshot must fail, because this performs no action.
+        Renaming the filesystem must fail, because this performs no action.
         """
         command_line = self._MENU + [self._POOLNAME, self._FSNAME, self._FSNAME]
         with self.assertRaises(StratisCliActionError) as context:
@@ -65,36 +67,46 @@ class SnapshotTestCase(SimTestCase):
         self.assertIsInstance(cause, StratisCliNoChangeError)
 
 
-class Snapshot1TestCase(SimTestCase):
+class Rename1TestCase(SimTestCase):
     """
-    Test creating a snapshot w/out a pool.
+    Test 'rename' when pool is non-existent.
     """
 
-    _MENU = ["--propagate", "filesystem", "snapshot"]
+    _MENU = ["--propagate", "filesystem", "rename"]
     _POOLNAME = "nopool"
-    _SNAPNAME = "snapfs"
     _FSNAME = "fs"
+    _RENAMEFSNAME = "renamefs"
 
-    def testCreation(self):
+    def testNonExistentPool(self):
         """
-        Creation of the snapshot must fail since specified pool does not exist.
+        Renaming the filesystem must fail, because the pool does not exist.
         """
-        command_line = self._MENU + [self._POOLNAME, self._FSNAME, self._SNAPNAME]
+        command_line = self._MENU + [self._POOLNAME, self._FSNAME, self._RENAMEFSNAME]
+        with self.assertRaises(StratisCliActionError) as context:
+            RUNNER(command_line)
+        cause = context.exception.__cause__
+        self.assertIsInstance(cause, DbusClientUniqueResultError)
+
+    def testNonExistentPoolSameName(self):
+        """
+        Renaming the filesystem must fail, because the pool does not exist.
+        """
+        command_line = self._MENU + [self._POOLNAME, self._FSNAME, self._RENAMEFSNAME]
         with self.assertRaises(StratisCliActionError) as context:
             RUNNER(command_line)
         cause = context.exception.__cause__
         self.assertIsInstance(cause, DbusClientUniqueResultError)
 
 
-class Snapshot2TestCase(SimTestCase):
+class Rename2TestCase(SimTestCase):
     """
-    Test creating a snapshot w/out a filesystem.
+    Test renaming a non-existent filesystem.
     """
 
-    _MENU = ["--propagate", "filesystem", "snapshot"]
+    _MENU = ["--propagate", "filesystem", "rename"]
     _POOLNAME = "pool"
-    _FSNAME = "fs"
-    _SNAPNAME = "snapfs"
+    _FSNAME = "nofs"
+    _RENAMEFSNAME = "renamefs"
 
     def setUp(self):
         """
@@ -104,11 +116,21 @@ class Snapshot2TestCase(SimTestCase):
         command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
         RUNNER(command_line)
 
-    def testCreation(self):
+    def testNonExistentFilesystem(self):
         """
-        Creation of the snapshot must fail since filesystem does not exist.
+        Renaming the filesystem must fail, because filesystem does not exist.
         """
-        command_line = self._MENU + [self._POOLNAME, self._FSNAME, self._SNAPNAME]
+        command_line = self._MENU + [self._POOLNAME, self._FSNAME, self._RENAMEFSNAME]
+        with self.assertRaises(StratisCliActionError) as context:
+            RUNNER(command_line)
+        cause = context.exception.__cause__
+        self.assertIsInstance(cause, DbusClientUniqueResultError)
+
+    def testNonExistentFilesystemSameName(self):
+        """
+        Renaming the filesystem must fail, because the filesystem does not exist.
+        """
+        command_line = self._MENU + [self._POOLNAME, self._FSNAME, self._RENAMEFSNAME]
         with self.assertRaises(StratisCliActionError) as context:
             RUNNER(command_line)
         cause = context.exception.__cause__
