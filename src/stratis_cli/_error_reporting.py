@@ -31,7 +31,6 @@ from ._errors import StratisCliEngineError
 from ._errors import StratisCliIncoherenceError
 from ._errors import StratisCliInUseError
 from ._errors import StratisCliPartialChangeError
-from ._errors import StratisCliPropertyNotFoundError
 from ._errors import StratisCliUnknownInterfaceError
 
 _DBUS_INTERFACE_MSG = (
@@ -145,15 +144,6 @@ def _interpret_errors(errors):
                 "stratisd reported that it did not execute every action "
                 "that it would have been expected to execute as a result "
                 "of the command that you requested: %s"
-            )
-            return fmt_str % error
-        # Property not found is untestable from this point in the codebase. While
-        # the string conversion can be easily tested, this error handling requires
-        # a command that requests an invalid property from the DBus.
-        if isinstance(error, StratisCliPropertyNotFoundError):  # pragma: no cover
-            fmt_str = (
-                "A property requested by the most recent list command was not "
-                "recognized by stratisd: %s"
             )
             return fmt_str % error
 
