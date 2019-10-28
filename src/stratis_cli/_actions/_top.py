@@ -28,7 +28,6 @@ from .._stratisd_constants import StratisdErrors
 
 from ._connection import get_object
 from ._constants import TOP_OBJECT
-from ._constants import SECTOR_SIZE
 from ._formatting import print_table
 
 
@@ -133,11 +132,11 @@ class TopActions:
         :raises StratisCliEngineError:
         """
         # pylint: disable=import-outside-toplevel
-        from ._data import _fetch_property
         from ._data import FetchProperties
         from ._data import MOPool
         from ._data import ObjectManager
         from ._data import pools
+        from ._formatting import _fetch_property
 
         proxy = get_object(TOP_OBJECT)
 
@@ -154,7 +153,7 @@ class TopActions:
             (
                 mopool.Name(),
                 _fetch_property(
-                    "TotalPhysicalSize", props, lambda x: str(Range(x, SECTOR_SIZE))
+                    "Pool", props, "TotalPhysicalSize", lambda x: str(Range(x))
                 ),
             )
             for props, mopool in pools_with_props

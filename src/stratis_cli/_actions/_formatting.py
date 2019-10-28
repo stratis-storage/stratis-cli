@@ -17,6 +17,8 @@ Formatting for tables.
 
 import sys
 
+from .._errors import StratisCliPropertyNotFoundError
+
 # If the wcwidth package is not available the wcswidth function will not
 # be available. In that case, use the standard function len where wcswidth
 # would otherwise be used. Since len determines the number of _characters_
@@ -36,6 +38,33 @@ try:
     maybe_wcswidth = wcswidth  # pragma: no cover
 except ImportError:
     maybe_wcswidth = len  # pragma: no cover
+
+
+def _fetch_property(object_type, props, name, to_string):
+    """
+    Get a string representation of a property fetched through FetchProperties interface
+
+    :param object_type: string representation of object type implementing FetchProperties
+    :type object_type: str
+    :param props: dictionary of property names mapped to values
+    :type props: dict of strs to (bool, object)
+    :param name: the name of the property
+    :type name: str
+    :param to_string: function expecting one object argument to convert to string
+    :type to_string: function(object) -> str
+    :returns: str
+    :raises StratisCliPropertyNotFoundError:
+    """
+    if name in props:
+        (success, variant) = props[name]
+        if success:
+            string_rep = to_string(variant)
+        else:
+            string_rep = "FAILED"
+    else:
+        raise StratisCliPropertyNotFoundError(object_type, name)
+
+    return string_rep
 
 
 def _get_column_len(column_width, entry_len, entry_width):

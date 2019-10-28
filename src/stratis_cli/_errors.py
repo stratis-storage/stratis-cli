@@ -33,6 +33,32 @@ class StratisCliRuntimeError(StratisCliError):
     """
 
 
+class StratisCliPropertyNotFoundError(StratisCliRuntimeError):
+    """
+    Exception raised when a requested property from FetchProperties DBus interface
+    does not exist.
+    """
+
+    def __init__(self, type_name, prop_name):
+        """ Initializer.
+
+            :param str type_name: the name of the type that does not support this property name
+            :param str prop_name: the property that did not exist
+        """
+        # pylint: disable=super-init-not-called
+        self.type_name = type_name
+        self.prop_name = prop_name
+
+    # pylint: disable=fixme
+    # FIXME: Find a way to test the string conversion method. This will
+    # require a call directly to the DBus interface.
+    def __str__(self):  # pragma: no cover
+        return (
+            "The requested property '%s' is not supported by FetchProperties "
+            "for object of type %s" % (self.prop_name, self.type_name)
+        )
+
+
 class StratisCliPartialChangeError(StratisCliRuntimeError):
     """
     Raised if a request made of stratisd must result in a partial or no change

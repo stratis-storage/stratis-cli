@@ -20,7 +20,6 @@ from justbytes import Range
 from .._stratisd_constants import BLOCK_DEV_TIER_TO_NAME
 
 from ._connection import get_object
-from ._constants import SECTOR_SIZE
 from ._constants import TOP_OBJECT
 from ._formatting import print_table
 
@@ -40,12 +39,12 @@ class PhysicalActions:
         """
         # pylint: disable=import-outside-toplevel
         from ._data import devs
-        from ._data import _fetch_property
         from ._data import pools
         from ._data import FetchProperties
         from ._data import MODev
         from ._data import MOPool
         from ._data import ObjectManager
+        from ._formatting import _fetch_property
 
         # This method is invoked as the default for "stratis blockdev";
         # the namespace may not have a pool_name field.
@@ -84,7 +83,7 @@ class PhysicalActions:
                 path_to_name[modev.Pool()],
                 modev.Devnode(),
                 _fetch_property(
-                    "TotalPhysicalSize", props, lambda x: str(Range(x, SECTOR_SIZE))
+                    "Blockdev", props, "TotalPhysicalSize", lambda x: str(Range(x))
                 ),
                 BLOCK_DEV_TIER_TO_NAME(modev.Tier(), True),
             ]
