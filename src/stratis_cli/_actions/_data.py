@@ -246,8 +246,6 @@ try:
 
     fetch_properties_spec = ET.fromstring(SPECS[FETCH_PROPERTIES_INTERFACE])
     FetchProperties = make_class("FetchProperties", fetch_properties_spec, timeout)
-    MOFetchProperties = managed_object_class("MOFetchProperties", fetch_properties_spec)
-    fetch_properties = mo_query_builder(fetch_properties_spec)
 
     filesystem_spec = ET.fromstring(SPECS[FILESYSTEM_INTERFACE])
     Filesystem = make_class("Filesystem", filesystem_spec, timeout)
