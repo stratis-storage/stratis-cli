@@ -38,7 +38,7 @@ def make_test_pool(pool_name):
     (obj_path_exists, (obj_path, _)), return_code, _ = StratisDbus.pool_create(
         pool_name, pool_disk
     )
-    if obj_path_exists == dbus.Boolean(False) or return_code == dbus.UInt16(1):
+    if not obj_path_exists or not return_code == 0:
         return None
     return obj_path
 
@@ -54,7 +54,7 @@ def make_test_filesystem(pool_path, fs_name):
         filesystems_created,
         (array_of_tuples_with_obj_paths_and_names),
     ), return_code, _ = StratisDbus.fs_create(pool_path, fs_name)
-    if filesystems_created == dbus.Boolean(False) or return_code == dbus.UInt16(1):
+    if not filesystems_created or not return_code == 0:
         return None
     return array_of_tuples_with_obj_paths_and_names[0][0]
 
