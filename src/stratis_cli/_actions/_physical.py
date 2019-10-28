@@ -20,6 +20,7 @@ from justbytes import Range
 from .._stratisd_constants import BLOCK_DEV_TIER_TO_NAME
 
 from ._connection import get_object
+from ._constants import SECTOR_SIZE
 from ._constants import TOP_OBJECT
 from ._formatting import print_table
 
@@ -83,7 +84,10 @@ class PhysicalActions:
                 path_to_name[modev.Pool()],
                 modev.Devnode(),
                 _fetch_property(
-                    "Blockdev", props, "TotalPhysicalSize", lambda x: str(Range(x))
+                    "Blockdev",
+                    props,
+                    "TotalPhysicalSize",
+                    lambda x: str(Range(x, SECTOR_SIZE)),
                 ),
                 BLOCK_DEV_TIER_TO_NAME(modev.Tier(), True),
             ]

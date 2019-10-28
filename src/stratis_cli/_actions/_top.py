@@ -27,6 +27,7 @@ from .._stratisd_constants import BlockDevTiers
 from .._stratisd_constants import StratisdErrors
 
 from ._connection import get_object
+from ._constants import SECTOR_SIZE
 from ._constants import TOP_OBJECT
 from ._formatting import print_table
 
@@ -153,7 +154,10 @@ class TopActions:
             (
                 mopool.Name(),
                 _fetch_property(
-                    "Pool", props, "TotalPhysicalSize", lambda x: str(Range(x))
+                    "Pool",
+                    props,
+                    "TotalPhysicalSize",
+                    lambda x: str(Range(x, SECTOR_SIZE)),
                 ),
             )
             for props, mopool in pools_with_props
