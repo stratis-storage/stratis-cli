@@ -125,12 +125,7 @@ def _interpret_errors(errors):
             )
             return fmt_str % error
         if isinstance(error, StratisCliPartialChangeError):
-            if error.partial():
-                fmt_str = (
-                    "You issued a command that would have had a partial effect: %s"
-                )
-            else:
-                fmt_str = "You issued a command that would have had no effect: %s"
+            fmt_str = "You issued a command that would have a partial or no effect: %s"
             return fmt_str % error
         if isinstance(error, StratisCliInUseError):
             fmt_str = (
