@@ -33,7 +33,9 @@ class StratisCliRuntimeError(StratisCliError):
     """
 
 
-class StratisCliPropertyNotFoundError(StratisCliRuntimeError):
+# This indicates a bug and so coverage is not necessary as this error
+# is not handled.
+class StratisCliPropertyNotFoundError(StratisCliRuntimeError):  # pragma: no cover
     """
     Exception raised when a requested property from FetchProperties DBus interface
     does not exist.
@@ -49,10 +51,7 @@ class StratisCliPropertyNotFoundError(StratisCliRuntimeError):
         self.type_name = type_name
         self.prop_name = prop_name
 
-    # pylint: disable=fixme
-    # FIXME: Find a way to test the string conversion method. This will
-    # require a call directly to the DBus interface.
-    def __str__(self):  # pragma: no cover
+    def __str__(self):
         return (
             "The requested property '%s' is not supported by FetchProperties "
             "for object of type %s" % (self.prop_name, self.type_name)
