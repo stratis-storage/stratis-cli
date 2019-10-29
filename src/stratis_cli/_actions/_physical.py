@@ -84,7 +84,7 @@ class PhysicalActions:
                 path_to_name[modev.Pool()],
                 modev.Devnode(),
                 fetch_property(
-                    "Blockdev",
+                    "org.storage.stratis1.blockdev",
                     props,
                     "TotalPhysicalSize",
                     lambda x: str(Range(x, SECTOR_SIZE)),

@@ -154,7 +154,7 @@ class TopActions:
             (
                 mopool.Name(),
                 fetch_property(
-                    "Pool",
+                    "org.storage.stratis1.pool",
                     props,
                     "TotalPhysicalSize",
                     lambda x: str(Range(x, SECTOR_SIZE)),

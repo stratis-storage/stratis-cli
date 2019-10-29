@@ -142,7 +142,12 @@ class LogicalActions:
             (
                 path_to_name[mofilesystem.Pool()],
                 mofilesystem.Name(),
-                fetch_property("Filesystem", props, "Used", lambda x: str(Range(x))),
+                fetch_property(
+                    "org.storage.stratis1.filesystem",
+                    props,
+                    "Used",
+                    lambda x: str(Range(x)),
+                ),
                 date_parser.parse(mofilesystem.Created())
                 .astimezone()
                 .strftime("%b %d %Y %H:%M"),
