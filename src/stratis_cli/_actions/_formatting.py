@@ -40,7 +40,7 @@ except ImportError:
     maybe_wcswidth = len  # pragma: no cover
 
 
-def _fetch_property(object_type, props, name, to_string):
+def fetch_property(object_type, props, name, to_string):
     """
     Get a string representation of a property fetched through FetchProperties interface
 
@@ -55,16 +55,13 @@ def _fetch_property(object_type, props, name, to_string):
     :returns: str
     :raises StratisCliPropertyNotFoundError:
     """
-    if name in props:
+    try:
         (success, variant) = props[name]
-        if success:
-            string_rep = to_string(variant)
-        else:
-            string_rep = "FAILED"
-    else:
+        if not success:
+            return "FAILED"
+        return to_string(variant)
+    except KeyError:
         raise StratisCliPropertyNotFoundError(object_type, name)
-
-    return string_rep
 
 
 def _get_column_len(column_width, entry_len, entry_width):

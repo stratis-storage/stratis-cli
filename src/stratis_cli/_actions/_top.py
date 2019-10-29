@@ -137,7 +137,7 @@ class TopActions:
         from ._data import MOPool
         from ._data import ObjectManager
         from ._data import pools
-        from ._formatting import _fetch_property
+        from ._formatting import fetch_property
 
         proxy = get_object(TOP_OBJECT)
 
@@ -153,7 +153,7 @@ class TopActions:
         tables = [
             (
                 mopool.Name(),
-                _fetch_property(
+                fetch_property(
                     "Pool",
                     props,
                     "TotalPhysicalSize",

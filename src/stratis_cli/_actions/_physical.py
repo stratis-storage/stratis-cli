@@ -45,7 +45,7 @@ class PhysicalActions:
         from ._data import MODev
         from ._data import MOPool
         from ._data import ObjectManager
-        from ._formatting import _fetch_property
+        from ._formatting import fetch_property
 
         # This method is invoked as the default for "stratis blockdev";
         # the namespace may not have a pool_name field.
@@ -83,7 +83,7 @@ class PhysicalActions:
             [
                 path_to_name[modev.Pool()],
                 modev.Devnode(),
-                _fetch_property(
+                fetch_property(
                     "Blockdev",
                     props,
                     "TotalPhysicalSize",

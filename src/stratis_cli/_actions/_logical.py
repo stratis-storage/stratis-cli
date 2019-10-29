@@ -104,7 +104,7 @@ class LogicalActions:
         from ._data import ObjectManager
         from ._data import filesystems
         from ._data import pools
-        from ._formatting import _fetch_property
+        from ._formatting import fetch_property
 
         # This method is invoked as the default for "stratis filesystem";
         # the namespace may not have a pool_name field.
@@ -142,7 +142,7 @@ class LogicalActions:
             (
                 path_to_name[mofilesystem.Pool()],
                 mofilesystem.Name(),
-                _fetch_property("Filesystem", props, "Used", lambda x: str(Range(x))),
+                fetch_property("Filesystem", props, "Used", lambda x: str(Range(x))),
                 date_parser.parse(mofilesystem.Created())
                 .astimezone()
                 .strftime("%b %d %Y %H:%M"),
