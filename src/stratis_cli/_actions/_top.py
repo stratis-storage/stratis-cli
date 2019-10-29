@@ -133,6 +133,7 @@ class TopActions:
         :raises StratisCliEngineError:
         """
         # pylint: disable=import-outside-toplevel
+        from ._constants import POOL_INTERFACE
         from ._data import FetchProperties
         from ._data import MOPool
         from ._data import ObjectManager
@@ -154,7 +155,7 @@ class TopActions:
             (
                 mopool.Name(),
                 fetch_property(
-                    "org.storage.stratis1.pool",
+                    POOL_INTERFACE,
                     props,
                     "TotalPhysicalSize",
                     lambda x: str(Range(x, SECTOR_SIZE)),

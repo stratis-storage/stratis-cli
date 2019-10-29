@@ -39,6 +39,7 @@ class PhysicalActions:
         for that pool. Otherwise, list all devices for all pools.
         """
         # pylint: disable=import-outside-toplevel
+        from ._constants import BLOCKDEV_INTERFACE
         from ._data import devs
         from ._data import pools
         from ._data import FetchProperties
@@ -84,7 +85,7 @@ class PhysicalActions:
                 path_to_name[modev.Pool()],
                 modev.Devnode(),
                 fetch_property(
-                    "org.storage.stratis1.blockdev",
+                    BLOCKDEV_INTERFACE,
                     props,
                     "TotalPhysicalSize",
                     lambda x: str(Range(x, SECTOR_SIZE)),

@@ -98,6 +98,7 @@ class LogicalActions:
         List the volumes in a pool.
         """
         # pylint: disable=import-outside-toplevel
+        from ._constants import FILESYSTEM_INTERFACE
         from ._data import FetchProperties
         from ._data import MOFilesystem
         from ._data import MOPool
@@ -143,10 +144,7 @@ class LogicalActions:
                 path_to_name[mofilesystem.Pool()],
                 mofilesystem.Name(),
                 fetch_property(
-                    "org.storage.stratis1.filesystem",
-                    props,
-                    "Used",
-                    lambda x: str(Range(x)),
+                    FILESYSTEM_INTERFACE, props, "Used", lambda x: str(Range(x))
                 ),
                 date_parser.parse(mofilesystem.Created())
                 .astimezone()
