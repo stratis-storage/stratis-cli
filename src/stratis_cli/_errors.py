@@ -57,16 +57,6 @@ class StratisCliPartialChangeError(StratisCliRuntimeError):
         self.changed_resources = changed_resources
         self.unchanged_resources = unchanged_resources
 
-    def partial(self):
-        """
-        Returns True if some partial change would be effected, but False if
-        no change at all would be effected.
-
-        :returns: True if raised due to a partial change, otherwise False
-        :rtype: bool
-        """
-        return self.changed_resources != frozenset()
-
     # pylint: disable=fixme
     # FIXME: remove no coverage pragma when adequate testing for CLI output
     # exists.
