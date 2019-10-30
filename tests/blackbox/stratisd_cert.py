@@ -32,7 +32,7 @@ def make_test_pool(pool_name, pool_disks):
     """
     Create a test pool that will later get destroyed
     :param str pool_name: Name of the pool to be created
-    :param list disks: List of disks with which the pool will be created
+    :param list pool_disks: List of disks with which the pool will be created
     :return: Object path of the created pool
     """
     (obj_path_exists, (obj_path, _)), return_code, _ = StratisDbus.pool_create(
