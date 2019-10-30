@@ -20,10 +20,41 @@ import sys
 import time
 import unittest
 
-from testlib.utils import exec_command, exec_test_command, process_exists
+import dbus
+
 from testlib.dbus import StratisDbus, clean_up
+from testlib.utils import exec_command, exec_test_command, process_exists, p_n, fs_n
 
 DISKS = []
+
+
+def make_test_pool(pool_name):
+    """
+    Create a test pool that will later get destroyed
+    :param str pool_name: Name of the pool to be created
+    :return: Object path of the created pool
+    """
+    pool_disk = DISKS[0:1]
+    (obj_path_exists, (obj_path, _)), return_code, _ = StratisDbus.pool_create(
+        pool_name, pool_disk
+    )
+    assert obj_path_exists and return_code == 0
+    return obj_path
+
+
+def make_test_filesystem(pool_path, fs_name):
+    """
+    Create a test filesystem that will later get destroyed
+    :param str pool_path: Object path of a test pool
+    :param str fs_name: Name of the filesystem to be created
+    :return: Object path of the created filesystem
+    """
+    (
+        filesystems_created,
+        (array_of_tuples_with_obj_paths_and_names),
+    ), return_code, _ = StratisDbus.fs_create(pool_path, fs_name)
+    assert filesystems_created and return_code == 0
+    return array_of_tuples_with_obj_paths_and_names[0][0]
 
 
 class StratisCertify(unittest.TestCase):
@@ -69,6 +100,202 @@ class StratisCertify(unittest.TestCase):
         self.assertEqual(exit_code, 0)
         self.assertEqual(stderr, "")
         self.assertNotEqual(stdout, "")
+
+    def test_stratisd_version(self):
+        """
+        Test getting the daemon version.
+        """
+        result = StratisDbus.stratisd_version()
+        self.assertIsInstance(result, str)
+        self.assertNotEqual(result, "")
+
+    def test_pool_list_empty(self):
+        """
+        Test listing an non-existent pool.
+        """
+        result = StratisDbus.pool_list()
+        self.assertIsInstance(result, list)
+        self.assertEqual(result, [])
+
+    def test_blockdev_list(self):
+        """
+        Test listing a blockdev.
+        """
+        result = StratisDbus.blockdev_list()
+        self.assertIsInstance(result, list)
+        self.assertEqual(result, [])
+
+    def test_filesystem_list_empty(self):
+        """
+        Test listing an non-existent filesystem.
+        """
+        result = StratisDbus.fs_list()
+        self.assertIsInstance(result, dict)
+        self.assertEqual(result, {})
+
+    def test_pool_create(self):
+        """
+        Test creating a pool.
+        """
+        pool_name = p_n()
+        (_, return_code, _) = StratisDbus.pool_create(pool_name, DISKS)
+        self.assertEqual(return_code, dbus.UInt16(0))
+
+    def test_pool_add_cache(self):
+        """
+        Test adding cache to a pool.
+        """
+        cache_disks = DISKS[1:2]
+
+        pool_name = p_n()
+        pool_path = make_test_pool(pool_name)
+
+        (_, return_code, _) = StratisDbus.pool_add_cache(pool_path, cache_disks)
+        self.assertEqual(return_code, dbus.UInt16(0))
+
+    def test_pool_add_data(self):
+        """
+        Test adding data to a pool.
+        """
+        data_disks = DISKS[2:3]
+
+        pool_name = p_n()
+        pool_path = make_test_pool(pool_name)
+
+        (_, return_code, _) = StratisDbus.pool_add_data(pool_path, data_disks)
+        self.assertEqual(return_code, dbus.UInt16(0))
+
+    def test_pool_list_not_empty(self):
+        """
+        Test listing an non-existent pool.
+        """
+        pool_name = p_n()
+        make_test_pool(pool_name)
+
+        result = StratisDbus.pool_list()
+        self.assertIsInstance(result, list)
+        self.assertNotEqual(result, [])
+
+    def test_pool_create_same_name(self):
+        """
+        Test creating a pool that already exists.
+        """
+        pool_disks = DISKS[1:3]
+
+        pool_name = p_n()
+        make_test_pool(pool_name)
+
+        (_, return_code, _) = StratisDbus.pool_create(pool_name, pool_disks)
+        self.assertEqual(return_code, dbus.UInt16(0))
+
+    def test_pool_destroy(self):
+        """
+        Test destroying a pool.
+        """
+        pool_name = p_n()
+        make_test_pool(pool_name)
+
+        (_, return_code, _) = StratisDbus.pool_destroy(pool_name)
+        self.assertEqual(return_code, dbus.UInt16(0))
+
+        self.assertEqual(StratisDbus.fs_list(), {})
+
+    def test_filesystem_create(self):
+        """
+        Test creating a filesystem.
+        """
+        pool_name = p_n()
+        pool_path = make_test_pool(pool_name)
+
+        fs_name = fs_n()
+
+        (_, return_code, _) = StratisDbus.fs_create(pool_path, fs_name)
+        self.assertEqual(return_code, dbus.UInt16(0))
+
+    def test_filesystem_rename(self):
+        """
+        Test renaming a filesystem.
+        """
+        pool_name = p_n()
+        pool_path = make_test_pool(pool_name)
+
+        fs_name = fs_n()
+        make_test_filesystem(pool_path, fs_name)
+
+        fs_name_rename = fs_n()
+
+        (_, return_code, _) = StratisDbus.fs_rename(fs_name, fs_name_rename)
+        self.assertEqual(return_code, dbus.UInt16(0))
+
+    def test_filesystem_rename_same_name(self):
+        """
+        Test renaming a filesystem.
+        """
+        pool_name = p_n()
+        pool_path = make_test_pool(pool_name)
+
+        fs_name = fs_n()
+        make_test_filesystem(pool_path, fs_name)
+
+        (_, return_code, _) = StratisDbus.fs_rename(fs_name, fs_name)
+        self.assertEqual(return_code, dbus.UInt16(0))
+
+    def test_filesystem_snapshot(self):
+        """
+        Test snapshotting a filesystem.
+        """
+        pool_name = p_n()
+        pool_path = make_test_pool(pool_name)
+
+        fs_name = fs_n()
+        fs_path = make_test_filesystem(pool_path, fs_name)
+
+        snapshot_name = fs_n()
+
+        (_, return_code, _) = StratisDbus.fs_snapshot(pool_path, fs_path, snapshot_name)
+        self.assertEqual(return_code, dbus.UInt16(0))
+
+    def test_filesystem_list_not_empty(self):
+        """
+        Test listing an existent filesystem.
+        """
+        pool_name = p_n()
+        pool_path = make_test_pool(pool_name)
+
+        fs_name = fs_n()
+        make_test_filesystem(pool_path, fs_name)
+
+        result = StratisDbus.fs_list()
+        self.assertIsInstance(result, dict)
+        self.assertNotEqual(result, {})
+
+    def test_filesystem_create_same_name(self):
+        """
+        Test creating a filesystem that already exists.
+        """
+        pool_name = p_n()
+        pool_path = make_test_pool(pool_name)
+
+        fs_name = fs_n()
+        make_test_filesystem(pool_path, fs_name)
+
+        (_, return_code, _) = StratisDbus.fs_create(pool_path, fs_name)
+        self.assertEqual(return_code, dbus.UInt16(0))
+
+    def test_filesystem_destroy(self):
+        """
+        Test destroying a filesystem.
+        """
+        pool_name = p_n()
+        pool_path = make_test_pool(pool_name)
+
+        fs_name = fs_n()
+        make_test_filesystem(pool_path, fs_name)
+
+        (_, return_code, _) = StratisDbus.fs_destroy(pool_name, fs_name)
+        self.assertEqual(return_code, dbus.UInt16(0))
+
+        self.assertEqual(StratisDbus.fs_list(), {})
 
 
 if __name__ == "__main__":
