@@ -26,7 +26,9 @@ from .._errors import StratisCliPartialChangeError
 from .._stratisd_constants import StratisdErrors
 
 from ._connection import get_object
+from ._constants import FILESYSTEM_INTERFACE
 from ._constants import TOP_OBJECT
+from ._formatting import fetch_property
 from ._formatting import print_table
 
 
@@ -98,6 +100,7 @@ class LogicalActions:
         List the volumes in a pool.
         """
         # pylint: disable=import-outside-toplevel
+        from ._data import FetchProperties
         from ._data import MOFilesystem
         from ._data import MOPool
         from ._data import ObjectManager
@@ -111,9 +114,12 @@ class LogicalActions:
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
-        mofilesystems = (
-            MOFilesystem(info)
-            for _, info in filesystems(
+        filesystems_with_props = [
+            (
+                FetchProperties.Methods.GetAllProperties(get_object(objpath), {}),
+                MOFilesystem(info),
+            )
+            for objpath, info in filesystems(
                 props=None
                 if pool_name is None
                 else {
@@ -124,7 +130,7 @@ class LogicalActions:
                     )[0]
                 }
             ).search(managed_objects)
-        )
+        ]
 
         path_to_name = dict(
             (path, MOPool(info).Name())
@@ -134,17 +140,19 @@ class LogicalActions:
         )
 
         tables = [
-            [
+            (
                 path_to_name[mofilesystem.Pool()],
                 mofilesystem.Name(),
-                str(Range(mofilesystem.Used())),
+                fetch_property(
+                    FILESYSTEM_INTERFACE, props, "Used", lambda x: str(Range(x))
+                ),
                 date_parser.parse(mofilesystem.Created())
                 .astimezone()
                 .strftime("%b %d %Y %H:%M"),
                 mofilesystem.Devnode(),
                 mofilesystem.Uuid(),
-            ]
-            for mofilesystem in mofilesystems
+            )
+            for props, mofilesystem in filesystems_with_props
         ]
 
         print_table(
