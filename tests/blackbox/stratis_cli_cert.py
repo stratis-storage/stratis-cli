@@ -26,9 +26,10 @@ from testlib.stratis import STRATIS_CLI, clean_up
 DISKS = []
 
 
-def make_test_pool():
+def make_test_pool(pool_disks):
     """
     Create a test pool that will later get destroyed
+    :param list pool_disks: List of disks with which the pool will be created
     :return: Name of the created pool
     """
     pool_name = p_n()
@@ -142,7 +143,7 @@ class StratisCertify(unittest.TestCase):
         """
         Test listing an existent pool.
         """
-        make_test_pool()
+        make_test_pool(DISKS[0])
         self.unittest_command([STRATIS_CLI, "pool", "list"], 0, True, False)
 
     def test_blockdev_list(self):
@@ -156,7 +157,10 @@ class StratisCertify(unittest.TestCase):
         Test creating a pool that already exists.
         """
         self.unittest_command(
-            [STRATIS_CLI, "pool", "create", make_test_pool(), DISKS[0]], 1, False, True
+            [STRATIS_CLI, "pool", "create", make_test_pool(DISKS[0]), DISKS[1]],
+            0,
+            True,
+            True,
         )
 
     def test_pool_add_cache(self):
@@ -164,7 +168,10 @@ class StratisCertify(unittest.TestCase):
         Test adding cache to a pool.
         """
         self.unittest_command(
-            [STRATIS_CLI, "pool", "add-cache", make_test_pool(), DISKS[1]], 0, 1, True
+            [STRATIS_CLI, "pool", "add-cache", make_test_pool(DISKS[0]), DISKS[1]],
+            0,
+            1,
+            True,
         )
 
     def test_pool_destroy(self):
@@ -172,7 +179,7 @@ class StratisCertify(unittest.TestCase):
         Test destroying a pool.
         """
         self.unittest_command(
-            [STRATIS_CLI, "pool", "destroy", make_test_pool()], 0, True, True
+            [STRATIS_CLI, "pool", "destroy", make_test_pool(DISKS[0])], 0, True, True
         )
 
     def test_filesystem_create(self):
@@ -181,7 +188,13 @@ class StratisCertify(unittest.TestCase):
         """
         filesystem_name = fs_n()
         self.unittest_command(
-            [STRATIS_CLI, "filesystem", "create", make_test_pool(), filesystem_name],
+            [
+                STRATIS_CLI,
+                "filesystem",
+                "create",
+                make_test_pool(DISKS[0]),
+                filesystem_name,
+            ],
             0,
             True,
             True,
@@ -191,7 +204,7 @@ class StratisCertify(unittest.TestCase):
         """
         Test adding data to a pool.
         """
-        pool_name = make_test_pool()
+        pool_name = make_test_pool(DISKS[0])
         self.unittest_command(
             [STRATIS_CLI, "pool", "add-data", pool_name, DISKS[1]], 0, True, True
         )
@@ -200,7 +213,7 @@ class StratisCertify(unittest.TestCase):
         """
         Test listing an existent filesystem.
         """
-        pool_name = make_test_pool()
+        pool_name = make_test_pool(DISKS[0])
         make_test_filesystem(pool_name)
         self.unittest_command([STRATIS_CLI, "filesystem", "list"], 0, True, False)
 
@@ -208,12 +221,12 @@ class StratisCertify(unittest.TestCase):
         """
         Test creating a filesystem that already exists.
         """
-        pool_name = make_test_pool()
+        pool_name = make_test_pool(DISKS[0])
         filesystem_name = make_test_filesystem(pool_name)
         self.unittest_command(
             [STRATIS_CLI, "filesystem", "create", pool_name, filesystem_name],
-            1,
-            False,
+            0,
+            True,
             True,
         )
 
@@ -221,7 +234,7 @@ class StratisCertify(unittest.TestCase):
         """
         Test renaming a filesystem to a new name.
         """
-        pool_name = make_test_pool()
+        pool_name = make_test_pool(DISKS[0])
         filesystem_name = make_test_filesystem(pool_name)
         fs_name_rename = fs_n()
         self.unittest_command(
@@ -242,7 +255,7 @@ class StratisCertify(unittest.TestCase):
         """
         Test renaming a filesystem to the same name.
         """
-        pool_name = make_test_pool()
+        pool_name = make_test_pool(DISKS[0])
         filesystem_name = make_test_filesystem(pool_name)
         self.unittest_command(
             [
@@ -253,8 +266,8 @@ class StratisCertify(unittest.TestCase):
                 filesystem_name,
                 filesystem_name,
             ],
-            1,
-            False,
+            0,
+            True,
             True,
         )
 
@@ -262,7 +275,7 @@ class StratisCertify(unittest.TestCase):
         """
         Test snapshotting a filesystem.
         """
-        pool_name = make_test_pool()
+        pool_name = make_test_pool(DISKS[0])
         filesystem_name = make_test_filesystem(pool_name)
         snapshot_name = fs_n()
         self.unittest_command(
@@ -283,7 +296,7 @@ class StratisCertify(unittest.TestCase):
         """
         Test destroying a filesystem.
         """
-        pool_name = make_test_pool()
+        pool_name = make_test_pool(DISKS[0])
         filesystem_name = make_test_filesystem(pool_name)
         self.unittest_command(
             [STRATIS_CLI, "filesystem", "destroy", pool_name, filesystem_name],
