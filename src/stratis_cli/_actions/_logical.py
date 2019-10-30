@@ -26,7 +26,9 @@ from .._errors import StratisCliPartialChangeError
 from .._stratisd_constants import StratisdErrors
 
 from ._connection import get_object
+from ._constants import FILESYSTEM_INTERFACE
 from ._constants import TOP_OBJECT
+from ._formatting import fetch_property
 from ._formatting import print_table
 
 
@@ -98,14 +100,12 @@ class LogicalActions:
         List the volumes in a pool.
         """
         # pylint: disable=import-outside-toplevel
-        from ._constants import FILESYSTEM_INTERFACE
         from ._data import FetchProperties
         from ._data import MOFilesystem
         from ._data import MOPool
         from ._data import ObjectManager
         from ._data import filesystems
         from ._data import pools
-        from ._formatting import fetch_property
 
         # This method is invoked as the default for "stratis filesystem";
         # the namespace may not have a pool_name field.
