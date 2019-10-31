@@ -84,21 +84,6 @@ class RedundancyCodes(IntEnum):
 REDUNDANCY_CODE_TO_NAME = value_to_name(RedundancyCodes)
 
 
-class BlockDevStates(IntEnum):
-    """
-    State of individual block devices.
-    """
-
-    Missing = 0
-    Bad = 1
-    Spare = 2
-    NotInUse = 3
-    InUse = 4
-
-
-BLOCK_DEV_STATE_TO_NAME = value_to_name(BlockDevStates)
-
-
 class BlockDevTiers(IntEnum):
     """
     Tier to which a blockdev device belongs.
