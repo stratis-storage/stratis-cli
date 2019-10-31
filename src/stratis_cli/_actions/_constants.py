@@ -15,12 +15,12 @@
 General constants.
 """
 
-SERVICE = "org.storage.stratis1"
-TOP_OBJECT = "/org/storage/stratis1"
+SERVICE = "org.storage.stratis2"
+TOP_OBJECT = "/org/storage/stratis2"
 
 SECTOR_SIZE = 512
 
-FETCH_PROPERTIES_INTERFACE = "org.storage.stratis1.FetchProperties"
-FILESYSTEM_INTERFACE = "org.storage.stratis1.filesystem"
-POOL_INTERFACE = "org.storage.stratis1.pool"
-BLOCKDEV_INTERFACE = "org.storage.stratis1.blockdev"
+FETCH_PROPERTIES_INTERFACE = "org.storage.stratis2.FetchProperties"
+FILESYSTEM_INTERFACE = "org.storage.stratis2.filesystem"
+POOL_INTERFACE = "org.storage.stratis2.pool"
+BLOCKDEV_INTERFACE = "org.storage.stratis2.blockdev"
