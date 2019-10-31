@@ -28,7 +28,6 @@ from .._stratisd_constants import StratisdErrors
 
 from ._connection import get_object
 from ._constants import POOL_INTERFACE
-from ._constants import SECTOR_SIZE
 from ._constants import TOP_OBJECT
 from ._formatting import fetch_property
 from ._formatting import print_table
@@ -155,10 +154,7 @@ class TopActions:
             (
                 mopool.Name(),
                 fetch_property(
-                    POOL_INTERFACE,
-                    props,
-                    "TotalPhysicalSize",
-                    lambda x: str(Range(x, SECTOR_SIZE)),
+                    POOL_INTERFACE, props, "TotalPhysicalSize", lambda x: str(Range(x))
                 ),
             )
             for props, mopool in pools_with_props

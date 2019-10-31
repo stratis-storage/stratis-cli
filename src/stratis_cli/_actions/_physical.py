@@ -21,7 +21,6 @@ from .._stratisd_constants import BLOCK_DEV_TIER_TO_NAME
 
 from ._connection import get_object
 from ._constants import BLOCKDEV_INTERFACE
-from ._constants import SECTOR_SIZE
 from ._constants import TOP_OBJECT
 from ._formatting import fetch_property
 from ._formatting import print_table
@@ -88,7 +87,7 @@ class PhysicalActions:
                     BLOCKDEV_INTERFACE,
                     props,
                     "TotalPhysicalSize",
-                    lambda x: str(Range(x, SECTOR_SIZE)),
+                    lambda x: str(Range(x)),
                 ),
                 BLOCK_DEV_TIER_TO_NAME(modev.Tier(), True),
             ]
