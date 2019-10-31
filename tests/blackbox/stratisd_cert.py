@@ -38,7 +38,8 @@ def make_test_pool(pool_name):
     (obj_path_exists, (obj_path, _)), return_code, _ = StratisDbus.pool_create(
         pool_name, pool_disk
     )
-    assert obj_path_exists and return_code == 0
+    assert return_code == 0, "return_code: %s" % return_code
+    assert obj_path_exists, "obj_path_exists: %s" % obj_path_exists
     return obj_path
 
 
@@ -53,7 +54,8 @@ def make_test_filesystem(pool_path, fs_name):
         filesystems_created,
         (array_of_tuples_with_obj_paths_and_names),
     ), return_code, _ = StratisDbus.fs_create(pool_path, fs_name)
-    assert filesystems_created and return_code == 0
+    assert return_code == 0, "return_code: %s" % return_code
+    assert filesystems_created, "filesystems_created: %s" % filesystems_created
     return array_of_tuples_with_obj_paths_and_names[0][0]
 
 
