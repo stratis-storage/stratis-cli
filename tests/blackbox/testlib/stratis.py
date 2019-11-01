@@ -22,9 +22,12 @@ from .utils import exec_command, umount_mdv, TEST_PREF
 STRATIS_CLI = os.getenv("STRATIS_CLI", "/usr/bin/stratis")
 
 
-class StratisCli:
+class _StratisCli:
     """
     Wrappers around stratis cli command-line calls.
+
+    These are used exclusively for infrastructure cleanup actions and should
+    _not_ be used in tests in stratis_cli_cert.py.
     """
 
     @staticmethod
@@ -64,11 +67,11 @@ class StratisCli:
         umount_mdv()
 
         # Remove FS
-        for fs_name, pool_name in StratisCli.fs_list().items():
+        for fs_name, pool_name in _StratisCli.fs_list().items():
             exec_command([STRATIS_CLI, "fs", "destroy", pool_name, fs_name])
 
         # Remove Pools
-        for name in StratisCli.pool_list():
+        for name in _StratisCli.pool_list():
             exec_command([STRATIS_CLI, "pool", "destroy", name])
 
 
@@ -78,5 +81,5 @@ def clean_up():
 
     :return: None
     """
-    StratisCli.destroy_all()
-    assert StratisCli.pool_list() == []
+    _StratisCli.destroy_all()
+    assert _StratisCli.pool_list() == []
