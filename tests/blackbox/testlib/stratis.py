@@ -56,16 +56,6 @@ class StratisCli:
         )
 
     @staticmethod
-    def pool_destroy(name):
-        """
-        Destroy a pool
-        :param name: Name of pool to destroy
-        :return: None
-        """
-        if name.startswith(TEST_PREF):
-            exec_command([STRATIS_CLI, "pool", "destroy", name])
-
-    @staticmethod
     def destroy_all():
         """
         Destroys all Stratis FS and pools!
@@ -74,23 +64,12 @@ class StratisCli:
         umount_mdv()
 
         # Remove FS
-        for name, pool_name in StratisCli.fs_list().items():
-            StratisCli.fs_destroy(pool_name, name)
+        for fs_name, pool_name in StratisCli.fs_list().items():
+            exec_command([STRATIS_CLI, "fs", "destroy", pool_name, fs_name])
 
         # Remove Pools
         for name in StratisCli.pool_list():
-            StratisCli.pool_destroy(name)
-
-    @staticmethod
-    def fs_destroy(pool_name, fs_name):
-        """
-        Destroy a FS
-        :param pool_name:  Pool which contains the FS
-        :param fs_name: Name of FS to destroy
-        :return: None
-        """
-        if pool_name.startswith(TEST_PREF):
-            exec_command([STRATIS_CLI, "fs", "destroy", pool_name, fs_name])
+            exec_command([STRATIS_CLI, "pool", "destroy", name])
 
 
 def clean_up():
