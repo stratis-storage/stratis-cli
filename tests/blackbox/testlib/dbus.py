@@ -62,13 +62,13 @@ class StratisDbus:
 
     _OBJECT_MANAGER = "org.freedesktop.DBus.ObjectManager"
     _BUS = dbus.SystemBus()
-    _BUS_NAME = "org.storage.stratis1"
-    _TOP_OBJECT = "/org/storage/stratis1"
+    _BUS_NAME = "org.storage.stratis2"
+    _TOP_OBJECT = "/org/storage/stratis2"
 
-    _MNGR_IFACE = "org.storage.stratis1.Manager"
-    _POOL_IFACE = "org.storage.stratis1.pool"
-    _FS_IFACE = "org.storage.stratis1.filesystem"
-    _BLKDEV_IFACE = "org.storage.stratis1.blockdev"
+    _MNGR_IFACE = "org.storage.stratis2.Manager"
+    _POOL_IFACE = "org.storage.stratis2.pool"
+    _FS_IFACE = "org.storage.stratis2.filesystem"
+    _BLKDEV_IFACE = "org.storage.stratis2.blockdev"
 
     _DBUS_TIMEOUT_SECONDS = 120
     _TIMEOUT = _get_timeout(
@@ -76,7 +76,7 @@ class StratisDbus:
     )
 
     @staticmethod
-    def _get_managed_objects():
+    def get_managed_objects():
         """
         Get managed objects for stratis
         :return: A dict,  Keys are object paths with dicts containing interface
@@ -98,7 +98,7 @@ class StratisDbus:
         """
         versions = [
             obj_data[StratisDbus._MNGR_IFACE]["Version"]
-            for _, obj_data in StratisDbus._get_managed_objects().items()
+            for _, obj_data in StratisDbus.get_managed_objects().items()
             if StratisDbus._MNGR_IFACE in obj_data
         ]
 
@@ -113,7 +113,7 @@ class StratisDbus:
         """
         pool_objects = [
             obj_data[StratisDbus._POOL_IFACE]
-            for _, obj_data in StratisDbus._get_managed_objects().items()
+            for _, obj_data in StratisDbus.get_managed_objects().items()
             if StratisDbus._POOL_IFACE in obj_data
             and obj_data[StratisDbus._POOL_IFACE]["Name"].startswith(TEST_PREF)
         ]
@@ -129,7 +129,7 @@ class StratisDbus:
         """
         blockdev_objects = [
             obj_data[StratisDbus._BLKDEV_IFACE]
-            for _, obj_data in StratisDbus._get_managed_objects().items()
+            for _, obj_data in StratisDbus.get_managed_objects().items()
             if StratisDbus._BLKDEV_IFACE in obj_data
             and obj_data[StratisDbus._BLKDEV_IFACE]["Name"].startswith(TEST_PREF)
         ]
@@ -166,7 +166,7 @@ class StratisDbus:
         """
         pool_objects = {
             path: obj_data[StratisDbus._POOL_IFACE]
-            for path, obj_data in StratisDbus._get_managed_objects().items()
+            for path, obj_data in StratisDbus.get_managed_objects().items()
             if StratisDbus._POOL_IFACE in obj_data
             and obj_data[StratisDbus._POOL_IFACE]["Name"].startswith(TEST_PREF)
         }
@@ -192,7 +192,7 @@ class StratisDbus:
         :return: A dict,  Key being the fs name, the value being the pool name
         :rtype: dict mapping str to str
         """
-        objects = StratisDbus._get_managed_objects().items()
+        objects = StratisDbus.get_managed_objects().items()
 
         fs_objects = [
             obj_data[StratisDbus._FS_IFACE]
@@ -268,7 +268,7 @@ class StratisDbus:
         :return: The return values of the DestroyFilesystems call, or None
         :rtype: The D-Bus types (bas), q, and s, or None
         """
-        objects = StratisDbus._get_managed_objects().items()
+        objects = StratisDbus.get_managed_objects().items()
 
         pool_objects = {
             path: obj_data[StratisDbus._POOL_IFACE]
@@ -312,7 +312,7 @@ class StratisDbus:
         :return: The return values of the SetName call, or None
         :rtype: The D-Bus types (bs), q, and s, or None
         """
-        objects = StratisDbus._get_managed_objects().items()
+        objects = StratisDbus.get_managed_objects().items()
 
         fs_objects = {
             path: obj_data[StratisDbus._FS_IFACE]

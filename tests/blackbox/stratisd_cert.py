@@ -23,7 +23,7 @@ import unittest
 import dbus
 
 from testlib.dbus import StratisDbus, clean_up
-from testlib.utils import exec_command, exec_test_command, process_exists, p_n, fs_n
+from testlib.utils import exec_command, process_exists, p_n, fs_n
 
 DISKS = []
 
@@ -87,24 +87,10 @@ class StratisCertify(unittest.TestCase):
 
     def test_get_managed_objects(self):
         """
-        Test that GetManagedObjects returns a string w/out failure.
+        Test that GetManagedObjects returns a dict w/out failure.
         """
-        exit_code, stdout, stderr = exec_test_command(
-            [
-                "busctl",
-                "call",
-                "org.storage.stratis1",
-                "/org/storage/stratis1",
-                "org.freedesktop.DBus.ObjectManager",
-                "GetManagedObjects",
-                "--verbose",
-                "--no-pager",
-                "--timeout=1200",
-            ]
-        )
-        self.assertEqual(exit_code, 0)
-        self.assertEqual(stderr, "")
-        self.assertNotEqual(stdout, "")
+        result = StratisDbus.get_managed_objects()
+        self.assertIsInstance(result, dict)
 
     def test_stratisd_version(self):
         """
