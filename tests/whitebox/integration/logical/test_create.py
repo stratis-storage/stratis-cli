@@ -21,6 +21,7 @@ from dbus_client_gen import DbusClientUniqueResultError
 
 from stratis_cli._errors import StratisCliActionError
 from stratis_cli._errors import StratisCliEngineError
+from stratis_cli._errors import StratisCliPartialChangeError
 
 from stratis_cli._stratisd_constants import StratisdErrors
 
@@ -109,3 +110,34 @@ class Create3TestCase(SimTestCase):
         cause = context.exception.__cause__
         self.assertIsInstance(cause, StratisCliEngineError)
         self.assertEqual(cause.rc, StratisdErrors.ALREADY_EXISTS)
+
+
+class Create4TestCase(SimTestCase):
+    """
+    Test creating multiple volumes, of which one already exists.
+    """
+
+    _MENU = ["--propagate", "filesystem", "create"]
+    _POOLNAME = "deadpool"
+    _VOLNAMES = ["oubliette", "mnemosyne"]
+
+    def setUp(self):
+        """
+        Start the stratisd daemon with the simulator.
+        """
+        super().setUp()
+        command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
+        RUNNER(command_line)
+
+        command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES[0:1]
+        RUNNER(command_line)
+
+    def testDestroy(self):
+        """
+        Creation of multiple volumes, of which one already exists, must fail.
+        """
+        command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
+        with self.assertRaises(StratisCliActionError) as context:
+            RUNNER(command_line)
+        cause = context.exception.__cause__
+        self.assertIsInstance(cause, StratisCliPartialChangeError)

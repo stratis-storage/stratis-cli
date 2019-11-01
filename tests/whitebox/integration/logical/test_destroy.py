@@ -20,6 +20,7 @@ import unittest
 from dbus_client_gen import DbusClientUniqueResultError
 
 from stratis_cli._errors import StratisCliActionError
+from stratis_cli._errors import StratisCliPartialChangeError
 
 from .._misc import device_name_list
 from .._misc import RUNNER
@@ -108,3 +109,40 @@ class Destroy3TestCase(SimTestCase):
         """
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
         RUNNER(command_line)
+
+
+class Destroy4TestCase(SimTestCase):
+    """
+    Test destroying multiple volumes, of which one does not exist.
+    """
+
+    _MENU = ["--propagate", "filesystem", "destroy"]
+    _POOLNAME = "deadpool"
+    _VOLNAMES = ["oubliette", "mnemosyne"]
+
+    def setUp(self):
+        """
+        Start the stratisd daemon with the simulator.
+        """
+        super().setUp()
+        command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
+        RUNNER(command_line)
+
+        command_line = ["filesystem", "create", self._POOLNAME] + self._VOLNAMES[0:1]
+        RUNNER(command_line)
+
+        command_line = ["filesystem", "create", self._POOLNAME] + self._VOLNAMES[1:2]
+        RUNNER(command_line)
+
+        command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES[0:1]
+        RUNNER(command_line)
+
+    def testDestroy(self):
+        """
+        Destruction of multiple volumes, of which one does not exist, must fail.
+        """
+        command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
+        with self.assertRaises(StratisCliActionError) as context:
+            RUNNER(command_line)
+        cause = context.exception.__cause__
+        self.assertIsInstance(cause, StratisCliPartialChangeError)
