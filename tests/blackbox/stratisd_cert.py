@@ -35,7 +35,7 @@ def make_test_pool(pool_name, pool_disks):
     :param list pool_disks: List of disks with which the pool will be created
     :return: Object path of the created pool
     """
-    (obj_path_exists, (obj_path, _)), return_code, _ = StratisDbus.pool_create(
+    (obj_path_exists, (obj_path, _)), return_code, msg = StratisDbus.pool_create(
         pool_name, pool_disks
     )
     assert return_code == 0, "return_code: %s, error_msg: %s" % (return_code, msg)
