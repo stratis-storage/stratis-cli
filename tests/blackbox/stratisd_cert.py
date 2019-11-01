@@ -35,10 +35,10 @@ def make_test_pool(pool_name):
     :return: Object path of the created pool
     """
     pool_disk = DISKS[0:1]
-    (obj_path_exists, (obj_path, _)), return_code, _ = StratisDbus.pool_create(
+    (obj_path_exists, (obj_path, _)), return_code, msg = StratisDbus.pool_create(
         pool_name, pool_disk
     )
-    assert return_code == 0, "return_code: %s" % return_code
+    assert return_code == 0, "return_code: %s, error_msg: %s" % (return_code, msg)
     assert obj_path_exists, "obj_path_exists: %s" % obj_path_exists
     return obj_path
 
@@ -53,8 +53,8 @@ def make_test_filesystem(pool_path, fs_name):
     (
         filesystems_created,
         (array_of_tuples_with_obj_paths_and_names),
-    ), return_code, _ = StratisDbus.fs_create(pool_path, fs_name)
-    assert return_code == 0, "return_code: %s" % return_code
+    ), return_code, msg = StratisDbus.fs_create(pool_path, fs_name)
+    assert return_code == 0, "return_code: %s, error_msg: %s" % (return_code, msg)
     assert filesystems_created, "filesystems_created: %s" % filesystems_created
     return array_of_tuples_with_obj_paths_and_names[0][0]
 
