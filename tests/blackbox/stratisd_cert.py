@@ -71,6 +71,8 @@ class StratisCertify(unittest.TestCase):
         * Ensure that stratisd is running via systemd.
         * Use the running stratisd instance to destroy any existing
         Stratis filesystems, pools, etc.
+        * Call "udevadm settle" so udev database can be updated with changes
+        to Stratis devices.
         :return: None
         """
         self.addCleanup(clean_up)
@@ -79,8 +81,9 @@ class StratisCertify(unittest.TestCase):
             exec_command(["systemctl", "start", "stratisd"])
             time.sleep(20)
 
-        StratisDbus.destroy_all()
-        assert StratisDbus.pool_list() == []
+        clean_up()
+
+        exec_command(["udevadm", "settle"])
 
     def test_get_managed_objects(self):
         """
