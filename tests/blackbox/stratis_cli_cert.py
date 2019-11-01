@@ -21,7 +21,7 @@ import time
 import unittest
 
 from testlib.utils import exec_command, exec_test_command, process_exists, p_n, fs_n
-from testlib.stratis import STRATIS_CLI, StratisCli, clean_up
+from testlib.stratis import STRATIS_CLI, clean_up
 
 DISKS = []
 
@@ -73,8 +73,7 @@ class StratisCertify(unittest.TestCase):
             exec_command(["systemctl", "start", "stratisd"])
             time.sleep(20)
 
-        StratisCli.destroy_all()
-        assert StratisCli.pool_list() == []
+        clean_up()
 
     def unittest_command(  # pylint: disable=bad-continuation
         self, args, exp_exit_code, exp_stderr_is_empty, exp_stdout_is_empty

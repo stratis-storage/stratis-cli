@@ -16,15 +16,18 @@ Wrapper around stratis CLI
 """
 import os
 
-from .utils import exec_command, umount_mdv, stratis_link, TEST_PREF
+from .utils import exec_command, umount_mdv, TEST_PREF
 
 # Some packaged systems might place this in /usr/sbin
 STRATIS_CLI = os.getenv("STRATIS_CLI", "/usr/bin/stratis")
 
 
-class StratisCli:
+class _StratisCli:
     """
     Wrappers around stratis cli command-line calls.
+
+    These are used exclusively for infrastructure cleanup actions and should
+    _not_ be used in tests in stratis_cli_cert.py.
     """
 
     @staticmethod
@@ -56,16 +59,6 @@ class StratisCli:
         )
 
     @staticmethod
-    def pool_destroy(name):
-        """
-        Destroy a pool
-        :param name: Name of pool to destroy
-        :return: None
-        """
-        if name.startswith(TEST_PREF):
-            exec_command([STRATIS_CLI, "pool", "destroy", name])
-
-    @staticmethod
     def destroy_all():
         """
         Destroys all Stratis FS and pools!
@@ -74,25 +67,12 @@ class StratisCli:
         umount_mdv()
 
         # Remove FS
-        for name, pool_name in StratisCli.fs_list().items():
-            StratisCli.fs_destroy(pool_name, name)
+        for fs_name, pool_name in _StratisCli.fs_list().items():
+            exec_command([STRATIS_CLI, "fs", "destroy", pool_name, fs_name])
 
         # Remove Pools
-        for name in StratisCli.pool_list():
-            StratisCli.pool_destroy(name)
-
-    @staticmethod
-    def fs_destroy(pool_name, fs_name):
-        """
-        Destroy a FS
-        :param pool_name:  Pool which contains the FS
-        :param fs_name: Name of FS to destroy
-        :return: None
-        """
-        if pool_name.startswith(TEST_PREF):
-            exec_command([STRATIS_CLI, "fs", "destroy", pool_name, fs_name])
-            full_path = stratis_link(pool_name, fs_name)
-            assert os.path.exists(full_path) is False
+        for name in _StratisCli.pool_list():
+            exec_command([STRATIS_CLI, "pool", "destroy", name])
 
 
 def clean_up():
@@ -101,5 +81,5 @@ def clean_up():
 
     :return: None
     """
-    StratisCli.destroy_all()
-    assert StratisCli.pool_list() == []
+    _StratisCli.destroy_all()
+    assert _StratisCli.pool_list() == []
