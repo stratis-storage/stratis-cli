@@ -174,7 +174,7 @@ class TopActions:
         If no pool exists, the method succeeds.
 
         :raises StratisCliEngineError:
-        :raises StratisCliNoChangeError:
+        :raises StratisCliIncoherenceError:
         """
         # pylint: disable=import-outside-toplevel
         from ._data import Manager
@@ -198,8 +198,15 @@ class TopActions:
         if rc != StratisdErrors.OK:
             raise StratisCliEngineError(rc, message)
 
-        if not changed:
-            raise StratisCliNoChangeError("destroy", namespace.pool_name)
+        if not changed:  # pragma: no cover
+            raise StratisCliIncoherenceError(
+                (
+                    "Expected to destroy the specified pool %s but "
+                    "stratisd reports that it did not actually "
+                    "destroy the pool requested"
+                )
+                % namespace.pool_name
+            )
 
     @staticmethod
     def rename_pool(namespace):
