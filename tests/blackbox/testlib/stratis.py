@@ -16,7 +16,7 @@ Wrapper around stratis CLI
 """
 import os
 
-from .utils import exec_command, umount_mdv, stratis_link, TEST_PREF
+from .utils import exec_command, umount_mdv, TEST_PREF
 
 # Some packaged systems might place this in /usr/sbin
 STRATIS_CLI = os.getenv("STRATIS_CLI", "/usr/bin/stratis")
@@ -91,8 +91,6 @@ class StratisCli:
         """
         if pool_name.startswith(TEST_PREF):
             exec_command([STRATIS_CLI, "fs", "destroy", pool_name, fs_name])
-            full_path = stratis_link(pool_name, fs_name)
-            assert os.path.exists(full_path) is False
 
 
 def clean_up():

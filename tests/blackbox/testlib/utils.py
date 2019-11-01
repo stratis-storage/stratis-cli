@@ -50,19 +50,6 @@ def random_string(length=4):
     )
 
 
-def stratis_link(pool_name, fs_name=None):
-    """
-    Generate the stratis symlink for the pool and optionally for FS
-    :param pool_name:
-    :param fs_name:
-    :return: Full path and name to symlink
-    """
-    fs_path = os.path.join(os.path.sep + "stratis", pool_name)
-    if fs_name:
-        fs_path = os.path.join(fs_path, fs_name)
-    return fs_path
-
-
 def process_exists(name):
     """
     Walk the process table looking for executable 'name', returns pid if one
