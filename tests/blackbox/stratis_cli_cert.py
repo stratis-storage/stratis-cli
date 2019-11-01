@@ -32,10 +32,10 @@ def make_test_pool():
     :return: Name of the created pool
     """
     pool_name = p_n()
-    (return_code, _, _) = exec_test_command(
+    (return_code, _, stderr) = exec_test_command(
         [STRATIS_CLI, "pool", "create", pool_name, DISKS[0]]
     )
-    assert return_code == 0, "return_code: %s" % return_code
+    assert return_code == 0, "return_code: %s, stderr: %s" % (return_code, stderr)
     return pool_name
 
 
@@ -46,10 +46,10 @@ def make_test_filesystem(pool_name):
     :return: Name of the created filesystem
     """
     filesystem_name = fs_n()
-    (return_code, _, _) = exec_test_command(
+    (return_code, _, stderr) = exec_test_command(
         [STRATIS_CLI, "filesystem", "create", pool_name, filesystem_name]
     )
-    assert return_code == 0, "return_code: %s" % return_code
+    assert return_code == 0, "return_code: %s, stderr: %s" % (return_code, stderr)
     return filesystem_name
 
 
