@@ -4,11 +4,37 @@ Python auto-formatter: black (18.9b0)
 
 New minimum stratisd version requirement: 2.0.0
 
+- Expect new versions of D-Bus service and interface names:
+  https://github.com/stratis-storage/project/issues/103
+  https://github.com/stratis-storage/stratis-cli/pull/389
+
+- Use newly introduced stratisd D-Bus interface FetchProperties
+  to obtain properties of engine objects for list methods:
+  https://github.com/stratis-storage/project/issues/52
+  https://github.com/stratis-storage/stratis-cli/pull/381
+  https://github.com/stratis-storage/stratis-cli/pull/385
+  https://github.com/stratis-storage/stratis-cli/pull/388
+
 - Remove idempotent behavior on certain commands:
   https://github.com/stratis-storage/project/issues/51
   https://github.com/stratis-storage/stratis-cli/pull/358
+  https://github.com/stratis-storage/stratis-cli/pull/366
+  https://github.com/stratis-storage/stratis-cli/pull/372
+  https://github.com/stratis-storage/stratis-cli/pull/377
+  https://github.com/stratis-storage/stratis-cli/pull/378
+  https://github.com/stratis-storage/stratis-cli/pull/390
+
+- Expect that all size values placed on the D-Bus represent bytes:
+  https://github.com/stratis-storage/stratis-cli/pull/383
 
 - Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/394
+  https://github.com/stratis-storage/stratis-cli/pull/393
+  https://github.com/stratis-storage/stratis-cli/pull/391
+  https://github.com/stratis-storage/stratis-cli/pull/386
+  https://github.com/stratis-storage/stratis-cli/pull/379
+  https://github.com/stratis-storage/stratis-cli/pull/368
+  https://github.com/stratis-storage/stratis-cli/pull/367
   https://github.com/stratis-storage/stratis-cli/pull/363
   https://github.com/stratis-storage/stratis-cli/pull/362
   https://github.com/stratis-storage/stratis-cli/pull/361
