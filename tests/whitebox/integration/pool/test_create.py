@@ -17,6 +17,7 @@ Test 'create'.
 
 from stratis_cli._errors import StratisCliActionError
 from stratis_cli._errors import StratisCliEngineError
+from stratis_cli._errors import StratisCliNoChangeError
 
 from .._misc import device_name_list
 from .._misc import RUNNER
@@ -57,12 +58,25 @@ class Create3TestCase(SimTestCase):
         Start the stratisd daemon with the simulator.
         """
         super().setUp()
-        command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
+        self.devices = _DEVICE_STRATEGY()
+        command_line = ["pool", "create", self._POOLNAME] + self.devices
         RUNNER(command_line)
 
-    def testCreate(self):
+    def testCreateSameDevices(self):
         """
-        Create should fail trying to create new pool with same name as previous.
+        Create should fail with a StratisCliNoChangeError trying to create new pool
+        with different devices and the same name as previous.
+        """
+        command_line = self._MENU + [self._POOLNAME] + self.devices
+        with self.assertRaises(StratisCliActionError) as context:
+            RUNNER(command_line)
+        cause = context.exception.__cause__
+        self.assertIsInstance(cause, StratisCliNoChangeError)
+
+    def testCreateDifferentDevices(self):
+        """
+        Create should fail with a StratisCliEngineError trying to create new pool
+        with different devices and the same name as previous.
         """
         command_line = self._MENU + [self._POOLNAME] + _DEVICE_STRATEGY()
         with self.assertRaises(StratisCliActionError) as context:
