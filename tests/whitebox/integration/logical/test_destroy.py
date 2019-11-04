@@ -131,12 +131,6 @@ class Destroy4TestCase(SimTestCase):
         command_line = ["filesystem", "create", self._POOLNAME] + self._VOLNAMES[0:1]
         RUNNER(command_line)
 
-        command_line = ["filesystem", "create", self._POOLNAME] + self._VOLNAMES[1:2]
-        RUNNER(command_line)
-
-        command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES[0:1]
-        RUNNER(command_line)
-
     def testDestroy(self):
         """
         Destruction of multiple volumes, of which one does not exist, must fail.
