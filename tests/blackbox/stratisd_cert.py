@@ -167,9 +167,21 @@ class StratisCertify(unittest.TestCase):
         self.assertIsInstance(result, list)
         self.assertNotEqual(result, [])
 
-    def test_pool_create_same_name(self):
+    def test_pool_create_same_name_and_devices(self):
         """
-        Test creating a pool that already exists.
+        Test creating a pool that already exists with the same devices.
+        """
+        pool_disks = DISKS[0:1]
+
+        pool_name = p_n()
+        make_test_pool(pool_name)
+
+        (_, return_code, _) = StratisDbus.pool_create(pool_name, pool_disks)
+        self.assertEqual(return_code, dbus.UInt16(0))
+
+    def test_pool_create_same_name_different_devices(self):
+        """
+        Test creating a pool that already exists with different devices.
         """
         pool_disks = DISKS[1:3]
 
@@ -177,7 +189,7 @@ class StratisCertify(unittest.TestCase):
         make_test_pool(pool_name)
 
         (_, return_code, _) = StratisDbus.pool_create(pool_name, pool_disks)
-        self.assertEqual(return_code, dbus.UInt16(0))
+        self.assertEqual(return_code, dbus.UInt16(1))
 
     def test_pool_destroy(self):
         """
