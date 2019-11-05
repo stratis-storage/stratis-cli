@@ -136,24 +136,20 @@ class StratisCertify(unittest.TestCase):
         """
         Test adding cache to a pool.
         """
-        cache_disk = DISKS[2:3]
-
         pool_name = p_n()
         pool_path = make_test_pool(pool_name, DISKS[0:2])
 
-        (_, return_code, _) = StratisDbus.pool_add_cache(pool_path, cache_disk)
+        (_, return_code, _) = StratisDbus.pool_add_cache(pool_path, DISKS[2:3])
         self.assertEqual(return_code, dbus.UInt16(0))
 
     def test_pool_add_data(self):
         """
         Test adding data to a pool.
         """
-        data_disk = DISKS[2:3]
-
         pool_name = p_n()
         pool_path = make_test_pool(pool_name, DISKS[0:2])
 
-        (_, return_code, _) = StratisDbus.pool_add_data(pool_path, data_disk)
+        (_, return_code, _) = StratisDbus.pool_add_data(pool_path, DISKS[2:3])
         self.assertEqual(return_code, dbus.UInt16(0))
 
     def test_pool_list_not_empty(self):
@@ -171,24 +167,20 @@ class StratisCertify(unittest.TestCase):
         """
         Test creating a pool that already exists with the same devices.
         """
-        pool_disks = DISKS[0:1]
-
         pool_name = p_n()
         make_test_pool(pool_name, DISKS[0:1])
 
-        (_, return_code, _) = StratisDbus.pool_create(pool_name, pool_disks)
+        (_, return_code, _) = StratisDbus.pool_create(pool_name, DISKS[0:1])
         self.assertEqual(return_code, dbus.UInt16(0))
 
     def test_pool_create_same_name_different_devices(self):
         """
         Test creating a pool that already exists with different devices.
         """
-        pool_disks = DISKS[1:3]
-
         pool_name = p_n()
-        make_test_pool(pool_name)
+        make_test_pool(pool_name, DISKS[0:1])
 
-        (_, return_code, _) = StratisDbus.pool_create(pool_name, pool_disks)
+        (_, return_code, _) = StratisDbus.pool_create(pool_name, DISKS[1:3])
         self.assertEqual(return_code, dbus.UInt16(1))
 
     def test_pool_destroy(self):

@@ -33,10 +33,9 @@ def make_test_pool(pool_disks):
     :return: Name of the created pool
     """
     pool_name = p_n()
-    command_param = [STRATIS_CLI, "pool", "create", pool_name]
-    for pool_disk in pool_disks:
-        command_param.insert(len(command_param), pool_disk)
-    (return_code, _, stderr) = exec_test_command(command_param)
+    (return_code, _, stderr) = exec_test_command(
+        [STRATIS_CLI, "pool", "create", pool_name] + pool_disks
+    )
     assert return_code == 0, "return_code: %s, stderr: %s" % (return_code, stderr)
     return pool_name
 
@@ -169,7 +168,7 @@ class StratisCertify(unittest.TestCase):
         Test adding cache to a pool.
         """
         self.unittest_command(
-            [STRATIS_CLI, "pool", "add-cache", make_test_pool(DISKS[0:1]), DISKS[1]],
+            [STRATIS_CLI, "pool", "add-cache", make_test_pool(DISKS[0:2]), DISKS[2]],
             0,
             1,
             True,
