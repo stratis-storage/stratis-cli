@@ -22,6 +22,7 @@ from .._stratisd_constants import BLOCK_DEV_TIER_TO_NAME
 from ._connection import get_object
 from ._constants import BLOCKDEV_INTERFACE
 from ._constants import TOP_OBJECT
+from ._formatting import TABLE_FAILURE_STRING
 from ._formatting import fetch_property
 from ._formatting import print_table
 
@@ -79,16 +80,28 @@ class PhysicalActions:
             ).search(managed_objects)
         )
 
+        def total_physical_size(props):
+            """
+            Calculate the string value to display for physical size of block
+            device.
+
+            The format is just that chosen by justbytes default configuration.
+
+            :param props: a dictionary of property values obtained
+            :type props: a dict of str * object
+            :returns: a string to display in the resulting list output
+            :rtype: str
+            """
+            physical_size = fetch_property(
+                BLOCKDEV_INTERFACE, props, "TotalPhysicalSize", Range
+            )
+            return TABLE_FAILURE_STRING if physical_size is None else str(physical_size)
+
         tables = [
             [
                 path_to_name[modev.Pool()],
                 modev.Devnode(),
-                fetch_property(
-                    BLOCKDEV_INTERFACE,
-                    props,
-                    "TotalPhysicalSize",
-                    lambda x: str(Range(x)),
-                ),
+                total_physical_size(props),
                 BLOCK_DEV_TIER_TO_NAME(modev.Tier(), True),
             ]
             for (props, modev) in modevs
