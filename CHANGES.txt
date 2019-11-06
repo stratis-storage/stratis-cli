@@ -1,5 +1,5 @@
-stratis-cli 2.0.0 (UNRELEASED)
-==============================
+stratis-cli 2.0.0
+=================
 Python auto-formatter: black (18.9b0)
 
 New minimum stratisd version requirement: 2.0.0
@@ -14,6 +14,7 @@ New minimum stratisd version requirement: 2.0.0
   https://github.com/stratis-storage/stratis-cli/pull/381
   https://github.com/stratis-storage/stratis-cli/pull/385
   https://github.com/stratis-storage/stratis-cli/pull/388
+  https://github.com/stratis-storage/stratis-cli/pull/406
 
 - Remove idempotent behavior on certain commands:
   https://github.com/stratis-storage/project/issues/51
@@ -23,11 +24,19 @@ New minimum stratisd version requirement: 2.0.0
   https://github.com/stratis-storage/stratis-cli/pull/377
   https://github.com/stratis-storage/stratis-cli/pull/378
   https://github.com/stratis-storage/stratis-cli/pull/390
+  https://github.com/stratis-storage/stratis-cli/pull/396
+  https://github.com/stratis-storage/stratis-cli/pull/400
+  https://github.com/stratis-storage/stratis-cli/pull/401
 
 - Expect that all size values placed on the D-Bus represent bytes:
   https://github.com/stratis-storage/stratis-cli/pull/383
 
+- Expect that optional D-Bus properties are represented as tuples:
+  https://github.com/stratis-storage/project/issues/37
+  https://github.com/stratis-storage/stratis-cli/pull/405
+
 - Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/403
   https://github.com/stratis-storage/stratis-cli/pull/394
   https://github.com/stratis-storage/stratis-cli/pull/393
   https://github.com/stratis-storage/stratis-cli/pull/391
