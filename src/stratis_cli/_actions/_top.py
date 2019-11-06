@@ -29,6 +29,7 @@ from .._stratisd_constants import StratisdErrors
 from ._connection import get_object
 from ._constants import POOL_INTERFACE
 from ._constants import TOP_OBJECT
+from ._formatting import TABLE_FAILURE_STRING
 from ._formatting import fetch_property
 from ._formatting import print_table
 
@@ -150,18 +151,51 @@ class TopActions:
             for objpath, info in pools().search(managed_objects)
         ]
 
-        tables = [
-            (
-                mopool.Name(),
-                fetch_property(
-                    POOL_INTERFACE, props, "TotalPhysicalSize", lambda x: str(Range(x))
-                ),
+        def physical_size_triple(props):
+            """
+            Calculate the triple to display for total physical size.
+
+            The format is total/used/free where the display value for each
+            member of the tuple are chosen automatically according to justbytes'
+            configuration.
+
+            :param props: a dictionary of property values obtained
+            :type props: dict of str * object
+            :returns: a string to display in the resulting list output
+            :rtype: str
+            """
+            total_physical_size = fetch_property(
+                POOL_INTERFACE, props, "TotalPhysicalSize", Range
             )
+            total_physical_used = fetch_property(
+                POOL_INTERFACE, props, "TotalPhysicalUsed", Range
+            )
+
+            total_physical_free = (
+                None
+                if total_physical_size is None or total_physical_used is None
+                else total_physical_size - total_physical_used
+            )
+
+            return "%s / %s / %s" % (
+                TABLE_FAILURE_STRING
+                if total_physical_size is None
+                else total_physical_size,
+                TABLE_FAILURE_STRING
+                if total_physical_used is None
+                else total_physical_used,
+                TABLE_FAILURE_STRING
+                if total_physical_free is None
+                else total_physical_free,
+            )
+
+        tables = [
+            (mopool.Name(), physical_size_triple(props))
             for props, mopool in pools_with_props
         ]
 
         print_table(
-            ["Name", "Total Physical Size"],
+            ["Name", "Total Physical"],
             sorted(tables, key=lambda entry: entry[0]),
             ["<", ">"],
         )

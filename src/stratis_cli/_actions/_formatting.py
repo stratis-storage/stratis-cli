@@ -39,10 +39,14 @@ try:
 except ImportError:
     maybe_wcswidth = len  # pragma: no cover
 
+# placeholder for tables where a desired value was not obtained from stratisd
+# when the value should be supported.
+TABLE_FAILURE_STRING = "FAILURE"
 
-def fetch_property(object_type, props, name, to_string):
+
+def fetch_property(object_type, props, name, to_repr):
     """
-    Get a string representation of a property fetched through FetchProperties interface
+    Get a representation of a property fetched through FetchProperties interface
 
     :param object_type: string representation of object type implementing FetchProperties
     :type object_type: str
@@ -50,9 +54,9 @@ def fetch_property(object_type, props, name, to_string):
     :type props: dict of strs to (bool, object)
     :param name: the name of the property
     :type name: str
-    :param to_string: function expecting one object argument to convert to string
-    :type to_string: function(object) -> str
-    :returns: str
+    :param to_repr: function expecting one object argument to convert to some type
+    :type to_repr: function(object) -> object
+    :returns: object produced by to_repr or None
     :raises StratisCliPropertyNotFoundError:
     """
     # Disable coverage for failure of the engine to successfully get a value
@@ -65,8 +69,8 @@ def fetch_property(object_type, props, name, to_string):
     try:
         (success, variant) = props[name]
         if not success:
-            return "FAILED"  # pragma: no cover
-        return to_string(variant)
+            return None  # pragma: no cover
+        return to_repr(variant)
     except KeyError:  # pragma: no cover
         raise StratisCliPropertyNotFoundError(object_type, name)
 
