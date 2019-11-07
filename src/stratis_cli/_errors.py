@@ -35,7 +35,7 @@ class StratisCliRuntimeError(StratisCliError):
 
 # This indicates a bug and so coverage is not necessary as this error
 # is not handled.
-class StratisCliPropertyNotFoundError(StratisCliRuntimeError):  # pragma: no cover
+class StratisCliPropertyNotFoundError(StratisCliRuntimeError):
     """
     Exception raised when a requested property from FetchProperties DBus interface
     does not exist.
@@ -201,9 +201,7 @@ class StratisCliUnknownInterfaceError(StratisCliRuntimeError):  # pragma: no cov
         self._interface_name = interface_name
 
     # pylint: disable=fixme
-    # FIXME: remove no coverage pragma when adequate testing for CLI output
-    # exists.
-    def __str__(self):  # pragma: no cover
+    def __str__(self):
         return "unexpected interface name %s" % self._interface_name
 
 
@@ -223,9 +221,7 @@ class StratisCliEngineError(StratisCliRuntimeError):
         self.message = message
 
     # pylint: disable=fixme
-    # FIXME: remove no coverage pragma when adequate testing for CLI output
-    # exists.
-    def __str__(self):  # pragma: no cover
+    def __str__(self):
         return "%s: %s" % (STRATISD_ERROR_TO_NAME(self.rc), self.message)
 
 
@@ -247,9 +243,7 @@ class StratisCliActionError(StratisCliRuntimeError):
         self.namespace = namespace
 
     # pylint: disable=fixme
-    # FIXME: remove no coverage pragma when adequate testing for CLI output
-    # exists.
-    def __str__(self):  # pragma: no cover
+    def __str__(self):
         fmt_str = (
             "Action selected by command-line arguments %s which were "
             "parsed to %s failed"
