@@ -33,8 +33,7 @@ class StratisCliRuntimeError(StratisCliError):
     """
 
 
-# This indicates a bug and so coverage is not necessary as this error
-# is not handled.
+# This indicates a bug.
 class StratisCliPropertyNotFoundError(StratisCliRuntimeError):
     """
     Exception raised when a requested property from FetchProperties DBus interface
@@ -200,7 +199,6 @@ class StratisCliUnknownInterfaceError(StratisCliRuntimeError):  # pragma: no cov
         # pylint: disable=super-init-not-called
         self._interface_name = interface_name
 
-    # pylint: disable=fixme
     def __str__(self):
         return "unexpected interface name %s" % self._interface_name
 
@@ -220,7 +218,6 @@ class StratisCliEngineError(StratisCliRuntimeError):
         self.rc = rc
         self.message = message
 
-    # pylint: disable=fixme
     def __str__(self):
         return "%s: %s" % (STRATISD_ERROR_TO_NAME(self.rc), self.message)
 
@@ -242,7 +239,6 @@ class StratisCliActionError(StratisCliRuntimeError):
         self.command_line_args = command_line_args
         self.namespace = namespace
 
-    # pylint: disable=fixme
     def __str__(self):
         fmt_str = (
             "Action selected by command-line arguments %s which were "

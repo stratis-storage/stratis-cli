@@ -1,4 +1,4 @@
-# Copyright 2016 Red Hat, Inc.
+# Copyright 2019 Red Hat, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -39,90 +39,95 @@ class ErrorFmtTestCase(unittest.TestCase):
     Test stringification of various error types.
     """
 
+    def StringNotEmpty(self, exception):
+        """
+        :param exception: an object of a Stratis CLI error type
+        :param type exception: the class defining the Stratis CLI error type
+        """
+        self.assertNotEqual(str(exception), "")
+
     def testStratisCliErrorFmt(self):
         """
         Test 'StratisCliError'
         """
-        exception = StratisCliError("Error")
-        self.assertNotEqual(str(exception), "")
+        self.StringNotEmpty(StratisCliError("Error"))
 
     def testStratisCliRuntimeErrorFmt(self):
         """
         Test 'StratisCliRuntimeError'
         """
-        exception = StratisCliRuntimeError("Error")
-        self.assertNotEqual(str(exception), "")
+        self.StringNotEmpty(StratisCliRuntimeError("Error"))
 
     def testStratisCliPropertyNotFoundErrorFmt(self):
         """
         Test 'StratisCliPropertyNotFoundError'
         """
-        exception = StratisCliPropertyNotFoundError("BadInterface", "BadProperty")
-        self.assertNotEqual(str(exception), "")
+        self.StringNotEmpty(
+            StratisCliPropertyNotFoundError("BadInterface", "BadProperty")
+        )
 
     def testStratisCliPartialChangeErrorFmt(self):
         """
         Test 'StratisCliPartialChangeError'
         """
-        exception = StratisCliPartialChangeError(
-            "Command", frozenset("ChangedResources"), frozenset("UnchangedResources")
+        self.StringNotEmpty(
+            StratisCliPartialChangeError(
+                "Command",
+                frozenset("ChangedResources"),
+                frozenset("UnchangedResources"),
+            )
         )
-        self.assertNotEqual(str(exception), "")
 
     def testStratisCliNoChangeErrorFmt(self):
         """
         Test 'StratisCliNoChangeError'
         """
-        exception = StratisCliNoChangeError("Command", frozenset("ChangedResources"))
-        self.assertNotEqual(str(exception), "")
+        self.StringNotEmpty(
+            StratisCliNoChangeError("Command", frozenset("ChangedResources"))
+        )
 
     def testStratisCliIncoherenceErrorFmt(self):
         """
         Test 'StratisCliIncoherenceError'
         """
-        exception = StratisCliIncoherenceError("Error")
-        self.assertNotEqual(str(exception), "")
+        self.StringNotEmpty(StratisCliIncoherenceError("Error"))
 
     def testStratisCliInUseErrorFmt(self):
         """
         Test 'StratisCliInUseError'
         """
-        exception = StratisCliInUseError(frozenset("Blockdevs"), BlockDevTiers(0))
-        self.assertNotEqual(str(exception), "")
+        self.StringNotEmpty(
+            StratisCliInUseError(frozenset("Blockdevs"), BlockDevTiers(0))
+        )
 
     def testStratisCliUnknownInterfaceErrorFmt(self):
         """
         Test 'StratisCliUnknownInterfaceError'
         """
-        exception = StratisCliUnknownInterfaceError("BadInterface")
-        self.assertNotEqual(str(exception), "")
+        self.StringNotEmpty(StratisCliUnknownInterfaceError("BadInterface"))
 
     def testTimeoutStratisCliEngineErrorFmt(self):
         """
         Test 'StratisCliEngineError'
         """
-        exception = StratisCliEngineError(42, "Message")
-        self.assertNotEqual(str(exception), "")
+        self.StringNotEmpty(StratisCliEngineError(42, "Message"))
 
     def testStratisCliActionErrorFmt(self):
         """
         Test 'StratisCliActionError'
         """
-        exception = StratisCliActionError(
-            ["CommandLineArgs"], argparse.ArgumentParser()
+        self.StringNotEmpty(
+            StratisCliActionError(["CommandLineArgs"], argparse.ArgumentParser())
         )
-        self.assertNotEqual(str(exception), "")
 
     def testStratisCliGenerationErrorFmt(self):
         """
         Test 'StratisCliGenerationError'
         """
-        exception = StratisCliGenerationError("Error")
-        self.assertNotEqual(str(exception), "")
+        self.StringNotEmpty(StratisCliGenerationError("Error"))
 
     def testStratisCliEnvironmentErrorFmt(self):
         """
         Test 'StratisCliEnvironmentError'
         """
-        exception = StratisCliEnvironmentError("Error")
-        self.assertNotEqual(str(exception), "")
+        self.StringNotEmpty(StratisCliEnvironmentError("Error"))
