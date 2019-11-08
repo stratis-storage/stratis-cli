@@ -78,14 +78,14 @@ class ErrorFmtTestCase(unittest.TestCase):
 
     def testStratisCliIncoherenceErrorFmt(self):
         """
-        Should fail because the timeout value is a float.
+        Test 'StratisCliIncoherenceError'
         """
         exception = StratisCliIncoherenceError("Error")
         self.assertNotEqual(str(exception), "")
 
     def testStratisCliInUseErrorFmt(self):
         """
-        Should fail because the timeout value is not an integer.
+        Test 'StratisCliInUseError'
         """
         exception = StratisCliInUseError(frozenset("Blockdevs"), BlockDevTiers(0))
         self.assertNotEqual(str(exception), "")
