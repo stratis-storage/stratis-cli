@@ -9,7 +9,7 @@ addons:
       libdbus-glib-1-dev
 
 branches:
-    only: master
+    only: develop
 
 env:
   - TASK=lint
