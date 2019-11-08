@@ -39,10 +39,10 @@ class ErrorFmtTestCase(unittest.TestCase):
     Test stringification of various error types.
     """
 
-    def StringNotEmpty(self, exception):
+    def _string_not_empty(self, exception):
         """
         :param exception: an object of a Stratis CLI error type
-        :param type exception: the class defining the Stratis CLI error type
+        :type exception: Exception
         """
         self.assertNotEqual(str(exception), "")
 
@@ -50,19 +50,19 @@ class ErrorFmtTestCase(unittest.TestCase):
         """
         Test 'StratisCliError'
         """
-        self.StringNotEmpty(StratisCliError("Error"))
+        self._string_not_empty(StratisCliError("Error"))
 
     def testStratisCliRuntimeErrorFmt(self):
         """
         Test 'StratisCliRuntimeError'
         """
-        self.StringNotEmpty(StratisCliRuntimeError("Error"))
+        self._string_not_empty(StratisCliRuntimeError("Error"))
 
     def testStratisCliPropertyNotFoundErrorFmt(self):
         """
         Test 'StratisCliPropertyNotFoundError'
         """
-        self.StringNotEmpty(
+        self._string_not_empty(
             StratisCliPropertyNotFoundError("BadInterface", "BadProperty")
         )
 
@@ -70,7 +70,7 @@ class ErrorFmtTestCase(unittest.TestCase):
         """
         Test 'StratisCliPartialChangeError'
         """
-        self.StringNotEmpty(
+        self._string_not_empty(
             StratisCliPartialChangeError(
                 "Command",
                 frozenset("ChangedResources"),
@@ -82,7 +82,7 @@ class ErrorFmtTestCase(unittest.TestCase):
         """
         Test 'StratisCliNoChangeError'
         """
-        self.StringNotEmpty(
+        self._string_not_empty(
             StratisCliNoChangeError("Command", frozenset("ChangedResources"))
         )
 
@@ -90,13 +90,13 @@ class ErrorFmtTestCase(unittest.TestCase):
         """
         Test 'StratisCliIncoherenceError'
         """
-        self.StringNotEmpty(StratisCliIncoherenceError("Error"))
+        self._string_not_empty(StratisCliIncoherenceError("Error"))
 
     def testStratisCliInUseErrorFmt(self):
         """
         Test 'StratisCliInUseError'
         """
-        self.StringNotEmpty(
+        self._string_not_empty(
             StratisCliInUseError(frozenset("Blockdevs"), BlockDevTiers(0))
         )
 
@@ -104,19 +104,19 @@ class ErrorFmtTestCase(unittest.TestCase):
         """
         Test 'StratisCliUnknownInterfaceError'
         """
-        self.StringNotEmpty(StratisCliUnknownInterfaceError("BadInterface"))
+        self._string_not_empty(StratisCliUnknownInterfaceError("BadInterface"))
 
     def testTimeoutStratisCliEngineErrorFmt(self):
         """
         Test 'StratisCliEngineError'
         """
-        self.StringNotEmpty(StratisCliEngineError(42, "Message"))
+        self._string_not_empty(StratisCliEngineError(42, "Message"))
 
     def testStratisCliActionErrorFmt(self):
         """
         Test 'StratisCliActionError'
         """
-        self.StringNotEmpty(
+        self._string_not_empty(
             StratisCliActionError(["CommandLineArgs"], argparse.ArgumentParser())
         )
 
@@ -124,10 +124,10 @@ class ErrorFmtTestCase(unittest.TestCase):
         """
         Test 'StratisCliGenerationError'
         """
-        self.StringNotEmpty(StratisCliGenerationError("Error"))
+        self._string_not_empty(StratisCliGenerationError("Error"))
 
     def testStratisCliEnvironmentErrorFmt(self):
         """
         Test 'StratisCliEnvironmentError'
         """
-        self.StringNotEmpty(StratisCliEnvironmentError("Error"))
+        self._string_not_empty(StratisCliEnvironmentError("Error"))
