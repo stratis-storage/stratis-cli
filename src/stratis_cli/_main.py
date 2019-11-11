@@ -17,9 +17,9 @@ Highest level runner.
 
 import justbytes as jb
 
+from ._error_reporting import handle_error
 from ._errors import StratisCliActionError
 from ._errors import StratisCliEnvironmentError
-from ._error_reporting import handle_error
 from ._parser import gen_parser
 
 

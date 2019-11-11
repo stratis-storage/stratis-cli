@@ -14,27 +14,22 @@
 """
 XML interface specifications.
 """
+import sys
+import xml.etree.ElementTree as ET
 from os import environ
 
-import sys
-
-import xml.etree.ElementTree as ET
-
+from dbus_client_gen import DbusClientGenerationError
 from dbus_client_gen import managed_object_class
 from dbus_client_gen import mo_query_builder
-from dbus_client_gen import DbusClientGenerationError
-
-from dbus_python_client_gen import make_class
 from dbus_python_client_gen import DPClientGenerationError
+from dbus_python_client_gen import make_class
 
 from .._errors import StratisCliEnvironmentError
 from .._errors import StratisCliGenerationError
-
 from ._constants import BLOCKDEV_INTERFACE
 from ._constants import FETCH_PROPERTIES_INTERFACE
 from ._constants import FILESYSTEM_INTERFACE
 from ._constants import POOL_INTERFACE
-
 
 assert hasattr(sys.modules.get("stratis_cli"), "run"), (
     "This module is being loaded too eagerly. Make sure that loading it is "

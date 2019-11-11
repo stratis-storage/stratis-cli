@@ -18,7 +18,8 @@ import os
 
 import dbus
 
-from .utils import umount_mdv, TEST_PREF
+from .utils import TEST_PREF
+from .utils import umount_mdv
 
 
 # This method is based off of the STRATIS_DBUS_TIMEOUT environment variable parsing

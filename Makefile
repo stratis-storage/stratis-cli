@@ -8,10 +8,13 @@ lint:
 
 .PHONY: fmt
 fmt:
+	isort -sl -rc src tests
 	black .
 
 .PHONY: fmt-travis
 fmt-travis:
+	isort -v
+	isort -df -c -sl -rc src tests
 	black . --check
 
 PYREVERSE_OPTS = --output=pdf

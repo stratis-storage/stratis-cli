@@ -18,16 +18,14 @@ Test 'create'.
 import unittest
 
 from dbus_client_gen import DbusClientUniqueResultError
-
 from stratis_cli._errors import StratisCliActionError
 from stratis_cli._errors import StratisCliEngineError
 from stratis_cli._errors import StratisCliPartialChangeError
-
 from stratis_cli._stratisd_constants import StratisdErrors
 
-from .._misc import device_name_list
 from .._misc import RUNNER
 from .._misc import SimTestCase
+from .._misc import device_name_list
 
 _DEVICE_STRATEGY = device_name_list(1)
 

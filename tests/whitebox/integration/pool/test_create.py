@@ -19,9 +19,9 @@ from stratis_cli._errors import StratisCliActionError
 from stratis_cli._errors import StratisCliEngineError
 from stratis_cli._errors import StratisCliNoChangeError
 
-from .._misc import device_name_list
 from .._misc import RUNNER
 from .._misc import SimTestCase
+from .._misc import device_name_list
 
 _DEVICE_STRATEGY = device_name_list(1)
 

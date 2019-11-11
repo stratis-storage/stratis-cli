@@ -21,9 +21,7 @@ from .._actions import LogicalActions
 from .._actions import PhysicalActions
 from .._actions import StratisActions
 from .._actions import TopActions
-
 from .._version import __version__
-
 from ._logical import LOGICAL_SUBCMDS
 from ._physical import PHYSICAL_SUBCMDS
 from ._pool import POOL_SUBCMDS

@@ -21,9 +21,12 @@ import time
 import unittest
 
 import dbus
-
-from testlib.dbus import StratisDbus, clean_up
-from testlib.utils import exec_command, process_exists, p_n, fs_n
+from testlib.dbus import StratisDbus
+from testlib.dbus import clean_up
+from testlib.utils import exec_command
+from testlib.utils import fs_n
+from testlib.utils import p_n
+from testlib.utils import process_exists
 
 DISKS = []
 

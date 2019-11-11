@@ -18,7 +18,6 @@ Test 'stratisd'.
 import unittest
 
 import dbus
-
 from stratis_cli._errors import StratisCliActionError
 
 from ._misc import RUNNER
