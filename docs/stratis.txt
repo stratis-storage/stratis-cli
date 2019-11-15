@@ -31,7 +31,7 @@ GLOBAL OPTIONS
 
 COMMANDS
 --------
-pool create [--redundancy <redundancy>] <pool_name> <blockdev> [<blockdev>..]::
+pool create [--redundancy <redundancy>] [--key-desc <key_desc>] <pool_name> <blockdev> [<blockdev>..]::
      Create a pool from one or more block devices, with the given pool name.
 pool list::
      List all pools on the system.
@@ -77,6 +77,11 @@ OPTIONS
 --redundancy::
         The redundancy for the created pool. The only option is "none" which
         is also the default.
+--key-desc::
+        The key description of the key that should be used to encrypt the
+        created pool. The key description must correspond to a kernel key
+        that is managed by the user and has at least one link to a searchable
+	keyring (thread, process, or session keyrings).
 
 ENVIRONMENT VARIABLES
 ---------------------

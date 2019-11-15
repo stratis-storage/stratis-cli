@@ -165,12 +165,12 @@ class StratisCertify(unittest.TestCase):
             True,
         )
 
-    def test_pool_add_cache(self):
+    def test_pool_init_cache(self):
         """
-        Test adding cache to a pool.
+        Test initialzing the cache for a pool.
         """
         self.unittest_command(
-            [STRATIS_CLI, "pool", "add-cache", make_test_pool(DISKS[0:2]), DISKS[2]],
+            [STRATIS_CLI, "pool", "init-cache", make_test_pool(DISKS[0:2]), DISKS[2]],
             0,
             True,
             True,
