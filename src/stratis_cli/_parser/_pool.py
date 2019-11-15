@@ -37,6 +37,15 @@ POOL_SUBCMDS = [
                         help="Redundancy level for this pool",
                     ),
                 ),
+                (
+                    "--keyfile",
+                    dict(
+                        default=None,
+                        type=str,
+                        help="Path to keyfile for optional encryption of a pool",
+                        dest="keyfile_path",
+                    ),
+                ),
             ],
             func=TopActions.create_pool,
         ),

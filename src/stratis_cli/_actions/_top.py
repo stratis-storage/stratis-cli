@@ -166,7 +166,17 @@ class TopActions:
         _check_same_tier(pool_name, managed_objects, blockdevs, BlockDevTiers.Data)
 
         ((changed, (_, _)), rc, message) = Manager.Methods.CreatePool(
-            proxy, {"name": pool_name, "redundancy": (True, 0), "devices": blockdevs}
+            proxy,
+            {
+                "name": pool_name,
+                "redundancy": (True, 0),
+                "devices": namespace.blockdevs,
+                "keyfile_path": (
+                    (True, namespace.keyfile_path)
+                    if namespace.keyfile_path is not None
+                    else (False, "")
+                ),
+            },
         )
 
         if rc != StratisdErrors.OK:  # pragma: no cover
