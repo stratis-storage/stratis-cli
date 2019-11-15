@@ -60,8 +60,8 @@ SPECS = {
 </method>
 </interface>
 """,
-    "org.storage.stratis2.Manager": """
-<interface name="org.storage.stratis2.Manager">
+    "org.storage.stratis2.Manager.r1": """
+<interface name="org.storage.stratis2.Manager.r1">
 <method name="ConfigureSimulator">
 <arg name="denominator" type="u" direction="in"/>
 <arg name="return_code" type="q" direction="out"/>
@@ -71,6 +71,7 @@ SPECS = {
 <arg name="name" type="s" direction="in"/>
 <arg name="redundancy" type="(bq)" direction="in"/>
 <arg name="devices" type="as" direction="in"/>
+<arg name="key_desc" type="(bs)" direction="in"/>
 <arg name="result" type="(b(oao))" direction="out"/>
 <arg name="return_code" type="q" direction="out"/>
 <arg name="return_string" type="s" direction="out"/>
@@ -88,6 +89,12 @@ SPECS = {
 """,
     "org.storage.stratis2.pool.r1": """
 <interface name="org.storage.stratis2.pool.r1">
+<method name="InitCache">
+<arg name="devices" type="as" direction="in"/>
+<arg name="results" type="(bao)" direction="out"/>
+<arg name="return_code" type="q" direction="out"/>
+<arg name="return_string" type="s" direction="out"/>
+</method>
 <method name="AddCacheDevs">
 <arg name="devices" type="as" direction="in"/>
 <arg name="results" type="(bao)" direction="out"/>
@@ -194,7 +201,7 @@ SPECS = {
 """,
 }
 
-_MANAGER_INTERFACE = "org.storage.stratis2.Manager"
+_MANAGER_INTERFACE = "org.storage.stratis2.Manager.r1"
 
 DBUS_TIMEOUT_SECONDS = 120
 MAXIMUM_DBUS_TIMEOUT_MS = 1073741823
