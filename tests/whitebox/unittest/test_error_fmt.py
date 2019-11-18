@@ -18,19 +18,18 @@ Test error type string formatting.
 import argparse
 import unittest
 
+from stratis_cli._errors import StratisCliActionError
+from stratis_cli._errors import StratisCliEngineError
+from stratis_cli._errors import StratisCliEnvironmentError
 from stratis_cli._errors import StratisCliError
-from stratis_cli._errors import StratisCliRuntimeError
-from stratis_cli._errors import StratisCliPropertyNotFoundError
-from stratis_cli._errors import StratisCliPartialChangeError
-from stratis_cli._errors import StratisCliNoChangeError
+from stratis_cli._errors import StratisCliGenerationError
 from stratis_cli._errors import StratisCliIncoherenceError
 from stratis_cli._errors import StratisCliInUseError
+from stratis_cli._errors import StratisCliNoChangeError
+from stratis_cli._errors import StratisCliPartialChangeError
+from stratis_cli._errors import StratisCliPropertyNotFoundError
+from stratis_cli._errors import StratisCliRuntimeError
 from stratis_cli._errors import StratisCliUnknownInterfaceError
-from stratis_cli._errors import StratisCliEngineError
-from stratis_cli._errors import StratisCliActionError
-from stratis_cli._errors import StratisCliGenerationError
-from stratis_cli._errors import StratisCliEnvironmentError
-
 from stratis_cli._stratisd_constants import BlockDevTiers
 
 
