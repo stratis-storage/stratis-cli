@@ -36,8 +36,9 @@ try:
     from wcwidth import wcswidth
 
     maybe_wcswidth = wcswidth  # pragma: no cover
-except ImportError:
-    maybe_wcswidth = len  # pragma: no cover
+
+except ImportError:  # pragma: no cover
+    maybe_wcswidth = len
 
 # placeholder for tables where a desired value was not obtained from stratisd
 # when the value should be supported.
