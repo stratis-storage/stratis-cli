@@ -113,7 +113,7 @@ class Destroy3TestCase(SimTestCase):
 
 class Destroy4TestCase(SimTestCase):
     """
-    Test destroying multiple volumes, of which one does not exist.
+    Test destroying a set of volumes, of which one does not exist.
     """
 
     _MENU = ["--propagate", "filesystem", "destroy"]
@@ -133,10 +133,78 @@ class Destroy4TestCase(SimTestCase):
 
     def testDestroy(self):
         """
-        Destruction of multiple volumes, of which one does not exist, must fail.
+        Destruction of 2 volumes, of which 1 does not exist, must fail.
+        There is 1 target resource that would change.
+        There is 1 target resource that would not change.
         """
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
         with self.assertRaises(StratisCliActionError) as context:
             RUNNER(command_line)
         cause = context.exception.__cause__
         self.assertIsInstance(cause, StratisCliPartialChangeError)
+        self.assertNotEqual(str(cause), "")
+
+    def test2Destroy(self):
+        """
+        Destruction of 3 volumes, of which 1 does not exist, must fail.
+        There are multiple (2) target resources that would change.
+        There is 1 target resource that would not change.
+        """
+        command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES[0:3]
+        with self.assertRaises(StratisCliActionError) as context:
+            RUNNER(command_line)
+        cause = context.exception.__cause__
+        self.assertIsInstance(cause, StratisCliPartialChangeError)
+        self.assertNotEqual(str(cause), "")
+
+
+class Create5TestCase(SimTestCase):
+    """
+    Test destroying a set of volumes, of which two do not exist.
+    """
+
+    _MENU = ["--propagate", "filesystem", "create"]
+    _POOLNAME = "deadpool"
+    _VOLNAMES = ["oubliette", "mnemosyne", "gaia", "zeus"]
+
+    def setUp(self):
+        """
+        Start the stratisd daemon with the simulator.
+        """
+        super().setUp()
+        command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
+        RUNNER(command_line)
+
+        # Creation of two volumes is split up into two calls to RUNNER,
+        # since only one filesystem per request is currently allowed.
+        command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES[0:1]
+        RUNNER(command_line)
+
+        command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES[1:2]
+        RUNNER(command_line)
+
+    def testDestroy(self):
+        """
+        Destruction of 3 volumes, of which 2 do not exist, must fail.
+        There is 1 target resource that would change.
+        There are multiple (2) target resources that would not change.
+        """
+        command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES[0:3]
+        with self.assertRaises(StratisCliActionError) as context:
+            RUNNER(command_line)
+        cause = context.exception.__cause__
+        self.assertIsInstance(cause, StratisCliPartialChangeError)
+        self.assertNotEqual(str(cause), "")
+
+    def test2Destroy(self):
+        """
+        Destruction of 4 volumes, of which 2 do not exist, must fail.
+        There are multiple (2) target resources that would change.
+        There are multiple (2) target resources that would not change.
+        """
+        command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES[0:4]
+        with self.assertRaises(StratisCliActionError) as context:
+            RUNNER(command_line)
+        cause = context.exception.__cause__
+        self.assertIsInstance(cause, StratisCliPartialChangeError)
+        self.assertNotEqual(str(cause), "")

@@ -91,6 +91,8 @@ class AddDataTestCase1(SimTestCase):
         """
         Test that trying to add the same devices twice results in an
         exception.
+        There are 0 target resources that would change.
+        There is 1 target resource that would not change.
         """
         command_line = self._MENU + [self._POOLNAME] + self._DEVICES
         with self.assertRaises(StratisCliActionError) as context:
@@ -138,6 +140,8 @@ class AddCacheTestCase1(SimTestCase):
         """
         Test that trying to add the same devices twice results in an
         exception.
+        There are 0 target resources that would change.
+        There is 1 target resource that would not change.
         """
         devices = _DEVICE_STRATEGY()
         command_line = self._MENU + [self._POOLNAME] + devices
@@ -146,6 +150,7 @@ class AddCacheTestCase1(SimTestCase):
             RUNNER(command_line)
         cause = context.exception.__cause__
         self.assertIsInstance(cause, StratisCliPartialChangeError)
+        self.assertNotEqual(str(cause), "")
 
     def testAddCacheData(self):
         """
