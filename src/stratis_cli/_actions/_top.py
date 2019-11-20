@@ -20,6 +20,7 @@ from justbytes import Range
 from .._errors import StratisCliEngineError
 from .._errors import StratisCliIncoherenceError
 from .._errors import StratisCliInUseError
+from .._errors import StratisCliNameConflictError
 from .._errors import StratisCliNoChangeError
 from .._errors import StratisCliPartialChangeError
 
@@ -105,12 +106,19 @@ class TopActions:
         Create a stratis pool.
 
         :raises StratisCliEngineError:
-        :raises StratisCliNoChangeError:
+        :raises StratisCliIncoherenceError:
+        :raises StratisCliNameConflictError:
         """
         # pylint: disable=import-outside-toplevel
         from ._data import Manager
+        from ._data import ObjectManager
+        from ._data import pools
 
         proxy = get_object(TOP_OBJECT)
+        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
+        names = pools(props={"Name": namespace.pool_name}).search(managed_objects)
+        if list(names) != []:
+            raise StratisCliNameConflictError("pool", namespace.pool_name)
 
         ((changed, (_, _)), rc, message) = Manager.Methods.CreatePool(
             proxy,
@@ -124,8 +132,14 @@ class TopActions:
         if rc != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(rc, message)
 
-        if not changed:
-            raise StratisCliNoChangeError("create", namespace.pool_name)
+        if not changed:  # pragma: no cover
+            raise StratisCliIncoherenceError(
+                (
+                    "Expected to create the specified pool %s but stratisd "
+                    "reports that it did not actually create the pool"
+                )
+                % namespace.pool_name
+            )
 
     @staticmethod
     def list_pools(_):
