@@ -82,10 +82,7 @@ class StratisCliPartialChangeError(StratisCliRuntimeError):
         self.changed_resources = changed_resources
         self.unchanged_resources = unchanged_resources
 
-    # pylint: disable=fixme
-    # FIXME: remove no coverage pragma when adequate testing for CLI output
-    # exists.
-    def __str__(self):  # pragma: no cover
+    def __str__(self):
         if len(self.unchanged_resources) > 1:
             msg = "The '%s' action has no effect for resources %s" % (
                 self.command,
