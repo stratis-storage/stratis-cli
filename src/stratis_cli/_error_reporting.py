@@ -30,6 +30,7 @@ from ._actions import POOL_INTERFACE
 from ._errors import StratisCliEngineError
 from ._errors import StratisCliIncoherenceError
 from ._errors import StratisCliInUseError
+from ._errors import StratisCliNameConflictError
 from ._errors import StratisCliPartialChangeError
 from ._errors import StratisCliUnknownInterfaceError
 
@@ -133,6 +134,9 @@ def _interpret_errors(errors):
                 "including a block device in both cache and data tiers: %s"
             )
             return fmt_str % error
+        if isinstance(error, StratisCliNameConflictError):
+            return str(error)
+
         # An incoherence error should be pretty untestable. It can arise
         # * in the case of a stratisd bug. We would expect to fix that very
         # soon, so should not have a test in that case.

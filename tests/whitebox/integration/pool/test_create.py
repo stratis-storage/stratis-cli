@@ -16,8 +16,7 @@ Test 'create'.
 """
 
 from stratis_cli._errors import StratisCliActionError
-from stratis_cli._errors import StratisCliEngineError
-from stratis_cli._errors import StratisCliNoChangeError
+from stratis_cli._errors import StratisCliNameConflictError
 
 from .._misc import device_name_list
 from .._misc import RUNNER
@@ -64,22 +63,24 @@ class Create3TestCase(SimTestCase):
 
     def testCreateSameDevices(self):
         """
-        Create should fail with a StratisCliNoChangeError trying to create new pool
-        with different devices and the same name as previous.
+        Create should fail with a StratisCliNameConflictError trying to create
+        new pool with the same devices and the same name as previous.
         """
         command_line = self._MENU + [self._POOLNAME] + self.devices
         with self.assertRaises(StratisCliActionError) as context:
             RUNNER(command_line)
         cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliNoChangeError)
+        self.assertIsInstance(cause, StratisCliNameConflictError)
+        self.assertNotEqual(str(cause), "")
 
     def testCreateDifferentDevices(self):
         """
-        Create should fail with a StratisCliEngineError trying to create new pool
-        with different devices and the same name as previous.
+        Create should fail with a StratisCliNameConflictError trying to create
+        new pool with different devices and the same name as previous.
         """
         command_line = self._MENU + [self._POOLNAME] + _DEVICE_STRATEGY()
         with self.assertRaises(StratisCliActionError) as context:
             RUNNER(command_line)
         cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliEngineError)
+        self.assertIsInstance(cause, StratisCliNameConflictError)
+        self.assertNotEqual(str(cause), "")

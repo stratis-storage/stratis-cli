@@ -125,6 +125,26 @@ class StratisCliNoChangeError(StratisCliPartialChangeError):
         )
 
 
+class StratisCliNameConflictError(StratisCliRuntimeError):
+    """
+    Raised if an item of the same name already exists.
+    """
+
+    def __init__(self, object_type, name):
+        """
+        Initializer.
+
+        :param str object_type: the type of the object, pool, filesystem, etc.
+        :param str name: the conflicting name
+        """
+        # pylint: disable=super-init-not-called
+        self.object_type = object_type
+        self.name = name
+
+    def __str__(self):
+        return "A %s named %s already exists" % (self.object_type, self.name)
+
+
 class StratisCliIncoherenceError(StratisCliRuntimeError):
     """
     Raised if there was a disagreement about state between the CLI
