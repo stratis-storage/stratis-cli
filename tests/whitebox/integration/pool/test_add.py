@@ -25,7 +25,7 @@ from .._misc import device_name_list
 from .._misc import RUNNER
 from .._misc import SimTestCase
 
-_DEVICE_STRATEGY = device_name_list(1)
+_DEVICE_STRATEGY = device_name_list(2)
 
 
 class AddDataTestCase(SimTestCase):
@@ -110,6 +110,7 @@ class AddDataTestCase1(SimTestCase):
             RUNNER(self._MENU + [self._POOLNAME] + devices)
         cause = context.exception.__cause__
         self.assertIsInstance(cause, StratisCliInUseError)
+        self.assertNotEqual(str(cause), "")
 
 
 class AddCacheTestCase1(SimTestCase):
@@ -156,3 +157,4 @@ class AddCacheTestCase1(SimTestCase):
             RUNNER(command_line)
         cause = context.exception.__cause__
         self.assertIsInstance(cause, StratisCliInUseError)
+        self.assertNotEqual(str(cause), "")
