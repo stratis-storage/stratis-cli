@@ -182,11 +182,7 @@ class StratisCliInUseError(StratisCliRuntimeError):
         )
 
 
-# This exception is only raised in the unlikely event that the introspection
-# data contains an unknown interface or that there is a bug in the
-# dbus-client-gen library. In either case, these problems will be fixed
-# immediately. There is no reason to require coverage for this error.
-class StratisCliUnknownInterfaceError(StratisCliRuntimeError):  # pragma: no cover
+class StratisCliUnknownInterfaceError(StratisCliRuntimeError):
     """
     Error raised when code encounters an unexpected D-Bus interface name.
     """
