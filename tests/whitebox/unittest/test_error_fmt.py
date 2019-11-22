@@ -24,14 +24,11 @@ from stratis_cli._errors import StratisCliPropertyNotFoundError
 from stratis_cli._errors import StratisCliPartialChangeError
 from stratis_cli._errors import StratisCliNoChangeError
 from stratis_cli._errors import StratisCliIncoherenceError
-from stratis_cli._errors import StratisCliInUseError
 from stratis_cli._errors import StratisCliUnknownInterfaceError
 from stratis_cli._errors import StratisCliEngineError
 from stratis_cli._errors import StratisCliActionError
 from stratis_cli._errors import StratisCliGenerationError
 from stratis_cli._errors import StratisCliEnvironmentError
-
-from stratis_cli._stratisd_constants import BlockDevTiers
 
 
 class ErrorFmtTestCase(unittest.TestCase):
@@ -91,14 +88,6 @@ class ErrorFmtTestCase(unittest.TestCase):
         Test 'StratisCliIncoherenceError'
         """
         self._string_not_empty(StratisCliIncoherenceError("Error"))
-
-    def testStratisCliInUseErrorFmt(self):
-        """
-        Test 'StratisCliInUseError'
-        """
-        self._string_not_empty(
-            StratisCliInUseError(frozenset("Blockdevs"), BlockDevTiers(0))
-        )
 
     def testStratisCliUnknownInterfaceErrorFmt(self):
         """
