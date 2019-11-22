@@ -35,6 +35,12 @@ class StratisCliRuntimeError(StratisCliError):
     """
 
 
+class StratisCliUserError(StratisCliRuntimeError):
+    """
+    Exception raised as a result of a user error.
+    """
+
+
 # This indicates a bug.
 class StratisCliPropertyNotFoundError(StratisCliRuntimeError):
     """
@@ -60,7 +66,7 @@ class StratisCliPropertyNotFoundError(StratisCliRuntimeError):
         )
 
 
-class StratisCliPartialChangeError(StratisCliRuntimeError):
+class StratisCliPartialChangeError(StratisCliUserError):
     """
     Raised if a request made of stratisd must result in a partial or no change
     since some or all of the post-condition for the request already holds.
@@ -124,7 +130,7 @@ class StratisCliNoChangeError(StratisCliPartialChangeError):
         )
 
 
-class StratisCliNameConflictError(StratisCliRuntimeError):
+class StratisCliNameConflictError(StratisCliUserError):
     """
     Raised if an item of the same name already exists.
     """
@@ -154,7 +160,7 @@ class StratisCliIncoherenceError(StratisCliRuntimeError):
     """
 
 
-class StratisCliInUseError(StratisCliRuntimeError):
+class StratisCliInUseError(StratisCliUserError):
     """
     Raised if a request made of stratisd must result in a device being
     included in both data and cache tiers.

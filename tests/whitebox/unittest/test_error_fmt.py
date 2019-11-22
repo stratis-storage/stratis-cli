@@ -66,14 +66,6 @@ class ErrorFmtTestCase(unittest.TestCase):
             StratisCliPropertyNotFoundError("BadInterface", "BadProperty")
         )
 
-    def testStratisCliNoChangeErrorFmt(self):
-        """
-        Test 'StratisCliNoChangeError'
-        """
-        self._string_not_empty(
-            StratisCliNoChangeError("Command", frozenset("ChangedResources"))
-        )
-
     def testStratisCliIncoherenceErrorFmt(self):
         """
         Test 'StratisCliIncoherenceError'
@@ -105,9 +97,3 @@ class ErrorFmtTestCase(unittest.TestCase):
         Test 'StratisCliGenerationError'
         """
         self._string_not_empty(StratisCliGenerationError("Error"))
-
-    def testStratisCliEnvironmentErrorFmt(self):
-        """
-        Test 'StratisCliEnvironmentError'
-        """
-        self._string_not_empty(StratisCliEnvironmentError("Error"))
