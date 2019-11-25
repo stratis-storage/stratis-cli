@@ -129,17 +129,10 @@ def _interpret_errors(errors):
                 "the D-Bus: %s."
             )
             return fmt_str % error
-        if isinstance(error, StratisCliPartialChangeError):
-            fmt_str = "You issued a command that would have a partial or no effect: %s"
+
+        if isinstance(error, StratisCliUserError):
+            fmt_str = "It appears that you issued an unintended command: %s"
             return fmt_str % error
-        if isinstance(error, StratisCliInUseError):
-            fmt_str = (
-                "You issued a command that would have resulted in "
-                "including a block device in both cache and data tiers: %s"
-            )
-            return fmt_str % error
-        if isinstance(error, StratisCliNameConflictError):
-            return str(error)
 
         # An incoherence error should be pretty untestable. It can arise
         # * in the case of a stratisd bug. We would expect to fix that very
