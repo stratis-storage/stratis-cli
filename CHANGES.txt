@@ -1,3 +1,19 @@
+stratis-cli 2.0.1 (UNRELEASED)
+==============================
+
+- Check for pool name conflict in the CLI when creating a pool:
+  https://github.com/stratis-storage/stratis-cli/pull/420
+
+- Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/425
+  https://github.com/stratis-storage/stratis-cli/pull/424
+  https://github.com/stratis-storage/stratis-cli/pull/423
+  https://github.com/stratis-storage/stratis-cli/pull/417
+  https://github.com/stratis-storage/stratis-cli/pull/416
+  https://github.com/stratis-storage/stratis-cli/pull/411
+  https://github.com/stratis-storage/stratis-cli/pull/410
+
+
 stratis-cli 2.0.0
 =================
 Python auto-formatter: black (18.9b0)
