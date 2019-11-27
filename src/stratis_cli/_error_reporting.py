@@ -146,6 +146,13 @@ def _interpret_errors(errors):
             )
             return fmt_str % error
 
+        # Initial attempts to test this error were unsuccessful.
+        # Whether or not getting coverage on this error will be feasible
+        # requires further investivation.
+        # See: https://github.com/stratis-storage/stratis-cli/issues/439
+        if isinstance(error, BrokenPipeError):  # pragma: no cover
+            return "Broken pipe"
+
         # Inspect lowest error
         error = errors[-1]
 
