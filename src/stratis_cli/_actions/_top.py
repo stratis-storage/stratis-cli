@@ -46,16 +46,26 @@ def _check_opposite_tier(managed_objects, to_be_added, other_tier):
     """
     # pylint: disable=import-outside-toplevel
     from ._data import MODev
+    from ._data import MOPool
     from ._data import devs
+    from ._data import pools
 
-    others = frozenset(
-        str(MODev(info).Devnode())
-        for (_, info) in devs(props={"Tier": other_tier}).search(managed_objects)
+    pool_map = dict(
+        (path, MOPool(info).Name()) for (path, info) in pools().search(managed_objects)
     )
-    already_others = to_be_added.intersection(others)
-    if already_others != frozenset():
+
+    pools_to_blockdevs = {}
+    for (_, info) in devs(props={"Tier": other_tier}).search(managed_objects):
+        modev = MODev(info)
+        if modev.Devnode() in to_be_added:
+            pool_name = pool_map[modev.Pool()]
+            if pool_name not in pools_to_blockdevs:
+                pools_to_blockdevs[pool_name] = []
+            pools_to_blockdevs[pool_name].append(str(modev.Devnode()))
+
+    if pools_to_blockdevs != {}:
         raise StratisCliInUseError(
-            already_others,
+            pools_to_blockdevs,
             BlockDevTiers.Data
             if other_tier == BlockDevTiers.Cache
             else BlockDevTiers.Cache,
