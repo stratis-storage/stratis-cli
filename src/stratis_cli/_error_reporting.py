@@ -146,8 +146,9 @@ def _interpret_errors(errors):
             )
             return fmt_str % error
 
-        if isinstance(error, BrokenPipeError):
+        if isinstance(error, BrokenPipeError):  # pragma: no cover
             return "Broken pipe"
+
         # Inspect lowest error
         error = errors[-1]
 
