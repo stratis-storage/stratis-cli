@@ -114,12 +114,12 @@ class Create3TestCase(SimTestCase):
 
 class Create4TestCase(SimTestCase):
     """
-    Test creating multiple volumes, of which one already exists.
+    Test creating a set of volumes, of which one already exists.
     """
 
     _MENU = ["--propagate", "filesystem", "create"]
     _POOLNAME = "deadpool"
-    _VOLNAMES = ["oubliette", "mnemosyne"]
+    _VOLNAMES = ["oubliette", "mnemosyne", "gaia"]
 
     def setUp(self):
         """
@@ -132,12 +132,80 @@ class Create4TestCase(SimTestCase):
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES[0:1]
         RUNNER(command_line)
 
-    def testDestroy(self):
+    def testCreate(self):
         """
-        Creation of multiple volumes, of which one already exists, must fail.
+        Creation of 2 volumes, of which 1 already exists, must fail.
+        There is 1 target resource that would change.
+        There is 1 target resource that would not change.
         """
-        command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
+        command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES[0:2]
         with self.assertRaises(StratisCliActionError) as context:
             RUNNER(command_line)
         cause = context.exception.__cause__
         self.assertIsInstance(cause, StratisCliPartialChangeError)
+        self.assertNotEqual(str(cause), "")
+
+    def test2Create(self):
+        """
+        Creation of 3 volumes, of which 1 already exists, must fail.
+        There are multiple (2) target resources that would change.
+        There is 1 target resource that would not change.
+        """
+        command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES[0:3]
+        with self.assertRaises(StratisCliActionError) as context:
+            RUNNER(command_line)
+        cause = context.exception.__cause__
+        self.assertIsInstance(cause, StratisCliPartialChangeError)
+        self.assertNotEqual(str(cause), "")
+
+
+class Create5TestCase(SimTestCase):
+    """
+    Test creating a set of volumes, of which two already exist.
+    """
+
+    _MENU = ["--propagate", "filesystem", "create"]
+    _POOLNAME = "deadpool"
+    _VOLNAMES = ["oubliette", "mnemosyne", "gaia", "zeus"]
+
+    def setUp(self):
+        """
+        Start the stratisd daemon with the simulator.
+        """
+        super().setUp()
+        command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
+        RUNNER(command_line)
+
+        # Creation of two volumes is split up into two calls to RUNNER,
+        # since only one filesystem per request is currently allowed.
+        command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES[0:1]
+        RUNNER(command_line)
+
+        command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES[1:2]
+        RUNNER(command_line)
+
+    def testCreate(self):
+        """
+        Creation of 3 volumes, of which 2 already exist, must fail.
+        There is 1 target resource that would change.
+        There are multiple (2) target resources that would not change.
+        """
+        command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES[0:3]
+        with self.assertRaises(StratisCliActionError) as context:
+            RUNNER(command_line)
+        cause = context.exception.__cause__
+        self.assertIsInstance(cause, StratisCliPartialChangeError)
+        self.assertNotEqual(str(cause), "")
+
+    def test2Create(self):
+        """
+        Creation of 4 volumes, of which 2 already exist, must fail.
+        There are multiple (2) target resources that would change.
+        There are multiple (2) target resources that would not change.
+        """
+        command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES[0:4]
+        with self.assertRaises(StratisCliActionError) as context:
+            RUNNER(command_line)
+        cause = context.exception.__cause__
+        self.assertIsInstance(cause, StratisCliPartialChangeError)
+        self.assertNotEqual(str(cause), "")
