@@ -105,8 +105,8 @@ def _check_same_tier(pool_name, managed_objects, to_be_added, this_tier):
     :type managed_objects: dict of str * dict
     :param to_be_added: the blockdevs to be added
     :type to_be_added: frozenset of str
-    :param other_tier: the tier requested
-    :type other_tier: _stratisd_constants.BlockDevTiers
+    :param this_tier: the tier requested
+    :type this_tier: _stratisd_constants.BlockDevTiers
     :raises StratisCliPartialChangeError: if blockdevs are used by this tier
     :raises StratisCliInUseSameTierError: if blockdevs are used by this tier in another pool
     """

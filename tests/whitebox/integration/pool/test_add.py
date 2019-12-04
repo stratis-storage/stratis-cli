@@ -21,7 +21,8 @@ from dbus_client_gen import DbusClientUniqueResultError
 # isort: LOCAL
 from stratis_cli._errors import (
     StratisCliActionError,
-    StratisCliInUseError,
+    StratisCliInUseOtherTierError,
+    StratisCliInUseSameTierError,
     StratisCliPartialChangeError,
 )
 
@@ -114,7 +115,7 @@ class AddDataTestCase1(SimTestCase):
         with self.assertRaises(StratisCliActionError) as context:
             RUNNER(self._MENU + [self._POOLNAME] + devices)
         cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliInUseError)
+        self.assertIsInstance(cause, StratisCliInUseOtherTierError)
         self.assertNotEqual(str(cause), "")
 
     def testAddDataCache2(self):
@@ -128,7 +129,38 @@ class AddDataTestCase1(SimTestCase):
         with self.assertRaises(StratisCliActionError) as context:
             RUNNER(self._MENU + [self._POOLNAME] + devices)
         cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliInUseError)
+        self.assertIsInstance(cause, StratisCliInUseOtherTierError)
+        self.assertNotEqual(str(cause), "")
+
+
+class AddDataTestCase2(SimTestCase):
+    """
+    Test adding data devices where the devices are already in the data tier
+    of another pool.
+    """
+
+    _POOLNAME = "deadpool"
+    _SECOND_POOLNAME = "deadpool2"
+    _MENU = ["--propagate", "pool", "add-data"]
+    _DEVICES = _DEVICE_STRATEGY()
+    _SECOND_DEVICES = _DEVICE_STRATEGY()
+
+    def setUp(self):
+        super().setUp()
+        command_line = ["pool", "create", self._POOLNAME] + self._DEVICES
+        RUNNER(command_line)
+        command_line = ["pool", "create", self._SECOND_POOLNAME] + self._SECOND_DEVICES
+        RUNNER(command_line)
+
+    def testAddData(self):
+        """
+        Test that adding the same devices to a different data tier fails.
+        """
+        command_line = self._MENU + [self._POOLNAME] + self._SECOND_DEVICES
+        with self.assertRaises(StratisCliActionError) as context:
+            RUNNER(command_line)
+        cause = context.exception.__cause__
+        self.assertIsInstance(cause, StratisCliInUseSameTierError)
         self.assertNotEqual(str(cause), "")
 
 
@@ -178,7 +210,7 @@ class AddCacheTestCase1(SimTestCase):
         with self.assertRaises(StratisCliActionError) as context:
             RUNNER(command_line)
         cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliInUseError)
+        self.assertIsInstance(cause, StratisCliInUseOtherTierError)
         self.assertNotEqual(str(cause), "")
 
 
@@ -205,5 +237,5 @@ class AddCacheTestCase2(SimTestCase):
         with self.assertRaises(StratisCliActionError) as context:
             RUNNER(command_line)
         cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliInUseError)
+        self.assertIsInstance(cause, StratisCliInUseOtherTierError)
         self.assertNotEqual(str(cause), "")
