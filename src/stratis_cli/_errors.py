@@ -162,6 +162,14 @@ class StratisCliIncoherenceError(StratisCliRuntimeError):
 
 class StratisCliInUseError(StratisCliUserError):
     """
+    Base class for if a request made of stratisd must result in a device being
+    included in both data and cache tiers or in the same tier of two different
+    pools.
+    """
+
+
+class StratisCliInUseOtherTierError(StratisCliInUseError):
+    """
     Raised if a request made of stratisd must result in a device being
     included in both data and cache tiers.
     """
@@ -170,12 +178,12 @@ class StratisCliInUseError(StratisCliUserError):
         """ Initializer.
 
             :param pools_to_blockdevs: pools mapped to the blockdevs they own
-            :type pools_to_blockdevs: dict of dbus.types.ObjectPath to list of str
+            :type pools_to_blockdevs: dict of dbus.types.ObjectPath * frozenset of str
             :param added_as: what tier the devices were to be added to
             :type added_as: _stratisd_constants.BlockDevTiers
 
             Precondition: pools_to_blockdevs != {}
-            Precondition: all list of str in pools_to_blockdevs have at least one item
+            Precondition: all frozenset of str in pools_to_blockdevs have at least one item
         """
         # pylint: disable=super-init-not-called
         self.pools_to_blockdevs = pools_to_blockdevs
@@ -195,13 +203,14 @@ class StratisCliInUseError(StratisCliUserError):
             "At least one of the provided devices is already owned by an "
             "existing pool's %s tier" % (already_blockdev_tier,)
         )
+
         for pool_name, blockdevs in self.pools_to_blockdevs.items():
             if len(blockdevs) > 1:
                 msg += (
                     "; devices %s would be added to the %s tier but are "
                     "already in use in the %s tier of pool %s"
                     % (
-                        blockdevs,
+                        list(blockdevs),
                         target_blockdev_tier,
                         already_blockdev_tier,
                         pool_name,
@@ -212,11 +221,60 @@ class StratisCliInUseError(StratisCliUserError):
                     "; device %s would be added to the %s tier but is "
                     "already in use in the %s tier of pool %s"
                     % (
-                        blockdevs[0],
+                        list(blockdevs)[0],
                         target_blockdev_tier,
                         already_blockdev_tier,
                         pool_name,
                     )
+                )
+
+        return msg
+
+
+class StratisCliInUseSameTierError(StratisCliInUseError):
+    """
+    Raised if a request made of stratisd must result in a device being
+    included in the same tier in two different pools.
+    """
+
+    def __init__(self, pools_to_blockdevs, added_as):
+        """ Initializer.
+
+            :param pools_to_blockdevs: pools mapped to the blockdevs they own
+            :type pools_to_blockdevs: dict of dbus.types.ObjectPath * frozenset of str
+            :param added_as: what tier the devices were to be added to
+            :type added_as: _stratisd_constants.BlockDevTiers
+
+            Precondition: pools_to_blockdevs != {}
+            Precondition: all frozenset of str in pools_to_blockdevs have at least one item
+        """
+        # pylint: disable=super-init-not-called
+        self.pools_to_blockdevs = pools_to_blockdevs
+        self.added_as = added_as
+
+    # pylint: disable=fixme
+    # FIXME: remove no coverage pragma when adequate testing for CLI output
+    # exists.
+    def __str__(self):  # pragma: no cover
+        blockdev_tier = BLOCK_DEV_TIER_TO_NAME(self.added_as)
+
+        msg = (
+            "At least one of the provided devices is already owned by an "
+            "existing pool's %s tier" % (blockdev_tier,)
+        )
+
+        for pool_name, blockdevs in self.pools_to_blockdevs.items():
+            if len(blockdevs) > 1:
+                msg += (
+                    "; devices %s would be added to the %s tier but are "
+                    "already in use in the same tier of pool %s"
+                    % (list(blockdevs), blockdev_tier, pool_name)
+                )
+            elif len(blockdevs) == 1:
+                msg += (
+                    "; device %s would be added to the %s tier but is "
+                    "already in use in the same tier of pool %s"
+                    % (list(blockdevs)[0], blockdev_tier, pool_name)
                 )
 
         return msg

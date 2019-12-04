@@ -21,7 +21,8 @@ from justbytes import Range
 from .._errors import (
     StratisCliEngineError,
     StratisCliIncoherenceError,
-    StratisCliInUseError,
+    StratisCliInUseOtherTierError,
+    StratisCliInUseSameTierError,
     StratisCliNameConflictError,
     StratisCliNoChangeError,
     StratisCliPartialChangeError,
@@ -32,17 +33,13 @@ from ._constants import POOL_INTERFACE, TOP_OBJECT
 from ._formatting import TABLE_FAILURE_STRING, fetch_property, print_table
 
 
-def _check_opposite_tier(managed_objects, to_be_added, other_tier):
+def _generate_pools_to_blockdevs(managed_objects, to_be_added, tier):
     """
-    Check whether specified blockdevs are already in the other tier.
-
+    Generate a map of pools to which block devices they own
     :param managed_objects: the result of a GetManagedObjects call
     :type managed_objects: dict of str * dict
-    :param to_be_added: the blockdevs to be added
-    :type to_be_added: frozenset of str
-    :param other_tier: the other tier, not the one requested
-    :type other_tier: _stratisd_constants.BlockDevTiers
-    :raises StratisCliInUseError: if blockdevs are used by other tier
+    :returns: a map of pool names to sets of strings containing blockdevs they own
+    :rtype: dict of str * frozenset of str
     """
     # pylint: disable=import-outside-toplevel
     from ._data import MODev
@@ -55,7 +52,7 @@ def _check_opposite_tier(managed_objects, to_be_added, other_tier):
     )
 
     pools_to_blockdevs = {}
-    for (_, info) in devs(props={"Tier": other_tier}).search(managed_objects):
+    for (_, info) in devs(props={"Tier": tier}).search(managed_objects):
         modev = MODev(info)
         if modev.Devnode() in to_be_added:
             pool_name = pool_map[modev.Pool()]
@@ -63,8 +60,35 @@ def _check_opposite_tier(managed_objects, to_be_added, other_tier):
                 pools_to_blockdevs[pool_name] = []
             pools_to_blockdevs[pool_name].append(str(modev.Devnode()))
 
+    return dict(
+        (pool, frozenset(blockdevs)) for pool, blockdevs in pools_to_blockdevs.items()
+    )
+
+
+def _check_opposite_tier(managed_objects, to_be_added, other_tier):
+    """
+    Check whether specified blockdevs are already in the other tier.
+
+    :param managed_objects: the result of a GetManagedObjects call
+    :type managed_objects: dict of str * dict
+    :param to_be_added: the blockdevs to be added
+    :type to_be_added: frozenset of str
+    :param other_tier: the other tier, not the one requested
+    :type other_tier: _stratisd_constants.BlockDevTiers
+    :raises StratisCliInUseOtherTierError: if blockdevs are used by other tier
+    """
+    # pylint: disable=import-outside-toplevel
+    from ._data import MODev
+    from ._data import MOPool
+    from ._data import devs
+    from ._data import pools
+
+    pools_to_blockdevs = _generate_pools_to_blockdevs(
+        managed_objects, to_be_added, other_tier
+    )
+
     if pools_to_blockdevs != {}:
-        raise StratisCliInUseError(
+        raise StratisCliInUseOtherTierError(
             pools_to_blockdevs,
             BlockDevTiers.Data
             if other_tier == BlockDevTiers.Cache
@@ -72,7 +96,7 @@ def _check_opposite_tier(managed_objects, to_be_added, other_tier):
         )
 
 
-def _check_same_tier(managed_objects, to_be_added, this_tier):
+def _check_same_tier(pool_name, managed_objects, to_be_added, this_tier):
     """
     Check whether specified blockdevs are already in the tier to which they
     are to be added.
@@ -84,22 +108,36 @@ def _check_same_tier(managed_objects, to_be_added, this_tier):
     :param other_tier: the tier requested
     :type other_tier: _stratisd_constants.BlockDevTiers
     :raises StratisCliPartialChangeError: if blockdevs are used by this tier
+    :raises StratisCliInUseSameTierError: if blockdevs are used by this tier in another pool
     """
     # pylint: disable=import-outside-toplevel
     from ._data import MODev
     from ._data import devs
 
-    these = frozenset(
-        str(MODev(info).Devnode())
-        for (_, info) in devs(props={"Tier": this_tier}).search(managed_objects)
+    pools_to_blockdevs = _generate_pools_to_blockdevs(
+        managed_objects, to_be_added, this_tier
     )
-    already_these = to_be_added.intersection(these)
-    if already_these != frozenset():
+
+    owned_by_current_pool = frozenset(
+        devnode
+        for pool, devnodes in pools_to_blockdevs.items()
+        for devnode in devnodes
+        if pool_name == pool
+    )
+    owned_by_other_pools = dict(
+        (pool, devnodes)
+        for pool, devnodes in pools_to_blockdevs.items()
+        if pool_name != pool
+    )
+
+    if owned_by_current_pool != frozenset():
         raise StratisCliPartialChangeError(
             "add to cache" if this_tier == BlockDevTiers.Cache else "add to data",
-            to_be_added.difference(already_these),
-            already_these,
+            to_be_added.difference(owned_by_current_pool),
+            to_be_added.intersection(owned_by_current_pool),
         )
+    if owned_by_other_pools != {}:
+        raise StratisCliInUseSameTierError(owned_by_other_pools, this_tier)
 
 
 class TopActions:
@@ -301,7 +339,8 @@ class TopActions:
 
         :raises StratisCliEngineError:
         :raises StratisCliIncoherenceError:
-        :raises StratisCliInUseError:
+        :raises StratisCliInUseOtherTierError:
+        :raises StratisCliInUseSameTierError:
         :raises StratisCliPartialChangeError:
         """
         # pylint: disable=import-outside-toplevel
@@ -316,7 +355,9 @@ class TopActions:
 
         _check_opposite_tier(managed_objects, blockdevs, BlockDevTiers.Cache)
 
-        _check_same_tier(managed_objects, blockdevs, BlockDevTiers.Data)
+        _check_same_tier(
+            namespace.pool_name, managed_objects, blockdevs, BlockDevTiers.Data
+        )
 
         (pool_object_path, _) = next(
             pools(props={"Name": namespace.pool_name})
@@ -347,7 +388,8 @@ class TopActions:
 
         :raises StratisCliEngineError:
         :raises StratisCliIncoherenceError:
-        :raises StratisCliInUseError:
+        :raises StratisCliInUseOtherTierError:
+        :raises StratisCliInUseSameTierError:
         :raises StratisCliPartialChangeError:
         """
         # pylint: disable=import-outside-toplevel
@@ -362,7 +404,9 @@ class TopActions:
 
         _check_opposite_tier(managed_objects, blockdevs, BlockDevTiers.Data)
 
-        _check_same_tier(managed_objects, blockdevs, BlockDevTiers.Cache)
+        _check_same_tier(
+            namespace.pool_name, managed_objects, blockdevs, BlockDevTiers.Cache
+        )
 
         (pool_object_path, _) = next(
             pools(props={"Name": namespace.pool_name})
