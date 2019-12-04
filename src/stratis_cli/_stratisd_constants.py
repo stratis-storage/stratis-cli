@@ -15,6 +15,7 @@
 Stratisd error classes.
 """
 
+# isort: STDLIB
 from enum import IntEnum
 
 

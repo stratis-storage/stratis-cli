@@ -15,16 +15,13 @@
 Miscellaneous physical actions.
 """
 
+# isort: THIRDPARTY
 from justbytes import Range
 
 from .._stratisd_constants import BLOCK_DEV_TIER_TO_NAME
-
 from ._connection import get_object
-from ._constants import BLOCKDEV_INTERFACE
-from ._constants import TOP_OBJECT
-from ._formatting import TABLE_FAILURE_STRING
-from ._formatting import fetch_property
-from ._formatting import print_table
+from ._constants import BLOCKDEV_INTERFACE, TOP_OBJECT
+from ._formatting import TABLE_FAILURE_STRING, fetch_property, print_table
 
 
 class PhysicalActions:

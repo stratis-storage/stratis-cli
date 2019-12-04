@@ -15,15 +15,16 @@
 Tests of stratisd via the Stratis CLI.
 """
 
+# isort: STDLIB
 import argparse
 import sys
 import time
 import unittest
 
+# isort: THIRDPARTY
 import dbus
-
 from testlib.dbus import StratisDbus, clean_up
-from testlib.utils import exec_command, process_exists, p_n, fs_n
+from testlib.utils import exec_command, fs_n, p_n, process_exists
 
 DISKS = []
 

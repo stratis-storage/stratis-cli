@@ -15,6 +15,7 @@
 Test management of KeyboardInterrupt in stratisd.
 """
 
+# isort: LOCAL
 import stratis_cli
 
 from .._misc import SimTestCase

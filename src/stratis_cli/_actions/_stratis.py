@@ -16,7 +16,6 @@ Miscellaneous actions about stratis.
 """
 
 from .._stratisd_constants import RedundancyCodes
-
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 

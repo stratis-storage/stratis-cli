@@ -14,11 +14,13 @@
 """
 DBus methods for blackbox testing.
 """
+# isort: STDLIB
 import os
 
+# isort: THIRDPARTY
 import dbus
 
-from .utils import umount_mdv, TEST_PREF
+from .utils import TEST_PREF, umount_mdv
 
 
 # This method is based off of the STRATIS_DBUS_TIMEOUT environment variable parsing
