@@ -14,10 +14,11 @@
 """
 Utility functions for blackbox testing.
 """
+# isort: STDLIB
 import os
 import random
 import string
-from subprocess import Popen, PIPE
+from subprocess import PIPE, Popen
 
 # Name prefix, so that we hopefully don't destroy any end user data by mistake!
 TEST_PREF = os.getenv("STRATIS_UT_PREFIX", "STRATI$_DE$TROY_ME!_")

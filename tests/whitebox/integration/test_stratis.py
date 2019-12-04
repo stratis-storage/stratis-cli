@@ -15,14 +15,16 @@
 Test 'stratisd'.
 """
 
+# isort: STDLIB
 import unittest
 
+# isort: THIRDPARTY
 import dbus
 
+# isort: LOCAL
 from stratis_cli._errors import StratisCliActionError
 
-from ._misc import RUNNER
-from ._misc import SimTestCase
+from ._misc import RUNNER, SimTestCase
 
 
 class StratisTestCase(SimTestCase):

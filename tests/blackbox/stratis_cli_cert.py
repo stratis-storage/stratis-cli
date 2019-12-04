@@ -15,13 +15,15 @@
 Tests of the stratis CLI.
 """
 
+# isort: STDLIB
 import argparse
 import sys
 import time
 import unittest
 
-from testlib.utils import exec_command, exec_test_command, process_exists, p_n, fs_n
+# isort: THIRDPARTY
 from testlib.stratis import STRATIS_CLI, clean_up
+from testlib.utils import exec_command, exec_test_command, fs_n, p_n, process_exists
 
 DISKS = []
 

@@ -15,20 +15,23 @@
 Test error type string formatting.
 """
 
+# isort: STDLIB
 import argparse
 import unittest
 
-
-from stratis_cli._errors import StratisCliActionError
-from stratis_cli._errors import StratisCliEngineError
-from stratis_cli._errors import StratisCliEnvironmentError
-from stratis_cli._errors import StratisCliError
-from stratis_cli._errors import StratisCliGenerationError
-from stratis_cli._errors import StratisCliIncoherenceError
-from stratis_cli._errors import StratisCliNoChangeError
-from stratis_cli._errors import StratisCliPropertyNotFoundError
-from stratis_cli._errors import StratisCliRuntimeError
-from stratis_cli._errors import StratisCliUnknownInterfaceError
+# isort: LOCAL
+from stratis_cli._errors import (
+    StratisCliActionError,
+    StratisCliEngineError,
+    StratisCliEnvironmentError,
+    StratisCliError,
+    StratisCliGenerationError,
+    StratisCliIncoherenceError,
+    StratisCliNoChangeError,
+    StratisCliPropertyNotFoundError,
+    StratisCliRuntimeError,
+    StratisCliUnknownInterfaceError,
+)
 
 
 class ErrorFmtTestCase(unittest.TestCase):
