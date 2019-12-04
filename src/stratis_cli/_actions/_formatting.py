@@ -15,6 +15,7 @@
 Formatting for tables.
 """
 
+# isort: STDLIB
 import sys
 
 from .._errors import StratisCliPropertyNotFoundError

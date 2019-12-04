@@ -14,25 +14,29 @@
 """
 Facilities for managing and reporting errors.
 """
+# isort: STDLIB
 import os
 import sys
 
+# isort: THIRDPARTY
 import dbus
 
-from dbus_client_gen import DbusClientMissingPropertyError
-from dbus_client_gen import DbusClientMissingSearchPropertiesError
-from dbus_client_gen import DbusClientUniqueResultError
+# isort: FIRSTPARTY
+from dbus_client_gen import (
+    DbusClientMissingPropertyError,
+    DbusClientMissingSearchPropertiesError,
+    DbusClientUniqueResultError,
+)
 
-from ._actions import BLOCKDEV_INTERFACE
-from ._actions import FILESYSTEM_INTERFACE
-from ._actions import POOL_INTERFACE
-
-from ._errors import StratisCliEngineError
-from ._errors import StratisCliIncoherenceError
-from ._errors import StratisCliInUseError
-from ._errors import StratisCliNameConflictError
-from ._errors import StratisCliPartialChangeError
-from ._errors import StratisCliUnknownInterfaceError
+from ._actions import BLOCKDEV_INTERFACE, FILESYSTEM_INTERFACE, POOL_INTERFACE
+from ._errors import (
+    StratisCliEngineError,
+    StratisCliIncoherenceError,
+    StratisCliInUseError,
+    StratisCliNameConflictError,
+    StratisCliPartialChangeError,
+    StratisCliUnknownInterfaceError,
+)
 
 _DBUS_INTERFACE_MSG = (
     "The version of stratis you are running expects a different "

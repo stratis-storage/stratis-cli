@@ -15,6 +15,7 @@
 Miscellaneous methods to support testing.
 """
 
+# isort: STDLIB
 import os
 import random
 import string
@@ -23,8 +24,10 @@ import sys
 import time
 import unittest
 
+# isort: THIRDPARTY
 import psutil
 
+# isort: LOCAL
 from stratis_cli import run
 
 try:

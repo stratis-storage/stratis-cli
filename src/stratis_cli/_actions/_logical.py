@@ -15,22 +15,20 @@
 Miscellaneous logical actions.
 """
 
-from justbytes import Range
+# isort: THIRDPARTY
 from dateutil import parser as date_parser
+from justbytes import Range
 
-from .._errors import StratisCliEngineError
-from .._errors import StratisCliIncoherenceError
-from .._errors import StratisCliNoChangeError
-from .._errors import StratisCliPartialChangeError
-
+from .._errors import (
+    StratisCliEngineError,
+    StratisCliIncoherenceError,
+    StratisCliNoChangeError,
+    StratisCliPartialChangeError,
+)
 from .._stratisd_constants import StratisdErrors
-
 from ._connection import get_object
-from ._constants import FILESYSTEM_INTERFACE
-from ._constants import TOP_OBJECT
-from ._formatting import TABLE_FAILURE_STRING
-from ._formatting import fetch_property
-from ._formatting import print_table
+from ._constants import FILESYSTEM_INTERFACE, TOP_OBJECT
+from ._formatting import TABLE_FAILURE_STRING, fetch_property, print_table
 
 
 class LogicalActions:

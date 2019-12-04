@@ -15,10 +15,10 @@
 Test command-line argument parsing.
 """
 
+# isort: STDLIB
 import unittest
 
-from ._misc import RUNNER
-from ._misc import SimTestCase
+from ._misc import RUNNER, SimTestCase
 
 
 class ParserTestCase(unittest.TestCase):
