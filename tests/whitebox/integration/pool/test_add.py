@@ -27,7 +27,8 @@ from stratis_cli._errors import (
 
 from .._misc import RUNNER, SimTestCase, device_name_list
 
-_DEVICE_STRATEGY = device_name_list(2)
+_DEVICE_STRATEGY = device_name_list(1, 1)
+_DEVICE_STRATEGY_2 = device_name_list(2, 2)
 
 
 class AddDataTestCase(SimTestCase):
@@ -104,10 +105,24 @@ class AddDataTestCase1(SimTestCase):
 
     def testAddDataCache(self):
         """
-        Test that adding data devices that are already in the cache tier raises
+        Test that adding 1 data device that is already in the cache tier raises
         an exception.
         """
         devices = _DEVICE_STRATEGY()
+        command_line = ["--propagate", "pool", "add-cache"] + [self._POOLNAME] + devices
+        RUNNER(command_line)
+        with self.assertRaises(StratisCliActionError) as context:
+            RUNNER(self._MENU + [self._POOLNAME] + devices)
+        cause = context.exception.__cause__
+        self.assertIsInstance(cause, StratisCliInUseError)
+        self.assertNotEqual(str(cause), "")
+
+    def testAddDataCache2(self):
+        """
+        Test that adding multiple (2) data devices that are already in the cache tier raises
+        an exception.
+        """
+        devices = _DEVICE_STRATEGY_2()
         command_line = ["--propagate", "pool", "add-cache"] + [self._POOLNAME] + devices
         RUNNER(command_line)
         with self.assertRaises(StratisCliActionError) as context:
@@ -156,10 +171,37 @@ class AddCacheTestCase1(SimTestCase):
 
     def testAddCacheData(self):
         """
-        Test that adding cache devices that are already in the data tier raises
+        Test that adding 1 cache device that is already in the data tier raises
         an exception.
         """
         command_line = self._MENU + [self._POOLNAME] + self._DEVICES
+        with self.assertRaises(StratisCliActionError) as context:
+            RUNNER(command_line)
+        cause = context.exception.__cause__
+        self.assertIsInstance(cause, StratisCliInUseError)
+        self.assertNotEqual(str(cause), "")
+
+
+class AddCacheTestCase2(SimTestCase):
+    """
+    Test adding cache devices to an existing pool.
+    """
+
+    _POOLNAME = "deadpool"
+    _MENU = ["--propagate", "pool", "add-cache"]
+    _DEVICES_2 = _DEVICE_STRATEGY_2()
+
+    def setUp(self):
+        super().setUp()
+        command_line = ["pool", "create", self._POOLNAME] + self._DEVICES_2
+        RUNNER(command_line)
+
+    def testAddCacheData(self):
+        """
+        Test that adding multiple (2) cache devices that are already in the data tier raises
+        an exception.
+        """
+        command_line = self._MENU + [self._POOLNAME] + self._DEVICES_2
         with self.assertRaises(StratisCliActionError) as context:
             RUNNER(command_line)
         cause = context.exception.__cause__

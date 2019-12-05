@@ -174,10 +174,7 @@ class StratisCliInUseError(StratisCliRuntimeError):
         self.blockdevs = blockdevs
         self.added_as = added_as
 
-    # pylint: disable=fixme
-    # FIXME: remove no coverage pragma when adequate testing for CLI output
-    # exists.
-    def __str__(self):  # pragma: no cover
+    def __str__(self):
         (target_blockdev_tier, already_blockdev_tier) = (
             BLOCK_DEV_TIER_TO_NAME(self.added_as),
             BLOCK_DEV_TIER_TO_NAME(
