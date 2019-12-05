@@ -23,11 +23,9 @@ import unittest
 from stratis_cli._errors import (
     StratisCliActionError,
     StratisCliEngineError,
-    StratisCliEnvironmentError,
     StratisCliError,
     StratisCliGenerationError,
     StratisCliIncoherenceError,
-    StratisCliNoChangeError,
     StratisCliPropertyNotFoundError,
     StratisCliRuntimeError,
     StratisCliUnknownInterfaceError,

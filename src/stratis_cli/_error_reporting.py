@@ -32,10 +32,8 @@ from ._actions import BLOCKDEV_INTERFACE, FILESYSTEM_INTERFACE, POOL_INTERFACE
 from ._errors import (
     StratisCliEngineError,
     StratisCliIncoherenceError,
-    StratisCliInUseError,
-    StratisCliNameConflictError,
-    StratisCliPartialChangeError,
     StratisCliUnknownInterfaceError,
+    StratisCliUserError,
 )
 
 _DBUS_INTERFACE_MSG = (
