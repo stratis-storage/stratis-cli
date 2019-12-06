@@ -216,7 +216,7 @@ class StratisCliInUseOtherTierError(StratisCliInUseError):
                         pool_name,
                     )
                 )
-            elif len(blockdevs) == 1:
+            else:
                 msg += (
                     "; device %s would be added to the %s tier but is "
                     "already in use in the %s tier of pool %s"
