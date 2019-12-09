@@ -161,17 +161,18 @@ class TopActions:
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        names = pools(props={"Name": namespace.pool_name}).search(managed_objects)
+        pool_name = namespace.pool_name
+        names = pools(props={"Name": pool_name}).search(managed_objects)
+        blockdevs = namespace.blockdevs
         if list(names) != []:
-            raise StratisCliNameConflictError("pool", namespace.pool_name)
+            raise StratisCliNameConflictError("pool", pool_name)
+
+        _check_opposite_tier(managed_objects, blockdevs, BlockDevTiers.Cache)
+
+        _check_same_tier(pool_name, managed_objects, blockdevs, BlockDevTiers.Data)
 
         ((changed, (_, _)), rc, message) = Manager.Methods.CreatePool(
-            proxy,
-            {
-                "name": namespace.pool_name,
-                "redundancy": (True, 0),
-                "devices": namespace.blockdevs,
-            },
+            proxy, {"name": pool_name, "redundancy": (True, 0), "devices": blockdevs}
         )
 
         if rc != StratisdErrors.OK:  # pragma: no cover
@@ -183,7 +184,7 @@ class TopActions:
                     "Expected to create the specified pool %s but stratisd "
                     "reports that it did not actually create the pool"
                 )
-                % namespace.pool_name
+                % pool_name
             )
 
     @staticmethod

@@ -252,10 +252,7 @@ class StratisCliInUseSameTierError(StratisCliInUseError):
         self.pools_to_blockdevs = pools_to_blockdevs
         self.added_as = added_as
 
-    # pylint: disable=fixme
-    # FIXME: remove no coverage pragma when adequate testing for CLI output
-    # exists.
-    def __str__(self):  # pragma: no cover
+    def __str__(self):
         blockdev_tier = BLOCK_DEV_TIER_TO_NAME(self.added_as)
 
         msg = (
@@ -270,7 +267,7 @@ class StratisCliInUseSameTierError(StratisCliInUseError):
                     "already in use in the same tier of pool %s"
                     % (list(blockdevs), blockdev_tier, pool_name)
                 )
-            elif len(blockdevs) == 1:
+            else:
                 msg += (
                     "; device %s would be added to the %s tier but is "
                     "already in use in the same tier of pool %s"
