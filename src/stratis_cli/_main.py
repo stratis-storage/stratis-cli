@@ -48,7 +48,13 @@ def run():
             # The same holds for SystemExit, except that it must be allowed
             # to propagate to the interpreter, i.e., it should not be recaught
             # anywhere.
-            except (KeyboardInterrupt, SystemExit, StratisCliEnvironmentError) as err:
+            except (
+                # pylint: disable=bad-continuation
+                BrokenPipeError,
+                KeyboardInterrupt,
+                SystemExit,
+                StratisCliEnvironmentError,
+            ) as err:
                 raise err
             except BaseException as err:
                 raise StratisCliActionError(command_line_args, result) from err
