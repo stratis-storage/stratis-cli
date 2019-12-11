@@ -264,14 +264,14 @@ class StratisCliInUseSameTierError(StratisCliInUseError):
             if len(blockdevs) > 1:
                 msg += (
                     "; devices %s would be added to the %s tier but are "
-                    "already in use in the same tier of pool %s"
-                    % (list(blockdevs), blockdev_tier, pool_name)
+                    "already in use in the %s tier of pool %s"
+                    % (list(blockdevs), blockdev_tier, blockdev_tier, pool_name)
                 )
             else:
                 msg += (
                     "; device %s would be added to the %s tier but is "
-                    "already in use in the same tier of pool %s"
-                    % (list(blockdevs)[0], blockdev_tier, pool_name)
+                    "already in use in the %s tier of pool %s"
+                    % (list(blockdevs)[0], blockdev_tier, blockdev_tier, pool_name)
                 )
 
         return msg

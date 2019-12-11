@@ -154,7 +154,7 @@ class AddDataTestCase2(SimTestCase):
 
     def testAddData(self):
         """
-        Test that adding the same devices to a different data tier fails.
+        Test that adding the same devices to the data tier in a different pool fails.
         """
         command_line = self._MENU + [self._POOLNAME] + self._SECOND_DEVICES
         with self.assertRaises(StratisCliActionError) as context:

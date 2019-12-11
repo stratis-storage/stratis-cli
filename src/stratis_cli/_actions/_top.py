@@ -15,6 +15,9 @@
 Miscellaneous top-level actions.
 """
 
+# isort: STDLIB
+from collections import defaultdict
+
 # isort: THIRDPARTY
 from justbytes import Range
 
@@ -38,6 +41,10 @@ def _generate_pools_to_blockdevs(managed_objects, to_be_added, tier):
     Generate a map of pools to which block devices they own
     :param managed_objects: the result of a GetManagedObjects call
     :type managed_objects: dict of str * dict
+    :param to_be_added: the blockdevs to be added
+    :type to_be_added: frozenset of str
+    :param tier: tier that blockdevs belong to
+    :type tier: _stratisd_constants.BlockDevTiers
     :returns: a map of pool names to sets of strings containing blockdevs they own
     :rtype: dict of str * frozenset of str
     """
@@ -51,13 +58,11 @@ def _generate_pools_to_blockdevs(managed_objects, to_be_added, tier):
         (path, MOPool(info).Name()) for (path, info) in pools().search(managed_objects)
     )
 
-    pools_to_blockdevs = {}
+    pools_to_blockdevs = defaultdict(list)
     for (_, info) in devs(props={"Tier": tier}).search(managed_objects):
         modev = MODev(info)
         if modev.Devnode() in to_be_added:
             pool_name = pool_map[modev.Pool()]
-            if pool_name not in pools_to_blockdevs:
-                pools_to_blockdevs[pool_name] = []
             pools_to_blockdevs[pool_name].append(str(modev.Devnode()))
 
     return dict(
@@ -118,12 +123,7 @@ def _check_same_tier(pool_name, managed_objects, to_be_added, this_tier):
         managed_objects, to_be_added, this_tier
     )
 
-    owned_by_current_pool = frozenset(
-        devnode
-        for pool, devnodes in pools_to_blockdevs.items()
-        for devnode in devnodes
-        if pool_name == pool
-    )
+    owned_by_current_pool = frozenset(pools_to_blockdevs.get(pool_name, []))
     owned_by_other_pools = dict(
         (pool, devnodes)
         for pool, devnodes in pools_to_blockdevs.items()
