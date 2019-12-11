@@ -43,7 +43,7 @@ def _generate_pools_to_blockdevs(managed_objects, to_be_added, tier):
     :type managed_objects: dict of str * dict
     :param to_be_added: the blockdevs to be added
     :type to_be_added: frozenset of str
-    :param tier: tier that blockdevs belong to
+    :param tier: tier to search for blockdevs to be added
     :type tier: _stratisd_constants.BlockDevTiers
     :returns: a map of pool names to sets of strings containing blockdevs they own
     :rtype: dict of str * frozenset of str
