@@ -15,10 +15,11 @@
 Test formatting.
 """
 
-import filecmp
-import os
+# isort: STDLIB
+import io
 import unittest
 
+# isort: LOCAL
 from stratis_cli._actions._formatting import print_table
 
 
@@ -27,20 +28,10 @@ class FormattingTestCase(unittest.TestCase):
     Test formatting.
     """
 
-    def testPrintTable(self):
-        """
-        Test printing a table
-        """
+    def setUp(self):
+        self.output = io.StringIO()
 
-        expected_output = open("expected_output.txt", "w+")
-        expected_output.write(
-            """Pool Name    Name  Used     Created            Device\n
-yes_you_can  ☺     546 MiB  Oct 05 2018 16:24  /dev/stratis/yes_you_can/☺\n
-yes_you_can  漢字    546 MiB  Oct 10 2018 09:37  /dev/stratis/yes_you_can/漢字"""
-        )
-
-        actual_output = open("actual_output.txt", "w+")
-
+        # pylint: disable=bad-continuation
         table = [
             ["Pool Name", "Name", "Used", "Created", "Device"],
             [
@@ -50,21 +41,18 @@ yes_you_can  漢字    546 MiB  Oct 10 2018 09:37  /dev/stratis/yes_you_can/漢�
                 "Oct 05 2018 16:24",
                 "/dev/stratis/yes_you_can/☺",
             ],
-            [
-                "yes_you_can",
-                "漢字",
-                "546 MiB",
-                "Oct 10 2018 09:37",
-                "/dev/stratis/yes_you_can/漢字",
-            ],
         ]
+        print_table(table[0], table[1:], [">", ">", "<", "<", "<"], self.output)
 
-        print_table(table[0], table[1:], ["<", "<", "<", "<", "<"], actual_output)
+    def testContainsNewLine(self):
+        """
+        Test that the table contains a new line
+        """
+        self.assertRegex(self.output.getvalue(), "\n")
 
-        self.assertEqual(filecmp.cmp("expected_output.txt", "actual_output.txt"), True)
-
-        expected_output.close()
-        actual_output.close()
-
-        os.remove("expected_output.txt")
-        os.remove("actual_output.txt")
+    def testContainsCorrectNumberOfLines(self):
+        """
+        Test that the table contains the correct number of lines
+        """
+        self.output.seek(0)
+        self.assertEqual(len(self.output.readlines()), 2)
