@@ -162,22 +162,31 @@ class StratisCliIncoherenceError(StratisCliRuntimeError):
 
 class StratisCliInUseError(StratisCliUserError):
     """
+    Base class for if a request made of stratisd must result in a device being
+    included in both data and cache tiers or in the same tier of two different
+    pools.
+    """
+
+
+class StratisCliInUseOtherTierError(StratisCliInUseError):
+    """
     Raised if a request made of stratisd must result in a device being
     included in both data and cache tiers.
     """
 
-    def __init__(self, blockdevs, added_as):
+    def __init__(self, pools_to_blockdevs, added_as):
         """ Initializer.
 
-            :param blockdevs: the blockdevs that would be added in both tiers
-            :type blockdevs: frozenset of str
+            :param pools_to_blockdevs: pools mapped to the blockdevs they own
+            :type pools_to_blockdevs: dict of str * frozenset of str
             :param added_as: what tier the devices were to be added to
             :type added_as: _stratisd_constants.BlockDevTiers
 
-            Precondition: blockdevs != frozenset()
+            Precondition: pools_to_blockdevs != {}
+            Precondition: all frozenset of str in pools_to_blockdevs have at least one item
         """
         # pylint: disable=super-init-not-called
-        self.blockdevs = blockdevs
+        self.pools_to_blockdevs = pools_to_blockdevs
         self.added_as = added_as
 
     def __str__(self):
@@ -190,18 +199,82 @@ class StratisCliInUseError(StratisCliUserError):
             ),
         )
 
-        if len(self.blockdevs) > 1:
-            return (
-                "The block devices %s would be added to the %s tier but are "
-                "already in use in the %s tier"
-                % (list(self.blockdevs), target_blockdev_tier, already_blockdev_tier)
-            )
-
-        return (
-            "The block device %s would be added to the %s tier but is already "
-            "in use in the %s tier"
-            % (list(self.blockdevs)[0], target_blockdev_tier, already_blockdev_tier)
+        msg = (
+            "At least one of the provided devices is already owned by an "
+            "existing pool's %s tier" % (already_blockdev_tier,)
         )
+
+        for pool_name, blockdevs in self.pools_to_blockdevs.items():
+            if len(blockdevs) > 1:
+                msg += (
+                    "; devices %s would be added to the %s tier but are "
+                    "already in use in the %s tier of pool %s"
+                    % (
+                        list(blockdevs),
+                        target_blockdev_tier,
+                        already_blockdev_tier,
+                        pool_name,
+                    )
+                )
+            else:
+                msg += (
+                    "; device %s would be added to the %s tier but is "
+                    "already in use in the %s tier of pool %s"
+                    % (
+                        list(blockdevs)[0],
+                        target_blockdev_tier,
+                        already_blockdev_tier,
+                        pool_name,
+                    )
+                )
+
+        return msg
+
+
+class StratisCliInUseSameTierError(StratisCliInUseError):
+    """
+    Raised if a request made of stratisd must result in a device being
+    included in the same tier in two different pools.
+    """
+
+    def __init__(self, pools_to_blockdevs, added_as):
+        """ Initializer.
+
+            :param pools_to_blockdevs: pools mapped to the blockdevs they own
+            :type pools_to_blockdevs: dict of str * frozenset of str
+            :param added_as: what tier the devices were to be added to
+            :type added_as: _stratisd_constants.BlockDevTiers
+
+            Precondition: pools_to_blockdevs != {}
+            Precondition: all frozenset of str in pools_to_blockdevs have at least one item
+        """
+        # pylint: disable=super-init-not-called
+        self.pools_to_blockdevs = pools_to_blockdevs
+        self.added_as = added_as
+
+    def __str__(self):
+        blockdev_tier = BLOCK_DEV_TIER_TO_NAME(self.added_as)
+
+        msg = (
+            "At least one of the provided devices is already owned by an "
+            "existing pool's %s tier" % (blockdev_tier,)
+        )
+
+        for pool_name, blockdevs in self.pools_to_blockdevs.items():
+            if len(blockdevs) > 1:
+                msg += (
+                    "; devices %s would be added to the %s tier but are "
+                    "already in use in the %s tier of pool %s"
+                    % (list(blockdevs), blockdev_tier, blockdev_tier, pool_name)
+                )
+            else:
+                msg += (
+                    "; device %s would be added to the %s tier but is "
+                    "already in use in the %s tier of pool %s"
+                    % (list(blockdevs)[0], blockdev_tier, blockdev_tier, pool_name)
+                )
+
+        return msg
 
 
 class StratisCliUnknownInterfaceError(StratisCliRuntimeError):

@@ -16,11 +16,16 @@ Test 'create'.
 """
 
 # isort: LOCAL
-from stratis_cli._errors import StratisCliActionError, StratisCliNameConflictError
+from stratis_cli._errors import (
+    StratisCliActionError,
+    StratisCliInUseSameTierError,
+    StratisCliNameConflictError,
+)
 
 from .._misc import RUNNER, SimTestCase, device_name_list
 
 _DEVICE_STRATEGY = device_name_list(1)
+_DEVICE_STRATEGY_2 = device_name_list(2)
 
 
 class CreateTestCase(SimTestCase):
@@ -81,4 +86,32 @@ class Create3TestCase(SimTestCase):
             RUNNER(command_line)
         cause = context.exception.__cause__
         self.assertIsInstance(cause, StratisCliNameConflictError)
+        self.assertNotEqual(str(cause), "")
+
+
+class Create4TestCase(SimTestCase):
+    """
+    Test adding data devices to two pools.
+    """
+
+    _POOLNAME_1 = "deadpool1"
+    _POOLNAME_2 = "deadpool2"
+    _MENU = ["--propagate", "pool", "create"]
+    _DEVICES = _DEVICE_STRATEGY_2()
+
+    def setUp(self):
+        super().setUp()
+        command_line = ["pool", "create", self._POOLNAME_1] + self._DEVICES
+        RUNNER(command_line)
+
+    def testCreateSameDevices(self):
+        """
+        Test that creating two pools with different names and the same devices raises
+        a StratisCliInUseSameTierError exception.
+        """
+        command_line = self._MENU + [self._POOLNAME_2] + self._DEVICES
+        with self.assertRaises(StratisCliActionError) as context:
+            RUNNER(command_line)
+        cause = context.exception.__cause__
+        self.assertIsInstance(cause, StratisCliInUseSameTierError)
         self.assertNotEqual(str(cause), "")
