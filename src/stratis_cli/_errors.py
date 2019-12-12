@@ -178,7 +178,7 @@ class StratisCliInUseOtherTierError(StratisCliInUseError):
         """ Initializer.
 
             :param pools_to_blockdevs: pools mapped to the blockdevs they own
-            :type pools_to_blockdevs: dict of dbus.types.ObjectPath * frozenset of str
+            :type pools_to_blockdevs: dict of str * frozenset of str
             :param added_as: what tier the devices were to be added to
             :type added_as: _stratisd_constants.BlockDevTiers
 
@@ -241,7 +241,7 @@ class StratisCliInUseSameTierError(StratisCliInUseError):
         """ Initializer.
 
             :param pools_to_blockdevs: pools mapped to the blockdevs they own
-            :type pools_to_blockdevs: dict of dbus.types.ObjectPath * frozenset of str
+            :type pools_to_blockdevs: dict of str * frozenset of str
             :param added_as: what tier the devices were to be added to
             :type added_as: _stratisd_constants.BlockDevTiers
 

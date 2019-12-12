@@ -55,15 +55,21 @@ def _generate_pools_to_blockdevs(managed_objects, to_be_added, tier):
     from ._data import pools
 
     pool_map = dict(
-        (path, MOPool(info).Name()) for (path, info) in pools().search(managed_objects)
+        (path, str(MOPool(info).Name()))
+        for (path, info) in pools().search(managed_objects)
     )
 
     pools_to_blockdevs = defaultdict(list)
-    for (_, info) in devs(props={"Tier": tier}).search(managed_objects):
-        modev = MODev(info)
-        if modev.Devnode() in to_be_added:
-            pool_name = pool_map[modev.Pool()]
-            pools_to_blockdevs[pool_name].append(str(modev.Devnode()))
+    for modev in (
+        # pylint: disable=bad-continuation
+        modev
+        for modev in (
+            MODev(info)
+            for (_, info) in devs(props={"Tier": tier}).search(managed_objects)
+        )
+        if str(modev.Devnode()) in to_be_added
+    ):
+        pools_to_blockdevs[pool_map[modev.Pool()]].append(str(modev.Devnode()))
 
     return dict(
         (pool, frozenset(blockdevs)) for pool, blockdevs in pools_to_blockdevs.items()
