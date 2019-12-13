@@ -28,25 +28,6 @@ _DEVICE_STRATEGY = device_name_list(1)
 _DEVICE_STRATEGY_2 = device_name_list(2)
 
 
-class CreateTestCase(SimTestCase):
-    """
-    Test 'create' parsing.
-    """
-
-    _MENU = ["--propagate", "pool", "create"]
-    _POOLNAME = "deadpool"
-
-    def testRedundancy(self):
-        """
-        Parser error on all redundancy that is not 'none'.
-        """
-        command_line = (
-            self._MENU + ["--redundancy", "raid6", self._POOLNAME] + _DEVICE_STRATEGY()
-        )
-        with self.assertRaises(SystemExit):
-            RUNNER(command_line)
-
-
 class Create3TestCase(SimTestCase):
     """
     Test 'create' on name collision.

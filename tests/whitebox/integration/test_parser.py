@@ -73,6 +73,27 @@ class ParserTestCase(unittest.TestCase):
                 exit_code = context.exception.code
                 self.assertEqual(exit_code, 2)
 
+    def testRedundancy(self):
+        """
+        Verify that there is a parser error if redundancy is not "none" in
+        pool creation.
+        """
+        command_line = [
+            "pool",
+            "create",
+            "--redundancy",
+            "raid6",
+            "the_pool",
+            "a_blockdev",
+            "another_blockdev",
+        ]
+
+        for prefix in [[], ["--propagate"]]:
+            with self.assertRaises(SystemExit) as context:
+                RUNNER(prefix + command_line)
+            exit_code = context.exception.code
+            self.assertEqual(exit_code, 2)
+
 
 class ParserSimTestCase(SimTestCase):
     """
