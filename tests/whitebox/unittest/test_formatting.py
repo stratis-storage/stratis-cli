@@ -23,7 +23,7 @@ import unittest
 from stratis_cli._actions._formatting import print_table
 
 
-class FormattingTestCase(unittest.TestCase):
+class FormattingTestCase1(unittest.TestCase):
     """
     Test formatting.
     """
@@ -32,49 +32,7 @@ class FormattingTestCase(unittest.TestCase):
         self.output = io.StringIO()
 
         # pylint: disable=bad-continuation
-        table = [
-            ["Pool Name", "Name", "Used", "Created", "Device"],
-            [
-                "yes_you_can",
-                "☺",
-                "546 MiB",
-                "Oct 05 2018 16:24",
-                "/dev/stratis/yes_you_can/☺",
-            ],
-            [
-                "yes_you_can",
-                "漢字",
-                "546 MiB",
-                "Oct 10 2018 09:37",
-                "/dev/stratis/yes_you_can/漢字",
-            ],
-        ]
-        print_table(table[0], table[1:], ["<", "<", "<", "<", "<"], self.output)
-
-    def testContainsNewLine(self):
-        """
-        Test that the table contains a new line
-        """
-        self.assertRegex(self.output.getvalue(), "\n")
-
-    def testContainsCorrectNumberOfLines(self):
-        """
-        Test that the table contains the correct number of lines
-        """
-        self.output.seek(0)
-        self.assertEqual(len(self.output.readlines()), 3)
-
-
-class FormattingTestCase2(unittest.TestCase):
-    """
-    Test formatting.
-    """
-
-    def setUp(self):
-        self.output = io.StringIO()
-
-        # pylint: disable=bad-continuation
-        table = [
+        self.table = [
             [u"Pool Na\u030ame", u"Na\u030ame", "Used", "Created", "Device", "UUID"],
             [
                 "unicode",
@@ -86,10 +44,10 @@ class FormattingTestCase2(unittest.TestCase):
             ],
             [
                 "unicode",
-                "eeee",
+                "☺",
                 "546 MiB",
                 "Feb 07 2019 15:33",
-                "/stratis/unicode/eeee",
+                "/stratis/unicode/☺",
                 "17101e39e72e423c90d8be5cb37c055b",
             ],
             [
@@ -102,24 +60,20 @@ class FormattingTestCase2(unittest.TestCase):
             ],
             [
                 "unicodé",
-                "éééé",
+                "漢字",
                 "546 MiB",
                 "Feb 07 2019 15:33",
-                "/stratis/unicodé/éééé",
+                "/stratis/unicodé/漢字",
                 "4ecacb15fb64453191d7da731c5f1601",
             ],
         ]
-        print_table(table[0], table[1:], ["<", "<", "<", "<", "<", "<"], self.output)
-
-    def testContainsNewLine(self):
-        """
-        Test that the table contains a new line
-        """
-        self.assertRegex(self.output.getvalue(), "\n")
+        print_table(
+            self.table[0], self.table[1:], ["<", "<", "<", "<", "<", "<"], self.output
+        )
 
     def testContainsCorrectNumberOfLines(self):
         """
         Test that the table contains the correct number of lines
         """
         self.output.seek(0)
-        self.assertEqual(len(self.output.readlines()), 5)
+        self.assertEqual(len(self.output.readlines()), len(self.table[0]) - 1)
