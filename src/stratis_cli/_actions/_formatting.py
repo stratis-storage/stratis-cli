@@ -125,7 +125,7 @@ def _print_row(file, row, row_widths, column_widths, column_alignments):
                 entry, align=column_alignments[index], width=column_len
             )
         )
-    print("  ".join(entries), end="", file=file)
+    print("   ".join(entries), end="", file=file)
 
 
 def print_table(column_headings, row_entries, alignment, file=sys.stdout):
