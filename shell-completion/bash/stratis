@@ -1,13 +1,12 @@
 _stratis()
 {
-	local cur prev x2prev x3prev opts root_subcommands pool_subcommands fs_subcommands blockdev_subcommands daemon_subcommands complete_pools blockdevs first second third
+	local cur prev x2prev opts root_subcommands pool_subcommands fs_subcommands blockdev_subcommands daemon_subcommands complete_pools blockdevs first second third
 
 	COMPREPLY=()
 
 	cur="${COMP_WORDS[COMP_CWORD]}"
 	prev="${COMP_WORDS[COMP_CWORD-1]}"
 	x2prev="${COMP_WORDS[COMP_CWORD-2]}"
-	x3prev="${COMP_WORDS[COMP_CWORD-3]}"
 	first="${COMP_WORDS[1]}"
 	second="${COMP_WORDS[2]}"
 	third="${COMP_WORDS[3]}"
@@ -27,7 +26,7 @@ _stratis()
             COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
         fi
 		return 0
-	else
+	elif [[ ${COMP_CWORD} -eq 2 ]]; then
 		case ${prev} in
 			-h|--help|--version)
 				return 0
@@ -49,11 +48,12 @@ _stratis()
 				return 0
 				;;
 		esac
+	elif [[ ${COMP_CWORD} -eq 3 ]]; then
 		case ${x2prev} in
 			filesystem|fs)
 				case ${prev} in
 					create|snapshot|list|destroy|rename)
-						COMPREPLY=( $(compgen -W  $(stratis pool list | awk '{if (NR!=1) {print $1}}' | tr '\n' ' ') -- ${cur}) )
+						COMPREPLY=( $(compgen -W  "$(stratis pool list | awk '{if (NR!=1) {print $1}}')" -- ${cur}) )
 						return 0
 						;;
 					-h|--help)
@@ -66,7 +66,7 @@ _stratis()
 						return 0
 						;;
 					list)
-						COMPREPLY=( $(compgen -W  $(stratis pool list | awk '{if (NR!=1) {print $1}}' | tr '\n' ' ') -- ${cur}) )
+						COMPREPLY=( $(compgen -W  "$(stratis pool list | awk '{if (NR!=1) {print $1}}')" -- ${cur}) )
 						return 0
 						;;
 				esac
@@ -80,20 +80,21 @@ _stratis()
 						return 0
 						;;
 					rename|destroy|add-data|add-cache)
-						COMPREPLY=( $(compgen -W  $(stratis pool list | awk '{if (NR!=1) {print $1}}' | tr '\n' ' ') -- ${cur}) )
+						COMPREPLY=( $(compgen -W  "$(stratis pool list | awk '{if (NR!=1) {print $1}}')" -- ${cur}) )
 						return 0
 						;;
 				esac
 				;;
 		esac
-		case ${x3prev} in
+	elif [[ ${COMP_CWORD} -eq 4 ]]; then
+		case ${first} in
 			filesystem|fs)
-				case ${x2prev} in
+				case ${second} in
 					list|create|-h|--help)
 						return 0;
 						;;
 					snapshot|destroy|rename)
-						COMPREPLY=( $(compgen -W  $(stratis filesystem list ${prev} | awk '{if (NR!=1) {print $1}}' ) -- ${cur}) )
+						COMPREPLY=( $(compgen -W  "$(stratis filesystem list ${third} | awk '{if (NR!=1) {print $2}}')" -- ${cur}) )
 						return 0
 						;;
 				esac
@@ -105,7 +106,7 @@ _stratis()
 				return 0
 				;;
 			pool)
-				case ${x2prev} in
+				case ${second} in
 					-h|--help|list|rename|destroy)
 						return 0
 						;;
@@ -115,41 +116,37 @@ _stratis()
 						;;
 				esac
 		esac
-
 #	Code to handle multiple block device names or multiple filesystem names for filesystem destroy and pool create/add-data/add-cache
-		if [[ ${COMP_CWORD} > 3 ]]; then
-			case ${first} in
-				filesystem|fs)
-					case ${second} in
-						snapshot|list|create|rename|-h|--help)
-							return 0
-							;;
-						destroy)
-							COMPREPLY=( $(compgen -W  $(stratis filesystem list ${third} | awk '{if (NR!=1) {print $1}}') -- ${cur}) )
-							return 0
-							;;
-					esac
-					;;
-				pool)
-					case ${second} in
-						-h|--help|list|rename|destroy)
-							return 0
-							;;
-						create|add-cache|add-data)
-							COMPREPLY=( $(compgen -W  "${blockdevs}" -- ${cur}) )
-							return 0
-							;;
-					esac
-					;;
-			esac
-		fi
-		if [[ ${COMP_CWORD} -eq 1 ]]; then
-			COMPREPLY=( $(compgen -W "${root_subcommands} ${global_opts}" -- ${cur}) )
-			return 0
-		elif [[ ${prev} == "--propagate" ]]; then
-			COMPREPLY=( $(compgen -W "${root_subcommands}" -- ${cur}) )
-			
-		fi
+	elif [[ ${COMP_CWORD} > 4 ]]; then
+		case ${first} in
+			filesystem|fs)
+				case ${second} in
+					snapshot|list|create|rename|-h|--help)
+						return 0
+						;;
+					destroy)
+						COMPREPLY=( $(compgen -W  "$(stratis filesystem list ${third} | awk '{if (NR!=1) {print $2}}')" -- ${cur}) )
+						return 0
+						;;
+				esac
+				;;
+			pool)
+				case ${second} in
+					-h|--help|list|rename|destroy)
+						return 0
+						;;
+					create|add-cache|add-data)
+						COMPREPLY=( $(compgen -W  "${blockdevs}" -- ${cur}) )
+						return 0
+						;;
+				esac
+				;;
+		esac
+	elif [[ ${COMP_CWORD} -eq 1 ]]; then
+		COMPREPLY=( $(compgen -W "${root_subcommands} ${global_opts}" -- ${cur}) )
+		return 0
+	elif [[ ${prev} == "--propagate" ]]; then
+		COMPREPLY=( $(compgen -W "${root_subcommands}" -- ${cur}) )
 	fi
 	return 0
 }
