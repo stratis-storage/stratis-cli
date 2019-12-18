@@ -42,7 +42,7 @@ POOL_SUBCMDS = [
                     dict(
                         default=None,
                         type=str,
-                        help="Path to keyfile for optional encryption of a pool",
+                        help="Path to keyfile for encryption of a pool",
                         dest="keyfile_path",
                     ),
                 ),
