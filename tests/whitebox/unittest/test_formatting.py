@@ -23,6 +23,8 @@ import unittest
 from stratis_cli._actions._formatting import maybe_wcswidth, print_table
 
 
+# pylint: disable=fixme
+# TODO: Use Hypoethesis library to create numerous test inputs.
 class FormattingTestCase1(unittest.TestCase):
     """
     Test formatting.
