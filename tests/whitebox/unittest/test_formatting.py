@@ -78,9 +78,7 @@ class FormattingTestCase1(unittest.TestCase):
         Test that the table's rows are of equal length
         """
         self.output.seek(0)
-        row_lengths = []
-        for line in self.output.readlines():
-            row_lengths.append(maybe_wcswidth(line))
+        row_lengths = map(maybe_wcswidth, self.output.readline())
         self.assertEqual(len(set(row_lengths)), 1)
 
     def testContainsCorrectNumberOfLines(self):
