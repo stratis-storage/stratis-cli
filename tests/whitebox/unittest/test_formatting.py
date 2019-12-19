@@ -24,7 +24,7 @@ from stratis_cli._actions._formatting import maybe_wcswidth, print_table
 
 
 # pylint: disable=fixme
-# TODO: Use Hypoethesis library to create numerous test inputs.
+# TODO: Use Hypothesis library to create numerous test inputs.
 class FormattingTestCase1(unittest.TestCase):
     """
     Test formatting.
@@ -78,12 +78,12 @@ class FormattingTestCase1(unittest.TestCase):
         Test that the table's rows are of equal length
         """
         self.output.seek(0)
-        row_lengths = map(maybe_wcswidth, self.output.readline())
-        self.assertEqual(len(set(row_lengths)), 1)
+        row_lengths = map(maybe_wcswidth, self.output.readlines())
+        self.assertEqual(len(frozenset(row_lengths)), 1)
 
     def testContainsCorrectNumberOfLines(self):
         """
         Test that the table contains the correct number of lines
         """
         self.output.seek(0)
-        self.assertEqual(len(self.output.readlines()), len(self.table[0]) - 1)
+        self.assertEqual(len(self.output.readlines()), len(self.table))
