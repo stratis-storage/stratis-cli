@@ -82,6 +82,41 @@ STRATIS_DBUS_TIMEOUT::
          which represents the timeout length in milliseconds
          2. -1, which represents the libdbus default timeout
 
+LIST OUTPUT FIELDS
+------------------
+
+FIELDS for stratis pool list
+
+Name::
+	  The name of the pool.
+Total Physical::
+	  The physical usage statistics for the pool (Total / Used / Free).
+
+FIELDS for stratis filesystem list
+
+Pool Name::
+	  The name of the pool containing the filesystem.
+Used::
+	  The amount of storage space used in the pool by this filesystem.
+Created::
+	  The time the filesystem was created.
+Device::
+	  The device path to use for mounting the filesystem.
+UUID::
+	  The UUID of the filesystem.
+
+
+FIELDS for stratis blockdev list
+
+Pool Name::
+	  The name of the pool using the block device.
+Device Node::
+	  The device node of the block device.
+Physical Size::
+	  The size of the device.
+Tier::
+	  The data tier type ("Data" or "Cache")
+
 NOTES
 -----
 If a block device appears to be already in use, stratisd will refuse to
