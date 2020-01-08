@@ -149,10 +149,15 @@ Mailing list::
 	stratis-devel@lists.fedorahosted.org for general development
 	discussion
 Unknown values::
-	stratis-cli uses the Stratis API. If the API returns values that
-	stratis-cli cannot interpret, stratis-cli will substitute "???". If
-	encountered, upgrading to the latest version of stratis-cli, or filing
-	an issue, is recommended.
+	If the stratisd D-Bus API returns values that stratis-cli cannot
+	interpret, stratis-cli will substitute "???". If encountered,
+	upgrading to the latest version of stratis-cli, or filing an
+	issue, is recommended.
+Unobtainable values::
+	If the stratisd D-Bus API indicates that a value is unobtainable,
+	stratis-cli will substitute "FAILURE". This may indicate something
+	wrong with the pool, blockdev, or filesystem. In some cases,
+	restarting stratisd may resolve the issue.
 
 LICENSE
 -------
