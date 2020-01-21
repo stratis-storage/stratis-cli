@@ -1,3 +1,57 @@
+stratis-cli 2.0.1
+=================
+Python import sorter: isort (4.3.4)
+Python auto-formatter: black (19.3b0)
+
+- Refine messages on conflicting uses for devices, and return promptly
+  rather than reporting the resulting daemon error:
+  https://github.com/stratis-storage/stratis-cli/issues/427
+  https://github.com/stratis-storage/stratis-cli/pull/442
+
+- Check for pool name conflict in the CLI when creating a pool,
+  and return promptly rather than reporting the resulting daemon error:
+  https://github.com/stratis-storage/stratis-cli/pull/420
+
+- Extend man pages to clarify meaning of "list" command fields:
+  https://github.com/stratis-storage/stratis-cli/issues/449
+  https://github.com/stratis-storage/stratis-cli/issues/451
+  https://github.com/stratis-storage/stratis-cli/pull/450
+  https://github.com/stratis-storage/stratis-cli/pull/452
+
+- Put three rather than two spaces between adjacent columns when listing
+  block devices, filesystems, and pools:
+  https://github.com/stratis-storage/stratis-cli/issues/443
+  https://github.com/stratis-storage/stratis-cli/pull/445
+
+- Improve bash tab-completion:
+  https://github.com/stratis-storage/stratis-cli/pull/446
+
+- Refine internal exception hierarchy, for more regular and systematic
+  error reporting:
+  https://github.com/stratis-storage/stratis-cli/issues/426
+  https://github.com/stratis-storage/stratis-cli/pull/438
+
+- Do not propagate an exception on a broken pipe:
+  https://github.com/stratis-storage/stratis-cli/issues/418
+  https://github.com/stratis-storage/stratis-cli/pull/441
+
+- Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/448
+  https://github.com/stratis-storage/stratis-cli/pull/444
+  https://github.com/stratis-storage/stratis-cli/pull/437
+  https://github.com/stratis-storage/stratis-cli/pull/436
+  https://github.com/stratis-storage/stratis-cli/pull/434
+  https://github.com/stratis-storage/stratis-cli/pull/433
+  https://github.com/stratis-storage/stratis-cli/pull/425
+  https://github.com/stratis-storage/stratis-cli/pull/424
+  https://github.com/stratis-storage/stratis-cli/pull/423
+  https://github.com/stratis-storage/stratis-cli/pull/422
+  https://github.com/stratis-storage/stratis-cli/pull/417
+  https://github.com/stratis-storage/stratis-cli/pull/416
+  https://github.com/stratis-storage/stratis-cli/pull/411
+  https://github.com/stratis-storage/stratis-cli/pull/410
+
+
 stratis-cli 2.0.0
 =================
 Python auto-formatter: black (18.9b0)
