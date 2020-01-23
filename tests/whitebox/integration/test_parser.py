@@ -23,6 +23,8 @@ from stratis_cli._error_reporting import StratisCliErrorCodes
 
 from ._misc import RUNNER, SimTestCase
 
+PARSE_ERROR = StratisCliErrorCodes.PARSE_ERROR
+
 
 class ParserTestCase(unittest.TestCase):
     """
@@ -44,7 +46,7 @@ class ParserTestCase(unittest.TestCase):
                 with self.assertRaises(SystemExit) as context:
                     RUNNER(prefix + command_line)
                 exit_code = context.exception.code
-                self.assertEqual(exit_code, 2)
+                self.assertEqual(exit_code, PARSE_ERROR)
 
     def testStratisTwoOptions(self):
         """
@@ -56,7 +58,7 @@ class ParserTestCase(unittest.TestCase):
             with self.assertRaises(SystemExit) as context:
                 RUNNER(prefix + command_line)
             exit_code = context.exception.code
-            self.assertEqual(exit_code, 2)
+            self.assertEqual(exit_code, PARSE_ERROR)
 
     def testStratisBadSubcommand(self):
         """
@@ -74,7 +76,7 @@ class ParserTestCase(unittest.TestCase):
                 with self.assertRaises(SystemExit) as context:
                     RUNNER(prefix + command_line)
                 exit_code = context.exception.code
-                self.assertEqual(exit_code, 2)
+                self.assertEqual(exit_code, PARSE_ERROR)
 
     def testRedundancy(self):
         """
@@ -95,7 +97,7 @@ class ParserTestCase(unittest.TestCase):
             with self.assertRaises(SystemExit) as context:
                 RUNNER(prefix + command_line)
             exit_code = context.exception.code
-            self.assertEqual(exit_code, 2)
+            self.assertEqual(exit_code, PARSE_ERROR)
 
 
 class ParserSimTestCase(SimTestCase):
