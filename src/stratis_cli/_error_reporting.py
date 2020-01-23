@@ -17,6 +17,7 @@ Facilities for managing and reporting errors.
 # isort: STDLIB
 import os
 import sys
+from enum import IntEnum
 
 # isort: THIRDPARTY
 import dbus
@@ -35,6 +36,17 @@ from ._errors import (
     StratisCliUnknownInterfaceError,
     StratisCliUserError,
 )
+
+
+class StratisCliErrorCodes(IntEnum):
+    """
+    StratisCli Error Codes
+    """
+
+    OK = 0
+    ERROR = 1
+    PARSE_ERROR = 2
+
 
 _DBUS_INTERFACE_MSG = (
     "The version of stratis you are running expects a different "
