@@ -18,6 +18,9 @@ Test command-line argument parsing.
 # isort: STDLIB
 import unittest
 
+# isort: LOCAL
+from stratis_cli._error_reporting import StratisCliErrorCodes
+
 from ._misc import RUNNER, SimTestCase
 
 
