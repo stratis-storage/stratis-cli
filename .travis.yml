@@ -13,9 +13,14 @@ branches:
       - master
       - develop-2.0.1
 
-env:
-  - TASK=lint
-  - TASK=fmt-travis
-  - TASK=test-travis
+matrix:
+  include:
+    - name: "run pylint"
+      env: TASK=lint
+    - name: "check formatting"
+      install: pip install black==19.3b0 isort==4.3.4
+      env: TASK=fmt-travis
+    - name: "run tests that do not require stratisd"
+      env: TASK=test-travis
 
 script: make -f Makefile $TASK
