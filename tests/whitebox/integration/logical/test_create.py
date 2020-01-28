@@ -22,6 +22,7 @@ import unittest
 from dbus_client_gen import DbusClientUniqueResultError
 
 # isort: LOCAL
+from stratis_cli._error_reporting import handle_error
 from stratis_cli._errors import (
     StratisCliActionError,
     StratisCliEngineError,
@@ -32,6 +33,14 @@ from stratis_cli._stratisd_constants import StratisdErrors
 from .._misc import RUNNER, SimTestCase, device_name_list
 
 _DEVICE_STRATEGY = device_name_list(1)
+
+
+def checkHandleError(obj, context):
+    with obj.assertRaises(SystemExit) as final_err:
+        handle_error(context.exception)
+    final_code = final_err.exception.code
+    obj.assertIsInstance(final_code, str)
+    obj.assertNotEqual(final_code, "")
 
 
 @unittest.skip("Temporarily unable to create multiple filesystems at same time")
@@ -143,9 +152,7 @@ class Create4TestCase(SimTestCase):
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES[0:2]
         with self.assertRaises(StratisCliActionError) as context:
             RUNNER(command_line)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliPartialChangeError)
-        self.assertNotEqual(str(cause), "")
+        checkHandleError(self, context)
 
     def test2Create(self):
         """
