@@ -1,20 +1,35 @@
 os: linux
 language: python
-python: "3.7"
 
 addons:
   apt:
     packages:
       libdbus-glib-1-dev
+      tox
 
 branches:
     only:
       - master
       - develop-2.0.1
 
-env:
-  - TASK=lint
-  - TASK=fmt-travis
-  - TASK=test-travis
+matrix:
+  include:
+
+    # MANDATORY CHECKS USING CURRENT DEVELOPMENT INTERPRETER
+    - name: "run pylint using Python 3.7.6"
+      python: "3.7.6"
+      env: TASK=lint
+    - name: "check formatting using Python 3.7.6"
+      python: "3.7.6"
+      install: pip install black==19.3b0 isort==4.3.4
+      env: TASK=fmt-travis
+    - name: "run tests that do not require stratisd using Python 3.7.6"
+      python: "3.7.6"
+      env: TASK=test-travis
+
+    # MANDATORY CHECKS USING LOWEST SUPPORTED INTERPRETER
+    - name: "run tests that do not require stratisd using Python 3.6.8"
+      python: "3.6.8"
+      env: TASK=test-travis
 
 script: make -f Makefile $TASK
