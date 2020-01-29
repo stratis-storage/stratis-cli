@@ -56,6 +56,15 @@ _DBUS_INTERFACE_MSG = (
 )
 
 
+def exit_(code, msg):
+    """
+    Description
+    """
+    # if msg is not None
+    print(msg, file=sys.stderr)
+    raise SystemExit(1)
+
+
 # pylint: disable=fixme
 # FIXME: remove no coverage pragma when adequate testing for CLI output exists.
 def _interface_name_to_common_name(interface_name):  # pragma: no cover
