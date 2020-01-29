@@ -24,13 +24,11 @@ try:
     from stratis_cli import run
     from stratis_cli import StratisCliEnvironmentError
 
-
     def main():
         """
         The main method.
         """
         return run()(sys.argv[1:])
-
 
     if __name__ == "__main__":
         main()

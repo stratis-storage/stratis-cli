@@ -11,13 +11,13 @@ lint:
 
 .PHONY: fmt
 fmt:
-	isort --recursive check.py setup.py src tests
-	black .
+	isort --recursive check.py setup.py bin/stratis src tests
+	black ./bin/stratis .
 
 .PHONY: fmt-travis
 fmt-travis:
-	isort --recursive --diff --check-only check.py setup.py src tests
-	black . --check
+	isort --recursive --diff --check-only check.py setup.py bin/stratis src tests
+	black ./bin/stratis . --check
 
 PYREVERSE_OPTS = --output=pdf
 .PHONY: view
