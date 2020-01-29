@@ -39,8 +39,7 @@ def checkHandleError(obj, context):
     with obj.assertRaises(SystemExit) as final_err:
         handle_error(context.exception)
     final_code = final_err.exception.code
-    obj.assertIsInstance(final_code, str)
-    obj.assertNotEqual(final_code, "")
+    obj.assertEqual(final_code, 1)
 
 
 @unittest.skip("Temporarily unable to create multiple filesystems at same time")

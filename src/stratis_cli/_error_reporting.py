@@ -62,7 +62,7 @@ def exit_(code, msg):
     """
     # if msg is not None
     print(msg, file=sys.stderr)
-    raise SystemExit(1)
+    raise SystemExit(code)
 
 
 # pylint: disable=fixme
@@ -235,4 +235,4 @@ def handle_error(err):
         raise err
 
     exit_msg = "Execution failed:%s%s" % (os.linesep, explanation)
-    sys.exit(exit_msg)
+    exit_(1, exit_msg)
