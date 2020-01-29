@@ -43,7 +43,6 @@ class KeyboardInterruptTestCase(SimTestCase):
             """
             raise KeyboardInterrupt()
 
-        # pylint: disable=import-outside-toplevel
         from stratis_cli._actions import _data
 
         # pylint: disable=protected-access

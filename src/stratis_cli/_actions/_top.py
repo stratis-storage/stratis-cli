@@ -48,7 +48,6 @@ def _generate_pools_to_blockdevs(managed_objects, to_be_added, tier):
     :returns: a map of pool names to sets of strings containing blockdevs they own
     :rtype: dict of str * frozenset of str
     """
-    # pylint: disable=import-outside-toplevel
     from ._data import MODev
     from ._data import MOPool
     from ._data import devs
@@ -88,12 +87,6 @@ def _check_opposite_tier(managed_objects, to_be_added, other_tier):
     :type other_tier: _stratisd_constants.BlockDevTiers
     :raises StratisCliInUseOtherTierError: if blockdevs are used by other tier
     """
-    # pylint: disable=import-outside-toplevel
-    from ._data import MODev
-    from ._data import MOPool
-    from ._data import devs
-    from ._data import pools
-
     pools_to_blockdevs = _generate_pools_to_blockdevs(
         managed_objects, to_be_added, other_tier
     )
@@ -121,10 +114,6 @@ def _check_same_tier(pool_name, managed_objects, to_be_added, this_tier):
     :raises StratisCliPartialChangeError: if blockdevs are used by this tier
     :raises StratisCliInUseSameTierError: if blockdevs are used by this tier in another pool
     """
-    # pylint: disable=import-outside-toplevel
-    from ._data import MODev
-    from ._data import devs
-
     pools_to_blockdevs = _generate_pools_to_blockdevs(
         managed_objects, to_be_added, this_tier
     )
@@ -160,7 +149,6 @@ class TopActions:
         :raises StratisCliIncoherenceError:
         :raises StratisCliNameConflictError:
         """
-        # pylint: disable=import-outside-toplevel
         from ._data import Manager
         from ._data import ObjectManager
         from ._data import pools
@@ -200,7 +188,6 @@ class TopActions:
 
         :raises StratisCliEngineError:
         """
-        # pylint: disable=import-outside-toplevel
         from ._data import FetchProperties
         from ._data import MOPool
         from ._data import ObjectManager
@@ -276,7 +263,6 @@ class TopActions:
         :raises StratisCliEngineError:
         :raises StratisCliIncoherenceError:
         """
-        # pylint: disable=import-outside-toplevel
         from ._data import Manager
         from ._data import ObjectManager
         from ._data import pools
@@ -316,7 +302,6 @@ class TopActions:
         :raises StratisCliEngineError:
         :raises StratisCliNoChangeError:
         """
-        # pylint: disable=import-outside-toplevel
         from ._data import ObjectManager
         from ._data import Pool
         from ._data import pools
@@ -350,7 +335,6 @@ class TopActions:
         :raises StratisCliInUseSameTierError:
         :raises StratisCliPartialChangeError:
         """
-        # pylint: disable=import-outside-toplevel
         from ._data import ObjectManager
         from ._data import Pool
         from ._data import pools
@@ -399,7 +383,6 @@ class TopActions:
         :raises StratisCliInUseSameTierError:
         :raises StratisCliPartialChangeError:
         """
-        # pylint: disable=import-outside-toplevel
         from ._data import ObjectManager
         from ._data import Pool
         from ._data import pools

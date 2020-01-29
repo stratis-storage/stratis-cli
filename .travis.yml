@@ -18,18 +18,21 @@ matrix:
     # MANDATORY CHECKS USING CURRENT DEVELOPMENT INTERPRETER
     - name: "run pylint using Python 3.7.6"
       python: "3.7.6"
-      env: TASK=lint
+      install: pip install pylint==2.3.1 dbus-client-gen==0.4 dbus-python-client-gen==0.7 justbytes==0.11 python-dateutil==2.8.0 wcwidth==0.1.7 psutil==5.4.3
+      script: PYTHONPATH=./src make -f Makefile lint
     - name: "check formatting using Python 3.7.6"
       python: "3.7.6"
       install: pip install black==19.3b0 isort==4.3.4
       env: TASK=fmt-travis
     - name: "run tests that do not require stratisd using Python 3.7.6"
       python: "3.7.6"
-      env: TASK=test-travis
+      install: pip install dbus-client-gen==0.4 dbus-python-client-gen==0.7 justbytes==0.11 python-dateutil==2.8.0 wcwidth==0.1.7 psutil==5.4.3
+      script: PYTHONPATH=./src make -f Makefile test-travis
 
     # MANDATORY CHECKS USING LOWEST SUPPORTED INTERPRETER
     - name: "run tests that do not require stratisd using Python 3.6.8"
       python: "3.6.8"
-      env: TASK=test-travis
+      install: pip install dbus-client-gen==0.4 dbus-python-client-gen==0.7 justbytes==0.11 python-dateutil wcwidth psutil
+      script: PYTHONPATH=./src make -f Makefile test-travis
 
 script: make -f Makefile $TASK

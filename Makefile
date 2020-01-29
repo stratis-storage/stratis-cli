@@ -1,10 +1,13 @@
 PYTEST_OPTS = --verbose
 
-TOX=tox
-
 .PHONY: lint
 lint:
-	$(TOX) -c tox.ini -e lint
+	./check.py bin/stratis
+	./check.py src/stratis_cli
+	./check.py tests/blackbox/stratis_cli_cert.py
+	./check.py tests/blackbox/stratisd_cert.py
+	./check.py tests/blackbox/testlib
+	./check.py tests/whitebox
 
 .PHONY: fmt
 fmt:
@@ -62,4 +65,4 @@ keyboard-interrupt-test:
 	py.test-3 ${PYTEST_OPTS} ./tests/whitebox/monkey_patching/test_keyboard_interrupt.py
 
 test-travis:
-	$(TOX) -c tox.ini -e test
+	py.test ${PYTEST_OPS} ./tests/whitebox/unittest
