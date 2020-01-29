@@ -26,14 +26,14 @@ from ._misc import RUNNER, SimTestCase
 PARSE_ERROR = StratisCliErrorCodes.PARSE_ERROR
 
 
-def checkErrorRaised(obj, command_line, prefix, expected_code):
+def check_error_raised(obj, command_line_args, expected_code):
     """
     Check that running the program with given prefix and command line arguments
     will return an exit code which matches the expected code, in this case a
     parser error.
     """
     with obj.assertRaises(SystemExit) as context:
-        RUNNER(prefix + command_line)
+        RUNNER(command_line_args)
     exit_code = context.exception.code
     obj.assertEqual(exit_code, expected_code)
 
@@ -55,7 +55,7 @@ class ParserTestCase(unittest.TestCase):
         """
         for command_line in [[], ["daemon"]]:
             for prefix in [[], ["--propagate"]]:
-                checkErrorRaised(self, command_line, prefix, PARSE_ERROR)
+                check_error_raised(self, prefix + command_line, PARSE_ERROR)
 
     def testStratisTwoOptions(self):
         """
@@ -64,7 +64,7 @@ class ParserTestCase(unittest.TestCase):
         """
         for prefix in [[], ["--propagate"]]:
             command_line = ["daemon", "redundancy", "version"]
-            checkErrorRaised(self, command_line, prefix, PARSE_ERROR)
+            check_error_raised(self, prefix + command_line, PARSE_ERROR)
 
     def testStratisBadSubcommand(self):
         """
@@ -79,7 +79,7 @@ class ParserTestCase(unittest.TestCase):
             ["filesystem", "notasub"],
         ]:
             for prefix in [[], ["--propagate"]]:
-                checkErrorRaised(self, command_line, prefix, PARSE_ERROR)
+                check_error_raised(self, prefix + command_line, PARSE_ERROR)
 
     def testRedundancy(self):
         """
@@ -97,7 +97,7 @@ class ParserTestCase(unittest.TestCase):
         ]
 
         for prefix in [[], ["--propagate"]]:
-            checkErrorRaised(self, command_line, prefix, PARSE_ERROR)
+            check_error_raised(self, prefix + command_line, PARSE_ERROR)
 
 
 class ParserSimTestCase(SimTestCase):
