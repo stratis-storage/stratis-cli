@@ -48,6 +48,8 @@ class StratisCliErrorCodes(IntEnum):
     PARSE_ERROR = 2
 
 
+ERROR = StratisCliErrorCodes.ERROR
+
 _DBUS_INTERFACE_MSG = (
     "The version of stratis you are running expects a different "
     "D-Bus interface than the one stratisd provides. Most likely "
@@ -60,7 +62,7 @@ def exit_(code, msg):
     """
     Exits program with a given exit code and error message.
     """
-    print(msg, file=sys.stderr)
+    print(msg, os.linesep, file=sys.stderr, flush=True)
     raise SystemExit(code)
 
 
@@ -234,4 +236,4 @@ def handle_error(err):
         raise err
 
     exit_msg = "Execution failed:%s%s" % (os.linesep, explanation)
-    exit_(1, exit_msg)
+    exit_(ERROR, exit_msg)
