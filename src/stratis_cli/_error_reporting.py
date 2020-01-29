@@ -58,9 +58,8 @@ _DBUS_INTERFACE_MSG = (
 
 def exit_(code, msg):
     """
-    Description
+    Exits program with a given exit code and error message.
     """
-    # if msg is not None
     print(msg, file=sys.stderr)
     raise SystemExit(code)
 

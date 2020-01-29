@@ -35,7 +35,7 @@ from .._misc import RUNNER, SimTestCase, device_name_list
 _DEVICE_STRATEGY = device_name_list(1)
 
 
-def checkHandleError(obj, context):
+def check_handle_error(obj, context):
     with obj.assertRaises(SystemExit) as final_err:
         handle_error(context.exception)
     final_code = final_err.exception.code
@@ -151,7 +151,7 @@ class Create4TestCase(SimTestCase):
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES[0:2]
         with self.assertRaises(StratisCliActionError) as context:
             RUNNER(command_line)
-        checkHandleError(self, context)
+        check_handle_error(self, context)
 
     def test2Create(self):
         """
