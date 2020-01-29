@@ -37,6 +37,11 @@ ERROR = StratisCliErrorCodes.ERROR
 
 
 def check_handle_error(obj, context, expected_code):
+    """
+    Test that exceptions are handled correctly by confirming that the correct
+    exception and exit code are returned.
+    """
+
     with obj.assertRaises(SystemExit) as final_err:
         handle_error(context.exception)
     final_code = final_err.exception.code
