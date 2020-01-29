@@ -23,6 +23,7 @@ try:
 
     from stratis_cli import run
     from stratis_cli import StratisCliEnvironmentError
+    from stratis_cli._error_reporting import StratisCliErrorCodes
 
     def main():
         """
@@ -34,10 +35,10 @@ try:
         main()
 
 except BrokenPipeError:
-    sys.exit("Broken pipe")
+    exit_(StratisCliErrorCodes.ERROR, "Broken pipe")
 
 except KeyboardInterrupt:
-    sys.exit("Received KeyboardInterrupt")
+    exit_(StratisCliErrorCodes.ERROR, "Received KeyboardInterrupt")
 
 except StratisCliEnvironmentError as err:
-    sys.exit("Value of STRATIS_DBUS_TIMEOUT invalid: %s" % err)
+    exit_(StratisCliErrorCodes.ERROR, "Value of STRATIS_DBUS_TIMEOUT invalid: %s" % err)
