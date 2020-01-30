@@ -20,7 +20,6 @@ import os
 import random
 import string
 import subprocess
-import sys
 import time
 import unittest
 
@@ -28,7 +27,7 @@ import unittest
 import psutil
 
 # isort: LOCAL
-from stratis_cli import run
+from stratis_cli import exit_, run
 from stratis_cli._error_reporting import StratisCliErrorCodes
 
 ERROR = StratisCliErrorCodes.ERROR

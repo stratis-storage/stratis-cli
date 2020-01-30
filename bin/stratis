@@ -23,7 +23,7 @@ try:
 
     from stratis_cli import run
     from stratis_cli import StratisCliEnvironmentError
-    from stratis_cli._error_reporting import StratisCliErrorCodes
+    from stratis_cli import StratisCliErrorCodes, exit_
 
     def main():
         """
