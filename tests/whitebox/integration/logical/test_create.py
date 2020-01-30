@@ -36,14 +36,14 @@ _DEVICE_STRATEGY = device_name_list(1)
 ERROR = StratisCliErrorCodes.ERROR
 
 
-def check_handle_error(obj, context, expected_code):
+def check_handle_error(obj, exception, expected_code):
     """
     Test that exceptions are handled correctly by confirming that the correct
     exception and exit code are returned.
     """
 
     with obj.assertRaises(SystemExit) as final_err:
-        handle_error(context.exception)
+        handle_error(exception)
     final_code = final_err.exception.code
     obj.assertEqual(final_code, expected_code)
 
@@ -157,7 +157,9 @@ class Create4TestCase(SimTestCase):
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES[0:2]
         with self.assertRaises(StratisCliActionError) as context:
             RUNNER(command_line)
-        check_handle_error(self, context, ERROR)
+        check_handle_error(self, context.exception, ERROR)
+        cause = context.exception.__cause__
+        self.assertIsInstance(cause, StratisCliPartialChangeError)
 
     def test2Create(self):
         """

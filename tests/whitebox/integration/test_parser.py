@@ -25,7 +25,6 @@ from ._misc import RUNNER, SimTestCase
 
 PARSE_ERROR = StratisCliErrorCodes.PARSE_ERROR
 
-
 def check_error_raised(obj, command_line_args, expected_code):
     """
     Check that running the program with given prefix and command line arguments
