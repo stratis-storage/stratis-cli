@@ -20,6 +20,7 @@ import os
 import random
 import string
 import subprocess
+import sys
 import time
 import unittest
 
@@ -27,16 +28,13 @@ import unittest
 import psutil
 
 # isort: LOCAL
-from stratis_cli import exit_, run
-from stratis_cli._error_reporting import StratisCliErrorCodes
-
-ERROR = StratisCliErrorCodes.ERROR
+from stratis_cli import run
 
 try:
     _STRATISD = os.environ["STRATISD"]
 except KeyError:
     message = "STRATISD environment variable must be set to absolute path of stratisd executable"
-    exit_(ERROR, message)
+    sys.exit(message)
 
 
 def device_name_list(min_devices=0, max_devices=10):
