@@ -22,7 +22,7 @@ import unittest
 from dbus_client_gen import DbusClientUniqueResultError
 
 # isort: LOCAL
-from stratis_cli._error_reporting import StratisCliErrorCodes, handle_error
+from stratis_cli._error_reporting import StratisCliErrorCodes
 from stratis_cli._errors import (
     StratisCliActionError,
     StratisCliEngineError,
@@ -30,22 +30,10 @@ from stratis_cli._errors import (
 )
 from stratis_cli._stratisd_constants import StratisdErrors
 
-from .._misc import RUNNER, SimTestCase, device_name_list
+from .._misc import RUNNER, SimTestCase, check_error, device_name_list
 
 _DEVICE_STRATEGY = device_name_list(1)
 ERROR = StratisCliErrorCodes.ERROR
-
-
-def check_handle_error(obj, exception, expected_code):
-    """
-    Test that exceptions are handled correctly by confirming that the correct
-    exception and exit code are returned.
-    """
-
-    with obj.assertRaises(SystemExit) as final_err:
-        handle_error(exception)
-    final_code = final_err.exception.code
-    obj.assertEqual(final_code, expected_code)
 
 
 @unittest.skip("Temporarily unable to create multiple filesystems at same time")
@@ -155,11 +143,13 @@ class Create4TestCase(SimTestCase):
         There is 1 target resource that would not change.
         """
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES[0:2]
-        with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(command_line)
-        check_handle_error(self, context.exception, ERROR)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliPartialChangeError)
+        check_error(
+            self,
+            StratisCliActionError,
+            StratisCliPartialChangeError,
+            command_line,
+            ERROR,
+        )
 
     def test2Create(self):
         """

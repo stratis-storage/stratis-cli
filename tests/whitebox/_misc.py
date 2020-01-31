@@ -28,7 +28,7 @@ import unittest
 import psutil
 
 # isort: LOCAL
-from stratis_cli import run, handle_error
+from stratis_cli import handle_error, run
 
 try:
     _STRATISD = os.environ["STRATISD"]
