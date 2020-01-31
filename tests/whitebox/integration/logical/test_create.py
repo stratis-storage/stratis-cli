@@ -51,10 +51,13 @@ class CreateTestCase(SimTestCase):
         Creation of the volume must fail since pool is not specified.
         """
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
-        with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(command_line)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, DbusClientUniqueResultError)
+        check_error(
+            self,
+            StratisCliActionError,
+            DbusClientUniqueResultError,
+            command_line,
+            ERROR,
+        )
 
 
 @unittest.skip("Temporarily unable to create multiple filesystems at same time")
