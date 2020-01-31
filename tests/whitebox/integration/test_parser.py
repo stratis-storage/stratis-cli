@@ -26,14 +26,18 @@ from ._misc import RUNNER, SimTestCase
 PARSE_ERROR = StratisCliErrorCodes.PARSE_ERROR
 
 
-def check_parse_error(obj, command_line_args, expected_code):
+def check_parse_error(obj, command_line, expected_code):
     """
     Check that running the program with given prefix and command line arguments
     will return an exit code which matches the expected code, in this case a
     parser error.
+    
+    :param command_line: the arguments given to command line
+    :param expected_code: the expected exit code from running with these arguments
+    :type expected_code: IntEnum
     """
     with obj.assertRaises(SystemExit) as context:
-        RUNNER(command_line_args)
+        RUNNER(command_line)
     exit_code = context.exception.code
     obj.assertEqual(exit_code, expected_code)
 
