@@ -37,6 +37,26 @@ except KeyError:
     sys.exit(message)
 
 
+def check_error(obj, expected_err, expected_cause, command_line, expected_code):
+    """
+    Check that the expected exception was raised, and that the cause
+    and exit codes where also as expected, based on the command line arguments
+    passed to the program.
+    """
+    with obj.assertRaises(expected_err) as context:
+        RUNNER(command_line)
+
+    cause = context.exception.__cause__
+    obj.assertIsInstance(cause, expected_cause)
+
+    with obj.assertRaises(SystemExit) as final_err:
+        handle_error(exception)
+
+    final_code = final_err.exception.code
+    obj.assertEqual(final_code, expected_code)
+
+
+
 def device_name_list(min_devices=0, max_devices=10):
     """
     Return a function that returns a random list of device names based on
