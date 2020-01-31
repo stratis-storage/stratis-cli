@@ -25,7 +25,8 @@ from ._misc import RUNNER, SimTestCase
 
 PARSE_ERROR = StratisCliErrorCodes.PARSE_ERROR
 
-def check_error_raised(obj, command_line_args, expected_code):
+
+def check_parse_error(obj, command_line_args, expected_code):
     """
     Check that running the program with given prefix and command line arguments
     will return an exit code which matches the expected code, in this case a
@@ -54,7 +55,7 @@ class ParserTestCase(unittest.TestCase):
         """
         for command_line in [[], ["daemon"]]:
             for prefix in [[], ["--propagate"]]:
-                check_error_raised(self, prefix + command_line, PARSE_ERROR)
+                check_parse_error(self, prefix + command_line, PARSE_ERROR)
 
     def testStratisTwoOptions(self):
         """
@@ -63,7 +64,7 @@ class ParserTestCase(unittest.TestCase):
         """
         for prefix in [[], ["--propagate"]]:
             command_line = ["daemon", "redundancy", "version"]
-            check_error_raised(self, prefix + command_line, PARSE_ERROR)
+            check_parse_error(self, prefix + command_line, PARSE_ERROR)
 
     def testStratisBadSubcommand(self):
         """
@@ -78,7 +79,7 @@ class ParserTestCase(unittest.TestCase):
             ["filesystem", "notasub"],
         ]:
             for prefix in [[], ["--propagate"]]:
-                check_error_raised(self, prefix + command_line, PARSE_ERROR)
+                check_parse_error(self, prefix + command_line, PARSE_ERROR)
 
     def testRedundancy(self):
         """
@@ -96,7 +97,7 @@ class ParserTestCase(unittest.TestCase):
         ]
 
         for prefix in [[], ["--propagate"]]:
-            check_error_raised(self, prefix + command_line, PARSE_ERROR)
+            check_parse_error(self, prefix + command_line, PARSE_ERROR)
 
 
 class ParserSimTestCase(SimTestCase):

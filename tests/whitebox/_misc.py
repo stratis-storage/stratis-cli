@@ -28,7 +28,7 @@ import unittest
 import psutil
 
 # isort: LOCAL
-from stratis_cli import run
+from stratis_cli import run, handle_error
 
 try:
     _STRATISD = os.environ["STRATISD"]
@@ -50,11 +50,10 @@ def check_error(obj, expected_err, expected_cause, command_line, expected_code):
     obj.assertIsInstance(cause, expected_cause)
 
     with obj.assertRaises(SystemExit) as final_err:
-        handle_error(exception)
+        handle_error(context.exception)
 
     final_code = final_err.exception.code
     obj.assertEqual(final_code, expected_code)
-
 
 
 def device_name_list(min_devices=0, max_devices=10):
