@@ -22,11 +22,13 @@ import unittest
 from dbus_client_gen import DbusClientUniqueResultError
 
 # isort: LOCAL
+from stratis_cli import StratisCliErrorCodes
 from stratis_cli._errors import StratisCliActionError, StratisCliPartialChangeError
 
-from .._misc import RUNNER, SimTestCase, device_name_list
+from .._misc import RUNNER, SimTestCase, check_error, device_name_list
 
 _DEVICE_STRATEGY = device_name_list(1)
+ERROR = StratisCliErrorCodes.ERROR
 
 
 @unittest.skip("Temporarily unable to create multiple filesystems at same time")
@@ -45,10 +47,13 @@ class DestroyTestCase(SimTestCase):
         Destruction of the volume must fail since pool is not specified.
         """
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
-        with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(command_line)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, DbusClientUniqueResultError)
+        check_error(
+            self,
+            StratisCliActionError,
+            DbusClientUniqueResultError,
+            command_line,
+            ERROR,
+        )
 
 
 @unittest.skip("Temporarily unable to create multiple filesystems at same time")
@@ -138,11 +143,13 @@ class Destroy4TestCase(SimTestCase):
         There is 1 target resource that would not change.
         """
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
-        with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(command_line)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliPartialChangeError)
-        self.assertNotEqual(str(cause), "")
+        check_error(
+            self,
+            StratisCliActionError,
+            StratisCliPartialChangeError,
+            command_line,
+            ERROR,
+        )
 
     def test2Destroy(self):
         """
@@ -151,11 +158,13 @@ class Destroy4TestCase(SimTestCase):
         There is 1 target resource that would not change.
         """
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES[0:3]
-        with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(command_line)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliPartialChangeError)
-        self.assertNotEqual(str(cause), "")
+        check_error(
+            self,
+            StratisCliActionError,
+            StratisCliPartialChangeError,
+            command_line,
+            ERROR,
+        )
 
 
 class Create5TestCase(SimTestCase):
@@ -190,11 +199,13 @@ class Create5TestCase(SimTestCase):
         There are multiple (2) target resources that would not change.
         """
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES[0:3]
-        with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(command_line)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliPartialChangeError)
-        self.assertNotEqual(str(cause), "")
+        check_error(
+            self,
+            StratisCliActionError,
+            StratisCliPartialChangeError,
+            command_line,
+            ERROR,
+        )
 
     def test2Destroy(self):
         """
@@ -203,8 +214,10 @@ class Create5TestCase(SimTestCase):
         There are multiple (2) target resources that would not change.
         """
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES[0:4]
-        with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(command_line)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliPartialChangeError)
-        self.assertNotEqual(str(cause), "")
+        check_error(
+            self,
+            StratisCliActionError,
+            StratisCliPartialChangeError,
+            command_line,
+            ERROR,
+        )
