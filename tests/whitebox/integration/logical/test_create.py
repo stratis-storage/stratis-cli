@@ -214,8 +214,10 @@ class Create5TestCase(SimTestCase):
         There are multiple (2) target resources that would not change.
         """
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES[0:4]
-        with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(command_line)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliPartialChangeError)
-        self.assertNotEqual(str(cause), "")
+        check_error(
+            self,
+            StratisCliActionError,
+            StratisCliPartialChangeError,
+            command_line,
+            ERROR,
+        )
