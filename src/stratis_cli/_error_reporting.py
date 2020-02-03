@@ -114,7 +114,7 @@ def _interpret_errors(errors):
     # pylint: disable=fixme
     # FIXME: remove no coverage pragma when adequate testing for CLI output
     # exists.
-    try:  # pragma: no cover
+    try:
         # Inspect top-most error after StratisCliActionError
         error = errors[1]
 
