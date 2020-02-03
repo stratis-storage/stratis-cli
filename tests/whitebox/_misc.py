@@ -42,15 +42,13 @@ def check_error(obj, expected_err, expected_cause, command_line, expected_code):
     Check that the expected exception was raised, and that the cause
     and exit codes where also as expected, based on the command line arguments
     passed to the program.
-    :param obj: the SimTestCase class
-    :type obj: SimTestCase ?
-    :param expected_err: the top level exception in the chain that is expected
-    :type expecter_err: Exception ?
-    :param expected_cause: the cause of the top level exception
-    :type expected_cause: Exception ?
+    :param expected_err: the expected top level exception in the chain
+    :type expecter_err: StratisCliError
+    :param expected_cause: the expected cause of the top level exception
+    :type expected_cause: StratisCliError
     :param command_line: the command line arguments
-    :param expected_code: the error code expected
-    :type expected_code: IntEnum ?
+    :param expected_code: the expected error code
+    :type expected_code: int
     """
     with obj.assertRaises(expected_err) as context:
         RUNNER(command_line)
