@@ -19,10 +19,11 @@ Test 'destroy'.
 from dbus_client_gen import DbusClientUniqueResultError
 
 # isort: LOCAL
+from stratis_cli import StratisCliErrorCodes
 from stratis_cli._errors import StratisCliActionError, StratisCliEngineError
 from stratis_cli._stratisd_constants import StratisdErrors
 
-from .._misc import RUNNER, SimTestCase, device_name_list
+from .._misc import RUNNER, SimTestCase, check_error, device_name_list
 
 _DEVICE_STRATEGY = device_name_list(1)
 
@@ -42,10 +43,13 @@ class Destroy1TestCase(SimTestCase):
         Destroy should fail because there is no object path for the pool.
         """
         command_line = self._MENU + [self._POOLNAME]
-        with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(command_line)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, DbusClientUniqueResultError)
+        check_error(
+            self,
+            StratisCliActionError,
+            DbusClientUniqueResultError,
+            command_line,
+            StratisCliErrorCodes.ERROR,
+        )
 
 
 class Destroy2TestCase(SimTestCase):
