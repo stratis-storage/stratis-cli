@@ -19,9 +19,10 @@ Test 'list'.
 from dbus_client_gen import DbusClientUniqueResultError
 
 # isort: LOCAL
+from stratis_cli import StratisCliErrorCodes
 from stratis_cli._errors import StratisCliActionError
 
-from .._misc import RUNNER, SimTestCase, device_name_list
+from .._misc import RUNNER, SimTestCase, check_error, device_name_list
 
 _DEVICE_STRATEGY = device_name_list(1)
 
@@ -39,10 +40,13 @@ class ListTestCase(SimTestCase):
         Listing the devices must fail since the pool does not exist.
         """
         command_line = self._MENU + [self._POOLNAME]
-        with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(command_line)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, DbusClientUniqueResultError)
+        check_error(
+            self,
+            StratisCliActionError,
+            DbusClientUniqueResultError,
+            command_line,
+            StratisCliErrorCodes.ERROR,
+        )
 
     def testListEmpty(self):
         """
