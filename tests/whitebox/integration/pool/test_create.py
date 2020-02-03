@@ -16,16 +16,18 @@ Test 'create'.
 """
 
 # isort: LOCAL
+from stratis_cli import StratisCliErrorCodes
 from stratis_cli._errors import (
     StratisCliActionError,
     StratisCliInUseSameTierError,
     StratisCliNameConflictError,
 )
 
-from .._misc import RUNNER, SimTestCase, device_name_list
+from .._misc import RUNNER, SimTestCase, check_error, device_name_list
 
 _DEVICE_STRATEGY = device_name_list(1)
 _DEVICE_STRATEGY_2 = device_name_list(2)
+ERROR = StratisCliErrorCodes.ERROR
 
 
 class Create3TestCase(SimTestCase):
@@ -51,11 +53,13 @@ class Create3TestCase(SimTestCase):
         new pool with the same devices and the same name as previous.
         """
         command_line = self._MENU + [self._POOLNAME] + self.devices
-        with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(command_line)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliNameConflictError)
-        self.assertNotEqual(str(cause), "")
+        check_error(
+            self,
+            StratisCliActionError,
+            StratisCliNameConflictError,
+            command_line,
+            ERROR,
+        )
 
     def testCreateDifferentDevices(self):
         """
@@ -63,11 +67,13 @@ class Create3TestCase(SimTestCase):
         new pool with different devices and the same name as previous.
         """
         command_line = self._MENU + [self._POOLNAME] + _DEVICE_STRATEGY()
-        with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(command_line)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliNameConflictError)
-        self.assertNotEqual(str(cause), "")
+        check_error(
+            self,
+            StratisCliActionError,
+            StratisCliNameConflictError,
+            command_line,
+            ERROR,
+        )
 
 
 class Create4TestCase(SimTestCase):
@@ -91,8 +97,10 @@ class Create4TestCase(SimTestCase):
         a StratisCliInUseSameTierError exception.
         """
         command_line = self._MENU + [self._POOLNAME_2] + self._DEVICES
-        with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(command_line)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliInUseSameTierError)
-        self.assertNotEqual(str(cause), "")
+        check_error(
+            self,
+            StratisCliActionError,
+            StratisCliInUseSameTierError,
+            command_line,
+            ERROR,
+        )
