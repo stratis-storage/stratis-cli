@@ -12,13 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """
-Test 'create'.
+Test 'add'.
 """
 
 # isort: FIRSTPARTY
 from dbus_client_gen import DbusClientUniqueResultError
 
 # isort: LOCAL
+from stratis_cli import StratisCliErrorCodes
 from stratis_cli._errors import (
     StratisCliActionError,
     StratisCliInUseOtherTierError,
@@ -26,10 +27,11 @@ from stratis_cli._errors import (
     StratisCliPartialChangeError,
 )
 
-from .._misc import RUNNER, SimTestCase, device_name_list
+from .._misc import RUNNER, SimTestCase, check_error, device_name_list
 
 _DEVICE_STRATEGY = device_name_list(1, 1)
 _DEVICE_STRATEGY_2 = device_name_list(2, 2)
+ERROR = StratisCliErrorCodes.ERROR
 
 
 class AddDataTestCase(SimTestCase):
@@ -45,10 +47,13 @@ class AddDataTestCase(SimTestCase):
         Adding the devices must fail since the pool does not exist.
         """
         command_line = self._MENU + [self._POOLNAME] + _DEVICE_STRATEGY()
-        with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(command_line)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, DbusClientUniqueResultError)
+        check_error(
+            self,
+            StratisCliActionError,
+            DbusClientUniqueResultError,
+            command_line,
+            ERROR,
+        )
 
 
 class AddCacheTestCase(SimTestCase):
@@ -63,11 +68,15 @@ class AddCacheTestCase(SimTestCase):
         """
         Adding the devices must fail since the pool does not exist.
         """
+
         command_line = self._MENU + [self._POOLNAME] + _DEVICE_STRATEGY()
-        with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(command_line)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, DbusClientUniqueResultError)
+        check_error(
+            self,
+            StratisCliActionError,
+            DbusClientUniqueResultError,
+            command_line,
+            ERROR,
+        )
 
 
 class AddDataTestCase1(SimTestCase):
@@ -99,10 +108,13 @@ class AddDataTestCase1(SimTestCase):
         There is 1 target resource that would not change.
         """
         command_line = self._MENU + [self._POOLNAME] + self._DEVICES
-        with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(command_line)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliPartialChangeError)
+        check_error(
+            self,
+            StratisCliActionError,
+            StratisCliPartialChangeError,
+            command_line,
+            ERROR,
+        )
 
     def testAddDataCache(self):
         """
@@ -112,11 +124,13 @@ class AddDataTestCase1(SimTestCase):
         devices = _DEVICE_STRATEGY()
         command_line = ["--propagate", "pool", "add-cache"] + [self._POOLNAME] + devices
         RUNNER(command_line)
-        with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(self._MENU + [self._POOLNAME] + devices)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliInUseOtherTierError)
-        self.assertNotEqual(str(cause), "")
+        check_error(
+            self,
+            StratisCliActionError,
+            StratisCliInUseOtherTierError,
+            self._MENU + [self._POOLNAME] + devices,
+            ERROR,
+        )
 
     def testAddDataCache2(self):
         """
@@ -126,11 +140,13 @@ class AddDataTestCase1(SimTestCase):
         devices = _DEVICE_STRATEGY_2()
         command_line = ["--propagate", "pool", "add-cache"] + [self._POOLNAME] + devices
         RUNNER(command_line)
-        with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(self._MENU + [self._POOLNAME] + devices)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliInUseOtherTierError)
-        self.assertNotEqual(str(cause), "")
+        check_error(
+            self,
+            StratisCliActionError,
+            StratisCliInUseOtherTierError,
+            self._MENU + [self._POOLNAME] + devices,
+            ERROR,
+        )
 
 
 class AddDataTestCase2(SimTestCase):
@@ -157,11 +173,13 @@ class AddDataTestCase2(SimTestCase):
         Test that adding the same devices to the data tier in a different pool fails.
         """
         command_line = self._MENU + [self._POOLNAME] + self._SECOND_DEVICES
-        with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(command_line)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliInUseSameTierError)
-        self.assertNotEqual(str(cause), "")
+        check_error(
+            self,
+            StratisCliActionError,
+            StratisCliInUseSameTierError,
+            command_line,
+            ERROR,
+        )
 
 
 class AddCacheTestCase1(SimTestCase):
@@ -195,11 +213,13 @@ class AddCacheTestCase1(SimTestCase):
         devices = _DEVICE_STRATEGY()
         command_line = self._MENU + [self._POOLNAME] + devices
         RUNNER(command_line)
-        with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(command_line)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliPartialChangeError)
-        self.assertNotEqual(str(cause), "")
+        check_error(
+            self,
+            StratisCliActionError,
+            StratisCliPartialChangeError,
+            command_line,
+            ERROR,
+        )
 
     def testAddCacheData(self):
         """
@@ -207,11 +227,13 @@ class AddCacheTestCase1(SimTestCase):
         an exception.
         """
         command_line = self._MENU + [self._POOLNAME] + self._DEVICES
-        with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(command_line)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliInUseOtherTierError)
-        self.assertNotEqual(str(cause), "")
+        check_error(
+            self,
+            StratisCliActionError,
+            StratisCliInUseOtherTierError,
+            command_line,
+            ERROR,
+        )
 
 
 class AddCacheTestCase2(SimTestCase):
@@ -234,8 +256,10 @@ class AddCacheTestCase2(SimTestCase):
         an exception.
         """
         command_line = self._MENU + [self._POOLNAME] + self._DEVICES_2
-        with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(command_line)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliInUseOtherTierError)
-        self.assertNotEqual(str(cause), "")
+        check_error(
+            self,
+            StratisCliActionError,
+            StratisCliInUseOtherTierError,
+            command_line,
+            ERROR,
+        )
