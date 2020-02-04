@@ -21,11 +21,11 @@ from dbus_client_gen import DbusClientUniqueResultError
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
 from stratis_cli._errors import StratisCliActionError, StratisCliEngineError
-from stratis_cli._stratisd_constants import StratisdErrors
 
 from .._misc import RUNNER, SimTestCase, check_error, device_name_list
 
 _DEVICE_STRATEGY = device_name_list(1)
+ERROR = StratisCliErrorCodes.ERROR
 
 
 class Destroy1TestCase(SimTestCase):
@@ -48,7 +48,7 @@ class Destroy1TestCase(SimTestCase):
             StratisCliActionError,
             DbusClientUniqueResultError,
             command_line,
-            StratisCliErrorCodes.ERROR,
+            ERROR,
         )
 
 
@@ -101,11 +101,9 @@ class Destroy3TestCase(SimTestCase):
         This should fail since it has a filesystem.
         """
         command_line = self._MENU + [self._POOLNAME]
-        with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(command_line)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliEngineError)
-        self.assertEqual(cause.rc, StratisdErrors.BUSY)
+        check_error(
+            self, StratisCliActionError, StratisCliEngineError, command_line, ERROR
+        )
 
     def testWithFilesystemRemoved(self):
         """

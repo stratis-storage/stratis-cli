@@ -28,7 +28,6 @@ from stratis_cli._errors import (
     StratisCliEngineError,
     StratisCliPartialChangeError,
 )
-from stratis_cli._stratisd_constants import StratisdErrors
 
 from .._misc import RUNNER, SimTestCase, check_error, device_name_list
 
@@ -112,11 +111,9 @@ class Create3TestCase(SimTestCase):
         volume of the same name.
         """
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
-        with self.assertRaises(StratisCliEngineError) as context:
-            RUNNER(command_line)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliEngineError)
-        self.assertEqual(cause.rc, StratisdErrors.ALREADY_EXISTS)
+        check_error(
+            self, StratisCliActionError, StratisCliEngineError, command_line, ERROR
+        )
 
 
 class Create4TestCase(SimTestCase):
