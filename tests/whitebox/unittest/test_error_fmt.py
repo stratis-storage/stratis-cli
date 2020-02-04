@@ -16,18 +16,13 @@ Test error type string formatting.
 """
 
 # isort: STDLIB
-import argparse
 import unittest
 
 # isort: LOCAL
 from stratis_cli._errors import (
-    StratisCliActionError,
-    StratisCliEngineError,
-    StratisCliError,
     StratisCliGenerationError,
     StratisCliIncoherenceError,
     StratisCliPropertyNotFoundError,
-    StratisCliRuntimeError,
     StratisCliUnknownInterfaceError,
 )
 
@@ -43,18 +38,6 @@ class ErrorFmtTestCase(unittest.TestCase):
         :type exception: Exception
         """
         self.assertNotEqual(str(exception), "")
-
-    def testStratisCliErrorFmt(self):
-        """
-        Test 'StratisCliError'
-        """
-        self._string_not_empty(StratisCliError("Error"))
-
-    def testStratisCliRuntimeErrorFmt(self):
-        """
-        Test 'StratisCliRuntimeError'
-        """
-        self._string_not_empty(StratisCliRuntimeError("Error"))
 
     def testStratisCliPropertyNotFoundErrorFmt(self):
         """
@@ -75,20 +58,6 @@ class ErrorFmtTestCase(unittest.TestCase):
         Test 'StratisCliUnknownInterfaceError'
         """
         self._string_not_empty(StratisCliUnknownInterfaceError("BadInterface"))
-
-    def testTimeoutStratisCliEngineErrorFmt(self):
-        """
-        Test 'StratisCliEngineError'
-        """
-        self._string_not_empty(StratisCliEngineError(42, "Message"))
-
-    def testStratisCliActionErrorFmt(self):
-        """
-        Test 'StratisCliActionError'
-        """
-        self._string_not_empty(
-            StratisCliActionError(["CommandLineArgs"], argparse.ArgumentParser())
-        )
 
     def testStratisCliGenerationErrorFmt(self):
         """
