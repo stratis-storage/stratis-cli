@@ -82,6 +82,7 @@ def _interface_name_to_common_name(interface_name):
     if interface_name == POOL_INTERFACE:
         return "pool"
 
+    # This is a permanent no cover. There should never be an unknown interface.
     raise StratisCliUnknownInterfaceError(interface_name)  # pragma: no cover
 
 
