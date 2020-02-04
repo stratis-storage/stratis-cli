@@ -64,9 +64,7 @@ def exit_(code, msg):
     raise SystemExit(code)
 
 
-# pylint: disable=fixme
-# FIXME: remove no coverage pragma when adequate testing for CLI output exists.
-def _interface_name_to_common_name(interface_name):  # pragma: no cover
+def _interface_name_to_common_name(interface_name):
     """
     Maps a D-Bus interface name to the common name that identifies the type
     of stratisd thing that the interface represents.
@@ -111,9 +109,6 @@ def _interpret_errors(errors):
     :type errors: list of Exception
     :returns: None if no interpretation found, otherwise str
     """
-    # pylint: disable=fixme
-    # FIXME: remove no coverage pragma when adequate testing for CLI output
-    # exists.
     try:
         # Inspect top-most error after StratisCliActionError
         error = errors[1]
