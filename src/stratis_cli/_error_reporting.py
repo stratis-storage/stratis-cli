@@ -73,7 +73,7 @@ def _interface_name_to_common_name(interface_name):
     :returns: a common name
     :rtype: str
     """
-    if interface_name == BLOCKDEV_INTERFACE:
+    if interface_name == BLOCKDEV_INTERFACE:  # pragma: no cover
         return "block device"
 
     if interface_name == FILESYSTEM_INTERFACE:
@@ -82,7 +82,7 @@ def _interface_name_to_common_name(interface_name):
     if interface_name == POOL_INTERFACE:
         return "pool"
 
-    raise StratisCliUnknownInterfaceError(interface_name)
+    raise StratisCliUnknownInterfaceError(interface_name)  # pragma: no cover
 
 
 def get_errors(exc):
@@ -168,7 +168,7 @@ def _interpret_errors(errors):
             # pylint: disable=bad-continuation
             isinstance(error, dbus.exceptions.DBusException)
             and error.get_dbus_name() == "org.freedesktop.DBus.Error.AccessDenied"
-        ):
+        ):  # pragma: no cover
             return "Most likely stratis has insufficient permissions for the action requested."
         # We have observed two causes of this problem. The first is that
         # stratisd is not running at all. The second is that stratisd has not
@@ -184,7 +184,7 @@ def _interpret_errors(errors):
             # pylint: disable=bad-continuation
             isinstance(error, dbus.exceptions.DBusException)
             and error.get_dbus_name() == "org.freedesktop.DBus.Error.NoReply"
-        ):
+        ):  # pragma: no cover
             fmt_str = (
                 "stratis attempted communication with the daemon, stratisd, "
                 "over the D-Bus, but stratisd did not respond in the allowed time."
