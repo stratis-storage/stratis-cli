@@ -20,12 +20,12 @@ from dbus_client_gen import DbusClientUniqueResultError
 
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
-from stratis_cli._errors import StratisCliActionError, StratisCliNoChangeError
+from stratis_cli._errors import StratisCliNoChangeError
 
 from .._misc import RUNNER, SimTestCase, check_error, device_name_list
 
 _DEVICE_STRATEGY = device_name_list(1)
-ERROR = StratisCliErrorCodes.ERROR
+_ERROR = StratisCliErrorCodes.ERROR
 
 
 class SnapshotTestCase(SimTestCase):
@@ -60,9 +60,7 @@ class SnapshotTestCase(SimTestCase):
         Creation of the snapshot must fail, because this performs no action.
         """
         command_line = self._MENU + [self._POOLNAME, self._FSNAME, self._FSNAME]
-        check_error(
-            self, StratisCliActionError, StratisCliNoChangeError, command_line, ERROR
-        )
+        check_error(self, StratisCliNoChangeError, command_line, _ERROR)
 
 
 class Snapshot1TestCase(SimTestCase):
@@ -80,13 +78,7 @@ class Snapshot1TestCase(SimTestCase):
         Creation of the snapshot must fail since specified pool does not exist.
         """
         command_line = self._MENU + [self._POOLNAME, self._FSNAME, self._SNAPNAME]
-        check_error(
-            self,
-            StratisCliActionError,
-            DbusClientUniqueResultError,
-            command_line,
-            ERROR,
-        )
+        check_error(self, DbusClientUniqueResultError, command_line, _ERROR)
 
 
 class Snapshot2TestCase(SimTestCase):
@@ -112,10 +104,4 @@ class Snapshot2TestCase(SimTestCase):
         Creation of the snapshot must fail since filesystem does not exist.
         """
         command_line = self._MENU + [self._POOLNAME, self._FSNAME, self._SNAPNAME]
-        check_error(
-            self,
-            StratisCliActionError,
-            DbusClientUniqueResultError,
-            command_line,
-            ERROR,
-        )
+        check_error(self, DbusClientUniqueResultError, command_line, _ERROR)

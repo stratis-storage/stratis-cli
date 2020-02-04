@@ -20,12 +20,12 @@ from dbus_client_gen import DbusClientUniqueResultError
 
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
-from stratis_cli._errors import StratisCliActionError, StratisCliEngineError
+from stratis_cli._errors import StratisCliEngineError
 
 from .._misc import RUNNER, SimTestCase, check_error, device_name_list
 
 _DEVICE_STRATEGY = device_name_list(1)
-ERROR = StratisCliErrorCodes.ERROR
+_ERROR = StratisCliErrorCodes.ERROR
 
 
 class Destroy1TestCase(SimTestCase):
@@ -43,13 +43,7 @@ class Destroy1TestCase(SimTestCase):
         Destroy should fail because there is no object path for the pool.
         """
         command_line = self._MENU + [self._POOLNAME]
-        check_error(
-            self,
-            StratisCliActionError,
-            DbusClientUniqueResultError,
-            command_line,
-            ERROR,
-        )
+        check_error(self, DbusClientUniqueResultError, command_line, _ERROR)
 
 
 class Destroy2TestCase(SimTestCase):
@@ -101,9 +95,7 @@ class Destroy3TestCase(SimTestCase):
         This should fail since it has a filesystem.
         """
         command_line = self._MENU + [self._POOLNAME]
-        check_error(
-            self, StratisCliActionError, StratisCliEngineError, command_line, ERROR
-        )
+        check_error(self, StratisCliEngineError, command_line, _ERROR)
 
     def testWithFilesystemRemoved(self):
         """

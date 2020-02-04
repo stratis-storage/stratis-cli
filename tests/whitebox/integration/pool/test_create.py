@@ -18,7 +18,6 @@ Test 'create'.
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
 from stratis_cli._errors import (
-    StratisCliActionError,
     StratisCliInUseSameTierError,
     StratisCliNameConflictError,
 )
@@ -27,7 +26,7 @@ from .._misc import RUNNER, SimTestCase, check_error, device_name_list
 
 _DEVICE_STRATEGY = device_name_list(1)
 _DEVICE_STRATEGY_2 = device_name_list(2)
-ERROR = StratisCliErrorCodes.ERROR
+_ERROR = StratisCliErrorCodes.ERROR
 
 
 class Create3TestCase(SimTestCase):
@@ -53,13 +52,7 @@ class Create3TestCase(SimTestCase):
         new pool with the same devices and the same name as previous.
         """
         command_line = self._MENU + [self._POOLNAME] + self.devices
-        check_error(
-            self,
-            StratisCliActionError,
-            StratisCliNameConflictError,
-            command_line,
-            ERROR,
-        )
+        check_error(self, StratisCliNameConflictError, command_line, _ERROR)
 
     def testCreateDifferentDevices(self):
         """
@@ -67,13 +60,7 @@ class Create3TestCase(SimTestCase):
         new pool with different devices and the same name as previous.
         """
         command_line = self._MENU + [self._POOLNAME] + _DEVICE_STRATEGY()
-        check_error(
-            self,
-            StratisCliActionError,
-            StratisCliNameConflictError,
-            command_line,
-            ERROR,
-        )
+        check_error(self, StratisCliNameConflictError, command_line, _ERROR)
 
 
 class Create4TestCase(SimTestCase):
@@ -97,10 +84,4 @@ class Create4TestCase(SimTestCase):
         a StratisCliInUseSameTierError exception.
         """
         command_line = self._MENU + [self._POOLNAME_2] + self._DEVICES
-        check_error(
-            self,
-            StratisCliActionError,
-            StratisCliInUseSameTierError,
-            command_line,
-            ERROR,
-        )
+        check_error(self, StratisCliInUseSameTierError, command_line, _ERROR)

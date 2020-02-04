@@ -29,6 +29,7 @@ import psutil
 
 # isort: LOCAL
 from stratis_cli import handle_error, run
+from stratis_cli._errors import StratisCliActionError
 
 try:
     _STRATISD = os.environ["STRATISD"]
@@ -37,27 +38,27 @@ except KeyError:
     sys.exit(message)
 
 
-def check_error(obj, expected_err, expected_cause, command_line, expected_code):
+def check_error(obj, expected_cause, command_line, expected_code):
     """
     Check that the expected exception was raised, and that the cause
     and exit codes where also as expected, based on the command line arguments
     passed to the program.
-    :param expected_err: the expected top level exception in the chain
-    :type expecter_err: StratisCliError
     :param expected_cause: the expected cause of the top level exception
-    :type expected_cause: StratisCliError
+    :type expected_cause: Exception
     :param command_line: the command line arguments
+    :type command_line: list
     :param expected_code: the expected error code
     :type expected_code: int
     """
-    with obj.assertRaises(expected_err) as context:
+    with obj.assertRaises(StratisCliActionError) as context:
         RUNNER(command_line)
 
-    cause = context.exception.__cause__
+    exception = context.exception
+    cause = exception.__cause__
     obj.assertIsInstance(cause, expected_cause)
 
     with obj.assertRaises(SystemExit) as final_err:
-        handle_error(context.exception)
+        handle_error(exception)
 
     final_code = final_err.exception.code
     obj.assertEqual(final_code, expected_code)

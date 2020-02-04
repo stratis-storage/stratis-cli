@@ -23,7 +23,6 @@ from dbus_client_gen import DbusClientUniqueResultError
 
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
-from stratis_cli._errors import StratisCliActionError
 
 from .._misc import RUNNER, SimTestCase, check_error, device_name_list
 
@@ -44,11 +43,7 @@ class ListTestCase(SimTestCase):
         """
         command_line = self._MENU + [self._POOLNAME]
         check_error(
-            self,
-            StratisCliActionError,
-            DbusClientUniqueResultError,
-            command_line,
-            StratisCliErrorCodes.ERROR,
+            self, DbusClientUniqueResultError, command_line, StratisCliErrorCodes.ERROR
         )
 
 

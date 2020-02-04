@@ -62,7 +62,6 @@ class PropagateTestCase(unittest.TestCase):
         command_line = ["--propagate", "daemon", "version"]
         check_error(
             self,
-            StratisCliActionError,
             dbus.exceptions.DBusException,
             command_line,
             StratisCliErrorCodes.ERROR,
