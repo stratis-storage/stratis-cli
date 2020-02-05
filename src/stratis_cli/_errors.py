@@ -330,6 +330,8 @@ class StratisCliActionError(StratisCliRuntimeError):
         self.command_line_args = command_line_args
         self.namespace = namespace
 
+    # pylint: disable=fixme
+    # FIXME
     def __str__(self):  # pragma: no cover
         fmt_str = (
             "Action selected by command-line arguments %s which were "

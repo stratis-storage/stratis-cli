@@ -43,7 +43,9 @@ def check_error(obj, expected_cause, command_line, expected_code):
     Check that the expected exception was raised, and that the cause
     and exit codes where also as expected, based on the command line arguments
     passed to the program.
-    :param expected_cause: the expected cause of the top level exception
+    :param obj: the instance of a unit test
+    :type obj: unittest.TestCase
+    :param expected_cause: the expected exception below the StratisCliActionError
     :type expected_cause: Exception
     :param command_line: the command line arguments
     :type command_line: list

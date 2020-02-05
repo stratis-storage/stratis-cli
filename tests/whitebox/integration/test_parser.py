@@ -26,20 +26,20 @@ from ._misc import RUNNER, SimTestCase
 _PARSE_ERROR = StratisCliErrorCodes.PARSE_ERROR
 
 
-def check_parse_error(obj, command_line, expected_code):
+def check_parse_error(obj, command_line):
     """
     Check that running the program with given prefix and command line arguments
     will return an exit code which matches the expected code, in this case a
     parser error.
-
+    :param obj: the instance of a unit test
+    :type obj: unittest.TestCase
     :param command_line: the command line arguments
-    :param expected_code: the expected exit code
-    :type expected_code: int
+    :type command_line: list
     """
     with obj.assertRaises(SystemExit) as context:
         RUNNER(command_line)
     exit_code = context.exception.code
-    obj.assertEqual(exit_code, expected_code)
+    obj.assertEqual(exit_code, _PARSE_ERROR)
 
 
 class ParserTestCase(unittest.TestCase):
@@ -59,7 +59,7 @@ class ParserTestCase(unittest.TestCase):
         """
         for command_line in [[], ["daemon"]]:
             for prefix in [[], ["--propagate"]]:
-                check_parse_error(self, prefix + command_line, _PARSE_ERROR)
+                check_parse_error(self, prefix + command_line)
 
     def testStratisTwoOptions(self):
         """
@@ -68,7 +68,7 @@ class ParserTestCase(unittest.TestCase):
         """
         for prefix in [[], ["--propagate"]]:
             command_line = ["daemon", "redundancy", "version"]
-            check_parse_error(self, prefix + command_line, _PARSE_ERROR)
+            check_parse_error(self, prefix + command_line)
 
     def testStratisBadSubcommand(self):
         """
@@ -83,7 +83,7 @@ class ParserTestCase(unittest.TestCase):
             ["filesystem", "notasub"],
         ]:
             for prefix in [[], ["--propagate"]]:
-                check_parse_error(self, prefix + command_line, _PARSE_ERROR)
+                check_parse_error(self, prefix + command_line)
 
     def testRedundancy(self):
         """
@@ -101,7 +101,7 @@ class ParserTestCase(unittest.TestCase):
         ]
 
         for prefix in [[], ["--propagate"]]:
-            check_parse_error(self, prefix + command_line, _PARSE_ERROR)
+            check_parse_error(self, prefix + command_line)
 
 
 class ParserSimTestCase(SimTestCase):

@@ -73,6 +73,9 @@ def _interface_name_to_common_name(interface_name):
     :returns: a common name
     :rtype: str
     """
+    # pylint: disable=fixme
+    # FIXME: remove no coverage pragma when adequate testing for CLI output
+    # exists.
     if interface_name == BLOCKDEV_INTERFACE:  # pragma: no cover
         return "block device"
 
@@ -165,6 +168,9 @@ def _interpret_errors(errors):
         # Inspect lowest error
         error = errors[-1]
 
+        # pylint: disable=fixme
+        # FIXME: remove no coverage pragma when adequate testing for CLI output
+        # exists.
         if (
             # pylint: disable=bad-continuation
             isinstance(error, dbus.exceptions.DBusException)
@@ -181,6 +187,9 @@ def _interpret_errors(errors):
         ):
             return "Most likely stratis is unable to connect to the stratisd D-Bus service."
 
+        # pylint: disable=fixme
+        # FIXME: remove no coverage pragma when adequate testing for CLI output
+        # exists.
         if (
             # pylint: disable=bad-continuation
             isinstance(error, dbus.exceptions.DBusException)
