@@ -25,7 +25,7 @@ from stratis_cli._errors import StratisCliNoChangeError
 from .._misc import RUNNER, SimTestCase, check_error, device_name_list
 
 _DEVICE_STRATEGY = device_name_list(1)
-ERROR = StratisCliErrorCodes.ERROR
+_ERROR = StratisCliErrorCodes.ERROR
 
 
 class RenameTestCase(SimTestCase):
@@ -62,7 +62,7 @@ class RenameTestCase(SimTestCase):
         Renaming the filesystem must fail, because this performs no action.
         """
         command_line = self._MENU + [self._POOLNAME, self._FSNAME, self._FSNAME]
-        check_error(self, StratisCliNoChangeError, command_line, ERROR)
+        check_error(self, StratisCliNoChangeError, command_line, _ERROR)
 
 
 class Rename1TestCase(SimTestCase):
@@ -81,14 +81,14 @@ class Rename1TestCase(SimTestCase):
         """
         command_line = self._MENU + [self._POOLNAME, self._FSNAME, self._RENAMEFSNAME]
 
-        check_error(self, DbusClientUniqueResultError, command_line, ERROR)
+        check_error(self, DbusClientUniqueResultError, command_line, _ERROR)
 
     def testNonExistentPoolSameName(self):
         """
         Renaming the filesystem must fail, because the pool does not exist.
         """
         command_line = self._MENU + [self._POOLNAME, self._FSNAME, self._RENAMEFSNAME]
-        check_error(self, DbusClientUniqueResultError, command_line, ERROR)
+        check_error(self, DbusClientUniqueResultError, command_line, _ERROR)
 
 
 class Rename2TestCase(SimTestCase):
@@ -114,11 +114,11 @@ class Rename2TestCase(SimTestCase):
         Renaming the filesystem must fail, because filesystem does not exist.
         """
         command_line = self._MENU + [self._POOLNAME, self._FSNAME, self._RENAMEFSNAME]
-        check_error(self, DbusClientUniqueResultError, command_line, ERROR)
+        check_error(self, DbusClientUniqueResultError, command_line, _ERROR)
 
     def testNonExistentFilesystemSameName(self):
         """
         Renaming the filesystem must fail, because the filesystem does not exist.
         """
         command_line = self._MENU + [self._POOLNAME, self._FSNAME, self._RENAMEFSNAME]
-        check_error(self, DbusClientUniqueResultError, command_line, ERROR)
+        check_error(self, DbusClientUniqueResultError, command_line, _ERROR)
