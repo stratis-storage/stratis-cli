@@ -28,7 +28,7 @@ import unittest
 import psutil
 
 # isort: LOCAL
-from stratis_cli import handle_error, run
+from stratis_cli import StratisCliErrorCodes, handle_error, run
 from stratis_cli._errors import StratisCliActionError
 
 try:
@@ -136,6 +136,49 @@ class SimTestCase(unittest.TestCase):
         self._service = _Service()
         self.addCleanup(self._service.cleanup)
         self._service.setUp()
+
+
+class RunTestCase(unittest.TestCase):
+    """
+    Description
+    """
+
+    # is command_line needed as a parameter?
+    def check_error(self, expected_cause, command_line, expected_code):
+        """
+        Check that the expected exception was raised, and that the cause
+        and exit codes where also as expected, based on the command line
+        arguments passed to the program.
+        :param expected_cause: the expected exception below the StratisCliActionError
+        :type expected_cause: Exception
+        :param command_line: the command line arguments
+        :type command_line: list
+        :param expected_code: the expected error code
+        :type expected_code: int
+        """
+        with self.assertRaises(StratisCliActionError) as context:
+            RUNNER(command_line)
+
+        exception = context.exception
+        cause = exception.__cause__
+        self.assertIsInstance(cause, expected_cause)
+
+        with self.assertRaises(SystemExit) as final_err:
+            handle_error(exception)
+
+        final_code = final_err.exception.code
+        self.assertEqual(final_code, expected_code)
+
+    def check_parse_error(self, command_line):
+        """
+        Description
+        :param command_line: the command line arguments
+        :type command_line: list
+        """
+        with self.assertRaises(SystemExit) as context:
+            RUNNER(command_line)
+        exit_code = context.exception.code
+        self.assertEqual(exit_code, StratisCliErrorCodes.PARSE_ERROR)
 
 
 RUNNER = run()
