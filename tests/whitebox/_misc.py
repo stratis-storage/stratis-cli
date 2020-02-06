@@ -113,7 +113,7 @@ class _Service:
 
 class RunTestCase(unittest.TestCase):
     """
-    Description
+    Test case for running the program.
     """
 
     # is command_line needed as a parameter?
@@ -144,9 +144,13 @@ class RunTestCase(unittest.TestCase):
 
     def check_parse_error(self, command_line, expected_code):
         """
-        Description
+        Check that SystemExit exception was raised with the expected error
+        code as a result of running the program.
+
         :param command_line: the command line arguments
         :type command_line: list
+        :param expected_code: the expected error code
+        :type expected_code: int
         """
         with self.assertRaises(SystemExit) as context:
             RUNNER(command_line)
