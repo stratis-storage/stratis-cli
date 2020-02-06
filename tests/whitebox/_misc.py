@@ -88,11 +88,10 @@ class RunTestCase(unittest.TestCase):
     Test case for running the program.
     """
 
-    # is command_line needed as a parameter?
     def check_error(self, expected_cause, command_line, expected_code):
         """
         Check that the expected exception was raised, and that the cause
-        and exit codes where also as expected, based on the command line
+        and exit codes were also as expected, based on the command line
         arguments passed to the program.
         :param expected_cause: the expected exception below the StratisCliActionError
         :type expected_cause: Exception
