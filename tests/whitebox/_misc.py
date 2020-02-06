@@ -111,33 +111,6 @@ class _Service:
             self.tearDown()
 
 
-class SimTestCase(unittest.TestCase):
-    """
-    A SimTestCase must always start and stop stratisd (simulator vesion).
-    """
-
-    @classmethod
-    def setUpClass(cls):
-        """
-        Assert that there are no other stratisd processes running.
-        """
-        for pid in psutil.pids():
-            try:
-                assert psutil.Process(pid).name() != "stratisd", (
-                    "Evidently a stratisd process with process id %u is running" % pid
-                )
-            except psutil.NoSuchProcess:
-                pass
-
-    def setUp(self):
-        """
-        Start the stratisd daemon with the simulator.
-        """
-        self._service = _Service()
-        self.addCleanup(self._service.cleanup)
-        self._service.setUp()
-
-
 class RunTestCase(unittest.TestCase):
     """
     Description
@@ -179,6 +152,33 @@ class RunTestCase(unittest.TestCase):
             RUNNER(command_line)
         exit_code = context.exception.code
         self.assertEqual(exit_code, StratisCliErrorCodes.PARSE_ERROR)
+
+
+class SimTestCase(RunTestCase):
+    """
+    A SimTestCase must always start and stop stratisd (simulator vesion).
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        Assert that there are no other stratisd processes running.
+        """
+        for pid in psutil.pids():
+            try:
+                assert psutil.Process(pid).name() != "stratisd", (
+                    "Evidently a stratisd process with process id %u is running" % pid
+                )
+            except psutil.NoSuchProcess:
+                pass
+
+    def setUp(self):
+        """
+        Start the stratisd daemon with the simulator.
+        """
+        self._service = _Service()
+        self.addCleanup(self._service.cleanup)
+        self._service.setUp()
 
 
 RUNNER = run()

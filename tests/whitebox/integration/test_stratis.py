@@ -15,9 +15,6 @@
 Test 'stratisd'.
 """
 
-# isort: STDLIB
-import unittest
-
 # isort: THIRDPARTY
 import dbus
 
@@ -25,7 +22,7 @@ import dbus
 from stratis_cli import StratisCliErrorCodes
 from stratis_cli._errors import StratisCliActionError
 
-from ._misc import RUNNER, SimTestCase, check_error
+from ._misc import RUNNER, RunTestCase, SimTestCase
 
 
 class StratisTestCase(SimTestCase):
@@ -50,7 +47,7 @@ class StratisTestCase(SimTestCase):
         RUNNER(command_line)
 
 
-class PropagateTestCase(unittest.TestCase):
+class PropagateTestCase(RunTestCase):
     """
     Verify correct operation of --propagate flag.
     """
@@ -60,11 +57,8 @@ class PropagateTestCase(unittest.TestCase):
         If propagate is set, the expected exception will propagate.
         """
         command_line = ["--propagate", "daemon", "version"]
-        check_error(
-            self,
-            dbus.exceptions.DBusException,
-            command_line,
-            StratisCliErrorCodes.ERROR,
+        self.check_error(
+            dbus.exceptions.DBusException, command_line, StratisCliErrorCodes.ERROR
         )
 
     def testNotPropagate(self):
