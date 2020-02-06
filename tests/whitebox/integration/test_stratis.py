@@ -89,4 +89,4 @@ class ErrorHandlingTestCase(SimTestCase):
         # If instead the exception chain is handed off to handle_error,
         # the exception is recognized, an error message is generated,
         # and the program exits with the message via SystemExit.
-        self.check_parse_error(command_line, _ERROR)
+        self.check_system_exit(command_line, _ERROR)

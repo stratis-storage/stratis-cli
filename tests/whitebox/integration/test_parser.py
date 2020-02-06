@@ -40,7 +40,7 @@ class ParserTestCase(RunTestCase):
         """
         for command_line in [[], ["daemon"]]:
             for prefix in [[], ["--propagate"]]:
-                self.check_parse_error(prefix + command_line, _PARSE_ERROR)
+                self.check_system_exit(prefix + command_line, _PARSE_ERROR)
 
     def testStratisTwoOptions(self):
         """
@@ -49,7 +49,7 @@ class ParserTestCase(RunTestCase):
         """
         for prefix in [[], ["--propagate"]]:
             command_line = ["daemon", "redundancy", "version"]
-            self.check_parse_error(prefix + command_line, _PARSE_ERROR)
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
 
     def testStratisBadSubcommand(self):
         """
@@ -64,7 +64,7 @@ class ParserTestCase(RunTestCase):
             ["filesystem", "notasub"],
         ]:
             for prefix in [[], ["--propagate"]]:
-                self.check_parse_error(prefix + command_line, _PARSE_ERROR)
+                self.check_system_exit(prefix + command_line, _PARSE_ERROR)
 
     def testRedundancy(self):
         """
@@ -82,7 +82,7 @@ class ParserTestCase(RunTestCase):
         ]
 
         for prefix in [[], ["--propagate"]]:
-            self.check_parse_error(prefix + command_line, _PARSE_ERROR)
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
 
 
 class ParserSimTestCase(SimTestCase):

@@ -114,7 +114,7 @@ class RunTestCase(unittest.TestCase):
         final_code = final_err.exception.code
         self.assertEqual(final_code, expected_code)
 
-    def check_parse_error(self, command_line, expected_code):
+    def check_system_exit(self, command_line, expected_code):
         """
         Check that SystemExit exception was raised with the expected error
         code as a result of running the program.
