@@ -331,7 +331,7 @@ class StratisCliActionError(StratisCliRuntimeError):
         self.namespace = namespace
 
     # pylint: disable=fixme
-    # FIXME
+    # FIXME: remove no coverage pragma when adequate testing for CLI output
     def __str__(self):  # pragma: no cover
         fmt_str = (
             "Action selected by command-line arguments %s which were "
