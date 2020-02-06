@@ -25,7 +25,7 @@ from dbus_client_gen import DbusClientUniqueResultError
 from stratis_cli import StratisCliErrorCodes
 from stratis_cli._errors import StratisCliEngineError, StratisCliPartialChangeError
 
-from .._misc import RUNNER, SimTestCase, check_error, device_name_list
+from .._misc import RUNNER, SimTestCase, device_name_list
 
 _DEVICE_STRATEGY = device_name_list(1)
 _ERROR = StratisCliErrorCodes.ERROR
@@ -46,7 +46,7 @@ class CreateTestCase(SimTestCase):
         Creation of the volume must fail since pool is not specified.
         """
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
-        check_error(self, DbusClientUniqueResultError, command_line, _ERROR)
+        self.check_error(DbusClientUniqueResultError, command_line, _ERROR)
 
 
 @unittest.skip("Temporarily unable to create multiple filesystems at same time")
@@ -101,7 +101,7 @@ class Create3TestCase(SimTestCase):
         volume of the same name.
         """
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
-        check_error(self, StratisCliEngineError, command_line, _ERROR)
+        self.check_error(StratisCliEngineError, command_line, _ERROR)
 
 
 class Create4TestCase(SimTestCase):
@@ -131,7 +131,7 @@ class Create4TestCase(SimTestCase):
         There is 1 target resource that would not change.
         """
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES[0:2]
-        check_error(self, StratisCliPartialChangeError, command_line, _ERROR)
+        self.check_error(StratisCliPartialChangeError, command_line, _ERROR)
 
     def test2Create(self):
         """
@@ -140,7 +140,7 @@ class Create4TestCase(SimTestCase):
         There is 1 target resource that would not change.
         """
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES[0:3]
-        check_error(self, StratisCliPartialChangeError, command_line, _ERROR)
+        self.check_error(StratisCliPartialChangeError, command_line, _ERROR)
 
 
 class Create5TestCase(SimTestCase):
@@ -175,7 +175,7 @@ class Create5TestCase(SimTestCase):
         There are multiple (2) target resources that would not change.
         """
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES[0:3]
-        check_error(self, StratisCliPartialChangeError, command_line, _ERROR)
+        self.check_error(StratisCliPartialChangeError, command_line, _ERROR)
 
     def test2Create(self):
         """
@@ -184,4 +184,4 @@ class Create5TestCase(SimTestCase):
         There are multiple (2) target resources that would not change.
         """
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES[0:4]
-        check_error(self, StratisCliPartialChangeError, command_line, _ERROR)
+        self.check_error(StratisCliPartialChangeError, command_line, _ERROR)
