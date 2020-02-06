@@ -28,7 +28,7 @@ import unittest
 import psutil
 
 # isort: LOCAL
-from stratis_cli import StratisCliErrorCodes, handle_error, run
+from stratis_cli import handle_error, run
 from stratis_cli._errors import StratisCliActionError
 
 try:
@@ -142,7 +142,7 @@ class RunTestCase(unittest.TestCase):
         final_code = final_err.exception.code
         self.assertEqual(final_code, expected_code)
 
-    def check_parse_error(self, command_line):
+    def check_parse_error(self, command_line, expected_code):
         """
         Description
         :param command_line: the command line arguments
@@ -151,7 +151,7 @@ class RunTestCase(unittest.TestCase):
         with self.assertRaises(SystemExit) as context:
             RUNNER(command_line)
         exit_code = context.exception.code
-        self.assertEqual(exit_code, StratisCliErrorCodes.PARSE_ERROR)
+        self.assertEqual(exit_code, expected_code)
 
 
 class SimTestCase(RunTestCase):

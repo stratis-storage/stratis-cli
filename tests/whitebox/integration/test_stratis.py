@@ -24,6 +24,8 @@ from stratis_cli._errors import StratisCliActionError
 
 from ._misc import RUNNER, RunTestCase, SimTestCase
 
+_ERROR = StratisCliErrorCodes.ERROR
+
 
 class StratisTestCase(SimTestCase):
     """
@@ -57,9 +59,7 @@ class PropagateTestCase(RunTestCase):
         If propagate is set, the expected exception will propagate.
         """
         command_line = ["--propagate", "daemon", "version"]
-        self.check_error(
-            dbus.exceptions.DBusException, command_line, StratisCliErrorCodes.ERROR
-        )
+        self.check_error(dbus.exceptions.DBusException, command_line, _ERROR)
 
     def testNotPropagate(self):
         """
@@ -89,8 +89,4 @@ class ErrorHandlingTestCase(SimTestCase):
         # If instead the exception chain is handed off to handle_error,
         # the exception is recognized, an error message is generated,
         # and the program exits with the message via SystemExit.
-        with self.assertRaises(SystemExit) as context:
-            RUNNER(command_line)
-        exit_code = context.exception.code
-        self.assertNotEqual(exit_code, 0)
-        self.assertIsNotNone(exit_code)
+        self.check_parse_error(command_line, _ERROR)

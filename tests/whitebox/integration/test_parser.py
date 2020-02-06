@@ -15,7 +15,12 @@
 Test command-line argument parsing.
 """
 
+# isort: LOCAL
+from stratis_cli import StratisCliErrorCodes
+
 from ._misc import RUNNER, RunTestCase, SimTestCase
+
+_PARSE_ERROR = StratisCliErrorCodes.PARSE_ERROR
 
 
 class ParserTestCase(RunTestCase):
@@ -35,7 +40,7 @@ class ParserTestCase(RunTestCase):
         """
         for command_line in [[], ["daemon"]]:
             for prefix in [[], ["--propagate"]]:
-                self.check_parse_error(prefix + command_line)
+                self.check_parse_error(prefix + command_line, _PARSE_ERROR)
 
     def testStratisTwoOptions(self):
         """
@@ -44,7 +49,7 @@ class ParserTestCase(RunTestCase):
         """
         for prefix in [[], ["--propagate"]]:
             command_line = ["daemon", "redundancy", "version"]
-            self.check_parse_error(prefix + command_line)
+            self.check_parse_error(prefix + command_line, _PARSE_ERROR)
 
     def testStratisBadSubcommand(self):
         """
@@ -59,7 +64,7 @@ class ParserTestCase(RunTestCase):
             ["filesystem", "notasub"],
         ]:
             for prefix in [[], ["--propagate"]]:
-                self.check_parse_error(prefix + command_line)
+                self.check_parse_error(prefix + command_line, _PARSE_ERROR)
 
     def testRedundancy(self):
         """
@@ -77,7 +82,7 @@ class ParserTestCase(RunTestCase):
         ]
 
         for prefix in [[], ["--propagate"]]:
-            self.check_parse_error(prefix + command_line)
+            self.check_parse_error(prefix + command_line, _PARSE_ERROR)
 
 
 class ParserSimTestCase(SimTestCase):
