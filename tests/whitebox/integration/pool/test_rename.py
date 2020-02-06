@@ -22,7 +22,7 @@ from dbus_client_gen import DbusClientUniqueResultError
 from stratis_cli import StratisCliErrorCodes
 from stratis_cli._errors import StratisCliNoChangeError
 
-from .._misc import RUNNER, SimTestCase, check_error, device_name_list
+from .._misc import RUNNER, SimTestCase, device_name_list
 
 _DEVICE_STRATEGY = device_name_list(1)
 _ERROR = StratisCliErrorCodes.ERROR
@@ -42,14 +42,14 @@ class Rename1TestCase(SimTestCase):
         This should fail because original name does not exist.
         """
         command_line = self._MENU + [self._POOLNAME, self._NEW_POOLNAME]
-        check_error(self, DbusClientUniqueResultError, command_line, _ERROR)
+        self.check_error(DbusClientUniqueResultError, command_line, _ERROR)
 
     def testSameName(self):
         """
         Renaming to itself will fail because the pool does not exist.
         """
         command_line = self._MENU + [self._POOLNAME, self._POOLNAME]
-        check_error(self, DbusClientUniqueResultError, command_line, _ERROR)
+        self.check_error(DbusClientUniqueResultError, command_line, _ERROR)
 
 
 class Rename2TestCase(SimTestCase):
@@ -81,11 +81,11 @@ class Rename2TestCase(SimTestCase):
         This should fail, because this performs no action.
         """
         command_line = self._MENU + [self._POOLNAME, self._POOLNAME]
-        check_error(self, StratisCliNoChangeError, command_line, _ERROR)
+        self.check_error(StratisCliNoChangeError, command_line, _ERROR)
 
     def testNonExistentPool(self):
         """
         This should fail, because this pool is not there.
         """
         command_line = self._MENU + ["nopool", self._POOLNAME]
-        check_error(self, DbusClientUniqueResultError, command_line, _ERROR)
+        self.check_error(DbusClientUniqueResultError, command_line, _ERROR)

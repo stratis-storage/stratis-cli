@@ -26,7 +26,7 @@ from stratis_cli._errors import (
     StratisCliPartialChangeError,
 )
 
-from .._misc import RUNNER, SimTestCase, check_error, device_name_list
+from .._misc import RUNNER, SimTestCase, device_name_list
 
 _DEVICE_STRATEGY = device_name_list(1, 1)
 _DEVICE_STRATEGY_2 = device_name_list(2, 2)
@@ -46,7 +46,7 @@ class AddDataTestCase(SimTestCase):
         Adding the devices must fail since the pool does not exist.
         """
         command_line = self._MENU + [self._POOLNAME] + _DEVICE_STRATEGY()
-        check_error(self, DbusClientUniqueResultError, command_line, _ERROR)
+        self.check_error(DbusClientUniqueResultError, command_line, _ERROR)
 
 
 class AddCacheTestCase(SimTestCase):
@@ -63,7 +63,7 @@ class AddCacheTestCase(SimTestCase):
         """
 
         command_line = self._MENU + [self._POOLNAME] + _DEVICE_STRATEGY()
-        check_error(self, DbusClientUniqueResultError, command_line, _ERROR)
+        self.check_error(DbusClientUniqueResultError, command_line, _ERROR)
 
 
 class AddDataTestCase1(SimTestCase):
@@ -95,7 +95,7 @@ class AddDataTestCase1(SimTestCase):
         There is 1 target resource that would not change.
         """
         command_line = self._MENU + [self._POOLNAME] + self._DEVICES
-        check_error(self, StratisCliPartialChangeError, command_line, _ERROR)
+        self.check_error(StratisCliPartialChangeError, command_line, _ERROR)
 
     def testAddDataCache(self):
         """
@@ -105,8 +105,7 @@ class AddDataTestCase1(SimTestCase):
         devices = _DEVICE_STRATEGY()
         command_line = ["--propagate", "pool", "add-cache"] + [self._POOLNAME] + devices
         RUNNER(command_line)
-        check_error(
-            self,
+        self.check_error(
             StratisCliInUseOtherTierError,
             self._MENU + [self._POOLNAME] + devices,
             _ERROR,
@@ -120,8 +119,7 @@ class AddDataTestCase1(SimTestCase):
         devices = _DEVICE_STRATEGY_2()
         command_line = ["--propagate", "pool", "add-cache"] + [self._POOLNAME] + devices
         RUNNER(command_line)
-        check_error(
-            self,
+        self.check_error(
             StratisCliInUseOtherTierError,
             self._MENU + [self._POOLNAME] + devices,
             _ERROR,
@@ -152,7 +150,7 @@ class AddDataTestCase2(SimTestCase):
         Test that adding the same devices to the data tier in a different pool fails.
         """
         command_line = self._MENU + [self._POOLNAME] + self._SECOND_DEVICES
-        check_error(self, StratisCliInUseSameTierError, command_line, _ERROR)
+        self.check_error(StratisCliInUseSameTierError, command_line, _ERROR)
 
 
 class AddCacheTestCase1(SimTestCase):
@@ -186,7 +184,7 @@ class AddCacheTestCase1(SimTestCase):
         devices = _DEVICE_STRATEGY()
         command_line = self._MENU + [self._POOLNAME] + devices
         RUNNER(command_line)
-        check_error(self, StratisCliPartialChangeError, command_line, _ERROR)
+        self.check_error(StratisCliPartialChangeError, command_line, _ERROR)
 
     def testAddCacheData(self):
         """
@@ -194,7 +192,7 @@ class AddCacheTestCase1(SimTestCase):
         an exception.
         """
         command_line = self._MENU + [self._POOLNAME] + self._DEVICES
-        check_error(self, StratisCliInUseOtherTierError, command_line, _ERROR)
+        self.check_error(StratisCliInUseOtherTierError, command_line, _ERROR)
 
 
 class AddCacheTestCase2(SimTestCase):
@@ -217,4 +215,4 @@ class AddCacheTestCase2(SimTestCase):
         an exception.
         """
         command_line = self._MENU + [self._POOLNAME] + self._DEVICES_2
-        check_error(self, StratisCliInUseOtherTierError, command_line, _ERROR)
+        self.check_error(StratisCliInUseOtherTierError, command_line, _ERROR)
