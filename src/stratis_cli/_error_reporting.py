@@ -17,6 +17,7 @@ Facilities for managing and reporting errors.
 # isort: STDLIB
 import os
 import sys
+from enum import IntEnum
 
 # isort: THIRDPARTY
 import dbus
@@ -36,6 +37,17 @@ from ._errors import (
     StratisCliUserError,
 )
 
+
+class StratisCliErrorCodes(IntEnum):
+    """
+    StratisCli Error Codes
+    """
+
+    OK = 0
+    ERROR = 1
+    PARSE_ERROR = 2
+
+
 _DBUS_INTERFACE_MSG = (
     "The version of stratis you are running expects a different "
     "D-Bus interface than the one stratisd provides. Most likely "
@@ -44,9 +56,15 @@ _DBUS_INTERFACE_MSG = (
 )
 
 
-# pylint: disable=fixme
-# FIXME: remove no coverage pragma when adequate testing for CLI output exists.
-def _interface_name_to_common_name(interface_name):  # pragma: no cover
+def exit_(code, msg):
+    """
+    Exits program with a given exit code and error message.
+    """
+    print(msg, os.linesep, file=sys.stderr, flush=True)
+    raise SystemExit(code)
+
+
+def _interface_name_to_common_name(interface_name):
     """
     Maps a D-Bus interface name to the common name that identifies the type
     of stratisd thing that the interface represents.
@@ -55,7 +73,10 @@ def _interface_name_to_common_name(interface_name):  # pragma: no cover
     :returns: a common name
     :rtype: str
     """
-    if interface_name == BLOCKDEV_INTERFACE:
+    # pylint: disable=fixme
+    # FIXME: remove no coverage pragma when adequate testing for CLI output
+    # exists.
+    if interface_name == BLOCKDEV_INTERFACE:  # pragma: no cover
         return "block device"
 
     if interface_name == FILESYSTEM_INTERFACE:
@@ -64,7 +85,8 @@ def _interface_name_to_common_name(interface_name):  # pragma: no cover
     if interface_name == POOL_INTERFACE:
         return "pool"
 
-    raise StratisCliUnknownInterfaceError(interface_name)
+    # This is a permanent no cover. There should never be an unknown interface.
+    raise StratisCliUnknownInterfaceError(interface_name)  # pragma: no cover
 
 
 def get_errors(exc):
@@ -91,10 +113,7 @@ def _interpret_errors(errors):
     :type errors: list of Exception
     :returns: None if no interpretation found, otherwise str
     """
-    # pylint: disable=fixme
-    # FIXME: remove no coverage pragma when adequate testing for CLI output
-    # exists.
-    try:  # pragma: no cover
+    try:
         # Inspect top-most error after StratisCliActionError
         error = errors[1]
 
@@ -149,11 +168,14 @@ def _interpret_errors(errors):
         # Inspect lowest error
         error = errors[-1]
 
+        # pylint: disable=fixme
+        # FIXME: remove no coverage pragma when adequate testing for CLI output
+        # exists.
         if (
             # pylint: disable=bad-continuation
             isinstance(error, dbus.exceptions.DBusException)
             and error.get_dbus_name() == "org.freedesktop.DBus.Error.AccessDenied"
-        ):
+        ):  # pragma: no cover
             return "Most likely stratis has insufficient permissions for the action requested."
         # We have observed two causes of this problem. The first is that
         # stratisd is not running at all. The second is that stratisd has not
@@ -165,11 +187,14 @@ def _interpret_errors(errors):
         ):
             return "Most likely stratis is unable to connect to the stratisd D-Bus service."
 
+        # pylint: disable=fixme
+        # FIXME: remove no coverage pragma when adequate testing for CLI output
+        # exists.
         if (
             # pylint: disable=bad-continuation
             isinstance(error, dbus.exceptions.DBusException)
             and error.get_dbus_name() == "org.freedesktop.DBus.Error.NoReply"
-        ):
+        ):  # pragma: no cover
             fmt_str = (
                 "stratis attempted communication with the daemon, stratisd, "
                 "over the D-Bus, but stratisd did not respond in the allowed time."
@@ -214,4 +239,4 @@ def handle_error(err):
         raise err
 
     exit_msg = "Execution failed:%s%s" % (os.linesep, explanation)
-    sys.exit(exit_msg)
+    exit_(StratisCliErrorCodes.ERROR, exit_msg)

@@ -15,13 +15,15 @@
 Test command-line argument parsing.
 """
 
-# isort: STDLIB
-import unittest
+# isort: LOCAL
+from stratis_cli import StratisCliErrorCodes
 
-from ._misc import RUNNER, SimTestCase
+from ._misc import RUNNER, RunTestCase, SimTestCase
+
+_PARSE_ERROR = StratisCliErrorCodes.PARSE_ERROR
 
 
-class ParserTestCase(unittest.TestCase):
+class ParserTestCase(RunTestCase):
     """
     Test parser behavior. The behavior should be identical, regardless of
     whether the "--propagate" flag is set. That is, stratis should never produce
@@ -38,10 +40,7 @@ class ParserTestCase(unittest.TestCase):
         """
         for command_line in [[], ["daemon"]]:
             for prefix in [[], ["--propagate"]]:
-                with self.assertRaises(SystemExit) as context:
-                    RUNNER(prefix + command_line)
-                exit_code = context.exception.code
-                self.assertEqual(exit_code, 2)
+                self.check_system_exit(prefix + command_line, _PARSE_ERROR)
 
     def testStratisTwoOptions(self):
         """
@@ -50,10 +49,7 @@ class ParserTestCase(unittest.TestCase):
         """
         for prefix in [[], ["--propagate"]]:
             command_line = ["daemon", "redundancy", "version"]
-            with self.assertRaises(SystemExit) as context:
-                RUNNER(prefix + command_line)
-            exit_code = context.exception.code
-            self.assertEqual(exit_code, 2)
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
 
     def testStratisBadSubcommand(self):
         """
@@ -68,10 +64,7 @@ class ParserTestCase(unittest.TestCase):
             ["filesystem", "notasub"],
         ]:
             for prefix in [[], ["--propagate"]]:
-                with self.assertRaises(SystemExit) as context:
-                    RUNNER(prefix + command_line)
-                exit_code = context.exception.code
-                self.assertEqual(exit_code, 2)
+                self.check_system_exit(prefix + command_line, _PARSE_ERROR)
 
     def testRedundancy(self):
         """
@@ -89,10 +82,7 @@ class ParserTestCase(unittest.TestCase):
         ]
 
         for prefix in [[], ["--propagate"]]:
-            with self.assertRaises(SystemExit) as context:
-                RUNNER(prefix + command_line)
-            exit_code = context.exception.code
-            self.assertEqual(exit_code, 2)
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
 
 
 class ParserSimTestCase(SimTestCase):

@@ -19,11 +19,13 @@ Test 'snapshot'.
 from dbus_client_gen import DbusClientUniqueResultError
 
 # isort: LOCAL
-from stratis_cli._errors import StratisCliActionError, StratisCliNoChangeError
+from stratis_cli import StratisCliErrorCodes
+from stratis_cli._errors import StratisCliNoChangeError
 
 from .._misc import RUNNER, SimTestCase, device_name_list
 
 _DEVICE_STRATEGY = device_name_list(1)
+_ERROR = StratisCliErrorCodes.ERROR
 
 
 class SnapshotTestCase(SimTestCase):
@@ -58,10 +60,7 @@ class SnapshotTestCase(SimTestCase):
         Creation of the snapshot must fail, because this performs no action.
         """
         command_line = self._MENU + [self._POOLNAME, self._FSNAME, self._FSNAME]
-        with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(command_line)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliNoChangeError)
+        self.check_error(StratisCliNoChangeError, command_line, _ERROR)
 
 
 class Snapshot1TestCase(SimTestCase):
@@ -79,10 +78,7 @@ class Snapshot1TestCase(SimTestCase):
         Creation of the snapshot must fail since specified pool does not exist.
         """
         command_line = self._MENU + [self._POOLNAME, self._FSNAME, self._SNAPNAME]
-        with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(command_line)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, DbusClientUniqueResultError)
+        self.check_error(DbusClientUniqueResultError, command_line, _ERROR)
 
 
 class Snapshot2TestCase(SimTestCase):
@@ -108,7 +104,4 @@ class Snapshot2TestCase(SimTestCase):
         Creation of the snapshot must fail since filesystem does not exist.
         """
         command_line = self._MENU + [self._POOLNAME, self._FSNAME, self._SNAPNAME]
-        with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(command_line)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, DbusClientUniqueResultError)
+        self.check_error(DbusClientUniqueResultError, command_line, _ERROR)
