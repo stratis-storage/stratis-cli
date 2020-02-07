@@ -22,16 +22,13 @@ import unittest
 from dbus_client_gen import DbusClientUniqueResultError
 
 # isort: LOCAL
-from stratis_cli._errors import (
-    StratisCliActionError,
-    StratisCliEngineError,
-    StratisCliPartialChangeError,
-)
-from stratis_cli._stratisd_constants import StratisdErrors
+from stratis_cli import StratisCliErrorCodes
+from stratis_cli._errors import StratisCliEngineError, StratisCliPartialChangeError
 
 from .._misc import RUNNER, SimTestCase, device_name_list
 
 _DEVICE_STRATEGY = device_name_list(1)
+_ERROR = StratisCliErrorCodes.ERROR
 
 
 @unittest.skip("Temporarily unable to create multiple filesystems at same time")
@@ -49,10 +46,7 @@ class CreateTestCase(SimTestCase):
         Creation of the volume must fail since pool is not specified.
         """
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
-        with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(command_line)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, DbusClientUniqueResultError)
+        self.check_error(DbusClientUniqueResultError, command_line, _ERROR)
 
 
 @unittest.skip("Temporarily unable to create multiple filesystems at same time")
@@ -107,11 +101,7 @@ class Create3TestCase(SimTestCase):
         volume of the same name.
         """
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
-        with self.assertRaises(StratisCliEngineError) as context:
-            RUNNER(command_line)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliEngineError)
-        self.assertEqual(cause.rc, StratisdErrors.ALREADY_EXISTS)
+        self.check_error(StratisCliEngineError, command_line, _ERROR)
 
 
 class Create4TestCase(SimTestCase):
@@ -141,11 +131,7 @@ class Create4TestCase(SimTestCase):
         There is 1 target resource that would not change.
         """
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES[0:2]
-        with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(command_line)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliPartialChangeError)
-        self.assertNotEqual(str(cause), "")
+        self.check_error(StratisCliPartialChangeError, command_line, _ERROR)
 
     def test2Create(self):
         """
@@ -154,11 +140,7 @@ class Create4TestCase(SimTestCase):
         There is 1 target resource that would not change.
         """
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES[0:3]
-        with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(command_line)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliPartialChangeError)
-        self.assertNotEqual(str(cause), "")
+        self.check_error(StratisCliPartialChangeError, command_line, _ERROR)
 
 
 class Create5TestCase(SimTestCase):
@@ -193,11 +175,7 @@ class Create5TestCase(SimTestCase):
         There are multiple (2) target resources that would not change.
         """
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES[0:3]
-        with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(command_line)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliPartialChangeError)
-        self.assertNotEqual(str(cause), "")
+        self.check_error(StratisCliPartialChangeError, command_line, _ERROR)
 
     def test2Create(self):
         """
@@ -206,8 +184,4 @@ class Create5TestCase(SimTestCase):
         There are multiple (2) target resources that would not change.
         """
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES[0:4]
-        with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(command_line)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliPartialChangeError)
-        self.assertNotEqual(str(cause), "")
+        self.check_error(StratisCliPartialChangeError, command_line, _ERROR)

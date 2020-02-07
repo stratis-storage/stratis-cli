@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """
-Test 'create'.
+Test 'list'.
 """
 
 # isort: STDLIB
@@ -22,7 +22,7 @@ import unittest
 from dbus_client_gen import DbusClientUniqueResultError
 
 # isort: LOCAL
-from stratis_cli._errors import StratisCliActionError
+from stratis_cli import StratisCliErrorCodes
 
 from .._misc import RUNNER, SimTestCase, device_name_list
 
@@ -42,10 +42,9 @@ class ListTestCase(SimTestCase):
         Listing the volume must fail since the pool does not exist.
         """
         command_line = self._MENU + [self._POOLNAME]
-        with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(command_line)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, DbusClientUniqueResultError)
+        self.check_error(
+            DbusClientUniqueResultError, command_line, StratisCliErrorCodes.ERROR
+        )
 
 
 class List2TestCase(SimTestCase):

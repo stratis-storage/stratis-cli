@@ -330,7 +330,9 @@ class StratisCliActionError(StratisCliRuntimeError):
         self.command_line_args = command_line_args
         self.namespace = namespace
 
-    def __str__(self):
+    # pylint: disable=fixme
+    # FIXME: remove no coverage pragma when adequate testing for CLI output
+    def __str__(self):  # pragma: no cover
         fmt_str = (
             "Action selected by command-line arguments %s which were "
             "parsed to %s failed"

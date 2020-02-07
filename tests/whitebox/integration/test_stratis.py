@@ -15,16 +15,16 @@
 Test 'stratisd'.
 """
 
-# isort: STDLIB
-import unittest
-
 # isort: THIRDPARTY
 import dbus
 
 # isort: LOCAL
+from stratis_cli import StratisCliErrorCodes
 from stratis_cli._errors import StratisCliActionError
 
-from ._misc import RUNNER, SimTestCase
+from ._misc import RUNNER, RunTestCase, SimTestCase
+
+_ERROR = StratisCliErrorCodes.ERROR
 
 
 class StratisTestCase(SimTestCase):
@@ -49,7 +49,7 @@ class StratisTestCase(SimTestCase):
         RUNNER(command_line)
 
 
-class PropagateTestCase(unittest.TestCase):
+class PropagateTestCase(RunTestCase):
     """
     Verify correct operation of --propagate flag.
     """
@@ -59,10 +59,7 @@ class PropagateTestCase(unittest.TestCase):
         If propagate is set, the expected exception will propagate.
         """
         command_line = ["--propagate", "daemon", "version"]
-        with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(command_line)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, dbus.exceptions.DBusException)
+        self.check_error(dbus.exceptions.DBusException, command_line, _ERROR)
 
     def testNotPropagate(self):
         """
@@ -92,8 +89,4 @@ class ErrorHandlingTestCase(SimTestCase):
         # If instead the exception chain is handed off to handle_error,
         # the exception is recognized, an error message is generated,
         # and the program exits with the message via SystemExit.
-        with self.assertRaises(SystemExit) as context:
-            RUNNER(command_line)
-        exit_code = context.exception.code
-        self.assertNotEqual(exit_code, 0)
-        self.assertIsNotNone(exit_code)
+        self.check_system_exit(command_line, _ERROR)

@@ -28,7 +28,8 @@ import unittest
 import psutil
 
 # isort: LOCAL
-from stratis_cli import run
+from stratis_cli import handle_error, run
+from stratis_cli._errors import StratisCliActionError
 
 try:
     _STRATISD = os.environ["STRATISD"]
@@ -82,7 +83,53 @@ class _Service:
             self.tearDown()
 
 
-class SimTestCase(unittest.TestCase):
+class RunTestCase(unittest.TestCase):
+    """
+    Test case for running the program.
+    """
+
+    def check_error(self, expected_cause, command_line, expected_code):
+        """
+        Check that the expected exception was raised, and that the cause
+        and exit codes were also as expected, based on the command line
+        arguments passed to the program.
+        :param expected_cause: the expected exception below the StratisCliActionError
+        :type expected_cause: Exception
+        :param command_line: the command line arguments
+        :type command_line: list
+        :param expected_code: the expected error code
+        :type expected_code: int
+        """
+        with self.assertRaises(StratisCliActionError) as context:
+            RUNNER(command_line)
+
+        exception = context.exception
+        cause = exception.__cause__
+        self.assertIsInstance(cause, expected_cause)
+
+        with self.assertRaises(SystemExit) as final_err:
+            handle_error(exception)
+
+        final_code = final_err.exception.code
+        self.assertEqual(final_code, expected_code)
+
+    def check_system_exit(self, command_line, expected_code):
+        """
+        Check that SystemExit exception was raised with the expected error
+        code as a result of running the program.
+
+        :param command_line: the command line arguments
+        :type command_line: list
+        :param expected_code: the expected error code
+        :type expected_code: int
+        """
+        with self.assertRaises(SystemExit) as context:
+            RUNNER(command_line)
+        exit_code = context.exception.code
+        self.assertEqual(exit_code, expected_code)
+
+
+class SimTestCase(RunTestCase):
     """
     A SimTestCase must always start and stop stratisd (simulator vesion).
     """
