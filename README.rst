@@ -66,11 +66,6 @@ absolute or relative path to your stratisd executable. For example
 *Note:* Since the tests invoke ``stratisd``, it should not be running
 independently when the tests are run.
 
-To run ``tox``, ensure python3-tox and dbus-glib-devel packages are
-installed, and then run::
-
-  > tox
-
 Internal Software Architecture
 ------------------------------
 ``stratis`` is implemented in two parts:
