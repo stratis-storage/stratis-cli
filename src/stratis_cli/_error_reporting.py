@@ -73,9 +73,10 @@ def _interface_name_to_common_name(interface_name):
     :returns: a common name
     :rtype: str
     """
-    # pylint: disable=fixme
-    # FIXME: remove no coverage pragma when adequate testing for CLI output
-    # exists.
+    # There is no action which specifies a block device once it has been
+    # added to a pool. Consequently, we cannot test that an non-existant block
+    # device has been specified. In the future, if such an action is created,
+    # this no cover may be removed.
     if interface_name == BLOCKDEV_INTERFACE:  # pragma: no cover
         return "block device"
 
