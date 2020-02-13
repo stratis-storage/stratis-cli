@@ -60,7 +60,8 @@ def process_exists(name):
     Return None if no such process found, else return the pid.
     :param name: name of process to check
     :type name: string
-    :return: None or pid
+    :return: pid or None
+    :rtype: int or NoneType
     """
     for pid in psutil.pids():
         try:
