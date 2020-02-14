@@ -93,6 +93,11 @@ class RunTestCase(unittest.TestCase):
         Check that the expected exception was raised, and that the cause
         and exit codes were also as expected, based on the command line
         arguments passed to the program.
+
+        Precondition: command_line contains the "--propagate" flag, so that
+        the exception is propagated by the source, and can thus be caught
+        in the test.
+
         :param expected_cause: the expected exception below the StratisCliActionError
         :type expected_cause: Exception
         :param command_line: the command line arguments

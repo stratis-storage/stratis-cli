@@ -20,7 +20,6 @@ import dbus
 
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
-from stratis_cli._errors import StratisCliActionError
 
 from ._misc import RUNNER, RunTestCase, SimTestCase
 
@@ -68,25 +67,3 @@ class PropagateTestCase(RunTestCase):
         command_line = ["daemon", "version"]
         with self.assertRaises(SystemExit):
             RUNNER(command_line)
-
-
-class ErrorHandlingTestCase(SimTestCase):
-    """
-    Test error-handling behavior when --propagate is not set.
-    """
-
-    def testErrorOnMissingFilesystem(self):
-        """
-        Test that listing filesystems for a non-existent pool results in early
-        exit.
-        """
-        command_line = ["filesystem", "list", "not_existing"]
-
-        # if exceptions are propagated then a Stratis error is caught
-        with self.assertRaises(StratisCliActionError):
-            RUNNER(["--propagate"] + command_line)
-
-        # If instead the exception chain is handed off to handle_error,
-        # the exception is recognized, an error message is generated,
-        # and the program exits with the message via SystemExit.
-        self.check_system_exit(command_line, _ERROR)
