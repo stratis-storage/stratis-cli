@@ -63,10 +63,10 @@ def process_exists(name):
     :return: pid or None
     :rtype: int or NoneType
     """
-    for pid in psutil.pids():
+    for proc in psutil.process_iter():
         try:
-            if psutil.Process(pid).name() == name:
-                return pid
+            if proc.name() == name:
+                return proc.pid
         except psutil.NoSuchProcess:
             pass
 
