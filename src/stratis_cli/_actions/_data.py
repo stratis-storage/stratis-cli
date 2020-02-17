@@ -236,7 +236,6 @@ def _get_timeout(value):
     # Convert from milliseconds to seconds
     return timeout_int / 1000
 
-
 try:
 
     timeout = _get_timeout(

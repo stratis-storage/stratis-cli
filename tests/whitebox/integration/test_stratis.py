@@ -14,12 +14,15 @@
 """
 Test 'stratisd'.
 """
+# isort: STDLIB
+from os import environ
 
 # isort: THIRDPARTY
 import dbus
 
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
+from stratis_cli._errors import StratisCliActionError
 
 from ._misc import RUNNER, RunTestCase, SimTestCase
 
@@ -47,6 +50,13 @@ class StratisTestCase(SimTestCase):
         command_line = self._MENU + ["redundancy"]
         RUNNER(command_line)
 
+    def testLowTimeout(self):
+        """
+        Getting version with low timeout variable should fail.
+        """
+        environ["STRATIS_DBUS_TIMEOUT"] = "1"
+        command_line = self._MENU + ["version"]
+        RUNNER(command_line)
 
 class PropagateTestCase(RunTestCase):
     """
