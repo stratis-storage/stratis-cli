@@ -55,6 +55,7 @@ coverage-no-html:
 	python3 -m coverage run --timid --branch -m pytest ./tests/whitebox/integration
 	python3 -m coverage run --timid --branch -a -m pytest ./tests/whitebox/unittest
 	python3 -m coverage run --timid --branch -a -m pytest ./tests/whitebox/monkey_patching/test_keyboard_interrupt.py
+	python3 -m coverage run --timid --branch -a -m pytest ./tests/whitebox/monkey_patching/test_timeout.py
 	python3 -m coverage report -m --fail-under=100 --show-missing --include="./src/*"
 
 .PHONY: coverage
@@ -64,5 +65,7 @@ coverage: coverage-no-html
 keyboard-interrupt-test:
 	py.test-3 ${PYTEST_OPTS} ./tests/whitebox/monkey_patching/test_keyboard_interrupt.py
 
+timeout-test:
+	py.test-3 ${PYTEST_OPTS} ./tests/whitebox/monkey_patching/test_timeout.py
 test-travis:
 	py.test ${PYTEST_OPS} ./tests/whitebox/unittest
