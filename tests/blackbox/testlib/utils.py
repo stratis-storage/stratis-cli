@@ -59,7 +59,7 @@ def process_exists(name):
     Look through processes, using their pids, to find one matching 'name'.
     Return None if no such process found, else return the pid.
     :param name: name of process to check
-    :type name: string
+    :type name: str
     :return: pid or None
     :rtype: int or NoneType
     """
