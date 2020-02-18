@@ -113,8 +113,8 @@ class RunTestCase(unittest.TestCase):
         self.assertIsInstance(cause, expected_cause)
 
         error_string = str(exception)
-        self.assertNotEqual(error_string, None)
         self.assertIsInstance(error_string, str)
+        self.assertNotEqual(error_string, "")
 
         with self.assertRaises(SystemExit) as final_err:
             handle_error(exception)
