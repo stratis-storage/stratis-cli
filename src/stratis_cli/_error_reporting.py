@@ -74,7 +74,7 @@ def _interface_name_to_common_name(interface_name):
     :rtype: str
     """
     # There is no action which specifies a block device once it has been
-    # added to a pool. Consequently, we cannot test that an non-existant block
+    # added to a pool. Consequently, we cannot test that a non-existent block
     # device has been specified. In the future, if such an action is created,
     # this no cover may be removed.
     if interface_name == BLOCKDEV_INTERFACE:  # pragma: no cover
