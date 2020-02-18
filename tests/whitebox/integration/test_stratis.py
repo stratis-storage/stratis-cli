@@ -20,8 +20,11 @@ from os import environ
 # isort: THIRDPARTY
 import dbus
 
+# isort: FIRSTPARTY
+from dbus_python_client_gen import DPClientInvocationError
+
 # isort: LOCAL
-from stratis_cli import StratisCliErrorCodes
+from stratis_cli import StratisCliErrorCodes, handle_error
 from stratis_cli._errors import StratisCliActionError
 
 from ._misc import RUNNER, RunTestCase, SimTestCase
@@ -54,9 +57,23 @@ class StratisTestCase(SimTestCase):
         """
         Getting version with low timeout variable should fail.
         """
-        environ["STRATIS_DBUS_TIMEOUT"] = "1"
+        environ["STRATIS_DBUS_TIMEOUT"] = "0"
         command_line = self._MENU + ["version"]
-        RUNNER(command_line)
+
+        with self.assertRaises(StratisCliActionError) as context:
+            RUNNER(command_line)
+
+        exception = context.exception
+        cause = exception.__cause__
+        self.assertIsInstance(cause, DPClientInvocationError)
+        self.assertIsInstance(cause.__cause__, dbus.exceptions.DBusException)
+        self.assertEqual(
+            cause.__cause__.get_dbus_name(), "org.freedesktop.DBus.Error.NoReply"
+        )
+
+        with self.assertRaises(SystemExit):
+            handle_error(exception)
+
 
 class PropagateTestCase(RunTestCase):
     """
