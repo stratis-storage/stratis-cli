@@ -102,7 +102,6 @@ def get_errors(exc):
 
 
 # pylint: disable=too-many-return-statements
-# pylint: disable=too-many-branches
 def _interpret_errors(errors):
     """
     Laboriously add best guesses at the cause of the error, based on
