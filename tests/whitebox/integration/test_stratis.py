@@ -14,6 +14,7 @@
 """
 Test 'stratisd'.
 """
+
 # isort: THIRDPARTY
 import dbus
 
