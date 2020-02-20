@@ -28,7 +28,8 @@ import unittest
 import psutil
 
 # isort: LOCAL
-from stratis_cli import handle_error, run
+from stratis_cli import run
+from stratis_cli._error_reporting import handle_error
 from stratis_cli._errors import StratisCliActionError
 
 try:
