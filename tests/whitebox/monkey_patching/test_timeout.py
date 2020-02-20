@@ -22,9 +22,8 @@ import dbus
 
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
-from stratis_cli._errors import StratisCliActionError
 
-from .._misc import RUNNER, SimTestCase, handle_error
+from .._misc import SimTestCase
 
 _ERROR = StratisCliErrorCodes.ERROR
 
@@ -44,15 +43,4 @@ class StratisTimeoutCase(SimTestCase):
         environ["STRATIS_DBUS_TIMEOUT"] = "0"
         command_line = self._MENU + ["version"]
 
-        with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(command_line)
-
-        exception = context.exception
-        cause = exception.__cause__.__cause__
-        self.assertIsInstance(cause, dbus.exceptions.DBusException)
-
-        with self.assertRaises(SystemExit) as final_err:
-            handle_error(exception)
-
-        final_code = final_err.exception.code
-        self.assertEqual(final_code, _ERROR)
+        self.check_bottom_error(dbus.exceptions.DBusException, command_line, _ERROR)

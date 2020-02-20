@@ -29,6 +29,7 @@ import psutil
 
 # isort: LOCAL
 from stratis_cli import handle_error, run
+from stratis_cli._error_reporting import get_errors
 from stratis_cli._errors import StratisCliActionError
 
 try:
@@ -110,6 +111,39 @@ class RunTestCase(unittest.TestCase):
 
         exception = context.exception
         cause = exception.__cause__
+        self.assertIsInstance(cause, expected_cause)
+
+        with self.assertRaises(SystemExit) as final_err:
+            handle_error(exception)
+
+        final_code = final_err.exception.code
+        self.assertEqual(final_code, expected_code)
+
+    def check_bottom_error(self, expected_cause, command_line, expected_code):
+        """
+        Check that the lowest level expected exception was raised, and that
+        the cause and exit codes were also as expected, based on the command line
+        arguments passed to the program.
+
+        Precondition: command_line contains the "--propagate" flag, so that
+        the exception is propagated by the source, and can thus be caught
+        in the test.
+
+        :param expected_cause: the expected exception at the bottom of the exception chain
+        :type expected_cause: Exception
+        :param command_line: the command line arguments
+        :type command_line: list
+        :param expected_code: the expected error code
+        :type expected_code: int
+        """
+
+        with self.assertRaises(StratisCliActionError) as context:
+            RUNNER(command_line)
+
+        exception = context.exception
+        cause = exception
+        for cause in get_errors(exception):
+            continue
         self.assertIsInstance(cause, expected_cause)
 
         with self.assertRaises(SystemExit) as final_err:
