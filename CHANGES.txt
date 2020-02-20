@@ -1,3 +1,122 @@
+stratis-cli 2.1.0
+=================
+Recommended Python interpreter: 3.7.6
+Lowest supported Python interpreter: 3.6.8
+Python linter: pylint (2.3.1)
+Python auto-formatter: black (19.3b0)
+Python import sorter: isort (4.3.4)
+
+
+- Add support for encryption:
+  https://github.com/stratis-storage/stratis-cli/issues/509
+  https://github.com/stratis-storage/stratis-cli/issues/510
+  https://github.com/stratis-storage/stratis-cli/issues/536
+  https://github.com/stratis-storage/stratis-cli/issues/565
+  https://github.com/stratis-storage/stratis-cli/issues/572
+  https://github.com/stratis-storage/stratis-cli/issues/582
+  https://github.com/stratis-storage/stratis-cli/pull/595
+  https://github.com/stratis-storage/stratis-cli/pull/584
+  https://github.com/stratis-storage/stratis-cli/pull/583
+  https://github.com/stratis-storage/stratis-cli/pull/580
+  https://github.com/stratis-storage/stratis-cli/pull/575
+  https://github.com/stratis-storage/stratis-cli/pull/564
+  https://github.com/stratis-storage/stratis-cli/pull/562
+  https://github.com/stratis-storage/stratis-cli/pull/551
+  https://github.com/stratis-storage/stratis-cli/pull/546
+  https://github.com/stratis-storage/stratis-cli/pull/545
+  https://github.com/stratis-storage/stratis-cli/pull/539
+  https://github.com/stratis-storage/stratis-cli/pull/535
+  https://github.com/stratis-storage/stratis-cli/pull/532
+  https://github.com/stratis-storage/stratis-cli/pull/520
+  https://github.com/stratis-storage/stratis-cli/pull/506
+  https://github.com/stratis-storage/stratis-cli/pull/504
+  https://github.com/stratis-storage/stratis-cli/pull/490
+  https://github.com/stratis-storage/stratis-cli/pull/489
+
+- Add support for displaying reports available via the
+  D-Bus Report interface:
+  https://github.com/stratis-storage/stratis-cli/issues/543
+  https://github.com/stratis-storage/stratis-cli/pull/570
+  https://github.com/stratis-storage/stratis-cli/pull/555
+
+- Add a dynamic check that the version of the stratisd daemon is compatible:
+  https://github.com/stratis-storage/stratis-cli/pull/553
+
+- Fix a bug in generation of an error message that might be generated
+  during pool creation:
+  https://github.com/stratis-storage/stratis-cli/issues/500
+  https://github.com/stratis-storage/stratis-cli/pull/501
+
+- Improve error messages in certain cases:
+  https://github.com/stratis-storage/stratis-cli/pull/518
+
+- Generalize handling of exit on error; improve testing of error-handling:
+  https://github.com/stratis-storage/stratis-cli/issues/371
+  https://github.com/stratis-storage/stratis-cli/pull/488
+  https://github.com/stratis-storage/stratis-cli/pull/487
+  https://github.com/stratis-storage/stratis-cli/pull/485
+  https://github.com/stratis-storage/stratis-cli/pull/483
+  https://github.com/stratis-storage/stratis-cli/pull/480
+  https://github.com/stratis-storage/stratis-cli/pull/474
+  https://github.com/stratis-storage/stratis-cli/pull/465
+
+- Improvements to blackbox tests:
+  https://github.com/stratis-storage/stratis-cli/pull/596
+  https://github.com/stratis-storage/stratis-cli/pull/537
+  https://github.com/stratis-storage/stratis-cli/pull/531
+  https://github.com/stratis-storage/stratis-cli/pull/528
+  https://github.com/stratis-storage/stratis-cli/pull/526
+  https://github.com/stratis-storage/stratis-cli/pull/524
+  https://github.com/stratis-storage/stratis-cli/pull/519
+  https://github.com/stratis-storage/stratis-cli/pull/515
+  https://github.com/stratis-storage/stratis-cli/pull/513
+  https://github.com/stratis-storage/stratis-cli/pull/508
+  https://github.com/stratis-storage/stratis-cli/pull/507
+
+- Add blackbox testing for new Report interface:
+  https://github.com/stratis-storage/stratis-cli/issues/540
+  https://github.com/stratis-storage/stratis-cli/issues/559
+  https://github.com/stratis-storage/stratis-cli/pull/561
+  https://github.com/stratis-storage/stratis-cli/pull/544
+
+- Make all tests pure unittest, instead of pytest/unittest:
+  https://github.com/stratis-storage/stratis-cli/pull/573
+  https://github.com/stratis-storage/stratis-cli/pull/560
+  https://github.com/stratis-storage/stratis-cli/pull/558
+  https://github.com/stratis-storage/stratis-cli/pull/556
+
+- Tidy up Travis CI, removing dependency on tox:
+  https://github.com/stratis-storage/stratis-cli/pull/530
+  https://github.com/stratis-storage/stratis-cli/pull/472
+  https://github.com/stratis-storage/stratis-cli/pull/460
+  https://github.com/stratis-storage/stratis-cli/pull/455
+
+- Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/590
+  https://github.com/stratis-storage/stratis-cli/pull/589
+  https://github.com/stratis-storage/stratis-cli/pull/588
+  https://github.com/stratis-storage/stratis-cli/pull/585
+  https://github.com/stratis-storage/stratis-cli/pull/578
+  https://github.com/stratis-storage/stratis-cli/pull/568
+  https://github.com/stratis-storage/stratis-cli/pull/567
+  https://github.com/stratis-storage/stratis-cli/pull/563
+  https://github.com/stratis-storage/stratis-cli/pull/538
+  https://github.com/stratis-storage/stratis-cli/pull/529
+  https://github.com/stratis-storage/stratis-cli/pull/511
+  https://github.com/stratis-storage/stratis-cli/pull/503
+  https://github.com/stratis-storage/stratis-cli/pull/502
+  https://github.com/stratis-storage/stratis-cli/pull/499
+  https://github.com/stratis-storage/stratis-cli/pull/498
+  https://github.com/stratis-storage/stratis-cli/pull/496
+  https://github.com/stratis-storage/stratis-cli/pull/495
+  https://github.com/stratis-storage/stratis-cli/pull/493
+  https://github.com/stratis-storage/stratis-cli/pull/491
+  https://github.com/stratis-storage/stratis-cli/pull/482
+  https://github.com/stratis-storage/stratis-cli/pull/481
+  https://github.com/stratis-storage/stratis-cli/pull/477
+  https://github.com/stratis-storage/stratis-cli/pull/461
+
+
 stratis-cli 2.0.1
 =================
 Python import sorter: isort (4.3.4)
