@@ -16,4 +16,4 @@ Top level of CLI.
 """
 from ._main import run
 from ._errors import StratisCliEnvironmentError
-from ._error_reporting import StratisCliErrorCodes, handle_error, exit_
+from ._error_reporting import StratisCliErrorCodes, exit_
