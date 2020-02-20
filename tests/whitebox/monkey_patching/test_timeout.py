@@ -31,7 +31,7 @@ _ERROR = StratisCliErrorCodes.ERROR
 
 class StratisTimeoutCase(SimTestCase):
     """
-    Test stratis D-Bus timeout
+    Test proper handling of D-Bus NoReply exception
     """
 
     _MENU = ["--propagate", "daemon"]
