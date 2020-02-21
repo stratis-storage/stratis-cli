@@ -186,9 +186,11 @@ def _interpret_errors(errors):
         ):
             return "Most likely stratis is unable to connect to the stratisd D-Bus service."
 
-        # pylint: disable=fixme
-        # FIXME: remove no coverage pragma when adequate testing for CLI output
-        # exists.
+        # Due to the uncertain behavior with which libdbus
+        # treats a timeout value of 0, it proves difficult to test this case,
+        # as seen here: https://github.com/stratis-storage/stratis-cli/pull/476
+        # Additional information may be found in the issue filed against libdbus
+        # here: https://gitlab.freedesktop.org/dbus/dbus/issues/293
         if (
             # pylint: disable=bad-continuation
             isinstance(error, dbus.exceptions.DBusException)
