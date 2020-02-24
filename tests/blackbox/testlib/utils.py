@@ -20,6 +20,9 @@ import random
 import string
 from subprocess import PIPE, Popen
 
+# isort: THIRDPARTY
+import psutil
+
 # Name prefix, so that we hopefully don't destroy any end user data by mistake!
 TEST_PREF = os.getenv("STRATIS_UT_PREFIX", "STRATI$_DE$TROY_ME!_")
 
@@ -53,16 +56,20 @@ def random_string(length=4):
 
 def process_exists(name):
     """
-    Walk the process table looking for executable 'name', returns pid if one
-    found, else return None
+    Look through processes, using their pids, to find one matching 'name'.
+    Return None if no such process found, else return the pid.
+    :param name: name of process to check
+    :type name: str
+    :return: pid or None
+    :rtype: int or NoneType
     """
-    for pid in [pid for pid in os.listdir("/proc") if pid.isdigit()]:
+    for proc in psutil.process_iter(["name"]):
         try:
-            exe_name = os.readlink(os.path.join("/proc/", pid, "exe"))
-        except OSError:
-            continue
-        if exe_name and exe_name.endswith(os.path.join("/", name)):
-            return pid
+            if proc.name() == name:
+                return proc.pid
+        except psutil.NoSuchProcess:
+            pass
+
     return None
 
 
