@@ -113,6 +113,10 @@ class RunTestCase(unittest.TestCase):
         cause = exception.__cause__
         self.assertIsInstance(cause, expected_cause)
 
+        error_string = str(exception)
+        self.assertIsInstance(error_string, str)
+        self.assertNotEqual(error_string, "")
+
         with self.assertRaises(SystemExit) as final_err:
             handle_error(exception)
 
