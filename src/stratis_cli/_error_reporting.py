@@ -102,6 +102,59 @@ def get_errors(exc):
             return
 
 
+def _interpret_errors_0(error):
+    """
+    Handle match on SCAE .*  DBE
+      where:
+         SCAE is StratisCliActionError
+         DBE is dbus.exceptions.DBusException
+
+    :param error: a specific error
+    :type error: dbus.exceptions.DBusException
+    :returns: the interpretation of the error if found, otherwise None
+    :rtype: None or str
+    """
+
+    # The permissions with which stratis-cli makes requests on the D-Bus
+    # are controlled by the "stratisd.conf" file. The CLI tests do not
+    # control the contents or installation of "stratisd.conf"
+    # and therefore, we cannot test this case reliably.
+    if (
+        # pylint: disable=bad-continuation
+        error.get_dbus_name()
+        == "org.freedesktop.DBus.Error.AccessDenied"
+    ):  # pragma: no cover
+        return (
+            "Most likely stratis has insufficient permissions for the action requested."
+        )
+
+    # We have observed two causes of this problem. The first is that
+    # stratisd is not running at all. The second is that stratisd has not
+    # yet established its D-Bus service.
+    if error.get_dbus_name() == "org.freedesktop.DBus.Error.NameHasNoOwner":
+        return "Most likely stratis is unable to connect to the stratisd D-Bus service."
+
+    # Due to the uncertain behavior with which libdbus
+    # treats a timeout value of 0, it proves difficult to test this case,
+    # as seen here: https://github.com/stratis-storage/stratis-cli/pull/476
+    # Additional information may be found in the issue filed against libdbus
+    # here: https://gitlab.freedesktop.org/dbus/dbus/issues/293
+    if (
+        # pylint: disable=bad-continuation
+        error.get_dbus_name()
+        == "org.freedesktop.DBus.Error.NoReply"
+    ):  # pragma: no cover
+        return (
+            "stratis attempted communication with the daemon, stratisd, "
+            "over the D-Bus, but stratisd did not respond in the allowed time."
+        )
+
+    # The goal is to have an explanation for every type of D-Bus error that
+    # is encountered. If there is none, then this will rapidly be fixed, so it
+    # will be unnecessary to maintain coverage for this branch.
+    return None  # pragma: no cover
+
+
 # pylint: disable=too-many-return-statements
 def _interpret_errors(errors):
     """
@@ -168,40 +221,10 @@ def _interpret_errors(errors):
         # Inspect lowest error
         error = errors[-1]
 
-        # The permissions with which stratis-cli makes requests on the D-Bus
-        # are controlled by the "stratisd.conf" file. The CLI tests do not
-        # control the contents or installation of "stratisd.conf"
-        # and therefore, we cannot test this case reliably.
-        if (
-            # pylint: disable=bad-continuation
-            isinstance(error, dbus.exceptions.DBusException)
-            and error.get_dbus_name() == "org.freedesktop.DBus.Error.AccessDenied"
-        ):  # pragma: no cover
-            return "Most likely stratis has insufficient permissions for the action requested."
-        # We have observed two causes of this problem. The first is that
-        # stratisd is not running at all. The second is that stratisd has not
-        # yet established its D-Bus service.
-        if (
-            # pylint: disable=bad-continuation
-            isinstance(error, dbus.exceptions.DBusException)
-            and error.get_dbus_name() == "org.freedesktop.DBus.Error.NameHasNoOwner"
-        ):
-            return "Most likely stratis is unable to connect to the stratisd D-Bus service."
-
-        # Due to the uncertain behavior with which libdbus
-        # treats a timeout value of 0, it proves difficult to test this case,
-        # as seen here: https://github.com/stratis-storage/stratis-cli/pull/476
-        # Additional information may be found in the issue filed against libdbus
-        # here: https://gitlab.freedesktop.org/dbus/dbus/issues/293
-        if (
-            # pylint: disable=bad-continuation
-            isinstance(error, dbus.exceptions.DBusException)
-            and error.get_dbus_name() == "org.freedesktop.DBus.Error.NoReply"
-        ):  # pragma: no cover
-            return (
-                "stratis attempted communication with the daemon, stratisd, "
-                "over the D-Bus, but stratisd did not respond in the allowed time."
-            )
+        if isinstance(error, dbus.exceptions.DBusException):
+            explanation = _interpret_errors_0(error)
+            if explanation is not None:
+                return explanation
 
         # The goal is to have an explanation for every error chain. If there is
         # none, then this will rapidly be fixed, so it will be difficult to
