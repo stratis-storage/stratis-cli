@@ -168,9 +168,10 @@ def _interpret_errors(errors):
         # Inspect lowest error
         error = errors[-1]
 
-        # pylint: disable=fixme
-        # FIXME: remove no coverage pragma when adequate testing for CLI output
-        # exists.
+        # The permissions with which stratis-cli makes requests on the D-Bus
+        # are controlled by the "stratisd.conf" file. The CLI tests do not
+        # control the contents or installation of "stratisd.conf"
+        # and therefore, we cannot test this case reliably.
         if (
             # pylint: disable=bad-continuation
             isinstance(error, dbus.exceptions.DBusException)
