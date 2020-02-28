@@ -1,4 +1,4 @@
-# Copyright 2016 Red Hat, Inc.
+# Copyright 2020 Red Hat, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,8 +12,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """
-Top level of CLI.
+Exit codes and methods.
 """
-from ._main import run
-from ._errors import StratisCliEnvironmentError
-from ._exit import StratisCliErrorCodes, exit_
+# isort: STDLIB
+import os
+import sys
+from enum import IntEnum
+
+
+class StratisCliErrorCodes(IntEnum):
+    """
+    StratisCli Error Codes
+    """
+
+    OK = 0
+    ERROR = 1
+    PARSE_ERROR = 2
+
+
+def exit_(code, msg):
+    """
+    Exits program with a given exit code and error message.
+    """
+    print(msg, os.linesep, file=sys.stderr, flush=True)
+    raise SystemExit(code)

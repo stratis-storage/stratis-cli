@@ -17,7 +17,6 @@ Facilities for managing and reporting errors.
 # isort: STDLIB
 import os
 import sys
-from enum import IntEnum
 
 # isort: THIRDPARTY
 import dbus
@@ -36,17 +35,7 @@ from ._errors import (
     StratisCliUnknownInterfaceError,
     StratisCliUserError,
 )
-
-
-class StratisCliErrorCodes(IntEnum):
-    """
-    StratisCli Error Codes
-    """
-
-    OK = 0
-    ERROR = 1
-    PARSE_ERROR = 2
-
+from ._exit import StratisCliErrorCodes, exit_
 
 _DBUS_INTERFACE_MSG = (
     "The version of stratis you are running expects a different "
@@ -54,14 +43,6 @@ _DBUS_INTERFACE_MSG = (
     "you are running a version that requires a newer version of "
     "stratisd than you are running."
 )
-
-
-def exit_(code, msg):
-    """
-    Exits program with a given exit code and error message.
-    """
-    print(msg, os.linesep, file=sys.stderr, flush=True)
-    raise SystemExit(code)
 
 
 def _interface_name_to_common_name(interface_name):
