@@ -167,10 +167,8 @@ def _interpret_errors(errors):
         if isinstance(
             # pylint: disable=bad-continuation
             error,
-            DbusClientMissingSearchPropertiesError,
+            (DbusClientMissingSearchPropertiesError, DbusClientMissingPropertyError),
         ):  # pragma: no cover
-            return _DBUS_INTERFACE_MSG
-        if isinstance(error, DbusClientMissingPropertyError):  # pragma: no cover
             return _DBUS_INTERFACE_MSG
 
         if isinstance(error, StratisCliEngineError):
