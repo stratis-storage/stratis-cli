@@ -17,7 +17,6 @@ Facilities for managing and reporting errors.
 # isort: STDLIB
 import os
 import sys
-from enum import IntEnum
 
 # isort: THIRDPARTY
 import dbus
@@ -36,17 +35,7 @@ from ._errors import (
     StratisCliUnknownInterfaceError,
     StratisCliUserError,
 )
-
-
-class StratisCliErrorCodes(IntEnum):
-    """
-    StratisCli Error Codes
-    """
-
-    OK = 0
-    ERROR = 1
-    PARSE_ERROR = 2
-
+from ._exit import StratisCliErrorCodes, exit_
 
 _DBUS_INTERFACE_MSG = (
     "The version of stratis you are running expects a different "
@@ -54,14 +43,6 @@ _DBUS_INTERFACE_MSG = (
     "you are running a version that requires a newer version of "
     "stratisd than you are running."
 )
-
-
-def exit_(code, msg):
-    """
-    Exits program with a given exit code and error message.
-    """
-    print(msg, os.linesep, file=sys.stderr, flush=True)
-    raise SystemExit(code)
 
 
 def _interface_name_to_common_name(interface_name):
@@ -102,6 +83,59 @@ def get_errors(exc):
             return
 
 
+def _interpret_errors_0(error):
+    """
+    Handle match on SCAE .*  DBE
+      where:
+         SCAE is StratisCliActionError
+         DBE is dbus.exceptions.DBusException
+
+    :param error: a specific error
+    :type error: dbus.exceptions.DBusException
+    :returns: the interpretation of the error if found, otherwise None
+    :rtype: None or str
+    """
+
+    # The permissions with which stratis-cli makes requests on the D-Bus
+    # are controlled by the "stratisd.conf" file. The CLI tests do not
+    # control the contents or installation of "stratisd.conf"
+    # and therefore, we cannot test this case reliably.
+    if (
+        # pylint: disable=bad-continuation
+        error.get_dbus_name()
+        == "org.freedesktop.DBus.Error.AccessDenied"
+    ):  # pragma: no cover
+        return (
+            "Most likely stratis has insufficient permissions for the action requested."
+        )
+
+    # We have observed two causes of this problem. The first is that
+    # stratisd is not running at all. The second is that stratisd has not
+    # yet established its D-Bus service.
+    if error.get_dbus_name() == "org.freedesktop.DBus.Error.NameHasNoOwner":
+        return "Most likely stratis is unable to connect to the stratisd D-Bus service."
+
+    # Due to the uncertain behavior with which libdbus
+    # treats a timeout value of 0, it proves difficult to test this case,
+    # as seen here: https://github.com/stratis-storage/stratis-cli/pull/476
+    # Additional information may be found in the issue filed against libdbus
+    # here: https://gitlab.freedesktop.org/dbus/dbus/issues/293
+    if (
+        # pylint: disable=bad-continuation
+        error.get_dbus_name()
+        == "org.freedesktop.DBus.Error.NoReply"
+    ):  # pragma: no cover
+        return (
+            "stratis attempted communication with the daemon, stratisd, "
+            "over the D-Bus, but stratisd did not respond in the allowed time."
+        )
+
+    # The goal is to have an explanation for every type of D-Bus error that
+    # is encountered. If there is none, then this will rapidly be fixed, so it
+    # will be unnecessary to maintain coverage for this branch.
+    return None  # pragma: no cover
+
+
 # pylint: disable=too-many-return-statements
 def _interpret_errors(errors):
     """
@@ -133,10 +167,8 @@ def _interpret_errors(errors):
         if isinstance(
             # pylint: disable=bad-continuation
             error,
-            DbusClientMissingSearchPropertiesError,
+            (DbusClientMissingSearchPropertiesError, DbusClientMissingPropertyError),
         ):  # pragma: no cover
-            return _DBUS_INTERFACE_MSG
-        if isinstance(error, DbusClientMissingPropertyError):  # pragma: no cover
             return _DBUS_INTERFACE_MSG
 
         if isinstance(error, StratisCliEngineError):
@@ -168,40 +200,10 @@ def _interpret_errors(errors):
         # Inspect lowest error
         error = errors[-1]
 
-        # The permissions with which stratis-cli makes requests on the D-Bus
-        # are controlled by the "stratisd.conf" file. The CLI tests do not
-        # control the contents or installation of "stratisd.conf"
-        # and therefore, we cannot test this case reliably.
-        if (
-            # pylint: disable=bad-continuation
-            isinstance(error, dbus.exceptions.DBusException)
-            and error.get_dbus_name() == "org.freedesktop.DBus.Error.AccessDenied"
-        ):  # pragma: no cover
-            return "Most likely stratis has insufficient permissions for the action requested."
-        # We have observed two causes of this problem. The first is that
-        # stratisd is not running at all. The second is that stratisd has not
-        # yet established its D-Bus service.
-        if (
-            # pylint: disable=bad-continuation
-            isinstance(error, dbus.exceptions.DBusException)
-            and error.get_dbus_name() == "org.freedesktop.DBus.Error.NameHasNoOwner"
-        ):
-            return "Most likely stratis is unable to connect to the stratisd D-Bus service."
-
-        # Due to the uncertain behavior with which libdbus
-        # treats a timeout value of 0, it proves difficult to test this case,
-        # as seen here: https://github.com/stratis-storage/stratis-cli/pull/476
-        # Additional information may be found in the issue filed against libdbus
-        # here: https://gitlab.freedesktop.org/dbus/dbus/issues/293
-        if (
-            # pylint: disable=bad-continuation
-            isinstance(error, dbus.exceptions.DBusException)
-            and error.get_dbus_name() == "org.freedesktop.DBus.Error.NoReply"
-        ):  # pragma: no cover
-            return (
-                "stratis attempted communication with the daemon, stratisd, "
-                "over the D-Bus, but stratisd did not respond in the allowed time."
-            )
+        if isinstance(error, dbus.exceptions.DBusException):
+            explanation = _interpret_errors_0(error)
+            if explanation is not None:
+                return explanation
 
         # The goal is to have an explanation for every error chain. If there is
         # none, then this will rapidly be fixed, so it will be difficult to
