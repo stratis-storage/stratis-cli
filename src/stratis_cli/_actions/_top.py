@@ -242,15 +242,50 @@ class TopActions:
                 else total_physical_free,
             )
 
+        def properties_string(mopool, props_map):
+            """
+            Make a string encoding some important properties of the pool
+
+            :param mopool: an object representing all the properties of the pool
+            :type mopool: MOPool
+            :param props_map: a map of properties returned by GetAllProperties
+            :type props_map: dict of str * any
+            """
+
+            def gen_string(b, code):
+                """
+                Generate the display string for a boolean property
+
+                :param bool b: whether the property is true or false
+                :param str code: the code to generate the string for
+                :returns: the generated string
+                :rtype: str
+                """
+                return " " + code if b else "~" + code
+
+            prop_list = []
+            prop_list.append(
+                gen_string(
+                    fetch_property(POOL_INTERFACE, props_map, "HasCache", lambda x: x),
+                    "Ca",
+                )
+            )
+            prop_list.append(gen_string(mopool.Encrypted(), "Cr"))
+            return ",".join(prop_list)
+
         tables = [
-            (mopool.Name(), physical_size_triple(props))
+            (
+                mopool.Name(),
+                physical_size_triple(props),
+                properties_string(mopool, props),
+            )
             for props, mopool in pools_with_props
         ]
 
         print_table(
-            ["Name", "Total Physical"],
+            ["Name", "Total Physical", "Properties"],
             sorted(tables, key=lambda entry: entry[0]),
-            ["<", ">"],
+            ["<", ">", ">"],
         )
 
     @staticmethod

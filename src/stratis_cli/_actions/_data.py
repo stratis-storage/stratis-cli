@@ -49,8 +49,8 @@ SPECS = {
 </method>
 </interface>
 """,
-    "org.storage.stratis2.FetchProperties": """
-<interface name="org.storage.stratis2.FetchProperties">
+    "org.storage.stratis2.FetchProperties.r1": """
+<interface name="org.storage.stratis2.FetchProperties.r1">
 <method name="GetAllProperties">
 <arg name="property_hash" type="a{s(bv)}" direction="out"/>
 </method>
@@ -86,8 +86,8 @@ SPECS = {
 </property>
 </interface>
 """,
-    "org.storage.stratis2.pool": """
-<interface name="org.storage.stratis2.pool">
+    "org.storage.stratis2.pool.r1": """
+<interface name="org.storage.stratis2.pool.r1">
 <method name="AddCacheDevs">
 <arg name="devices" type="as" direction="in"/>
 <arg name="results" type="(bao)" direction="out"/>
@@ -129,6 +129,9 @@ SPECS = {
 <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="true"/>
 </property>
 <property name="Uuid" type="s" access="read">
+<annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const"/>
+</property>
+<property name="Encrypted" type="b" access="read">
 <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const"/>
 </property>
 </interface>
