@@ -37,14 +37,14 @@ class Rename1TestCase(SimTestCase):
     _POOLNAME = "deadpool"
     _NEW_POOLNAME = "livepool"
 
-    def testRename(self):
+    def test_rename(self):
         """
         This should fail because original name does not exist.
         """
         command_line = self._MENU + [self._POOLNAME, self._NEW_POOLNAME]
         self.check_error(DbusClientUniqueResultError, command_line, _ERROR)
 
-    def testSameName(self):
+    def test_same_name(self):
         """
         Renaming to itself will fail because the pool does not exist.
         """
@@ -69,21 +69,21 @@ class Rename2TestCase(SimTestCase):
         command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
         RUNNER(command_line)
 
-    def testRename(self):
+    def test_rename(self):
         """
         This should succeed because pool exists.
         """
         command_line = self._MENU + [self._POOLNAME, self._NEW_POOLNAME]
         RUNNER(command_line)
 
-    def testSameName(self):
+    def test_same_name(self):
         """
         This should fail, because this performs no action.
         """
         command_line = self._MENU + [self._POOLNAME, self._POOLNAME]
         self.check_error(StratisCliNoChangeError, command_line, _ERROR)
 
-    def testNonExistentPool(self):
+    def test_non_existent_pool(self):
         """
         This should fail, because this pool is not there.
         """

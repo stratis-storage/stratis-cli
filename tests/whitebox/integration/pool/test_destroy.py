@@ -38,7 +38,7 @@ class Destroy1TestCase(SimTestCase):
     _MENU = ["--propagate", "pool", "destroy"]
     _POOLNAME = "deadpool"
 
-    def testExecution(self):
+    def test_execution(self):
         """
         Destroy should fail because there is no object path for the pool.
         """
@@ -62,7 +62,7 @@ class Destroy2TestCase(SimTestCase):
         command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
         RUNNER(command_line)
 
-    def testExecution(self):
+    def test_execution(self):
         """
         The pool was just created, so must be destroyable.
         """
@@ -90,14 +90,14 @@ class Destroy3TestCase(SimTestCase):
         command_line = ["filesystem", "create", self._POOLNAME, self._VOLNAME]
         RUNNER(command_line)
 
-    def testExecution(self):
+    def test_execution(self):
         """
         This should fail since it has a filesystem.
         """
         command_line = self._MENU + [self._POOLNAME]
         self.check_error(StratisCliEngineError, command_line, _ERROR)
 
-    def testWithFilesystemRemoved(self):
+    def test_with_filesystem_removed(self):
         """
         This should succeed since the filesystem is removed first.
         """

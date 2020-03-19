@@ -37,7 +37,7 @@ class ListTestCase(SimTestCase):
     _MENU = ["--propagate", "filesystem", "list"]
     _POOLNAME = "deadpool"
 
-    def testList(self):
+    def test_list(self):
         """
         Listing the volume must fail since the pool does not exist.
         """
@@ -63,7 +63,7 @@ class List2TestCase(SimTestCase):
         command_line = ["pool", "create"] + [self._POOLNAME] + _DEVICE_STRATEGY()
         RUNNER(command_line)
 
-    def testList(self):
+    def test_list(self):
         """
         Listing the volumes in an empty pool should succeed.
         """
@@ -91,7 +91,7 @@ class List3TestCase(SimTestCase):
         command_line = ["filesystem", "create", self._POOLNAME] + self._VOLUMES
         RUNNER(command_line)
 
-    def testList(self):
+    def test_list(self):
         """
         Listing the volumes in a non-empty pool should succeed.
         """
@@ -122,7 +122,7 @@ class List4TestCase(SimTestCase):
         command_line = ["filesystem", "create", self._POOLNAME, self._VOLUMES[2]]
         RUNNER(command_line)
 
-    def testList(self):
+    def test_list(self):
         """
         Listing multiple volumes in a non-empty pool should succeed.
         """
@@ -158,14 +158,14 @@ class List5TestCase(SimTestCase):
         command_line = ["pool", "create", self._POOLNAMES[2]] + _DEVICE_STRATEGY()
         RUNNER(command_line)
 
-    def testListOne(self):
+    def test_list_one(self):
         """
         Specifying a pool name should yield only filesystems for that pool.
         """
         command_line = self._MENU + [self._POOLNAMES[1]]
         RUNNER(command_line)
 
-    def testListNoPool(self):
+    def test_list_no_pool(self):
         """
         If pool name is not specified, all filesystems for all pools should
         be listed.
@@ -173,7 +173,7 @@ class List5TestCase(SimTestCase):
         command_line = self._MENU
         RUNNER(command_line)
 
-    def testListDefault(self):
+    def test_list_default(self):
         """
         filesystem or fs subcommand should default to listing all pools.
         """

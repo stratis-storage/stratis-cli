@@ -42,7 +42,7 @@ class DestroyTestCase(SimTestCase):
     _POOLNAME = "deadpool"
     _VOLNAMES = ["oubliette", "mnemosyne"]
 
-    def testDestroy(self):
+    def test_destroy(self):
         """
         Destruction of the volume must fail since pool is not specified.
         """
@@ -69,7 +69,7 @@ class Destroy2TestCase(SimTestCase):
         command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
         RUNNER(command_line)
 
-    def testDestroy(self):
+    def test_destroy(self):
         """
         Destruction of the volume must succeed since pool exists and at end
         volume is gone.
@@ -101,7 +101,7 @@ class Destroy3TestCase(SimTestCase):
         command_line = ["filesystem", "create", self._POOLNAME] + self._VOLNAMES
         RUNNER(command_line)
 
-    def testDestroy(self):
+    def test_destroy(self):
         """
         Destruction of the volume must succeed since pool exists and at end
         volume is gone.
@@ -130,7 +130,7 @@ class Destroy4TestCase(SimTestCase):
         command_line = ["filesystem", "create", self._POOLNAME] + self._VOLNAMES[0:1]
         RUNNER(command_line)
 
-    def testDestroy(self):
+    def test_destroy(self):
         """
         Destruction of 2 volumes, of which 1 does not exist, must fail.
         There is 1 target resource that would change.
@@ -139,7 +139,7 @@ class Destroy4TestCase(SimTestCase):
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
         self.check_error(StratisCliPartialChangeError, command_line, _ERROR)
 
-    def test2Destroy(self):
+    def test_2_destroy(self):
         """
         Destruction of 3 volumes, of which 1 does not exist, must fail.
         There are multiple (2) target resources that would change.
@@ -174,7 +174,7 @@ class Create5TestCase(SimTestCase):
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES[1:2]
         RUNNER(command_line)
 
-    def testDestroy(self):
+    def test_destroy(self):
         """
         Destruction of 3 volumes, of which 2 do not exist, must fail.
         There is 1 target resource that would change.
@@ -183,7 +183,7 @@ class Create5TestCase(SimTestCase):
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES[0:3]
         self.check_error(StratisCliPartialChangeError, command_line, _ERROR)
 
-    def test2Destroy(self):
+    def test_2_destroy(self):
         """
         Destruction of 4 volumes, of which 2 do not exist, must fail.
         There are multiple (2) target resources that would change.

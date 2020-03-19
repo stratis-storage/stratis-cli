@@ -49,7 +49,7 @@ class RenameTestCase(SimTestCase):
         command_line = ["filesystem", "create", self._POOLNAME, self._FSNAME]
         RUNNER(command_line)
 
-    def testRename(self):
+    def test_rename(self):
         """
         Renaming the filesystem should succeed,
         because origin the pool and filesytem are available.
@@ -57,7 +57,7 @@ class RenameTestCase(SimTestCase):
         command_line = self._MENU + [self._POOLNAME, self._FSNAME, self._RENAMEFSNAME]
         RUNNER(command_line)
 
-    def testSameName(self):
+    def test_same_name(self):
         """
         Renaming the filesystem must fail, because this performs no action.
         """
@@ -75,7 +75,7 @@ class Rename1TestCase(SimTestCase):
     _FSNAME = "fs"
     _RENAMEFSNAME = "renamefs"
 
-    def testNonExistentPool(self):
+    def test_non_existent_pool(self):
         """
         Renaming the filesystem must fail, because the pool does not exist.
         """
@@ -83,7 +83,7 @@ class Rename1TestCase(SimTestCase):
 
         self.check_error(DbusClientUniqueResultError, command_line, _ERROR)
 
-    def testNonExistentPoolSameName(self):
+    def test_non_existent_pool_same_name(self):
         """
         Renaming the filesystem must fail, because the pool does not exist.
         """
@@ -109,14 +109,14 @@ class Rename2TestCase(SimTestCase):
         command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
         RUNNER(command_line)
 
-    def testNonExistentFilesystem(self):
+    def test_non_existent_filesystem(self):
         """
         Renaming the filesystem must fail, because filesystem does not exist.
         """
         command_line = self._MENU + [self._POOLNAME, self._FSNAME, self._RENAMEFSNAME]
         self.check_error(DbusClientUniqueResultError, command_line, _ERROR)
 
-    def testNonExistentFilesystemSameName(self):
+    def test_non_existent_filesystem_same_name(self):
         """
         Renaming the filesystem must fail, because the filesystem does not exist.
         """

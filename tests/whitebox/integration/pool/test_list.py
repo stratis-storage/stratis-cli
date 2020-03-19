@@ -27,14 +27,14 @@ class ListTestCase(SimTestCase):
 
     _MENU = ["--propagate", "pool", "list"]
 
-    def testList(self):
+    def test_list(self):
         """
         List should just succeed, even though there is nothing to list.
         """
         command_line = self._MENU
         RUNNER(command_line)
 
-    def testListDefault(self):
+    def test_list_default(self):
         """
         Test default listing action when "list" is not specified.
 
@@ -60,14 +60,14 @@ class List2TestCase(SimTestCase):
         command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
         RUNNER(command_line)
 
-    def testList(self):
+    def test_list(self):
         """
         List should just succeed.
         """
         command_line = self._MENU
         RUNNER(command_line)
 
-    def testListDefault(self):
+    def test_list_default(self):
         """
         Test default listing action when "list" is not specified.
         """

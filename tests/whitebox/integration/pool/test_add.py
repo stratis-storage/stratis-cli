@@ -41,7 +41,7 @@ class AddDataTestCase(SimTestCase):
     _MENU = ["--propagate", "pool", "add-data"]
     _POOLNAME = "deadpool"
 
-    def testAdd(self):
+    def test_add(self):
         """
         Adding the devices must fail since the pool does not exist.
         """
@@ -57,7 +57,7 @@ class AddCacheTestCase(SimTestCase):
     _MENU = ["--propagate", "pool", "add-cache"]
     _POOLNAME = "deadpool"
 
-    def testAdd(self):
+    def test_add(self):
         """
         Adding the devices must fail since the pool does not exist.
         """
@@ -80,14 +80,14 @@ class AddDataTestCase1(SimTestCase):
         command_line = ["pool", "create", self._POOLNAME] + self._DEVICES
         RUNNER(command_line)
 
-    def testAddData(self):
+    def test_add_data(self):
         """
         Test that adding new devices to data tier succeeds.
         """
         command_line = self._MENU + [self._POOLNAME] + _DEVICE_STRATEGY()
         RUNNER(command_line)
 
-    def testAddDataAgain(self):
+    def test_add_data_again(self):
         """
         Test that trying to add the same devices twice results in an
         exception.
@@ -97,7 +97,7 @@ class AddDataTestCase1(SimTestCase):
         command_line = self._MENU + [self._POOLNAME] + self._DEVICES
         self.check_error(StratisCliPartialChangeError, command_line, _ERROR)
 
-    def testAddDataCache(self):
+    def test_add_data_cache(self):
         """
         Test that adding 1 data device that is already in the cache tier raises
         an exception.
@@ -111,7 +111,7 @@ class AddDataTestCase1(SimTestCase):
             _ERROR,
         )
 
-    def testAddDataCache2(self):
+    def test_add_data_cache_2(self):
         """
         Test that adding multiple (2) data devices that are already in the cache tier raises
         an exception.
@@ -145,7 +145,7 @@ class AddDataTestCase2(SimTestCase):
         command_line = ["pool", "create", self._SECOND_POOLNAME] + self._SECOND_DEVICES
         RUNNER(command_line)
 
-    def testAddData(self):
+    def test_add_data(self):
         """
         Test that adding the same devices to the data tier in a different pool fails.
         """
@@ -167,14 +167,14 @@ class AddCacheTestCase1(SimTestCase):
         command_line = ["pool", "create", self._POOLNAME] + self._DEVICES
         RUNNER(command_line)
 
-    def testAddCache(self):
+    def test_add_cache(self):
         """
         Test that adding new devices to cache tier succeeds.
         """
         command_line = self._MENU + [self._POOLNAME] + _DEVICE_STRATEGY()
         RUNNER(command_line)
 
-    def testAddCacheAgain(self):
+    def test_add_cache_again(self):
         """
         Test that trying to add the same devices twice results in an
         exception.
@@ -186,7 +186,7 @@ class AddCacheTestCase1(SimTestCase):
         RUNNER(command_line)
         self.check_error(StratisCliPartialChangeError, command_line, _ERROR)
 
-    def testAddCacheData(self):
+    def test_add_cache_data(self):
         """
         Test that adding 1 cache device that is already in the data tier raises
         an exception.
@@ -209,7 +209,7 @@ class AddCacheTestCase2(SimTestCase):
         command_line = ["pool", "create", self._POOLNAME] + self._DEVICES_2
         RUNNER(command_line)
 
-    def testAddCacheData(self):
+    def test_add_cache_data(self):
         """
         Test that adding multiple (2) cache devices that are already in the data tier raises
         an exception.

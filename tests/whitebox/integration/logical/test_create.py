@@ -41,7 +41,7 @@ class CreateTestCase(SimTestCase):
     _POOLNAME = "deadpool"
     _VOLNAMES = ["oubliette", "mnemosyne"]
 
-    def testCreation(self):
+    def test_creation(self):
         """
         Creation of the volume must fail since pool is not specified.
         """
@@ -67,7 +67,7 @@ class Create2TestCase(SimTestCase):
         command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
         RUNNER(command_line)
 
-    def testCreation(self):
+    def test_creation(self):
         """
         Creation of the volume should succeed since pool is available.
         """
@@ -95,7 +95,7 @@ class Create3TestCase(SimTestCase):
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
         RUNNER(command_line)
 
-    def testCreation(self):
+    def test_creation(self):
         """
         Creation of this volume should fail, because there is an existing
         volume of the same name.
@@ -124,7 +124,7 @@ class Create4TestCase(SimTestCase):
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES[0:1]
         RUNNER(command_line)
 
-    def testCreate(self):
+    def test_create(self):
         """
         Creation of 2 volumes, of which 1 already exists, must fail.
         There is 1 target resource that would change.
@@ -133,7 +133,7 @@ class Create4TestCase(SimTestCase):
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES[0:2]
         self.check_error(StratisCliPartialChangeError, command_line, _ERROR)
 
-    def test2Create(self):
+    def test_2_create(self):
         """
         Creation of 3 volumes, of which 1 already exists, must fail.
         There are multiple (2) target resources that would change.
@@ -168,7 +168,7 @@ class Create5TestCase(SimTestCase):
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES[1:2]
         RUNNER(command_line)
 
-    def testCreate(self):
+    def test_create(self):
         """
         Creation of 3 volumes, of which 2 already exist, must fail.
         There is 1 target resource that would change.
@@ -177,7 +177,7 @@ class Create5TestCase(SimTestCase):
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES[0:3]
         self.check_error(StratisCliPartialChangeError, command_line, _ERROR)
 
-    def test2Create(self):
+    def test_2_create(self):
         """
         Creation of 4 volumes, of which 2 already exist, must fail.
         There are multiple (2) target resources that would change.

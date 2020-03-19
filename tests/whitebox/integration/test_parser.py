@@ -32,7 +32,7 @@ class ParserTestCase(RunTestCase):
     during an action.
     """
 
-    def testStratisNoSubcommand(self):
+    def test_stratis_no_subcommand(self):
         """
         If missing subcommand, or missing "daemon" subcommand return exit code
         of 2. There can't be a missing subcommand for "blockdev", "pool", or
@@ -42,7 +42,7 @@ class ParserTestCase(RunTestCase):
             for prefix in [[], ["--propagate"]]:
                 self.check_system_exit(prefix + command_line, _PARSE_ERROR)
 
-    def testStratisTwoOptions(self):
+    def test_stratis_two_options(self):
         """
         Exactly one option should be set, so this should fail,
         but only because redundancy accepts no arguments.
@@ -51,7 +51,7 @@ class ParserTestCase(RunTestCase):
             command_line = ["daemon", "redundancy", "version"]
             self.check_system_exit(prefix + command_line, _PARSE_ERROR)
 
-    def testStratisBadSubcommand(self):
+    def test_stratis_bad_subcommand(self):
         """
         If an unknown subcommand return exit code of 2.
         """
@@ -66,7 +66,7 @@ class ParserTestCase(RunTestCase):
             for prefix in [[], ["--propagate"]]:
                 self.check_system_exit(prefix + command_line, _PARSE_ERROR)
 
-    def testRedundancy(self):
+    def test_redundancy(self):
         """
         Verify that there is a parser error if redundancy is not "none" in
         pool creation.
@@ -90,7 +90,7 @@ class ParserSimTestCase(SimTestCase):
     Parser tests which require the sim engine to be running.
     """
 
-    def testStratisListDefault(self):
+    def test_stratis_list_default(self):
         """
         Verify that pool, filesystem, and blockdev subcommands execute
         without any additional command.
