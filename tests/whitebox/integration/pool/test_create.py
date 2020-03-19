@@ -46,7 +46,7 @@ class Create3TestCase(SimTestCase):
         command_line = ["pool", "create", self._POOLNAME] + self.devices
         RUNNER(command_line)
 
-    def testCreateSameDevices(self):
+    def test_create_same_devices(self):
         """
         Create should fail with a StratisCliNameConflictError trying to create
         new pool with the same devices and the same name as previous.
@@ -54,7 +54,7 @@ class Create3TestCase(SimTestCase):
         command_line = self._MENU + [self._POOLNAME] + self.devices
         self.check_error(StratisCliNameConflictError, command_line, _ERROR)
 
-    def testCreateDifferentDevices(self):
+    def test_create_different_devices(self):
         """
         Create should fail with a StratisCliNameConflictError trying to create
         new pool with different devices and the same name as previous.
@@ -78,7 +78,7 @@ class Create4TestCase(SimTestCase):
         command_line = ["pool", "create", self._POOLNAME_1] + self._DEVICES
         RUNNER(command_line)
 
-    def testCreateSameDevices(self):
+    def test_create_same_devices(self):
         """
         Test that creating two pools with different names and the same devices raises
         a StratisCliInUseSameTierError exception.

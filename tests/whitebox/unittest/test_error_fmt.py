@@ -39,7 +39,7 @@ class ErrorFmtTestCase(unittest.TestCase):
         """
         self.assertNotEqual(str(exception), "")
 
-    def testStratisCliPropertyNotFoundErrorFmt(self):
+    def test_stratis_cli_property_not_found_error_fmt(self):
         """
         Test 'StratisCliPropertyNotFoundError'
         """
@@ -47,19 +47,19 @@ class ErrorFmtTestCase(unittest.TestCase):
             StratisCliPropertyNotFoundError("BadInterface", "BadProperty")
         )
 
-    def testStratisCliIncoherenceErrorFmt(self):
+    def test_stratis_cli_incoherence_error_fmt(self):
         """
         Test 'StratisCliIncoherenceError'
         """
         self._string_not_empty(StratisCliIncoherenceError("Error"))
 
-    def testStratisCliUnknownInterfaceErrorFmt(self):
+    def test_stratis_cli_unknown_interface_error_fmt(self):
         """
         Test 'StratisCliUnknownInterfaceError'
         """
         self._string_not_empty(StratisCliUnknownInterfaceError("BadInterface"))
 
-    def testStratisCliGenerationErrorFmt(self):
+    def test_stratis_cli_generation_error_fmt(self):
         """
         Test 'StratisCliGenerationError'
         """

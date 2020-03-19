@@ -33,14 +33,14 @@ class StratisTestCase(SimTestCase):
 
     _MENU = ["--propagate", "daemon"]
 
-    def testStratisVersion(self):
+    def test_stratis_version(self):
         """
         Getting version should just succeed.
         """
         command_line = self._MENU + ["version"]
         RUNNER(command_line)
 
-    def testStratisRedundancy(self):
+    def test_stratis_redundancy(self):
         """
         Getting redundancy should just succeed.
         """
@@ -53,14 +53,14 @@ class PropagateTestCase(RunTestCase):
     Verify correct operation of --propagate flag.
     """
 
-    def testPropagate(self):
+    def test_propagate(self):
         """
         If propagate is set, the expected exception will propagate.
         """
         command_line = ["--propagate", "daemon", "version"]
         self.check_error(dbus.exceptions.DBusException, command_line, _ERROR)
 
-    def testNotPropagate(self):
+    def test_not_propagate(self):
         """
         If propagate is not set, the exception will be SystemExit.
         """

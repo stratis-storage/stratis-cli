@@ -34,7 +34,7 @@ class ListTestCase(SimTestCase):
     _MENU = ["--propagate", "blockdev", "list"]
     _POOLNAME = "deadpool"
 
-    def testList(self):
+    def test_list(self):
         """
         Listing the devices must fail since the pool does not exist.
         """
@@ -43,7 +43,7 @@ class ListTestCase(SimTestCase):
             DbusClientUniqueResultError, command_line, StratisCliErrorCodes.ERROR
         )
 
-    def testListEmpty(self):
+    def test_list_empty(self):
         """
         Listing the devices should succeed without a pool name specified.
         The list should be empty.
@@ -51,7 +51,7 @@ class ListTestCase(SimTestCase):
         command_line = self._MENU
         RUNNER(command_line)
 
-    def testListDefault(self):
+    def test_list_default(self):
         """
         Blockdev subcommand should default to listing all blockdevs for all
         pools. The list should be empty.
@@ -76,21 +76,21 @@ class List2TestCase(SimTestCase):
         command_line = ["pool", "create"] + [self._POOLNAME] + _DEVICE_STRATEGY()
         RUNNER(command_line)
 
-    def testList(self):
+    def test_list(self):
         """
         Listing the devices should succeed.
         """
         command_line = self._MENU + [self._POOLNAME]
         RUNNER(command_line)
 
-    def testListEmpty(self):
+    def test_list_empty(self):
         """
         Listing the devices should succeed without a pool name specified.
         """
         command_line = self._MENU
         RUNNER(command_line)
 
-    def testListDefault(self):
+    def test_list_default(self):
         """
         Blockdev subcommand should default to listing all blockdevs for all
         pools.

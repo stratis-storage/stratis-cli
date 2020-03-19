@@ -48,14 +48,14 @@ class SnapshotTestCase(SimTestCase):
         command_line = ["filesystem", "create", self._POOLNAME, self._FSNAME]
         RUNNER(command_line)
 
-    def testSnapshot(self):
+    def test_snapshot(self):
         """
         Creation of the snapshot should succeed since origin pool/filesytem is available.
         """
         command_line = self._MENU + [self._POOLNAME, self._FSNAME, self._SNAPNAME]
         RUNNER(command_line)
 
-    def testSameName(self):
+    def test_same_name(self):
         """
         Creation of the snapshot must fail, because this performs no action.
         """
@@ -73,7 +73,7 @@ class Snapshot1TestCase(SimTestCase):
     _SNAPNAME = "snapfs"
     _FSNAME = "fs"
 
-    def testCreation(self):
+    def test_creation(self):
         """
         Creation of the snapshot must fail since specified pool does not exist.
         """
@@ -99,7 +99,7 @@ class Snapshot2TestCase(SimTestCase):
         command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
         RUNNER(command_line)
 
-    def testCreation(self):
+    def test_creation(self):
         """
         Creation of the snapshot must fail since filesystem does not exist.
         """

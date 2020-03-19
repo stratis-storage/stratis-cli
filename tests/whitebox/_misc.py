@@ -35,8 +35,8 @@ from stratis_cli._errors import StratisCliActionError
 try:
     _STRATISD = os.environ["STRATISD"]
 except KeyError:
-    message = "STRATISD environment variable must be set to absolute path of stratisd executable"
-    sys.exit(message)
+    _MESSAGE = "STRATISD environment variable must be set to absolute path of stratisd executable"
+    sys.exit(_MESSAGE)
 
 
 def device_name_list(min_devices=0, max_devices=10):

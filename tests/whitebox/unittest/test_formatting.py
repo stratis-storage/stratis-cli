@@ -73,7 +73,7 @@ class FormattingTestCase1(unittest.TestCase):
             self.table[0], self.table[1:], ["<", "<", "<", "<", "<", "<"], self.output
         )
 
-    def testContainsEquallyLongRows(self):
+    def test_contains_equally_long_rows(self):
         """
         Test that the table's rows are of equal length
         """
@@ -81,7 +81,7 @@ class FormattingTestCase1(unittest.TestCase):
         row_lengths = map(maybe_wcswidth, self.output.readlines())
         self.assertEqual(len(frozenset(row_lengths)), 1)
 
-    def testContainsCorrectNumberOfLines(self):
+    def test_contains_correct_number_of_lines(self):
         """
         Test that the table contains the correct number of lines
         """
