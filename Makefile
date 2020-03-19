@@ -29,6 +29,8 @@ view:
 	rm packages_stratis-cli.pdf
 	pyreverse ${PYREVERSE_OPTS} --project="stratis-cli-errors" src/stratis_cli/_errors.py
 	mv classes_stratis-cli-errors.pdf _pyreverse
+	pyreverse ${PYREVERSE_OPTS} --project="test-whitebox" tests/whitebox/_misc.py -a 1
+	mv classes_test-whitebox.pdf _pyreverse
 
 .PHONY: archive
 archive:
