@@ -35,7 +35,9 @@ from stratis_cli._errors import StratisCliActionError
 try:
     _STRATISD = os.environ["STRATISD"]
 except KeyError:
-    sys.exit("STRATISD environment variable must be set to absolute path of stratisd executable")
+    sys.exit(
+        "STRATISD environment variable must be set to absolute path of stratisd executable"
+    )
 
 
 def device_name_list(min_devices=0, max_devices=10):
@@ -65,7 +67,9 @@ class _Service:
         """
         Start the stratisd daemon with the simulator.
         """
-        self._stratisd = subprocess.Popen([os.path.join(_STRATISD), "--sim"]) # pylint: disable=attribute-defined-outside-init
+        self._stratisd = subprocess.Popen(  # pylint: disable=attribute-defined-outside-init
+            [os.path.join(_STRATISD), "--sim"]
+        )
         time.sleep(1)
 
     def teardown(self):
