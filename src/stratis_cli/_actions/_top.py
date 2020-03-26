@@ -171,9 +171,9 @@ class TopActions:
                 "name": pool_name,
                 "redundancy": (True, 0),
                 "devices": blockdevs,
-                "keyfile_path": (
-                    (True, namespace.keyfile_path)
-                    if namespace.keyfile_path is not None
+                "key_desc": (
+                    (True, namespace.key_desc)
+                    if namespace.key_desc is not None
                     else (False, "")
                 ),
             },

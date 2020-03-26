@@ -38,12 +38,15 @@ POOL_SUBCMDS = [
                     ),
                 ),
                 (
-                    "--keyfile",
+                    "--key-desc",
                     dict(
                         default=None,
                         type=str,
-                        help="Path to keyfile for encryption of a pool",
-                        dest="keyfile_path",
+                        help=(
+                            "Key description of key in kernel keyring to use "
+                            "for encryption"
+                        ),
+                        dest="key_desc",
                     ),
                 ),
             ],
