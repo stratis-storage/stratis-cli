@@ -306,11 +306,11 @@ class StratisCliEngineError(StratisCliRuntimeError):
             :param str message: whatever message accompanied the error code
         """
         # pylint: disable=super-init-not-called
-        self.rc = rc
+        self.error_code = rc
         self.message = message
 
     def __str__(self):
-        return "%s: %s" % (STRATISD_ERROR_TO_NAME(self.rc), self.message)
+        return "%s: %s" % (STRATISD_ERROR_TO_NAME(self.error_code), self.message)
 
 
 class StratisCliActionError(StratisCliRuntimeError):

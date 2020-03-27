@@ -75,12 +75,16 @@ class LogicalActions:
                 "create", requested_names.difference(already_names), already_names
             )
 
-        ((created, list_created), rc, message) = Pool.Methods.CreateFilesystems(
+        (
+            (created, list_created),
+            return_code,
+            message,
+        ) = Pool.Methods.CreateFilesystems(
             get_object(pool_object_path), {"specs": list(requested_names)}
         )
 
-        if rc != StratisdErrors.OK:  # pragma: no cover
-            raise StratisCliEngineError(rc, message)
+        if return_code != StratisdErrors.OK:  # pragma: no cover
+            raise StratisCliEngineError(return_code, message)
 
         if not created or len(list_created) < len(requested_names):  # pragma: no cover
             raise StratisCliIncoherenceError(
@@ -218,12 +222,16 @@ class LogicalActions:
             op for (name, op) in pool_filesystems.items() if name in requested_names
         ]
 
-        ((destroyed, list_destroyed), rc, message) = Pool.Methods.DestroyFilesystems(
+        (
+            (destroyed, list_destroyed),
+            return_code,
+            message,
+        ) = Pool.Methods.DestroyFilesystems(
             get_object(pool_object_path), {"filesystems": fs_object_paths}
         )
 
-        if rc != StratisdErrors.OK:  # pragma: no cover
-            raise StratisCliEngineError(rc, message)
+        if return_code != StratisdErrors.OK:  # pragma: no cover
+            raise StratisCliEngineError(return_code, message)
 
         if not destroyed or len(list_destroyed) < len(
             # pylint: disable=bad-continuation
@@ -265,13 +273,13 @@ class LogicalActions:
             .search(managed_objects)
         )
 
-        ((changed, _), rc, message) = Pool.Methods.SnapshotFilesystem(
+        ((changed, _), return_code, message) = Pool.Methods.SnapshotFilesystem(
             get_object(pool_object_path),
             {"origin": origin_fs_object_path, "snapshot_name": namespace.snapshot_name},
         )
 
-        if rc != StratisdErrors.OK:  # pragma: no cover
-            raise StratisCliEngineError(rc, message)
+        if return_code != StratisdErrors.OK:  # pragma: no cover
+            raise StratisCliEngineError(return_code, message)
 
         if not changed:
             raise StratisCliNoChangeError("snapshot", namespace.snapshot_name)
@@ -302,12 +310,12 @@ class LogicalActions:
             .search(managed_objects)
         )
 
-        ((changed, _), rc, message) = Filesystem.Methods.SetName(
+        ((changed, _), return_code, message) = Filesystem.Methods.SetName(
             get_object(fs_object_path), {"name": namespace.new_name}
         )
 
-        if rc != StratisdErrors.OK:  # pragma: no cover
-            raise StratisCliEngineError(rc, message)
+        if return_code != StratisdErrors.OK:  # pragma: no cover
+            raise StratisCliEngineError(return_code, message)
 
         if not changed:
             raise StratisCliNoChangeError("rename", namespace.new_name)
