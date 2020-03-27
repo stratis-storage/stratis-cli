@@ -36,10 +36,10 @@ from .._errors import StratisCliPropertyNotFoundError
 try:
     from wcwidth import wcswidth
 
-    maybe_wcswidth = wcswidth  # pragma: no cover
+    MAYBE_WCSWIDTH = wcswidth  # pragma: no cover
 
 except ImportError:  # pragma: no cover
-    maybe_wcswidth = len
+    MAYBE_WCSWIDTH = len
 
 # placeholder for tables where a desired value was not obtained from stratisd
 # when the value should be supported.
@@ -158,7 +158,7 @@ def print_table(column_headings, row_entries, alignment, file=sys.stdout):
     for row_index, row in enumerate(row_entries):
         cell_widths.append([])
         for column_index, cell in enumerate(row):
-            cell_width = maybe_wcswidth(cell)
+            cell_width = MAYBE_WCSWIDTH(cell)
             cell_widths[row_index].append(cell_width)
             column_widths[column_index] = max(column_widths[column_index], cell_width)
 
