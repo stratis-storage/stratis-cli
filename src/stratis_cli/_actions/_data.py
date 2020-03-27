@@ -241,6 +241,7 @@ def _get_timeout(value):
 
 
 try:
+    # pylint: disable=invalid-name
 
     timeout = _get_timeout(
         environ.get("STRATIS_DBUS_TIMEOUT", DBUS_TIMEOUT_SECONDS * 1000)

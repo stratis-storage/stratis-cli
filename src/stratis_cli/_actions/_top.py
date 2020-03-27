@@ -165,12 +165,12 @@ class TopActions:
 
         _check_same_tier(pool_name, managed_objects, blockdevs, BlockDevTiers.Data)
 
-        ((changed, (_, _)), rc, message) = Manager.Methods.CreatePool(
+        ((changed, (_, _)), return_code, message) = Manager.Methods.CreatePool(
             proxy, {"name": pool_name, "redundancy": (True, 0), "devices": blockdevs}
         )
 
-        if rc != StratisdErrors.OK:  # pragma: no cover
-            raise StratisCliEngineError(rc, message)
+        if return_code != StratisdErrors.OK:  # pragma: no cover
+            raise StratisCliEngineError(return_code, message)
 
         if not changed:  # pragma: no cover
             raise StratisCliIncoherenceError(
@@ -252,16 +252,16 @@ class TopActions:
             :type props_map: dict of str * any
             """
 
-            def gen_string(b, code):
+            def gen_string(has_property, code):
                 """
                 Generate the display string for a boolean property
 
-                :param bool b: whether the property is true or false
+                :param bool has_property: whether the property is true or false
                 :param str code: the code to generate the string for
                 :returns: the generated string
                 :rtype: str
                 """
-                return " " + code if b else "~" + code
+                return " " + code if has_property else "~" + code
 
             prop_list = []
             prop_list.append(
@@ -310,14 +310,14 @@ class TopActions:
             .search(managed_objects)
         )
 
-        ((changed, _), rc, message) = Manager.Methods.DestroyPool(
+        ((changed, _), return_code, message) = Manager.Methods.DestroyPool(
             proxy, {"pool": pool_object_path}
         )
 
         # This branch can be covered, since the engine will return an error
         # if the pool can not be destroyed because it has filesystems.
-        if rc != StratisdErrors.OK:
-            raise StratisCliEngineError(rc, message)
+        if return_code != StratisdErrors.OK:
+            raise StratisCliEngineError(return_code, message)
 
         if not changed:  # pragma: no cover
             raise StratisCliIncoherenceError(
@@ -349,12 +349,12 @@ class TopActions:
             .search(managed_objects)
         )
 
-        ((changed, _), rc, message) = Pool.Methods.SetName(
+        ((changed, _), return_code, message) = Pool.Methods.SetName(
             get_object(pool_object_path), {"name": namespace.new}
         )
 
-        if rc != StratisdErrors.OK:  # pragma: no cover
-            raise StratisCliEngineError(rc, message)
+        if return_code != StratisdErrors.OK:  # pragma: no cover
+            raise StratisCliEngineError(return_code, message)
 
         if not changed:
             raise StratisCliNoChangeError("rename", namespace.new)
@@ -391,11 +391,11 @@ class TopActions:
             .search(managed_objects)
         )
 
-        ((added, devs_added), rc, message) = Pool.Methods.AddDataDevs(
+        ((added, devs_added), return_code, message) = Pool.Methods.AddDataDevs(
             get_object(pool_object_path), {"devices": list(blockdevs)}
         )
-        if rc != StratisdErrors.OK:  # pragma: no cover
-            raise StratisCliEngineError(rc, message)
+        if return_code != StratisdErrors.OK:  # pragma: no cover
+            raise StratisCliEngineError(return_code, message)
 
         if not added or len(devs_added) < len(blockdevs):  # pragma: no cover
             raise StratisCliIncoherenceError(
@@ -439,11 +439,11 @@ class TopActions:
             .search(managed_objects)
         )
 
-        ((added, devs_added), rc, message) = Pool.Methods.AddCacheDevs(
+        ((added, devs_added), return_code, message) = Pool.Methods.AddCacheDevs(
             get_object(pool_object_path), {"devices": list(blockdevs)}
         )
-        if rc != StratisdErrors.OK:  # pragma: no cover
-            raise StratisCliEngineError(rc, message)
+        if return_code != StratisdErrors.OK:  # pragma: no cover
+            raise StratisCliEngineError(return_code, message)
 
         if not added or len(devs_added) < len(blockdevs):  # pragma: no cover
             raise StratisCliIncoherenceError(
