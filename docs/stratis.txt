@@ -31,7 +31,7 @@ GLOBAL OPTIONS
 
 COMMANDS
 --------
-pool create <pool_name> <blockdev> [<blockdev>..]::
+pool create [--redundancy <redundancy>] <pool_name> <blockdev> [<blockdev>..]::
      Create a pool from one or more block devices, with the given pool name.
 pool list::
      List all pools on the system.
@@ -71,6 +71,12 @@ daemon redundancy::
        List the redundancy levels that the Stratis service supports.
 daemon version::
        Show the Stratis service's version.
+
+OPTIONS
+-------
+--redundancy::
+        The redundancy for the created pool. The only option is "none" which
+        is also the default.
 
 ENVIRONMENT VARIABLES
 ---------------------
