@@ -54,6 +54,29 @@ POOL_SUBCMDS = [
         ),
     ),
     (
+        "init-cache",
+        dict(
+            help="Initialize the cache with block devices",
+            args=[
+                (
+                    "pool_name",
+                    dict(
+                        action="store",
+                        help=("Name of the pool for which to initialize the cache"),
+                    ),
+                ),
+                (
+                    "blockdevs",
+                    dict(
+                        help="Initialize the pool cache using these block devs",
+                        nargs="+",
+                    ),
+                ),
+            ],
+            func=TopActions.init_cache,
+        ),
+    ),
+    (
         "list",
         dict(
             help="List pools",

@@ -192,6 +192,50 @@ class TopActions:
             )
 
     @staticmethod
+    def init_cache(namespace):
+        """
+        Initialize the cache of an existing stratis pool.
+
+        :raises StratisCliEngineError:
+        :raises StratisCliIncoherenceError:
+        """
+        from ._data import ObjectManager
+        from ._data import Pool
+        from ._data import pools
+
+        proxy = get_object(TOP_OBJECT)
+        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
+        pool_name = namespace.pool_name
+        (pool_object_path, _) = next(
+            pools(props={"Name": pool_name})
+            .require_unique_match(True)
+            .search(managed_objects)
+        )
+        pool = get_object(pool_object_path)
+        blockdevs = namespace.blockdevs
+
+        _check_opposite_tier(managed_objects, blockdevs, BlockDevTiers.Data)
+
+        _check_same_tier(pool_name, managed_objects, blockdevs, BlockDevTiers.Cache)
+
+        ((changed, _), return_code, message) = Pool.Methods.InitCache(
+            pool, {"blockdevs": namespace.blockdevs}
+        )
+
+        if return_code != StratisdErrors.OK:  # pragma: no cover
+            raise StratisCliEngineError(return_code, message)
+
+        if not changed:  # pragma: no cover
+            raise StratisCliIncoherenceError(
+                (
+                    "Expected to add block devices %s as cache to pool with "
+                    "name %s but stratisd reports that it did not actually "
+                    "add the specified devices to the pool's cache."
+                )
+                % (blockdevs, pool_name)
+            )
+
+    @staticmethod
     def list_pools(_):
         """
         List all stratis pools.
