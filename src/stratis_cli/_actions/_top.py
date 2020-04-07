@@ -157,7 +157,7 @@ class TopActions:
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
         pool_name = namespace.pool_name
         names = pools(props={"Name": pool_name}).search(managed_objects)
-        blockdevs = namespace.blockdevs
+        blockdevs = frozenset(namespace.blockdevs)
         if list(names) != []:
             raise StratisCliNameConflictError("pool", pool_name)
 
