@@ -212,7 +212,7 @@ class TopActions:
             .search(managed_objects)
         )
         pool = get_object(pool_object_path)
-        blockdevs = namespace.blockdevs
+        blockdevs = frozenset(namespace.blockdevs)
 
         _check_opposite_tier(managed_objects, blockdevs, BlockDevTiers.Data)
 
