@@ -172,7 +172,7 @@ class StratisCertify(unittest.TestCase):
         self.unittest_command(
             [STRATIS_CLI, "pool", "add-cache", make_test_pool(DISKS[0:2]), DISKS[2]],
             0,
-            1,
+            True,
             True,
         )
 
