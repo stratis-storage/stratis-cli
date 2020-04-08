@@ -166,7 +166,17 @@ class TopActions:
         _check_same_tier(pool_name, managed_objects, blockdevs, BlockDevTiers.Data)
 
         ((changed, (_, _)), return_code, message) = Manager.Methods.CreatePool(
-            proxy, {"name": pool_name, "redundancy": (True, 0), "devices": blockdevs}
+            proxy,
+            {
+                "name": pool_name,
+                "redundancy": (True, 0),
+                "devices": blockdevs,
+                "key_desc": (
+                    (True, namespace.key_desc)
+                    if namespace.key_desc is not None
+                    else (False, "")
+                ),
+            },
         )
 
         if return_code != StratisdErrors.OK:  # pragma: no cover
@@ -179,6 +189,50 @@ class TopActions:
                     "reports that it did not actually create the pool"
                 )
                 % pool_name
+            )
+
+    @staticmethod
+    def init_cache(namespace):
+        """
+        Initialize the cache of an existing stratis pool.
+
+        :raises StratisCliEngineError:
+        :raises StratisCliIncoherenceError:
+        """
+        from ._data import ObjectManager
+        from ._data import Pool
+        from ._data import pools
+
+        proxy = get_object(TOP_OBJECT)
+        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
+        pool_name = namespace.pool_name
+        (pool_object_path, _) = next(
+            pools(props={"Name": pool_name})
+            .require_unique_match(True)
+            .search(managed_objects)
+        )
+        pool = get_object(pool_object_path)
+        blockdevs = frozenset(namespace.blockdevs)
+
+        _check_opposite_tier(managed_objects, blockdevs, BlockDevTiers.Data)
+
+        _check_same_tier(pool_name, managed_objects, blockdevs, BlockDevTiers.Cache)
+
+        ((changed, _), return_code, message) = Pool.Methods.InitCache(
+            pool, {"devices": namespace.blockdevs}
+        )
+
+        if return_code != StratisdErrors.OK:  # pragma: no cover
+            raise StratisCliEngineError(return_code, message)
+
+        if not changed:  # pragma: no cover
+            raise StratisCliIncoherenceError(
+                (
+                    "Expected to add block devices %s as cache to pool with "
+                    "name %s but stratisd reports that it did not actually "
+                    "add the specified devices to the pool's cache."
+                )
+                % (blockdevs, pool_name)
             )
 
     @staticmethod
