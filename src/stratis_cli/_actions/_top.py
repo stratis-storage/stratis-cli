@@ -219,7 +219,7 @@ class TopActions:
         _check_same_tier(pool_name, managed_objects, blockdevs, BlockDevTiers.Cache)
 
         ((changed, _), return_code, message) = Pool.Methods.InitCache(
-            pool, {"blockdevs": namespace.blockdevs}
+            pool, {"devices": namespace.blockdevs}
         )
 
         if return_code != StratisdErrors.OK:  # pragma: no cover
