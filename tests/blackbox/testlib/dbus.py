@@ -216,6 +216,21 @@ class StratisDbus:
         }
 
     @staticmethod
+    def pool_init_cache(pool_path, devices):
+        """
+        Initialize the cache for a pool with a list of devices.
+        :param str pool_path: The object path of the pool to which the cache device will be added
+        :param str devices: A list of devices that can be initialized as a cache device
+        :return: The return values of the InitCache call
+        :rtype: The D-Bus types (bao), q, and s
+        """
+        iface = dbus.Interface(
+            StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, pool_path),
+            StratisDbus._POOL_IFACE,
+        )
+        return iface.InitCache(devices, timeout=StratisDbus._TIMEOUT)
+
+    @staticmethod
     def pool_add_cache(pool_path, devices):
         """
         Add a block device as a cache device

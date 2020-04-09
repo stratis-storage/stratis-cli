@@ -138,8 +138,10 @@ class StratisCertify(unittest.TestCase):
         Test adding cache to a pool.
         """
         pool_name = p_n()
-        pool_path = make_test_pool(pool_name, DISKS[0:2])
+        pool_path = make_test_pool(pool_name, DISKS[0:1])
 
+        (_, return_code, _) = StratisDbus.pool_init_cache(pool_path, DISKS[1:2])
+        self.assertEqual(return_code, dbus.UInt16(0))
         (_, return_code, _) = StratisDbus.pool_add_cache(pool_path, DISKS[2:3])
         self.assertEqual(return_code, dbus.UInt16(0))
 
