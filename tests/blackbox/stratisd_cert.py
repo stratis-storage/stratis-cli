@@ -82,6 +82,7 @@ class StratisCertify(unittest.TestCase):
 
         clean_up()
 
+        time.sleep(1)
         exec_command(["udevadm", "settle"])
 
     def test_get_managed_objects(self):
