@@ -98,13 +98,13 @@ class StratisDbus:
         :return: The current stratisd version
         :rtype: str
         """
-        versions = [
-            obj_data[StratisDbus._MNGR_IFACE]["Version"]
-            for _, obj_data in StratisDbus.get_managed_objects().items()
-            if StratisDbus._MNGR_IFACE in obj_data
-        ]
-
-        return versions[0]
+        iface = dbus.Interface(
+            StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, StratisDbus._TOP_OBJECT),
+            dbus.PROPERTIES_IFACE,
+        )
+        return iface.Get(
+            StratisDbus._MNGR_IFACE, "Version", timeout=StratisDbus._TIMEOUT
+        )
 
     @staticmethod
     def pool_list():
