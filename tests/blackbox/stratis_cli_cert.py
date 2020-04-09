@@ -25,8 +25,6 @@ import unittest
 from testlib.stratis import STRATIS_CLI, clean_up
 from testlib.utils import exec_command, exec_test_command, fs_n, p_n, process_exists
 
-DISKS = []
-
 
 def make_test_pool(pool_disks):
     """
@@ -138,14 +136,17 @@ class StratisCertify(unittest.TestCase):
         """
         pool_name = p_n()
         self.unittest_command(
-            [STRATIS_CLI, "pool", "create", pool_name, DISKS[0]], 0, True, True
+            [STRATIS_CLI, "pool", "create", pool_name, StratisCertify.DISKS[0]],
+            0,
+            True,
+            True,
         )
 
     def test_pool_list_not_empty(self):
         """
         Test listing an existent pool.
         """
-        make_test_pool(DISKS[0:1])
+        make_test_pool(StratisCertify.DISKS[0:1])
         self.unittest_command([STRATIS_CLI, "pool", "list"], 0, True, False)
 
     def test_blockdev_list(self):
@@ -159,7 +160,13 @@ class StratisCertify(unittest.TestCase):
         Test creating a pool that already exists.
         """
         self.unittest_command(
-            [STRATIS_CLI, "pool", "create", make_test_pool(DISKS[0:1]), DISKS[1]],
+            [
+                STRATIS_CLI,
+                "pool",
+                "create",
+                make_test_pool(StratisCertify.DISKS[0:1]),
+                StratisCertify.DISKS[1],
+            ],
             1,
             False,
             True,
@@ -170,7 +177,13 @@ class StratisCertify(unittest.TestCase):
         Test initialzing the cache for a pool.
         """
         self.unittest_command(
-            [STRATIS_CLI, "pool", "init-cache", make_test_pool(DISKS[0:2]), DISKS[2]],
+            [
+                STRATIS_CLI,
+                "pool",
+                "init-cache",
+                make_test_pool(StratisCertify.DISKS[0:2]),
+                StratisCertify.DISKS[2],
+            ],
             0,
             True,
             True,
@@ -181,7 +194,10 @@ class StratisCertify(unittest.TestCase):
         Test destroying a pool.
         """
         self.unittest_command(
-            [STRATIS_CLI, "pool", "destroy", make_test_pool(DISKS[0:1])], 0, True, True
+            [STRATIS_CLI, "pool", "destroy", make_test_pool(StratisCertify.DISKS[0:1])],
+            0,
+            True,
+            True,
         )
 
     def test_filesystem_create(self):
@@ -194,7 +210,7 @@ class StratisCertify(unittest.TestCase):
                 STRATIS_CLI,
                 "filesystem",
                 "create",
-                make_test_pool(DISKS[0:1]),
+                make_test_pool(StratisCertify.DISKS[0:1]),
                 filesystem_name,
             ],
             0,
@@ -206,16 +222,19 @@ class StratisCertify(unittest.TestCase):
         """
         Test adding data to a pool.
         """
-        pool_name = make_test_pool(DISKS[0:1])
+        pool_name = make_test_pool(StratisCertify.DISKS[0:1])
         self.unittest_command(
-            [STRATIS_CLI, "pool", "add-data", pool_name, DISKS[1]], 0, True, True
+            [STRATIS_CLI, "pool", "add-data", pool_name, StratisCertify.DISKS[1]],
+            0,
+            True,
+            True,
         )
 
     def test_filesystem_list_not_empty(self):
         """
         Test listing an existent filesystem.
         """
-        pool_name = make_test_pool(DISKS[0:1])
+        pool_name = make_test_pool(StratisCertify.DISKS[0:1])
         make_test_filesystem(pool_name)
         self.unittest_command([STRATIS_CLI, "filesystem", "list"], 0, True, False)
 
@@ -223,7 +242,7 @@ class StratisCertify(unittest.TestCase):
         """
         Test creating a filesystem that already exists.
         """
-        pool_name = make_test_pool(DISKS[0:1])
+        pool_name = make_test_pool(StratisCertify.DISKS[0:1])
         filesystem_name = make_test_filesystem(pool_name)
         self.unittest_command(
             [STRATIS_CLI, "filesystem", "create", pool_name, filesystem_name],
@@ -236,7 +255,7 @@ class StratisCertify(unittest.TestCase):
         """
         Test renaming a filesystem to a new name.
         """
-        pool_name = make_test_pool(DISKS[0:1])
+        pool_name = make_test_pool(StratisCertify.DISKS[0:1])
         filesystem_name = make_test_filesystem(pool_name)
         fs_name_rename = fs_n()
         self.unittest_command(
@@ -257,7 +276,7 @@ class StratisCertify(unittest.TestCase):
         """
         Test renaming a filesystem to the same name.
         """
-        pool_name = make_test_pool(DISKS[0:1])
+        pool_name = make_test_pool(StratisCertify.DISKS[0:1])
         filesystem_name = make_test_filesystem(pool_name)
         self.unittest_command(
             [
@@ -277,7 +296,7 @@ class StratisCertify(unittest.TestCase):
         """
         Test snapshotting a filesystem.
         """
-        pool_name = make_test_pool(DISKS[0:1])
+        pool_name = make_test_pool(StratisCertify.DISKS[0:1])
         filesystem_name = make_test_filesystem(pool_name)
         snapshot_name = fs_n()
         self.unittest_command(
@@ -298,7 +317,7 @@ class StratisCertify(unittest.TestCase):
         """
         Test destroying a filesystem.
         """
-        pool_name = make_test_pool(DISKS[0:1])
+        pool_name = make_test_pool(StratisCertify.DISKS[0:1])
         filesystem_name = make_test_filesystem(pool_name)
         self.unittest_command(
             [STRATIS_CLI, "filesystem", "destroy", pool_name, filesystem_name],
@@ -308,12 +327,23 @@ class StratisCertify(unittest.TestCase):
         )
 
 
-if __name__ == "__main__":
-    ARGUMENT_PARSER = argparse.ArgumentParser()
-    ARGUMENT_PARSER.add_argument(
-        "--disk", action="append", dest="DISKS", help="disks to use", required=True
+def main():
+    """
+    The main method.
+    """
+    argument_parser = argparse.ArgumentParser()
+    argument_parser.add_argument(
+        "--disk",
+        action="append",
+        dest="DISKS",
+        default=[],
+        help="disks to use, a minimum of 3 in order to run every test",
     )
-    PARSED_ARGS, OTHER_ARGS = ARGUMENT_PARSER.parse_known_args()
-    DISKS = PARSED_ARGS.DISKS
-    print("Using block device(s) for tests: %s" % DISKS)
-    unittest.main(argv=sys.argv[:1] + OTHER_ARGS)
+    parsed_args, unittest_args = argument_parser.parse_known_args()
+    StratisCertify.DISKS = parsed_args.DISKS
+    print("Using block device(s) for tests: %s" % StratisCertify.DISKS)
+    unittest.main(argv=sys.argv[:1] + unittest_args)
+
+
+if __name__ == "__main__":
+    main()
