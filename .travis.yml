@@ -30,9 +30,9 @@ matrix:
       script: PYTHONPATH=./src make -f Makefile test-travis
 
     # MANDATORY CHECKS USING LOWEST SUPPORTED INTERPRETER
-    - name: "run tests that do not require stratisd using Python 3.6.8"
+    - name: "run pylint using Python 3.6.8"
       python: "3.6.8"
-      install: pip install dbus-client-gen==0.4 dbus-python-client-gen==0.7 justbytes==0.11 python-dateutil wcwidth psutil
-      script: PYTHONPATH=./src make -f Makefile test-travis
+      install: pip install pylint==2.3.1 dbus-client-gen==0.4 dbus-python-client-gen==0.7 justbytes==0.11 python-dateutil wcwidth psutil
+      script: PYTHONPATH=./src make -f Makefile lint
 
 script: make -f Makefile $TASK
