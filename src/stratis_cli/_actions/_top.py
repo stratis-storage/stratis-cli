@@ -192,15 +192,17 @@ class TopActions:
             )
 
     @staticmethod
-    def init_cache(namespace):
+    def init_cache(namespace):  # pylint: disable=too-many-locals
         """
         Initialize the cache of an existing stratis pool.
 
         :raises StratisCliEngineError:
         :raises StratisCliIncoherenceError:
         """
+        from ._data import MODev
         from ._data import ObjectManager
         from ._data import Pool
+        from ._data import devs
         from ._data import pools
 
         proxy = get_object(TOP_OBJECT)
@@ -211,28 +213,35 @@ class TopActions:
             .require_unique_match(True)
             .search(managed_objects)
         )
-        pool = get_object(pool_object_path)
         blockdevs = frozenset(namespace.blockdevs)
 
         _check_opposite_tier(managed_objects, blockdevs, BlockDevTiers.Data)
 
         _check_same_tier(pool_name, managed_objects, blockdevs, BlockDevTiers.Cache)
 
-        ((changed, _), return_code, message) = Pool.Methods.InitCache(
-            pool, {"devices": namespace.blockdevs}
+        ((changed, devs_added), return_code, message) = Pool.Methods.InitCache(
+            get_object(pool_object_path), {"devices": namespace.blockdevs}
         )
 
         if return_code != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(return_code, message)
 
-        if not changed:  # pragma: no cover
+        if not changed or len(devs_added) < len(blockdevs):  # pragma: no cover
+            devnodes_added = [
+                MODev(info).Devnode()
+                for (object_path, info) in devs(
+                    props={"Pool": pool_object_path}
+                ).search(ObjectManager.Methods.GetManagedObjects(proxy, {}))
+                if object_path in devs_added
+            ]
             raise StratisCliIncoherenceError(
                 (
-                    "Expected to add block devices %s as cache to pool with "
-                    "name %s but stratisd reports that it did not actually "
-                    "add the specified devices to the pool's cache."
+                    "Expected to add the specified blockdevs as cache "
+                    "to pool %s but stratisd reports that it did not actually "
+                    "add some or all of the blockdevs requested; devices "
+                    "added: (%s), devices requested: (%s)"
                 )
-                % (blockdevs, pool_name)
+                % (namespace.pool_name, ", ".join(devnodes_added), ", ".join(blockdevs))
             )
 
     @staticmethod
@@ -414,7 +423,7 @@ class TopActions:
             raise StratisCliNoChangeError("rename", namespace.new)
 
     @staticmethod
-    def add_data_devices(namespace):
+    def add_data_devices(namespace):  # pylint: disable=too-many-locals
         """
         Add specified data devices to a pool.
 
@@ -424,8 +433,10 @@ class TopActions:
         :raises StratisCliInUseSameTierError:
         :raises StratisCliPartialChangeError:
         """
+        from ._data import MODev
         from ._data import ObjectManager
         from ._data import Pool
+        from ._data import devs
         from ._data import pools
 
         proxy = get_object(TOP_OBJECT)
@@ -452,17 +463,25 @@ class TopActions:
             raise StratisCliEngineError(return_code, message)
 
         if not added or len(devs_added) < len(blockdevs):  # pragma: no cover
+            devnodes_added = [
+                MODev(info).Devnode()
+                for (object_path, info) in devs(
+                    props={"Pool": pool_object_path}
+                ).search(ObjectManager.Methods.GetManagedObjects(proxy, {}))
+                if object_path in devs_added
+            ]
             raise StratisCliIncoherenceError(
                 (
                     "Expected to add the specified blockdevs to the data tier "
                     "in pool %s but stratisd reports that it did not actually "
-                    "add some or all of the blockdevs requested"
+                    "add some or all of the blockdevs requested; devices "
+                    "added: (%s), devices requested: (%s)"
                 )
-                % namespace.pool_name
+                % (namespace.pool_name, ", ".join(devnodes_added), ", ".join(blockdevs))
             )
 
     @staticmethod
-    def add_cache_devices(namespace):
+    def add_cache_devices(namespace):  # pylint: disable=too-many-locals
         """
         Add specified cache devices to a pool.
 
@@ -472,8 +491,10 @@ class TopActions:
         :raises StratisCliInUseSameTierError:
         :raises StratisCliPartialChangeError:
         """
+        from ._data import MODev
         from ._data import ObjectManager
         from ._data import Pool
+        from ._data import devs
         from ._data import pools
 
         proxy = get_object(TOP_OBJECT)
@@ -500,11 +521,19 @@ class TopActions:
             raise StratisCliEngineError(return_code, message)
 
         if not added or len(devs_added) < len(blockdevs):  # pragma: no cover
+            devnodes_added = [
+                MODev(info).Devnode()
+                for (object_path, info) in devs(
+                    props={"Pool": pool_object_path}
+                ).search(ObjectManager.Methods.GetManagedObjects(proxy, {}))
+                if object_path in devs_added
+            ]
             raise StratisCliIncoherenceError(
                 (
                     "Expected to add the specified blockdevs to the cache tier "
                     "in pool %s but stratisd reports that it did not actually "
-                    "add some or all of the blockdevs requested"
+                    "add some or all of the blockdevs requested; devices "
+                    "added: (%s), devices requested: (%s)"
                 )
-                % namespace.pool_name
+                % (namespace.pool_name, ", ".join(devnodes_added), ", ".join(blockdevs))
             )
