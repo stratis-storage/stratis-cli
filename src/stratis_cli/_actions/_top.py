@@ -211,21 +211,20 @@ class TopActions:
             .require_unique_match(True)
             .search(managed_objects)
         )
-        pool = get_object(pool_object_path)
         blockdevs = frozenset(namespace.blockdevs)
 
         _check_opposite_tier(managed_objects, blockdevs, BlockDevTiers.Data)
 
         _check_same_tier(pool_name, managed_objects, blockdevs, BlockDevTiers.Cache)
 
-        ((changed, _), return_code, message) = Pool.Methods.InitCache(
-            pool, {"devices": namespace.blockdevs}
+        ((changed, devs_added), return_code, message) = Pool.Methods.InitCache(
+            get_object(pool_object_path), {"devices": namespace.blockdevs}
         )
 
         if return_code != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(return_code, message)
 
-        if not changed:  # pragma: no cover
+        if not changed or len(devs_added) < len(blockdevs):  # pragma: no cover
             raise StratisCliIncoherenceError(
                 (
                     "Expected to add block devices %s as cache to pool with "
