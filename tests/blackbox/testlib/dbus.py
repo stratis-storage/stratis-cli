@@ -67,7 +67,7 @@ class StratisDbus:
     _BUS_NAME = "org.storage.stratis2"
     _TOP_OBJECT = "/org/storage/stratis2"
 
-    _MNGR_IFACE = "org.storage.stratis2.Manager"
+    _MNGR_IFACE = "org.storage.stratis2.Manager.r1"
     _POOL_IFACE = "org.storage.stratis2.pool.r1"
     _FS_IFACE = "org.storage.stratis2.filesystem"
     _BLKDEV_IFACE = "org.storage.stratis2.blockdev"
@@ -139,11 +139,13 @@ class StratisDbus:
         return [blockdev_obj["Name"] for blockdev_obj in blockdev_objects]
 
     @staticmethod
-    def pool_create(pool_name, devices):
+    def pool_create(pool_name, devices, key_desc):
         """
         Create a pool
         :param str pool_name: The name of the pool to create
         :param str devices: A list of devices that can be used to create the pool
+        :param key_desc: Key description
+        :type key_desc: str or NoneType
         :return: The return values of the CreatePool call
         :rtype: The D-Bus types (b(oao)), q, and s
         """
@@ -155,6 +157,7 @@ class StratisDbus:
             pool_name,
             (dbus.Boolean(False), dbus.UInt16(0)),
             devices,
+            (True, key_desc) if key_desc is not None else (False, ""),
             timeout=StratisDbus._TIMEOUT,
         )
 
