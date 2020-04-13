@@ -17,6 +17,7 @@ Tests of the stratis CLI.
 
 # isort: STDLIB
 import argparse
+import os
 import sys
 import time
 import unittest
@@ -95,7 +96,11 @@ class StratisCertify(unittest.TestCase):
         """
         exit_code, stdout, stderr = exec_test_command(args)
 
-        self.assertEqual(exit_code, exp_exit_code)
+        self.assertEqual(
+            exit_code,
+            exp_exit_code,
+            msg=os.linesep.join(["", "stdout: %s" % stdout, "stderr: %s" % stderr]),
+        )
 
         if exp_stderr_is_empty:
             self.assertEqual(stderr, "")
