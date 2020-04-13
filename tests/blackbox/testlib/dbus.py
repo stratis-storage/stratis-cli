@@ -67,7 +67,7 @@ class StratisDbus:
     _BUS_NAME = "org.storage.stratis2"
     _TOP_OBJECT = "/org/storage/stratis2"
 
-    _MNGR_IFACE = "org.storage.stratis2.Manager"
+    _MNGR_IFACE = "org.storage.stratis2.Manager.r1"
     _POOL_IFACE = "org.storage.stratis2.pool.r1"
     _FS_IFACE = "org.storage.stratis2.filesystem"
     _BLKDEV_IFACE = "org.storage.stratis2.blockdev"
