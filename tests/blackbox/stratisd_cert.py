@@ -35,7 +35,7 @@ def make_test_pool(pool_name, pool_disks):
     :return: Object path of the created pool
     """
     (obj_path_exists, (obj_path, _)), return_code, msg = StratisDbus.pool_create(
-        pool_name, pool_disks
+        pool_name, pool_disks, None
     )
     assert return_code == 0, "return_code: %s, error_msg: %s" % (return_code, msg)
     assert obj_path_exists, "obj_path_exists: %s" % obj_path_exists
@@ -129,7 +129,9 @@ class StratisCertify(unittest.TestCase):
         Test creating a pool.
         """
         pool_name = p_n()
-        (_, return_code, _) = StratisDbus.pool_create(pool_name, StratisCertify.DISKS)
+        (_, return_code, _) = StratisDbus.pool_create(
+            pool_name, StratisCertify.DISKS, None
+        )
         self.assertEqual(return_code, dbus.UInt16(0))
 
     def test_pool_add_cache(self):
@@ -179,7 +181,7 @@ class StratisCertify(unittest.TestCase):
         make_test_pool(pool_name, StratisCertify.DISKS[0:1])
 
         (_, return_code, _) = StratisDbus.pool_create(
-            pool_name, StratisCertify.DISKS[0:1]
+            pool_name, StratisCertify.DISKS[0:1], None
         )
         self.assertEqual(return_code, dbus.UInt16(0))
 
@@ -191,7 +193,7 @@ class StratisCertify(unittest.TestCase):
         make_test_pool(pool_name, StratisCertify.DISKS[0:1])
 
         (_, return_code, _) = StratisDbus.pool_create(
-            pool_name, StratisCertify.DISKS[1:3]
+            pool_name, StratisCertify.DISKS[1:3], None
         )
         self.assertEqual(return_code, dbus.UInt16(1))
 
