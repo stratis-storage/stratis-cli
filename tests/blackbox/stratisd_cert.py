@@ -58,6 +58,7 @@ def make_test_filesystem(pool_path, fs_name):
     return array_of_tuples_with_obj_paths_and_names[0][0]
 
 
+# pylint: disable=too-many-public-methods
 class StratisCertify(unittest.TestCase):
     """
     Unit tests for Stratis
@@ -84,6 +85,23 @@ class StratisCertify(unittest.TestCase):
 
         time.sleep(1)
         exec_command(["udevadm", "settle"])
+
+    def unittest_command(self, result, expected_return_code):
+        """
+        :param result: a tuple of the (optional) return value, the
+                       return code, and the return message from a
+                       D-Bus call
+        :type result: tuple of object * dbus.UInt16 * str OR tuple
+                      of dbus.UInt16 * str if there is no return value
+        :raises: AssertionError if the actual return code is not
+                 equal to the expected return code
+        """
+        if len(result) == 3:
+            (_, return_code, msg) = result
+        else:
+            (return_code, msg) = result
+
+        self.assertEqual(return_code, expected_return_code, msg=msg)
 
     def test_get_managed_objects(self):
         """
@@ -204,8 +222,7 @@ class StratisCertify(unittest.TestCase):
         pool_name = p_n()
         make_test_pool(pool_name, StratisCertify.DISKS[0:1])
 
-        (_, return_code, _) = StratisDbus.pool_destroy(pool_name)
-        self.assertEqual(return_code, dbus.UInt16(0))
+        self.unittest_command(StratisDbus.pool_destroy(pool_name), dbus.UInt16(0))
 
         self.assertEqual(StratisDbus.fs_list(), {})
 
