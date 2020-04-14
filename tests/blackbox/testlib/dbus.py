@@ -142,7 +142,7 @@ class StratisDbus:
     def pool_create(pool_name, devices):
         """
         Create a pool
-        :param pool_name: The name of the pool to create
+        :param str pool_name: The name of the pool to create
         :param str devices: A list of devices that can be used to create the pool
         :return: The return values of the CreatePool call
         :rtype: The D-Bus types (b(oao)), q, and s
@@ -162,7 +162,7 @@ class StratisDbus:
     def pool_destroy(pool_name):
         """
         Destroy a pool
-        :param pool_name: The name of the pool to destroy
+        :param str pool_name: The name of the pool to destroy
         :return: The object path of the DestroyPool call, or None
         :rtype: The D-Bus types (bs), q, and s, or None
         """
