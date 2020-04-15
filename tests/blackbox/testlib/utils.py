@@ -127,7 +127,7 @@ def exec_test_command(cmd):
     )
 
 
-class KernelKey:
+class KernelKey:  # pylint: disable=attribute-defined-outside-init
     """
     A handle for operating on keys in the kernel keyring. The specified key will
     be available for the lifetime of the test when used with the Python with
@@ -162,15 +162,21 @@ class KernelKey:
             )
 
     def __enter__(self):
+        """
+        This method allows KernelKey to be used with the "with" keyword.
+        :return: The key description that can be used to access the
+                 provided key data in __init__.
+        """
         with open("/dev/urandom", "rb") as urandom_f:
             key_desc = base64.b64encode(urandom_f.read(16)).decode("utf-8")
 
         args = ["keyctl", "get_persistent", "@s", "0"]
         exit_values = run(args, capture_output=True, text=True)
-        persistent_id = exit_values.stdout.strip()
         KernelKey._raise_keyctl_error(exit_values.returncode, args)
 
-        args = ["keyctl", "add", "user", key_desc, self.key_data, persistent_id]
+        self.persistent_id = exit_values.stdout.strip()
+
+        args = ["keyctl", "add", "user", key_desc, self.key_data, self.persistent_id]
         exit_values = run(args, capture_output=True)
         KernelKey._raise_keyctl_error(exit_values.returncode, args)
 
@@ -178,14 +184,14 @@ class KernelKey:
 
     def __exit__(self, exception_type, exception_value, traceback):
         try:
+            args = ["keyctl", "clear", self.persistent_id]
+            exit_values = run(args)
+            KernelKey._raise_keyctl_error(exit_values.returncode, args)
+
             args = ["keyctl", "clear", "@s"]
             exit_values = run(args)
             KernelKey._raise_keyctl_error(exit_values.returncode, args)
-        except RuntimeError as run_exc:
-            try:
-                if exception_value is not None:
-                    raise exception_value
-            except Exception as exc:
-                raise run_exc from exc
-            else:
-                raise run_exc
+        except RuntimeError as rexc:
+            if exception_value is None:
+                raise rexc
+            raise rexc from exception_value
