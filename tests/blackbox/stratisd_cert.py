@@ -85,6 +85,16 @@ class StratisCertify(unittest.TestCase):
         time.sleep(1)
         exec_command(["udevadm", "settle"])
 
+    def _inequality_test(self, result, expected_non_result):
+        """
+        :param object result: the result of a test
+        :param object expected_non_result: a value which the result must
+                                           not match, but which has the
+                                           expected type
+        """
+        self.assertIsInstance(result, type(expected_non_result))
+        self.assertNotEqual(result, expected_non_result)
+
     def _unittest_command(self, result, expected_return_code):
         """
         :param result: a tuple of the (optional) return value, the
@@ -106,16 +116,13 @@ class StratisCertify(unittest.TestCase):
         """
         Test that GetManagedObjects returns a dict w/out failure.
         """
-        result = StratisDbus.get_managed_objects()
-        self.assertIsInstance(result, dict)
+        self._inequality_test(StratisDbus.get_managed_objects(), {})
 
     def test_stratisd_version(self):
         """
         Test getting the daemon version.
         """
-        result = StratisDbus.stratisd_version()
-        self.assertIsInstance(result, str)
-        self.assertNotEqual(result, "")
+        self._inequality_test(StratisDbus.stratisd_version(), "")
 
     def test_pool_list_empty(self):
         """
@@ -184,9 +191,7 @@ class StratisCertify(unittest.TestCase):
         pool_name = p_n()
         make_test_pool(pool_name, StratisCertify.DISKS[0:1])
 
-        result = StratisDbus.pool_list()
-        self.assertIsInstance(result, list)
-        self.assertNotEqual(result, [])
+        self._inequality_test(StratisDbus.pool_list(), [])
 
     def test_pool_create_same_name_and_devices(self):
         """
@@ -290,9 +295,7 @@ class StratisCertify(unittest.TestCase):
         fs_name = fs_n()
         make_test_filesystem(pool_path, fs_name)
 
-        result = StratisDbus.fs_list()
-        self.assertIsInstance(result, dict)
-        self.assertNotEqual(result, {})
+        self._inequality_test(StratisDbus.fs_list(), {})
 
     def test_filesystem_create_same_name(self):
         """
