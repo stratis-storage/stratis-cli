@@ -154,7 +154,7 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
 
     def test_pool_create_encrypted(self):
         """
-        Test creating a pool.
+        Test creating an encrypted pool.
         """
         with KernelKey("test-password") as key_desc:
             pool_name = p_n()
