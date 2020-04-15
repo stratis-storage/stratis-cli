@@ -116,8 +116,7 @@ class StratisCertify(unittest.TestCase):
         """
         Test that GetManagedObjects returns a dict w/out failure.
         """
-        result = StratisDbus.get_managed_objects()
-        self.assertIsInstance(result, dict)
+        self._inequality_test(StratisDbus.get_managed_objects(), {})
 
     def test_stratisd_version(self):
         """
