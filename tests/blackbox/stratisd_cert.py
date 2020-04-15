@@ -122,7 +122,6 @@ class StratisCertify(unittest.TestCase):
         Test listing an non-existent pool.
         """
         result = StratisDbus.pool_list()
-        self.assertIsInstance(result, list)
         self.assertEqual(result, [])
 
     def test_blockdev_list(self):
@@ -130,7 +129,6 @@ class StratisCertify(unittest.TestCase):
         Test listing a blockdev.
         """
         result = StratisDbus.blockdev_list()
-        self.assertIsInstance(result, list)
         self.assertEqual(result, [])
 
     def test_filesystem_list_empty(self):
@@ -138,7 +136,6 @@ class StratisCertify(unittest.TestCase):
         Test listing an non-existent filesystem.
         """
         result = StratisDbus.fs_list()
-        self.assertIsInstance(result, dict)
         self.assertEqual(result, {})
 
     def test_pool_create(self):
