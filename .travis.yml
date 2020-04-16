@@ -5,7 +5,6 @@ addons:
   apt:
     packages:
       libdbus-glib-1-dev
-      tox
 
 branches:
     only:
