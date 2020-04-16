@@ -12,7 +12,7 @@ branches:
       - master
       - develop-2.0.1
 
-matrix:
+jobs:
   include:
 
     # MANDATORY CHECKS USING CURRENT DEVELOPMENT INTERPRETER
