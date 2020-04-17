@@ -194,8 +194,8 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
             self.unittest_command(
                 [STRATIS_CLI, "pool", "init-cache", pool_name, StratisCertify.DISKS[2]],
                 1,
-                True,
                 False,
+                True,
             )
 
     def test_pool_list_not_empty(self):
