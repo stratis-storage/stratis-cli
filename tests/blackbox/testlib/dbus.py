@@ -23,15 +23,19 @@ import dbus
 from .utils import TEST_PREF, umount_mdv
 
 
-# This method is based off of the STRATIS_DBUS_TIMEOUT environment variable parsing
-# function in src/stratis_cli/_actions/_data.py
+# This function is an exact copy of the get_timeout function in
+# the stratis_cli source code, except that it raises RuntimeError where
+# that function raises StratisCliEnvironmentError.
+# The function should not be imported, as these tests are intended to be
+# run in an environment where the Stratis CLI source code is not certainly
+# available.
 def _get_timeout(value):
     """
     Turn an input str or int into a float timeout value.
 
     :param value: the input str or int
     :type value: str or int
-    :raises ValueError:
+    :raises RuntimeError:
     :returns: float
     """
 
@@ -39,18 +43,25 @@ def _get_timeout(value):
 
     # Ensure the input str is not a float
     if isinstance(value, float):
-        raise ValueError(
+        raise RuntimeError(
             "The timeout value provided is a float; it should be an integer."
         )
 
     try:
         timeout_int = int(value)
+
     except ValueError:
-        raise ValueError("The timeout value provided is not an integer.")
+        raise RuntimeError("The timeout value provided is not an integer.")
+
+    # Ensure the integer is not too small
+    if timeout_int < -1:
+        raise RuntimeError(
+            "The timeout value provided is smaller than the smallest acceptable value, -1."
+        )
 
     # Ensure the integer is not too large
     if timeout_int > maximum_dbus_timeout_ms:
-        raise ValueError(
+        raise RuntimeError(
             "The timeout value provided exceeds the largest acceptable value, %s."
             % maximum_dbus_timeout_ms
         )

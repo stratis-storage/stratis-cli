@@ -27,13 +27,14 @@ from dbus_client_gen import (
 )
 from dbus_python_client_gen import DPClientGenerationError, make_class
 
-from .._errors import StratisCliEnvironmentError, StratisCliGenerationError
+from .._errors import StratisCliGenerationError
 from ._constants import (
     BLOCKDEV_INTERFACE,
     FETCH_PROPERTIES_INTERFACE,
     FILESYSTEM_INTERFACE,
     POOL_INTERFACE,
 )
+from ._timeout import get_timeout
 
 assert hasattr(sys.modules.get("stratis_cli"), "run"), (
     "This module is being loaded too eagerly. Make sure that loading it is "
@@ -204,53 +205,12 @@ SPECS = {
 _MANAGER_INTERFACE = "org.storage.stratis2.Manager.r1"
 
 DBUS_TIMEOUT_SECONDS = 120
-MAXIMUM_DBUS_TIMEOUT_MS = 1073741823
-
-
-def _get_timeout(value):
-    """
-    Turn an input str or int into a float timeout value.
-
-    :param value: the input str or int
-    :type value: str or int
-    :raises StratisCliEnvironmentError:
-    :returns: float
-    """
-    # Ensure the input str is not a float
-    if isinstance(value, float):
-        raise StratisCliEnvironmentError(
-            "The timeout value provided is a float; it should be an integer."
-        )
-
-    try:
-        timeout_int = int(value)
-
-    except ValueError:
-        raise StratisCliEnvironmentError(
-            "The timeout value provided is not an integer."
-        )
-
-    # Ensure the integer is not too small
-    if timeout_int < -1:
-        raise StratisCliEnvironmentError(
-            "The timeout value provided is smaller than the smallest acceptable value, -1."
-        )
-
-    # Ensure the integer is not too large
-    if timeout_int > MAXIMUM_DBUS_TIMEOUT_MS:
-        raise StratisCliEnvironmentError(
-            "The timeout value provided exceeds the largest acceptable value, %s."
-            % MAXIMUM_DBUS_TIMEOUT_MS
-        )
-
-    # Convert from milliseconds to seconds
-    return timeout_int / 1000
 
 
 try:
     # pylint: disable=invalid-name
 
-    timeout = _get_timeout(
+    timeout = get_timeout(
         environ.get("STRATIS_DBUS_TIMEOUT", DBUS_TIMEOUT_SECONDS * 1000)
     )
 
