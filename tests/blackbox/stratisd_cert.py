@@ -24,7 +24,7 @@ import unittest
 # isort: THIRDPARTY
 import dbus
 from testlib.dbus import StratisDbus, clean_up
-from testlib.utils import exec_command, fs_n, p_n, process_exists
+from testlib.utils import KernelKey, exec_command, fs_n, p_n, process_exists
 
 
 def make_test_pool(pool_name, pool_disks):
@@ -58,7 +58,7 @@ def make_test_filesystem(pool_path, fs_name):
     return array_of_tuples_with_obj_paths_and_names[0][0]
 
 
-class StratisCertify(unittest.TestCase):
+class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-methods
     """
     Unit tests for Stratis
     """
@@ -155,6 +155,18 @@ class StratisCertify(unittest.TestCase):
             StratisDbus.pool_create(pool_name, StratisCertify.DISKS, None),
             dbus.UInt16(0),
         )
+
+    def test_pool_create_encrypted(self):
+        """
+        Test creating an encrypted pool.
+        """
+        with KernelKey("test-password") as key_desc:
+            pool_name = p_n()
+
+            self._unittest_command(
+                StratisDbus.pool_create(pool_name, StratisCertify.DISKS, key_desc),
+                dbus.UInt16(0),
+            )
 
     def test_pool_add_cache(self):
         """
