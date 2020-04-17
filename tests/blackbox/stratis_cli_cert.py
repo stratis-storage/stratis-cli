@@ -51,7 +51,11 @@ def make_test_pool(pool_disks, key_desc=None):
     args += [pool_name] + pool_disks
 
     (return_code, _, stderr) = exec_test_command(args)
-    assert return_code == 0, "return_code: %s, stderr: %s" % (return_code, stderr)
+    if return_code != 0:
+        raise RuntimeError(
+            "Expected return code of 0; actual return_code: %s, %s"
+            % (return_code, stderr)
+        )
     return pool_name
 
 
@@ -65,7 +69,11 @@ def make_test_filesystem(pool_name):
     (return_code, _, stderr) = exec_test_command(
         [STRATIS_CLI, "filesystem", "create", pool_name, filesystem_name]
     )
-    assert return_code == 0, "return_code: %s, stderr: %s" % (return_code, stderr)
+    if return_code != 0:
+        raise RuntimeError(
+            "Expected return code of 0; actual return_code: %s, %s"
+            % (return_code, stderr)
+        )
     return filesystem_name
 
 
