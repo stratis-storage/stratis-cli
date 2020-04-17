@@ -24,19 +24,33 @@ import unittest
 
 # isort: THIRDPARTY
 from testlib.stratis import STRATIS_CLI, clean_up
-from testlib.utils import exec_command, exec_test_command, fs_n, p_n, process_exists
+from testlib.utils import (
+    KernelKey,
+    exec_command,
+    exec_test_command,
+    fs_n,
+    p_n,
+    process_exists,
+)
 
 
-def make_test_pool(pool_disks):
+def make_test_pool(pool_disks, key_desc=None):
     """
     Create a test pool that will later get destroyed
     :param list pool_disks: List of disks with which the pool will be created
+    :param key_desc: Key description associated with the key with which to encrypt
+                     the block devices in the pool
+    :type key_desc: str or NoneType
     :return: Name of the created pool
     """
     pool_name = p_n()
-    (return_code, _, stderr) = exec_test_command(
-        [STRATIS_CLI, "pool", "create", pool_name] + pool_disks
-    )
+
+    args = [STRATIS_CLI, "pool", "create"]
+    if key_desc is not None:
+        args += ["--key-desc", key_desc]
+    args += [pool_name] + pool_disks
+
+    (return_code, _, stderr) = exec_test_command(args)
     assert return_code == 0, "return_code: %s, stderr: %s" % (return_code, stderr)
     return pool_name
 
@@ -55,7 +69,7 @@ def make_test_filesystem(pool_name):
     return filesystem_name
 
 
-class StratisCertify(unittest.TestCase):
+class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-methods
     """
     Unit tests for Stratis
     """
@@ -147,6 +161,42 @@ class StratisCertify(unittest.TestCase):
             True,
             True,
         )
+
+    def test_pool_create_encrypted(self):
+        """
+        Test creating an encrypted pool.
+        """
+        with KernelKey("test-password") as key_desc:
+            pool_name = p_n()
+            self.unittest_command(
+                [
+                    STRATIS_CLI,
+                    "pool",
+                    "create",
+                    "--key-desc",
+                    key_desc,
+                    pool_name,
+                    StratisCertify.DISKS[0],
+                ],
+                0,
+                True,
+                True,
+            )
+
+    def test_pool_create_encrypted_with_cache(self):
+        """
+        Test creating an encrypted pool with cache.
+
+        This should fail.
+        """
+        with KernelKey("test-password") as key_desc:
+            pool_name = make_test_pool(StratisCertify.DISKS[0:2], key_desc)
+            self.unittest_command(
+                [STRATIS_CLI, "pool", "init-cache", pool_name, StratisCertify.DISKS[2]],
+                1,
+                False,
+                True,
+            )
 
     def test_pool_list_not_empty(self):
         """
