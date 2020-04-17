@@ -27,6 +27,27 @@ from testlib.dbus import StratisDbus, clean_up
 from testlib.utils import KernelKey, exec_command, fs_n, p_n, process_exists
 
 
+def _raise_error_exception(return_code, msg, return_value_exists):
+    """
+    Check result of a D-Bus call in a context where it is in error
+    if the call fails.
+    :param int return_code: the return code from the D-Bus call
+    :param str msg: the message returned on the D-Bus
+    :param bool return_value_exists: whether a value representing
+                                     a valid result was returned
+    """
+    if return_code != 0:
+        raise RuntimeError(
+            "Expected return code of 0; actual return code: %s, error_msg: %s"
+            % (return_code, msg)
+        )
+
+    if not return_value_exists:
+        raise RuntimeError(
+            "Result value was default or placeholder value and does not represent a valid result"
+        )
+
+
 def make_test_pool(pool_name, pool_disks):
     """
     Create a test pool that will later get destroyed
@@ -37,8 +58,8 @@ def make_test_pool(pool_name, pool_disks):
     (obj_path_exists, (obj_path, _)), return_code, msg = StratisDbus.pool_create(
         pool_name, pool_disks, None
     )
-    assert return_code == 0, "return_code: %s, error_msg: %s" % (return_code, msg)
-    assert obj_path_exists, "obj_path_exists: %s" % obj_path_exists
+
+    _raise_error_exception(return_code, msg, obj_path_exists)
     return obj_path
 
 
@@ -53,8 +74,8 @@ def make_test_filesystem(pool_path, fs_name):
         filesystems_created,
         (array_of_tuples_with_obj_paths_and_names),
     ), return_code, msg = StratisDbus.fs_create(pool_path, fs_name)
-    assert return_code == 0, "return_code: %s, error_msg: %s" % (return_code, msg)
-    assert filesystems_created, "filesystems_created: %s" % filesystems_created
+
+    _raise_error_exception(return_code, msg, filesystems_created)
     return array_of_tuples_with_obj_paths_and_names[0][0]
 
 

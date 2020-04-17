@@ -34,6 +34,20 @@ from testlib.utils import (
 )
 
 
+def _raise_error_exception(return_code, msg):
+    """
+    Check result of a CLI call in a context where it is in error
+    if the call fails.
+    :param int return_code: the return code from the D-Bus call
+    :param str msg: the message returned on the D-Bus
+    """
+    if return_code != 0:
+        raise RuntimeError(
+            "Expected return code of 0; actual return code: %s, error_msg: %s"
+            % (return_code, msg)
+        )
+
+
 def make_test_pool(pool_disks, key_desc=None):
     """
     Create a test pool that will later get destroyed
@@ -51,7 +65,8 @@ def make_test_pool(pool_disks, key_desc=None):
     args += [pool_name] + pool_disks
 
     (return_code, _, stderr) = exec_test_command(args)
-    assert return_code == 0, "return_code: %s, stderr: %s" % (return_code, stderr)
+
+    _raise_error_exception(return_code, stderr)
     return pool_name
 
 
@@ -65,7 +80,8 @@ def make_test_filesystem(pool_name):
     (return_code, _, stderr) = exec_test_command(
         [STRATIS_CLI, "filesystem", "create", pool_name, filesystem_name]
     )
-    assert return_code == 0, "return_code: %s, stderr: %s" % (return_code, stderr)
+
+    _raise_error_exception(return_code, stderr)
     return filesystem_name
 
 
