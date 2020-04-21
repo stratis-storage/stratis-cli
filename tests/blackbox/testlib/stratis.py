@@ -83,5 +83,8 @@ def clean_up():
     :return: None
     """
     _StratisCli.destroy_all()
-    if _StratisCli.pool_list() != []:
-        raise RuntimeError("testlib cli: clean_up failed")
+    remnant_pools = _StratisCli.pool_list()
+    if remnant_pools != []:
+        raise RuntimeError(
+            "testlib cli: clean_up failed; remnant pools: %s" % ", ".join(remnant_pools)
+        )
