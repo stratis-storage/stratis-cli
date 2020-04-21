@@ -106,7 +106,6 @@ def exec_command(cmd):
         print("STDOUT= %s" % stdout_text)
         print("STDERR= %s" % stderr_text)
 
-    assert expected_exit_code == exit_code
     if expected_exit_code != exit_code:
         raise RuntimeError("exec_command: non-zero exit code")
     return stdout_text
