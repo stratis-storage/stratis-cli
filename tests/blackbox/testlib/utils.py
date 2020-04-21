@@ -102,12 +102,10 @@ def exec_command(cmd):
     expected_exit_code = 0
 
     if expected_exit_code != exit_code:
-        print("cmd = %s [%d != %d]" % (str(cmd), expected_exit_code, exit_code))
-        print("STDOUT= %s" % stdout_text)
-        print("STDERR= %s" % stderr_text)
-
-    if expected_exit_code != exit_code:
-        raise RuntimeError("exec_command: non-zero exit code")
+        raise RuntimeError(
+            "exec_command: non-zero exit code: %d\nSTDOUT=%s\nSTDERR=%s"
+            % (exit_code, stdout_text, stderr_text)
+        )
     return stdout_text
 
 
