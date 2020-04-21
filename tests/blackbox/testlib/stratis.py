@@ -83,4 +83,5 @@ def clean_up():
     :return: None
     """
     _StratisCli.destroy_all()
-    assert _StratisCli.pool_list() == []
+    if _StratisCli.pool_list() != []:
+        raise RuntimeError("testlib cli: clean_up failed")

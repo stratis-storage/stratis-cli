@@ -406,4 +406,5 @@ def clean_up():
     :return: None
     """
     StratisDbus.destroy_all()
-    assert StratisDbus.pool_list() == []
+    if StratisDbus.pool_list() != []:
+        raise RuntimeError("testlib dbus: clean_up failed")
