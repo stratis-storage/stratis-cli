@@ -36,7 +36,7 @@ from testlib.utils import (
 
 def _raise_error_exception(return_code, msg):
     """
-    Check result of a D-Bus call in a context where it is in error
+    Check result of a CLI call in a context where it is in error
     if the call fails.
     :param int return_code: the return code from the D-Bus call
     :param str msg: the message returned on the D-Bus
