@@ -95,18 +95,15 @@ def exec_command(cmd):
     :type cmd: list of str
     :returns: standard output
     :rtype: str
-    :raises AssertionError: if exit code is non-zero
+    :raises RuntimeError: if exit code is non-zero
     """
     exit_code, stdout_text, stderr_text = exec_test_command(cmd)
 
-    expected_exit_code = 0
-
-    if expected_exit_code != exit_code:
-        print("cmd = %s [%d != %d]" % (str(cmd), expected_exit_code, exit_code))
-        print("STDOUT= %s" % stdout_text)
-        print("STDERR= %s" % stderr_text)
-
-    assert expected_exit_code == exit_code
+    if exit_code != 0:
+        raise RuntimeError(
+            "exec_command: non-zero exit code: %d\nSTDOUT=%s\nSTDERR=%s"
+            % (exit_code, stdout_text, stderr_text)
+        )
     return stdout_text
 
 
