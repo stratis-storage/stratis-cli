@@ -99,9 +99,7 @@ def exec_command(cmd):
     """
     exit_code, stdout_text, stderr_text = exec_test_command(cmd)
 
-    expected_exit_code = 0
-
-    if expected_exit_code != exit_code:
+    if exit_code != 0:
         raise RuntimeError(
             "exec_command: non-zero exit code: %d\nSTDOUT=%s\nSTDERR=%s"
             % (exit_code, stdout_text, stderr_text)
