@@ -21,6 +21,7 @@ from dbus_client_gen import DbusClientUniqueResultError
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
 from stratis_cli._errors import (
+    StratisCliEngineError,
     StratisCliInUseOtherTierError,
     StratisCliInUseSameTierError,
     StratisCliPartialChangeError,
@@ -51,19 +52,23 @@ class AddDataTestCase(SimTestCase):
 
 class AddCacheTestCase(SimTestCase):
     """
-    Test adding devices to a non-existant pool.
+    Test adding cache devices before initializing cache.
     """
 
     _MENU = ["--propagate", "pool", "add-cache"]
     _POOLNAME = "deadpool"
 
+    def setUp(self):
+        super().setUp()
+        command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
+        RUNNER(command_line)
+
     def test_add(self):
         """
-        Adding the devices must fail since the pool does not exist.
+        Adding the devices must fail since the cache is not initialized.
         """
-
         command_line = self._MENU + [self._POOLNAME] + _DEVICE_STRATEGY()
-        self.check_error(DbusClientUniqueResultError, command_line, _ERROR)
+        self.check_error(StratisCliEngineError, command_line, _ERROR)
 
 
 class AddDataTestCase1(SimTestCase):
