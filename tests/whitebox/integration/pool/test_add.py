@@ -103,7 +103,9 @@ class AddDataTestCase1(SimTestCase):
         an exception.
         """
         devices = _DEVICE_STRATEGY()
-        command_line = ["--propagate", "pool", "add-cache"] + [self._POOLNAME] + devices
+        command_line = (
+            ["--propagate", "pool", "init-cache"] + [self._POOLNAME] + devices
+        )
         RUNNER(command_line)
         self.check_error(
             StratisCliInUseOtherTierError,
@@ -117,7 +119,9 @@ class AddDataTestCase1(SimTestCase):
         an exception.
         """
         devices = _DEVICE_STRATEGY_2()
-        command_line = ["--propagate", "pool", "add-cache"] + [self._POOLNAME] + devices
+        command_line = (
+            ["--propagate", "pool", "init-cache"] + [self._POOLNAME] + devices
+        )
         RUNNER(command_line)
         self.check_error(
             StratisCliInUseOtherTierError,
