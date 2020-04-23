@@ -68,3 +68,7 @@ keyboard-interrupt-test:
 
 test-travis:
 	py.test ${PYTEST_OPS} ./tests/whitebox/unittest
+
+.PHONY: yamllint
+yamllint:
+	yamllint --strict .travis.yml
