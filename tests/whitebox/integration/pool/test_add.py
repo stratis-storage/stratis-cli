@@ -170,6 +170,13 @@ class AddCacheTestCase1(SimTestCase):
         super().setUp()
         command_line = ["pool", "create", self._POOLNAME] + self._DEVICES
         RUNNER(command_line)
+        command_line = [
+            "--propagate",
+            "pool",
+            "init-cache",
+            self._POOLNAME,
+        ] + _DEVICE_STRATEGY()
+        RUNNER(command_line)
 
     def test_add_cache(self):
         """
@@ -211,6 +218,13 @@ class AddCacheTestCase2(SimTestCase):
     def setUp(self):
         super().setUp()
         command_line = ["pool", "create", self._POOLNAME] + self._DEVICES_2
+        RUNNER(command_line)
+        command_line = [
+            "--propagate",
+            "pool",
+            "init-cache",
+            self._POOLNAME,
+        ] + _DEVICE_STRATEGY()
         RUNNER(command_line)
 
     def test_add_cache_data(self):
