@@ -107,6 +107,33 @@ class InitCacheFail3TestCase(SimTestCase):
         self.check_error(DbusClientUniqueResultError, command_line, _ERROR)
 
 
+class InitCacheFail4TestCase(SimTestCase):
+    """
+    Test 'init-cache' for encrypted pool.
+    """
+
+    _MENU = ["--propagate", "pool", "init-cache"]
+    _POOLNAME = "deadpool"
+
+    def setUp(self):
+        super().setUp()
+        command_line = [
+            "pool",
+            "create",
+            "--key-desc",
+            "test-password",
+            self._POOLNAME,
+        ] + _DEVICE_STRATEGY()
+        RUNNER(command_line)
+
+    def test_init_cache(self):
+        """
+        Initializing the cache must fail since the pool is encrypted.
+        """
+        command_line = self._MENU + [self._POOLNAME] + _DEVICE_STRATEGY()
+        self.check_error(StratisCliEngineError, command_line, _ERROR)
+
+
 class InitCacheSuccessTestCase(SimTestCase):
     """
     Test 'init-cache' once.
