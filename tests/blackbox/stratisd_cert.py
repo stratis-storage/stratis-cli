@@ -360,6 +360,22 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
 
         self.assertEqual(StratisDbus.fs_list(), {})
 
+    def test_get_report(self):
+        """
+        Test getting a valid and invalid report.
+        """
+        ((is_some, result), return_code, _) = StratisDbus.get_report(
+            "errored_pool_report"
+        )
+        self._inequality_test(is_some, dbus.Boolean(False))
+        self._inequality_test(result, dbus.String(""))
+        self.assertEqual(return_code, dbus.UInt16(0))
+
+        ((is_some, result), return_code, _) = StratisDbus.get_report("invalid_report")
+        self.assertEqual(is_some, dbus.Boolean(False))
+        self.assertEqual(result, dbus.String(""))
+        self._inequality_test(return_code, dbus.UInt16(0))
+
 
 def main():
     """
