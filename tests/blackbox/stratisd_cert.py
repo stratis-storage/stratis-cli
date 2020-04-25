@@ -17,6 +17,7 @@ Tests of stratisd.
 
 # isort: STDLIB
 import argparse
+import json
 import sys
 import time
 import unittest
@@ -370,6 +371,8 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         self._inequality_test(is_some, dbus.Boolean(False))
         self._inequality_test(result, dbus.String(""))
         self.assertEqual(return_code, dbus.UInt16(0))
+        # Test that we have received valid JSON.
+        json.loads(result)
 
         ((is_some, result), return_code, _) = StratisDbus.get_report("invalid_report")
         self.assertEqual(is_some, dbus.Boolean(False))
