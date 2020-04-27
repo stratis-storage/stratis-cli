@@ -168,13 +168,13 @@ class KernelKey:  # pylint: disable=attribute-defined-outside-init
             key_desc = base64.b64encode(urandom_f.read(16)).decode("utf-8")
 
         args = ["keyctl", "get_persistent", "@s", "0"]
-        exit_values = run(args, capture_output=True, text=True)
+        exit_values = run(args, stdout=PIPE, stderr=PIPE, universal_newlines=True)
         KernelKey._raise_keyctl_error(exit_values.returncode, args)
 
         self.persistent_id = exit_values.stdout.strip()
 
         args = ["keyctl", "add", "user", key_desc, self.key_data, self.persistent_id]
-        exit_values = run(args, capture_output=True)
+        exit_values = run(args, stdout=PIPE, stderr=PIPE)
         KernelKey._raise_keyctl_error(exit_values.returncode, args)
 
         return key_desc
