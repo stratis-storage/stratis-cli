@@ -135,8 +135,8 @@ Tier::
 
 RESTRICTIONS
 ------------
-There is a restriction on the use of cache devices and encryption simultaneously.
-These features are mutually exclusive and only one may be selected.
+Encryption and a cache are mutually exclusive choices. If a pool is encrypted,
+an attempt to initialize a cache will result in an error.
 
 There is a restriction on the total size of the
 cache device of 32 TiB. Adding devices to the cache so that the
