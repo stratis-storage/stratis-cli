@@ -79,6 +79,7 @@ class StratisDbus:
     _TOP_OBJECT = "/org/storage/stratis2"
 
     _MNGR_IFACE = "org.storage.stratis2.Manager.r1"
+    _REPORT_IFACE = "org.storage.stratis2.Report.r1"
     _POOL_IFACE = "org.storage.stratis2.pool.r1"
     _FS_IFACE = "org.storage.stratis2.filesystem"
     _BLKDEV_IFACE = "org.storage.stratis2.blockdev"
@@ -397,6 +398,20 @@ class StratisDbus:
         # Remove Pools
         for name in StratisDbus.pool_list():
             StratisDbus.pool_destroy(name)
+
+    @staticmethod
+    def get_report(report_name):
+        """
+        Get the report with the given name.
+        :param str report_name: The name of the report
+        :return: The JSON report as a string with a status code and string
+        :rtype: The D-Bus types (bs), q, and s
+        """
+        iface = dbus.Interface(
+            StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, StratisDbus._TOP_OBJECT),
+            StratisDbus._REPORT_IFACE,
+        )
+        return iface.GetReport(report_name, timeout=StratisDbus._TIMEOUT)
 
 
 def clean_up():
