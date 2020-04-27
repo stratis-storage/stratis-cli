@@ -135,7 +135,10 @@ Tier::
 
 RESTRICTIONS
 ------------
-There is a temporary restriction on the total size of the
+There is a restriction on the use of cache devices and encryption simultaneously.
+These features are mutually exclusive and only one may be selected.
+
+There is a restriction on the total size of the
 cache device of 32 TiB. Adding devices to the cache so that the
 cumulative size of all the devices in the cache exceeds 32 TiB will
 result in an error.
