@@ -20,7 +20,7 @@ import os
 import random
 import shutil
 import string
-from subprocess import PIPE, Popen, run
+from subprocess import PIPE, CalledProcessError, Popen, run
 
 # isort: THIRDPARTY
 import psutil
@@ -151,7 +151,6 @@ class KernelKey:  # pylint: disable=attribute-defined-outside-init
         :param int return_code: Return code of the keyctl command
         :param args: The command line that caused the command to fail
         :type args: list of str
-        :raises RuntimeError
         """
         if return_code != 0:
             raise RuntimeError(
@@ -163,32 +162,31 @@ class KernelKey:  # pylint: disable=attribute-defined-outside-init
         This method allows KernelKey to be used with the "with" keyword.
         :return: The key description that can be used to access the
                  provided key data in __init__.
+        :raises CalledProcessError: if keyctl exits with a non-zero exit code
         """
         with open("/dev/urandom", "rb") as urandom_f:
             key_desc = base64.b64encode(urandom_f.read(16)).decode("utf-8")
 
         args = ["keyctl", "get_persistent", "@s", "0"]
-        exit_values = run(args, stdout=PIPE, stderr=PIPE, universal_newlines=True)
-        KernelKey._raise_keyctl_error(exit_values.returncode, args)
+        exit_values = run(
+            args, stdout=PIPE, stderr=PIPE, universal_newlines=True, check=True
+        )
 
         self.persistent_id = exit_values.stdout.strip()
 
         args = ["keyctl", "add", "user", key_desc, self.key_data, self.persistent_id]
-        exit_values = run(args, stdout=PIPE, stderr=PIPE)
-        KernelKey._raise_keyctl_error(exit_values.returncode, args)
+        run(args, stdout=PIPE, stderr=PIPE, check=True)
 
         return key_desc
 
     def __exit__(self, exception_type, exception_value, traceback):
         try:
             args = ["keyctl", "clear", self.persistent_id]
-            exit_values = run(args)
-            KernelKey._raise_keyctl_error(exit_values.returncode, args)
+            run(args, capture_output=True, check=True)
 
             args = ["keyctl", "clear", "@s"]
-            exit_values = run(args)
-            KernelKey._raise_keyctl_error(exit_values.returncode, args)
-        except RuntimeError as rexc:
+            run(args, capture_output=True, check=True)
+        except (RuntimeError, CalledProcessError) as rexc:
             if exception_value is None:
                 raise rexc
             raise rexc from exception_value

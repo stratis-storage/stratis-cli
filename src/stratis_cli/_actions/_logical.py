@@ -45,6 +45,7 @@ class LogicalActions:
         :raises StratisCliIncoherenceError:
         :raises StratisCliPartialChangeError:
         """
+        # pylint: disable=import-outside-toplevel
         # pylint: disable=too-many-locals
         from ._data import MOFilesystem
         from ._data import ObjectManager
@@ -101,6 +102,7 @@ class LogicalActions:
         """
         List the volumes in a pool.
         """
+        # pylint: disable=import-outside-toplevel
         from ._data import FetchProperties
         from ._data import MOFilesystem
         from ._data import MOPool
@@ -187,6 +189,7 @@ class LogicalActions:
         :raises StratisCliIncoherenceError:
         :raises StratisCliPartialChangeError:
         """
+        # pylint: disable=import-outside-toplevel
         # pylint: disable=too-many-locals
         from ._data import MOFilesystem
         from ._data import ObjectManager
@@ -254,6 +257,7 @@ class LogicalActions:
         :raises StratisCliEngineError:
         :raises StratisCliNoChangeError:
         """
+        # pylint: disable=import-outside-toplevel
         from ._data import ObjectManager
         from ._data import Pool
         from ._data import filesystems
@@ -292,6 +296,7 @@ class LogicalActions:
         :raises StratisCliEngineError:
         :raises StratisCliNoChangeError:
         """
+        # pylint: disable=import-outside-toplevel
         from ._data import ObjectManager
         from ._data import Filesystem
         from ._data import filesystems
