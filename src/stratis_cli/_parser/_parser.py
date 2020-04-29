@@ -20,6 +20,7 @@ import argparse
 
 from .._actions import LogicalActions, PhysicalActions, StratisActions, TopActions
 from .._version import __version__
+from ._key import KEY_SUBCMDS
 from ._logical import LOGICAL_SUBCMDS
 from ._physical import PHYSICAL_SUBCMDS
 from ._pool import POOL_SUBCMDS
@@ -38,6 +39,20 @@ def _add_args(parser, args):
         parser.add_argument(name, **arg)
 
 
+def _add_mut_ex_args(parser, args):
+    """
+    Add mututally exlusive arguments for a subcommand.
+
+    :param parser: the parser being build
+    :param list args: a data structure representing sets of mututally exclusive
+                      arguments to be added
+    """
+    for (one_is_required, arg_list) in args:
+        group = parser.add_mutually_exclusive_group(required=one_is_required)
+        for name, arg in arg_list:
+            group.add_argument(name, **arg)
+
+
 def add_subcommand(subparser, cmd):
     """
     Add subcommand to a parser based on a subcommand dict.
@@ -54,6 +69,7 @@ def add_subcommand(subparser, cmd):
             add_subcommand(subparsers, subcmd)
 
     _add_args(parser, info.get("args", []))
+    _add_mut_ex_args(parser, info.get("mut_ex_args", []))
 
     parser.set_defaults(func=info.get("func", PRINT_HELP(parser)))
 
@@ -98,6 +114,14 @@ ROOT_SUBCOMMANDS = [
             help="Commands related to filesystems allocated from a pool",
             subcmds=LOGICAL_SUBCMDS,
             func=LogicalActions.list_volumes,
+        ),
+    ),
+    (
+        "key",
+        dict(
+            help="Commands related to key operations for encrypted pools",
+            subcmds=KEY_SUBCMDS,
+            func=TopActions.list_keys,
         ),
     ),
     ("daemon", dict(help="Stratis daemon information", subcmds=DAEMON_SUBCMDS)),

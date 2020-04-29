@@ -41,6 +41,30 @@ class StratisCliUserError(StratisCliRuntimeError):
     """
 
 
+class StratisCliResourceNotFoundError(StratisCliUserError):
+    """
+    Raised if a request was made to stratisd to update a resource
+    that was expected to exist but was not found.
+    """
+
+    def __init__(self, command, resource):
+        """
+        Initializer.
+
+        :param str command: the executed command
+        :param str resource: the target resource
+        """
+        # pylint: disable=super-init-not-called
+        self.command = command
+        self.resource = resource
+
+    def __str__(self):
+        return (
+            "Command '%s' assumes that resource '%s' exists but it was not "
+            "found." % (self.command, self.resource)
+        )
+
+
 class StratisCliPropertyNotFoundError(StratisCliRuntimeError):
     """
     Exception raised when a property can not be found in the result of
