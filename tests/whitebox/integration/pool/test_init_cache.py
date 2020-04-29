@@ -22,6 +22,7 @@ from dbus_client_gen import DbusClientUniqueResultError
 from stratis_cli import StratisCliErrorCodes
 from stratis_cli._errors import StratisCliEngineError, StratisCliPartialChangeError
 
+from .._keyutils import RandomKeyTmpFile
 from .._misc import RUNNER, SimTestCase, device_name_list
 
 _DEVICE_STRATEGY = device_name_list(2)
@@ -114,14 +115,20 @@ class InitCacheFail4TestCase(SimTestCase):
 
     _MENU = ["--propagate", "pool", "init-cache"]
     _POOLNAME = "deadpool"
+    _KEYNAME = "test-password"
 
     def setUp(self):
         super().setUp()
+
+        with RandomKeyTmpFile() as keyfile_path:
+            command_line = ["key", "set", self._KEYNAME, "--keyfile-path", keyfile_path]
+            RUNNER(command_line)
+
         command_line = [
             "pool",
             "create",
             "--key-desc",
-            "test-password",
+            self._KEYNAME,
             self._POOLNAME,
         ] + _DEVICE_STRATEGY()
         RUNNER(command_line)
