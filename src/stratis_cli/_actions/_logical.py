@@ -27,8 +27,8 @@ from .._errors import (
 )
 from .._stratisd_constants import StratisdErrors
 from ._connection import get_object
-from ._constants import FILESYSTEM_INTERFACE, TOP_OBJECT
-from ._formatting import TABLE_FAILURE_STRING, fetch_property, print_table
+from ._constants import TOP_OBJECT
+from ._formatting import TABLE_FAILURE_STRING, get_property, print_table
 
 
 class LogicalActions:
@@ -151,11 +151,8 @@ class LogicalActions:
             :returns: a string to display in the resulting list output
             :rtype: str
             """
-            filesystem_used = fetch_property(FILESYSTEM_INTERFACE, props, "Used", Range)
-            return (
-                TABLE_FAILURE_STRING
-                if filesystem_used is None
-                else str(filesystem_used)
+            return get_property(
+                props, "Used", lambda x: str(Range(x)), TABLE_FAILURE_STRING
             )
 
         tables = [

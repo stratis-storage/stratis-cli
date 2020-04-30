@@ -41,11 +41,11 @@ class StratisCliUserError(StratisCliRuntimeError):
     """
 
 
-# This indicates a bug.
 class StratisCliPropertyNotFoundError(StratisCliRuntimeError):
     """
-    Exception raised when a requested property from FetchProperties DBus interface
-    does not exist.
+    Exception raised when a property can not be found in the result of
+    a FetchProperties call. This can be due to a bug in our code or to
+    a property being unavailable via the FetchProperties interface.
     """
 
     def __init__(self, iface_name, prop_name):
@@ -61,8 +61,9 @@ class StratisCliPropertyNotFoundError(StratisCliRuntimeError):
 
     def __str__(self):
         return (
-            "The requested property '%s' is not supported by FetchProperties "
-            "for object implementing interface %s" % (self.prop_name, self.iface_name)
+            "The requested property '%s' was not found in the FetchProperties "
+            "result for object implementing interface %s"
+            % (self.prop_name, self.iface_name)
         )
 
 
@@ -292,6 +293,37 @@ class StratisCliUnknownInterfaceError(StratisCliRuntimeError):
 
     def __str__(self):
         return "unexpected interface name %s" % self._interface_name
+
+
+class StratisCliEnginePropertyError(StratisCliRuntimeError):
+    """
+    Raised if there was a failure to obtain a property due to an error in
+    stratisd's engine.
+
+    In this case, stratisd does not return an error code, but an error message
+    is still transmitted.
+    """
+
+    def __init__(self, iface_name, prop_name, message):
+        """ Initializer.
+
+            :param str type_name: the full name of the DBus interface that
+                                  supports this property name
+            :param str prop_name: the property that could not be obtained
+            :param str message: the error message returned by the engine in
+                                place of the property
+        """
+        # pylint: disable=super-init-not-called
+        self.iface_name = iface_name
+        self.prop_name = prop_name
+        self.message = message
+
+    def __str__(self):
+        return (
+            "stratisd encountered the following error while obtaining the "
+            "requested property '%s' via the FetchProperties interface for an "
+            "object implementing the interface %s: %s"
+        ) % (self.prop_name, self.iface_name, self.message)
 
 
 class StratisCliEngineError(StratisCliRuntimeError):

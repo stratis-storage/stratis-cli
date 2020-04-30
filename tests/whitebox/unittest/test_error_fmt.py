@@ -20,6 +20,7 @@ import unittest
 
 # isort: LOCAL
 from stratis_cli._errors import (
+    StratisCliEnginePropertyError,
     StratisCliGenerationError,
     StratisCliIncoherenceError,
     StratisCliPropertyNotFoundError,
@@ -64,3 +65,9 @@ class ErrorFmtTestCase(unittest.TestCase):
         Test 'StratisCliGenerationError'
         """
         self._string_not_empty(StratisCliGenerationError("Error"))
+
+    def test_stratis_cli_engine_property_error_fmt(self):
+        """
+        Test 'StratisCliEnginePropertyError'
+        """
+        self._string_not_empty(StratisCliEnginePropertyError("iface", "name", "whoops"))

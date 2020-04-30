@@ -32,8 +32,8 @@ from .._errors import (
 )
 from .._stratisd_constants import BlockDevTiers, StratisdErrors
 from ._connection import get_object
-from ._constants import POOL_INTERFACE, TOP_OBJECT
-from ._formatting import TABLE_FAILURE_STRING, fetch_property, print_table
+from ._constants import TOP_OBJECT
+from ._formatting import TABLE_FAILURE_STRING, get_property, print_table
 
 
 def _generate_pools_to_blockdevs(managed_objects, to_be_added, tier):
@@ -248,8 +248,6 @@ class TopActions:
     def list_pools(_):
         """
         List all stratis pools.
-
-        :raises StratisCliEngineError:
         """
         from ._data import FetchProperties
         from ._data import MOPool
@@ -280,12 +278,9 @@ class TopActions:
             :returns: a string to display in the resulting list output
             :rtype: str
             """
-            total_physical_size = fetch_property(
-                POOL_INTERFACE, props, "TotalPhysicalSize", Range
-            )
-            total_physical_used = fetch_property(
-                POOL_INTERFACE, props, "TotalPhysicalUsed", Range
-            )
+            total_physical_size = get_property(props, "TotalPhysicalSize", Range, None)
+
+            total_physical_used = get_property(props, "TotalPhysicalUsed", Range, None)
 
             total_physical_free = (
                 None
@@ -319,19 +314,25 @@ class TopActions:
                 """
                 Generate the display string for a boolean property
 
-                :param bool has_property: whether the property is true or false
+                :param has_property: whether the property is true or false
+                :type has_property: bool or NoneType
                 :param str code: the code to generate the string for
                 :returns: the generated string
                 :rtype: str
                 """
-                return " " + code if has_property else "~" + code
+                if has_property == True:  # pylint: disable=singleton-comparison
+                    prefix = " "
+                elif has_property == False:  # pylint: disable=singleton-comparison
+                    prefix = "~"
+                # This is only going to occur if the engine experiences an
+                # error while calculating a property or if our code has a bug.
+                else:  # pragma: no cover
+                    prefix = "?"
+                return prefix + code
 
             prop_list = []
             prop_list.append(
-                gen_string(
-                    fetch_property(POOL_INTERFACE, props_map, "HasCache", lambda x: x),
-                    "Ca",
-                )
+                gen_string(get_property(props_map, "HasCache", lambda x: x, None), "Ca")
             )
             prop_list.append(gen_string(mopool.Encrypted(), "Cr"))
             return ",".join(prop_list)

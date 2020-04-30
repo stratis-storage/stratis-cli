@@ -20,8 +20,8 @@ from justbytes import Range
 
 from .._stratisd_constants import BLOCK_DEV_TIER_TO_NAME
 from ._connection import get_object
-from ._constants import BLOCKDEV_INTERFACE, TOP_OBJECT
-from ._formatting import TABLE_FAILURE_STRING, fetch_property, print_table
+from ._constants import TOP_OBJECT
+from ._formatting import TABLE_FAILURE_STRING, get_property, print_table
 
 
 class PhysicalActions:
@@ -88,10 +88,12 @@ class PhysicalActions:
             :returns: a string to display in the resulting list output
             :rtype: str
             """
-            physical_size = fetch_property(
-                BLOCKDEV_INTERFACE, props, "TotalPhysicalSize", Range
+            return get_property(
+                props,
+                "TotalPhysicalSize",
+                lambda x: str(Range(x)),
+                TABLE_FAILURE_STRING,
             )
-            return TABLE_FAILURE_STRING if physical_size is None else str(physical_size)
 
         tables = [
             [

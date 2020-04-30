@@ -18,7 +18,7 @@ Formatting for tables.
 # isort: STDLIB
 import sys
 
-from .._errors import StratisCliPropertyNotFoundError
+from ._utils import fetch_property
 
 # If the wcwidth package is not available the wcswidth function will not
 # be available. In that case, use the standard function len where wcswidth
@@ -46,35 +46,26 @@ except ImportError:  # pragma: no cover
 TABLE_FAILURE_STRING = "FAILURE"
 
 
-def fetch_property(object_type, props, name, to_repr):
+def get_property(props, name, to_repr, default):
     """
-    Get a representation of a property fetched through FetchProperties interface
-
-    :param object_type: string representation of object type implementing FetchProperties
-    :type object_type: str
+    Get a representation of a property fetched through FetchProperties
     :param props: dictionary of property names mapped to values
-    :type props: dict of strs to (bool, object)
-    :param name: the name of the property
-    :type name: str
-    :param to_repr: function expecting one object argument to convert to some type
-    :type to_repr: function(object) -> object
-    :returns: object produced by to_repr or None
-    :raises StratisCliPropertyNotFoundError:
+    :type props: dict of str * (bool, object)
+    :param str name: the name of the property
+    :param to_repr: function expecting one object argument to convert
+    :type to_repr: object -> object
+    :param default: object to return in lieu of propagating an exception
+    :type default: object
+    :returns: object produced by to_repr or default
+    :rtype: object
     """
-    # Disable coverage for failure of the engine to successfully get a value
-    # or for a property not existing for a specified key. We can not force the
-    # engine error easily and should not force it these CLI tests. A KeyError
-    # can only be raised if there is a bug in the code or if the version of
-    # stratisd being run is not compatible with the version of the CLI being
-    # tested. We expect to avoid those conditions, and choose not to test for
-    # them.
     try:
-        (success, variant) = props[name]
-        if not success:
-            return None  # pragma: no cover
-        return to_repr(variant)
-    except KeyError:  # pragma: no cover
-        raise StratisCliPropertyNotFoundError(object_type, name)
+        return to_repr(fetch_property("dummmy", props, name))
+    # An exception should only be raised if the property can not be obtained.
+    # This requires either running against an interface that does not support
+    # the property or the engine encountering an error getting the property.
+    except:  # pylint: disable=bare-except # pragma: no cover
+        return default
 
 
 def _get_column_len(column_width, entry_len, entry_width):
