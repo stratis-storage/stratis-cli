@@ -50,8 +50,9 @@ def _add_mut_ex_args(parser, args):
     Add mututally exlusive arguments for a subcommand.
 
     :param parser: the parser being build
-    :param list args: a data structure representing sets of mututally exclusive
-                      arguments to be added
+    :param args: a data structure representing sets of mututally exclusive
+                 arguments to be added
+    :type args: list of bool * (list of dict)
     """
     for (one_is_required, arg_list) in args:
         group = parser.add_mutually_exclusive_group(required=one_is_required)
