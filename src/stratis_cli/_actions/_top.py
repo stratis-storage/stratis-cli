@@ -170,16 +170,16 @@ def fetch_keylist_property(proxy):
     return key_list_variant
 
 
-def add_update_key(proxy, capture_key, keyfile_path, key_desc):
+def add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
     """
     Issue a command to set or reset a key in the kernel keyring with the option
     to set it interactively or from a keyfile.
 
     :param proxy: proxy to the top object
+    :param str key_desc: key description for the key to be set or reset
     :param bool capture_key: whether the key setting should be interactive
     :param keyfile_path: optional path to the keyfile containing the key
     :type keyfile_path: str or NoneType
-    :param str key_desc: key description for the key to be set or reset
     :return: the result of the AddKey D-Bus call
     :rtype: D-Bus types (bb), q, and s
     """
@@ -629,7 +629,10 @@ class TopActions:
             raise StratisCliNameConflictError("key", namespace.keydesc)
 
         ((changed, existing_modified), return_code, message) = add_update_key(
-            proxy, namespace.capture_key, namespace.keyfile_path, namespace.keydesc
+            proxy,
+            namespace.keydesc,
+            namespace.capture_key,
+            keyfile_path=namespace.keyfile_path,
         )
 
         if return_code != StratisdErrors.OK:  # pragma: no cover
@@ -671,7 +674,10 @@ class TopActions:
             raise StratisCliResourceNotFoundError("reset", namespace.keydesc)
 
         ((changed, existing_modified), return_code, message) = add_update_key(
-            proxy, namespace.capture_key, namespace.keyfile_path, namespace.keydesc
+            proxy,
+            namespace.keydesc,
+            namespace.capture_key,
+            keyfile_path=namespace.keyfile_path,
         )
 
         if return_code != StratisdErrors.OK:  # pragma: no cover
