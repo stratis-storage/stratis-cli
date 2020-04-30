@@ -17,7 +17,7 @@ Test 'set'.
 
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
-from stratis_cli._errors import StratisCliNameConflictError
+from stratis_cli._errors import StratisCliEngineError, StratisCliNameConflictError
 
 from .._misc import RUNNER, SimTestCase
 from ._utils import RandomKeyTmpFile
@@ -49,3 +49,11 @@ class TestKeySet(SimTestCase):
             command_line = self._MENU + [self._KEYNAME, "--keyfile-path", fname]
             RUNNER(command_line)
             self.check_error(StratisCliNameConflictError, command_line, _ERROR)
+
+    def test_set_key_too_long(self):
+        """
+        Setting should fail due to the length of the key.
+        """
+        with RandomKeyTmpFile(128) as fname:
+            command_line = self._MENU + [self._KEYNAME, "--keyfile-path", fname]
+            self.check_error(StratisCliEngineError, command_line, _ERROR)

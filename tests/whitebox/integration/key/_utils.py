@@ -24,13 +24,15 @@ class RandomKeyTmpFile:
     Generate a random passphrase and put it in a temporary file.
     """
 
-    def __init__(self):
+    def __init__(self, key_bytes=32):
         """
         Initializer
+
+        :param int key_bytes: the desired length of the key in bytes
         """
         self._tmpfile = NamedTemporaryFile("wb")
         with open("/dev/urandom", "rb") as random:
-            random_bytes = random.read(32)
+            random_bytes = random.read(key_bytes)
             self._tmpfile.write(random_bytes)
             self._tmpfile.flush()
 
