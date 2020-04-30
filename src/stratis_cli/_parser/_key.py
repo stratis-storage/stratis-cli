@@ -22,6 +22,7 @@ KEY_SUBCMDS = [
         "set",
         dict(
             help="Set a key in the kernel keyring",
+            args=[("keydesc", dict(action="store", help="key description"))],
             mut_ex_args=[
                 (
                     True,
@@ -54,7 +55,6 @@ KEY_SUBCMDS = [
                     ],
                 )
             ],
-            args=[("keydesc", dict(action="store", help="key description"))],
             func=TopActions.add_key,
         ),
     ),
@@ -62,6 +62,7 @@ KEY_SUBCMDS = [
         "reset",
         dict(
             help="Reset an existing key in the kernel keyring",
+            args=[("keydesc", dict(action="store", help="key description"))],
             mut_ex_args=[
                 (
                     True,
@@ -94,7 +95,6 @@ KEY_SUBCMDS = [
                     ],
                 )
             ],
-            args=[("keydesc", dict(action="store", help="key description"))],
             func=TopActions.update_key,
         ),
     ),
