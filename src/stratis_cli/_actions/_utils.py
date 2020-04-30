@@ -13,7 +13,7 @@
 # limitations under the License.
 
 """
-Function to parse the STRATIS_DBUS_TIMEOUT value read from the environment.
+Miscellaneous functions.
 """
 
 from .._errors import StratisCliEnvironmentError
