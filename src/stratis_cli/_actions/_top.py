@@ -179,10 +179,12 @@ def add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
     :param str key_desc: key description for the key to be set or reset
     :param bool capture_key: whether the key setting should be interactive
     :param keyfile_path: optional path to the keyfile containing the key
-    :type keyfile_path: str or NoneType
+    :type keyfile_path: list of str or NoneType (if list, exactly one element)
     :return: the result of the AddKey D-Bus call
     :rtype: D-Bus types (bb), q, and s
     """
+    assert capture_key == (keyfile_path is None)
+
     from ._data import Manager
 
     if capture_key:  # pragma: no cover
@@ -192,7 +194,7 @@ def add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
         fd_is_terminal = True
         print("Enter desired key data followed by the return key:")
     else:
-        file_desc = os.open(keyfile_path, os.O_RDONLY)
+        file_desc = os.open(keyfile_path[0], os.O_RDONLY)
         fd_is_terminal = False
 
     add_ret = Manager.Methods.AddKey(

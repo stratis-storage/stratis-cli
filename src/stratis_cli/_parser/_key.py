@@ -31,9 +31,7 @@ KEY_SUBCMDS = [
                             "--keyfile-path",
                             dict(
                                 action="store",
-                                nargs="?",
-                                default=None,
-                                const=None,
+                                nargs=1,
                                 help=(
                                     "Path to the key file containing a key to set "
                                     "in the keyring"
@@ -71,9 +69,7 @@ KEY_SUBCMDS = [
                             "--keyfile-path",
                             dict(
                                 action="store",
-                                nargs="?",
-                                default=None,
-                                const=None,
+                                nargs=1,
                                 help=(
                                     "Path to the key file containing a key to reset "
                                     "in the keyring"
