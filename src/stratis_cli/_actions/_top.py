@@ -157,11 +157,11 @@ def fetch_keylist_property(proxy):
         proxy, {"properties": [key_list_property_name]}
     )
     key_list_property = keys_properties.get(key_list_property_name, None)
-    if key_list_property is None:
+    if key_list_property is None:  # pragma: no cover
         raise StratisCliPropertyNotFoundError(key_list_property_name)
 
     (success, key_list_variant) = key_list_property
-    if not success:
+    if not success:  # pragma: no cover
         raise StratisCliEngineError(
             StratisdErrors.INTERNAL_ERROR,
             "Fetching property %s failed with error: %s"
@@ -186,7 +186,7 @@ def add_update_key(proxy, capture_key, keyfile_path, key_desc):
     """
     from ._data import Manager
 
-    if capture_key:
+    if capture_key:  # pragma: no cover
         file_desc = sys.stdout.fileno()
         terminal_attributes = tcgetattr(file_desc)
         setcbreak(file_desc)
@@ -196,9 +196,12 @@ def add_update_key(proxy, capture_key, keyfile_path, key_desc):
         file_desc = os.open(keyfile_path, os.O_RDONLY)
         fd_is_terminal = False
 
-    add_ret = Manager.Methods.AddKey(proxy, {"key_desc": key_desc, "key_fd": file_desc})
+    add_ret = Manager.Methods.AddKey(
+        proxy,
+        {"key_desc": key_desc, "key_fd": file_desc, "interactive": fd_is_terminal},
+    )
 
-    if fd_is_terminal:
+    if fd_is_terminal:  # pragma: no cover
         tcsetattr(file_desc, TCSANOW, terminal_attributes)
     else:
         os.close(file_desc)
