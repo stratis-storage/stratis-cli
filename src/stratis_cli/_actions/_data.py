@@ -34,7 +34,7 @@ from ._constants import (
     FILESYSTEM_INTERFACE,
     POOL_INTERFACE,
 )
-from ._timeout import get_timeout
+from ._utils import get_timeout
 
 assert hasattr(sys.modules.get("stratis_cli"), "run"), (
     "This module is being loaded too eagerly. Make sure that loading it is "
