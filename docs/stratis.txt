@@ -105,6 +105,8 @@ Properties::
           Boolean valued properties that the pool may have. Each property has
           a two-letter camel-case code. If the pool does not have the
           property, a '~', for negation, is prepended to the property code.
+          If the engine experienced an error when obtaining the property, a
+          "?", representing "unknown", is prepended to the property code.
           The property codes are: Ca - indicates the pool has a cache,
           Cr - indicates the pool is encrypted.
 
