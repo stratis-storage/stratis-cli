@@ -48,22 +48,18 @@ class StratisCliPropertyNotFoundError(StratisCliRuntimeError):
     a property being unavailable via the FetchProperties interface.
     """
 
-    def __init__(self, iface_name, prop_name):
+    def __init__(self, prop_name):
         """ Initializer.
 
-            :param str type_name: the full name of the DBus interface that does not
-                                  support this property name
             :param str prop_name: the property that did not exist
         """
         # pylint: disable=super-init-not-called
-        self.iface_name = iface_name
         self.prop_name = prop_name
 
     def __str__(self):
         return (
             "The requested property '%s' was not found in the FetchProperties "
-            "result for object implementing interface %s"
-            % (self.prop_name, self.iface_name)
+            "result for a D-Bus object" % self.prop_name
         )
 
 
@@ -304,26 +300,23 @@ class StratisCliEnginePropertyError(StratisCliRuntimeError):
     is still transmitted.
     """
 
-    def __init__(self, iface_name, prop_name, message):
+    def __init__(self, prop_name, message):
         """ Initializer.
 
-            :param str type_name: the full name of the DBus interface that
-                                  supports this property name
             :param str prop_name: the property that could not be obtained
             :param str message: the error message returned by the engine in
                                 place of the property
         """
         # pylint: disable=super-init-not-called
-        self.iface_name = iface_name
         self.prop_name = prop_name
         self.message = message
 
     def __str__(self):
         return (
             "stratisd encountered the following error while obtaining the "
-            "requested property '%s' via the FetchProperties interface for an "
-            "object implementing the interface %s: %s"
-        ) % (self.prop_name, self.iface_name, self.message)
+            "requested property '%s' via the FetchProperties interface for a "
+            "D-Bus object: %s"
+        ) % (self.prop_name, self.message)
 
 
 class StratisCliEngineError(StratisCliRuntimeError):

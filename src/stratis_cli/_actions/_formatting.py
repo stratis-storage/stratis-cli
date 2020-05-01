@@ -61,7 +61,7 @@ def get_property(props, name, to_repr, default):
     :rtype: object
     """
     try:
-        return to_repr(fetch_property("dummmy", props, name))
+        return to_repr(fetch_property(props, name))
     # An exception should only be raised if the property can not be obtained.
     # This requires either running against an interface that does not support
     # the property or the engine encountering an error getting the property,

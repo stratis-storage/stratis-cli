@@ -44,9 +44,7 @@ class ErrorFmtTestCase(unittest.TestCase):
         """
         Test 'StratisCliPropertyNotFoundError'
         """
-        self._string_not_empty(
-            StratisCliPropertyNotFoundError("BadInterface", "BadProperty")
-        )
+        self._string_not_empty(StratisCliPropertyNotFoundError("BadProperty"))
 
     def test_stratis_cli_incoherence_error_fmt(self):
         """
@@ -70,4 +68,4 @@ class ErrorFmtTestCase(unittest.TestCase):
         """
         Test 'StratisCliEnginePropertyError'
         """
-        self._string_not_empty(StratisCliEnginePropertyError("iface", "name", "whoops"))
+        self._string_not_empty(StratisCliEnginePropertyError("name", "whoops"))
