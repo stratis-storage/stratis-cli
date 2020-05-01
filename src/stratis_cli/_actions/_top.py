@@ -33,13 +33,13 @@ from .._errors import (
     StratisCliNameConflictError,
     StratisCliNoChangeError,
     StratisCliPartialChangeError,
-    StratisCliPropertyNotFoundError,
     StratisCliResourceNotFoundError,
 )
 from .._stratisd_constants import BlockDevTiers, StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import TABLE_FAILURE_STRING, get_property, print_table
+from ._utils import fetch_property
 
 
 def _generate_pools_to_blockdevs(managed_objects, to_be_added, tier):
@@ -147,7 +147,8 @@ def fetch_keylist_property(proxy):
     :param proxy: proxy to the top object in stratisd
     :return: list of keys in the kernel keyring
     :rtype: list of str
-    :raises StratisCliEngineError:
+    :raises StratisCliPropertyNotFoundError:
+    :raises StratisCliEnginePropertyError:
     """
     from ._data import FetchProperties
 
@@ -155,19 +156,7 @@ def fetch_keylist_property(proxy):
     keys_properties = FetchProperties.Methods.GetProperties(
         proxy, {"properties": [key_list_property_name]}
     )
-    key_list_property = keys_properties.get(key_list_property_name, None)
-    if key_list_property is None:  # pragma: no cover
-        raise StratisCliPropertyNotFoundError(key_list_property_name)
-
-    (success, key_list_variant) = key_list_property
-    if not success:  # pragma: no cover
-        raise StratisCliEngineError(
-            StratisdErrors.INTERNAL_ERROR,
-            "Fetching property %s failed with error: %s"
-            % (key_list_property_name, key_list_variant),
-        )
-
-    return key_list_variant
+    return fetch_property(keys_properties, key_list_property_name)
 
 
 def add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
