@@ -18,6 +18,7 @@ Formatting for tables.
 # isort: STDLIB
 import sys
 
+from .._errors import StratisCliEnginePropertyError, StratisCliPropertyNotFoundError
 from ._utils import fetch_property
 
 # If the wcwidth package is not available the wcswidth function will not
@@ -63,8 +64,13 @@ def get_property(props, name, to_repr, default):
         return to_repr(fetch_property(props, name))
     # An exception should only be raised if the property can not be obtained.
     # This requires either running against an interface that does not support
-    # the property or the engine encountering an error getting the property.
-    except:  # pylint: disable=bare-except # pragma: no cover
+    # the property or the engine encountering an error getting the property,
+    # or a bug in our code.
+    except (
+        # pylint: disable=bad-continuation
+        StratisCliEnginePropertyError,
+        StratisCliPropertyNotFoundError,
+    ):  # pragma: no cover
         return default
 
 
