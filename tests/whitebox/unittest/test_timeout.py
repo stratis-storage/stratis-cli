@@ -20,7 +20,7 @@ import unittest
 
 # isort: LOCAL
 from stratis_cli import StratisCliEnvironmentError
-from stratis_cli._actions._timeout import get_timeout
+from stratis_cli._actions._utils import get_timeout
 
 
 class TimeoutTestCase(unittest.TestCase):

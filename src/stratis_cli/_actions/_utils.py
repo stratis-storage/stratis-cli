@@ -13,10 +13,14 @@
 # limitations under the License.
 
 """
-Function to parse the STRATIS_DBUS_TIMEOUT value read from the environment.
+Miscellaneous functions.
 """
 
-from .._errors import StratisCliEnvironmentError
+from .._errors import (
+    StratisCliEnginePropertyError,
+    StratisCliEnvironmentError,
+    StratisCliPropertyNotFoundError,
+)
 
 
 def get_timeout(value):
@@ -60,3 +64,31 @@ def get_timeout(value):
 
     # Convert from milliseconds to seconds
     return timeout_int / 1000
+
+
+def fetch_property(props, name):
+    """
+    Get a property fetched through FetchProperties interface
+
+    :param props: dictionary of property names mapped to values
+    :type props: dict of strs to (bool, object)
+    :param name: the name of the property
+    :type name: str
+    :returns: the object in the dict
+    :raises StratisCliPropertyNotFoundError:
+    :raises StratisCliEnginePropertyError:
+    """
+    # Disable coverage for failure of the engine to successfully get a value
+    # or for a property not existing for a specified key. We can not force the
+    # engine error easily and should not force it these CLI tests. A KeyError
+    # can only be raised if there is a bug in the code or if the version of
+    # stratisd being run is not compatible with the version of the CLI being
+    # tested. We expect to avoid those conditions, and choose not to test for
+    # them.
+    try:
+        (success, variant) = props[name]
+        if not success:
+            raise StratisCliEnginePropertyError(name, variant)  # pragma: no cover
+        return variant
+    except KeyError:  # pragma: no cover
+        raise StratisCliPropertyNotFoundError(name)

@@ -73,3 +73,13 @@ class List2TestCase(SimTestCase):
         """
         command_line = self._MENU[:-1]
         RUNNER(command_line)
+
+    def test_list_with_cache(self):
+        """
+        Test listing a pool with a cache. The purpose is to verify that
+        strings representing boolean values with a True value are handled.
+        """
+        command_line = ["pool", "init-cache", self._POOLNAME] + _DEVICE_STRATEGY()
+        RUNNER(command_line)
+        command_line = self._MENU
+        RUNNER(command_line)
