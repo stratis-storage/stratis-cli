@@ -15,6 +15,9 @@
 Test 'init-cache'.
 """
 
+# isort: FIRSTPARTY
+from dbus_client_gen import DbusClientUniqueResultError
+
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
 from stratis_cli._errors import StratisCliEngineError, StratisCliPartialChangeError
@@ -86,6 +89,49 @@ class InitCacheFail2TestCase(SimTestCase):
         command_line = self._MENU + [self._POOLNAME] + devices
         RUNNER(command_line)
         self.check_error(StratisCliPartialChangeError, command_line, _ERROR)
+
+
+class InitCacheFail3TestCase(SimTestCase):
+    """
+    Test 'init-cache' for a non-existant pool.
+    """
+
+    _MENU = ["--propagate", "pool", "init-cache"]
+    _POOLNAME = "deadpool"
+
+    def test_init_cache(self):
+        """
+        Intializing the cache must fail since the pool does not exist.
+        """
+        command_line = self._MENU + [self._POOLNAME] + _DEVICE_STRATEGY()
+        self.check_error(DbusClientUniqueResultError, command_line, _ERROR)
+
+
+class InitCacheFail4TestCase(SimTestCase):
+    """
+    Test 'init-cache' for encrypted pool.
+    """
+
+    _MENU = ["--propagate", "pool", "init-cache"]
+    _POOLNAME = "deadpool"
+
+    def setUp(self):
+        super().setUp()
+        command_line = [
+            "pool",
+            "create",
+            "--key-desc",
+            "test-password",
+            self._POOLNAME,
+        ] + _DEVICE_STRATEGY()
+        RUNNER(command_line)
+
+    def test_init_cache(self):
+        """
+        Initializing the cache must fail since the pool is encrypted.
+        """
+        command_line = self._MENU + [self._POOLNAME] + _DEVICE_STRATEGY()
+        self.check_error(StratisCliEngineError, command_line, _ERROR)
 
 
 class InitCacheSuccessTestCase(SimTestCase):

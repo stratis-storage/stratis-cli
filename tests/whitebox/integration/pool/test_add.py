@@ -21,6 +21,7 @@ from dbus_client_gen import DbusClientUniqueResultError
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
 from stratis_cli._errors import (
+    StratisCliEngineError,
     StratisCliInUseOtherTierError,
     StratisCliInUseSameTierError,
     StratisCliPartialChangeError,
@@ -51,19 +52,23 @@ class AddDataTestCase(SimTestCase):
 
 class AddCacheTestCase(SimTestCase):
     """
-    Test adding devices to a non-existant pool.
+    Test adding cache devices before initializing cache.
     """
 
     _MENU = ["--propagate", "pool", "add-cache"]
     _POOLNAME = "deadpool"
 
+    def setUp(self):
+        super().setUp()
+        command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
+        RUNNER(command_line)
+
     def test_add(self):
         """
-        Adding the devices must fail since the pool does not exist.
+        Adding the devices must fail since the cache is not initialized.
         """
-
         command_line = self._MENU + [self._POOLNAME] + _DEVICE_STRATEGY()
-        self.check_error(DbusClientUniqueResultError, command_line, _ERROR)
+        self.check_error(StratisCliEngineError, command_line, _ERROR)
 
 
 class AddDataTestCase1(SimTestCase):
@@ -103,7 +108,9 @@ class AddDataTestCase1(SimTestCase):
         an exception.
         """
         devices = _DEVICE_STRATEGY()
-        command_line = ["--propagate", "pool", "add-cache"] + [self._POOLNAME] + devices
+        command_line = (
+            ["--propagate", "pool", "init-cache"] + [self._POOLNAME] + devices
+        )
         RUNNER(command_line)
         self.check_error(
             StratisCliInUseOtherTierError,
@@ -117,7 +124,9 @@ class AddDataTestCase1(SimTestCase):
         an exception.
         """
         devices = _DEVICE_STRATEGY_2()
-        command_line = ["--propagate", "pool", "add-cache"] + [self._POOLNAME] + devices
+        command_line = (
+            ["--propagate", "pool", "init-cache"] + [self._POOLNAME] + devices
+        )
         RUNNER(command_line)
         self.check_error(
             StratisCliInUseOtherTierError,
@@ -166,6 +175,13 @@ class AddCacheTestCase1(SimTestCase):
         super().setUp()
         command_line = ["pool", "create", self._POOLNAME] + self._DEVICES
         RUNNER(command_line)
+        command_line = [
+            "--propagate",
+            "pool",
+            "init-cache",
+            self._POOLNAME,
+        ] + _DEVICE_STRATEGY()
+        RUNNER(command_line)
 
     def test_add_cache(self):
         """
@@ -207,6 +223,13 @@ class AddCacheTestCase2(SimTestCase):
     def setUp(self):
         super().setUp()
         command_line = ["pool", "create", self._POOLNAME] + self._DEVICES_2
+        RUNNER(command_line)
+        command_line = [
+            "--propagate",
+            "pool",
+            "init-cache",
+            self._POOLNAME,
+        ] + _DEVICE_STRATEGY()
         RUNNER(command_line)
 
     def test_add_cache_data(self):

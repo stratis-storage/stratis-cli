@@ -223,7 +223,7 @@ class TopActions:
             get_object(pool_object_path), {"devices": namespace.blockdevs}
         )
 
-        if return_code != StratisdErrors.OK:  # pragma: no cover
+        if return_code != StratisdErrors.OK:
             raise StratisCliEngineError(return_code, message)
 
         if not changed or len(devs_added) < len(blockdevs):  # pragma: no cover
@@ -517,7 +517,7 @@ class TopActions:
         ((added, devs_added), return_code, message) = Pool.Methods.AddCacheDevs(
             get_object(pool_object_path), {"devices": list(blockdevs)}
         )
-        if return_code != StratisdErrors.OK:  # pragma: no cover
+        if return_code != StratisdErrors.OK:
             raise StratisCliEngineError(return_code, message)
 
         if not added or len(devs_added) < len(blockdevs):  # pragma: no cover
