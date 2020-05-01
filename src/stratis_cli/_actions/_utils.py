@@ -66,12 +66,10 @@ def get_timeout(value):
     return timeout_int / 1000
 
 
-def fetch_property(object_type, props, name):
+def fetch_property(props, name):
     """
     Get a property fetched through FetchProperties interface
 
-    :param object_type: string representation of object type implementing FetchProperties
-    :type object_type: str
     :param props: dictionary of property names mapped to values
     :type props: dict of strs to (bool, object)
     :param name: the name of the property
@@ -90,9 +88,7 @@ def fetch_property(object_type, props, name):
     try:
         (success, variant) = props[name]
         if not success:
-            raise StratisCliEnginePropertyError(
-                object_type, name, variant
-            )  # pragma: no cover
+            raise StratisCliEnginePropertyError(name, variant)  # pragma: no cover
         return variant
     except KeyError:  # pragma: no cover
-        raise StratisCliPropertyNotFoundError(object_type, name)
+        raise StratisCliPropertyNotFoundError(name)
