@@ -15,8 +15,8 @@
 Test 'list'.
 """
 
+from .._keyutils import RandomKeyTmpFile
 from .._misc import RUNNER, SimTestCase
-from ._utils import RandomKeyTmpFile
 
 
 class TestKeyList(SimTestCase):

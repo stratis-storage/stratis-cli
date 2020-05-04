@@ -19,8 +19,8 @@ Test 'reset'.
 from stratis_cli import StratisCliErrorCodes
 from stratis_cli._errors import StratisCliNoChangeError, StratisCliResourceNotFoundError
 
+from .._keyutils import RandomKeyTmpFile
 from .._misc import RUNNER, SimTestCase
-from ._utils import RandomKeyTmpFile
 
 _ERROR = StratisCliErrorCodes.ERROR
 
