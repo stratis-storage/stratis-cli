@@ -17,7 +17,11 @@ Test 'reset'.
 
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
-from stratis_cli._errors import StratisCliNoChangeError, StratisCliResourceNotFoundError
+from stratis_cli._errors import (
+    StratisCliEngineError,
+    StratisCliNoChangeError,
+    StratisCliResourceNotFoundError,
+)
 
 from .._keyutils import RandomKeyTmpFile
 from .._misc import RUNNER, SimTestCase
@@ -73,3 +77,11 @@ class TestKeyReset(SimTestCase):
             self._key_file.tmpfile_name(),
         ]
         self.check_error(StratisCliResourceNotFoundError, command_line, _ERROR)
+
+    def test_reset_key_too_long(self):
+        """
+        Resetting should fail due to the length of the key.
+        """
+        with RandomKeyTmpFile(128) as fname:
+            command_line = self._MENU + [self._KEYNAME, "--keyfile-path", fname]
+            self.check_error(StratisCliEngineError, command_line, _ERROR)

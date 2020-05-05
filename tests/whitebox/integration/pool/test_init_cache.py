@@ -115,19 +115,23 @@ class InitCacheFail4TestCase(SimTestCase):
 
     _MENU = ["--propagate", "pool", "init-cache"]
     _POOLNAME = "deadpool"
+    _KEYNAME = "test-password"
 
     def setUp(self):
         super().setUp()
 
         with RandomKeyTmpFile() as keyfile_path:
-            command_line = [
-                "pool",
-                "create",
-                "--keyfile-path",
-                keyfile_path,
-                self._POOLNAME,
-            ] + _DEVICE_STRATEGY()
+            command_line = ["key", "set", self._KEYNAME, "--keyfile-path", keyfile_path]
             RUNNER(command_line)
+
+        command_line = [
+            "pool",
+            "create",
+            "--key-desc",
+            self._KEYNAME,
+            self._POOLNAME,
+        ] + _DEVICE_STRATEGY()
+        RUNNER(command_line)
 
     def test_init_cache(self):
         """

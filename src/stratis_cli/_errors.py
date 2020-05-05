@@ -65,7 +65,6 @@ class StratisCliResourceNotFoundError(StratisCliUserError):
         )
 
 
-# This indicates a bug.
 class StratisCliPropertyNotFoundError(StratisCliRuntimeError):
     """
     Exception raised when a property can not be found in the result of

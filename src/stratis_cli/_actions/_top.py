@@ -142,7 +142,7 @@ def _check_same_tier(pool_name, managed_objects, to_be_added, this_tier):
         raise StratisCliInUseSameTierError(owned_by_other_pools, this_tier)
 
 
-def fetch_keylist_property(proxy):
+def _fetch_keylist_property(proxy):
     """
     Fetch the KeyList property from stratisd.
     :param proxy: proxy to the top object in stratisd
@@ -160,7 +160,7 @@ def fetch_keylist_property(proxy):
     return fetch_property(keys_properties, key_list_property_name)
 
 
-def add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
+def _add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
     """
     Issue a command to set or reset a key in the kernel keyring with the option
     to set it interactively or from a keyfile.
@@ -629,24 +629,25 @@ class TopActions:
         Add key to kernel keyring.
 
         :raises StratisCliEngineError:
+        :raises StratisCliEnginePropertyError:
         :raises StratisCliPropertyNotFoundError:
         :raises StratisCliNameConflictError:
         :raises StratisCliIncoherenceError:
         """
         proxy = get_object(TOP_OBJECT)
 
-        key_list = fetch_keylist_property(proxy)
+        key_list = _fetch_keylist_property(proxy)
         if namespace.keydesc in key_list:
             raise StratisCliNameConflictError("key", namespace.keydesc)
 
-        ((changed, existing_modified), return_code, message) = add_update_key(
+        ((changed, existing_modified), return_code, message) = _add_update_key(
             proxy,
             namespace.keydesc,
             namespace.capture_key,
             keyfile_path=namespace.keyfile_path,
         )
 
-        if return_code != StratisdErrors.OK:  # pragma: no cover
+        if return_code != StratisdErrors.OK:
             raise StratisCliEngineError(return_code, message)
 
         if not changed and not existing_modified:  # pragma: no cover
@@ -674,24 +675,25 @@ class TopActions:
         Update an existing key in the kernel keyring.
 
         :raises StratisCliEngineError:
+        :raises StratisCliEnginePropertyError:
         :raises StratisCliResourceNotFoundError:
         :raises StratisCliPropertyNotFoundError:
         :raises StratisCliIncoherenceError:
         """
         proxy = get_object(TOP_OBJECT)
 
-        key_list = fetch_keylist_property(proxy)
+        key_list = _fetch_keylist_property(proxy)
         if namespace.keydesc not in key_list:
             raise StratisCliResourceNotFoundError("reset", namespace.keydesc)
 
-        ((changed, existing_modified), return_code, message) = add_update_key(
+        ((changed, existing_modified), return_code, message) = _add_update_key(
             proxy,
             namespace.keydesc,
             namespace.capture_key,
             keyfile_path=namespace.keyfile_path,
         )
 
-        if return_code != StratisdErrors.OK:  # pragma: no cover
+        if return_code != StratisdErrors.OK:
             raise StratisCliEngineError(return_code, message)
 
         # The key description existed and the key was not changed.
@@ -714,6 +716,7 @@ class TopActions:
         Remove key from kernel keyring.
 
         :raises StratisCliEngineError:
+        :raises StratisCliEnginePropertyError:
         :raises StratisCliPropertyNotFoundError:
         :raises StratisCliNoChangeError:
         :raises StratisCliIncoherenceError:
@@ -722,7 +725,7 @@ class TopActions:
 
         proxy = get_object(TOP_OBJECT)
 
-        key_list = fetch_keylist_property(proxy)
+        key_list = _fetch_keylist_property(proxy)
         if namespace.keydesc not in key_list:
             raise StratisCliNoChangeError("remove", namespace.keydesc)
 
@@ -748,12 +751,12 @@ class TopActions:
         """
         List keys in kernel keyring.
 
-        :raises StratisCliEngineError:
         :raises StratisCliPropertyNotFoundError:
+        :raises StratisCliEnginePropertyError:
         """
         proxy = get_object(TOP_OBJECT)
 
-        key_list = [[key_desc] for key_desc in fetch_keylist_property(proxy)]
+        key_list = [[key_desc] for key_desc in _fetch_keylist_property(proxy)]
 
         print_table(
             ["Key Description"], sorted(key_list, key=lambda entry: entry[0]), ["<"]
