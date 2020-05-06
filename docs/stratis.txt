@@ -69,10 +69,10 @@ filesystem rename <pool_name> <fs_name> <new_name>::
 blockdev list [pool_name]::
 	 List all blockdevs that make up the specified pool, or all pools, if
 	 no pool name is given.
-key set <(--keyfile-path | --capture-key)> <key_desc>::
+key set <(--keyfile-path <path> | --capture-key)> <key_desc>::
      Set a key in the kernel keyring for use with encryption either from a keyfile
      or captured interactively from user input.
-key reset <(--keyfile-path | --capture-key)> <key_desc>::
+key reset <(--keyfile-path <path> | --capture-key)> <key_desc>::
      Reset the key data of an existing key in the kernel keyring either from a keyfile
      or captured interactively from user input.
 key unset <key_desc>::
