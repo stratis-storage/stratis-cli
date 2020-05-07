@@ -53,7 +53,7 @@ KEY_SUBCMDS = [
                     ],
                 )
             ],
-            func=TopActions.add_key,
+            func=TopActions.set_key,
         ),
     ),
     (
@@ -91,7 +91,7 @@ KEY_SUBCMDS = [
                     ],
                 )
             ],
-            func=TopActions.update_key,
+            func=TopActions.reset_key,
         ),
     ),
     (
@@ -99,7 +99,7 @@ KEY_SUBCMDS = [
         dict(
             help="Unset a key in the kernel keyring",
             args=[("keydesc", dict(action="store", help="key description"))],
-            func=TopActions.remove_key,
+            func=TopActions.unset_key,
         ),
     ),
     (

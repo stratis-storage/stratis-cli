@@ -624,9 +624,9 @@ class TopActions:
         print(json.dumps(json_report, indent=4, sort_keys=True))
 
     @staticmethod
-    def add_key(namespace):
+    def set_key(namespace):
         """
-        Add key to kernel keyring.
+        Set a key in the kernel keyring.
 
         :raises StratisCliEngineError:
         :raises StratisCliEnginePropertyError:
@@ -670,9 +670,9 @@ class TopActions:
             )
 
     @staticmethod
-    def update_key(namespace):
+    def reset_key(namespace):
         """
-        Update an existing key in the kernel keyring.
+        Reset the key data for an existing key in the kernel keyring.
 
         :raises StratisCliEngineError:
         :raises StratisCliEnginePropertyError:
@@ -711,9 +711,9 @@ class TopActions:
             )
 
     @staticmethod
-    def remove_key(namespace):
+    def unset_key(namespace):
         """
-        Remove key from kernel keyring.
+        Unset a key in kernel keyring.
 
         :raises StratisCliEngineError:
         :raises StratisCliEnginePropertyError:
