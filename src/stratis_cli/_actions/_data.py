@@ -36,6 +36,11 @@ from ._constants import (
 )
 from ._utils import get_timeout
 
+MAXIMUM_STRATISD_VERSION = (2, 0, 1)
+MINIMUM_STRATISD_VERSION = (2, 0, 0)
+
+assert MINIMUM_STRATISD_VERSION <= MAXIMUM_STRATISD_VERSION
+
 assert hasattr(sys.modules.get("stratis_cli"), "run"), (
     "This module is being loaded too eagerly. Make sure that loading it is "
     "deferred until after the stratis_cli module has been fully loaded."

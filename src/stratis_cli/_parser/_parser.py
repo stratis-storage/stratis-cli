@@ -18,7 +18,13 @@ Top level parser for Stratis CLI.
 # isort: STDLIB
 import argparse
 
-from .._actions import LogicalActions, PhysicalActions, StratisActions, TopActions
+from .._actions import (
+    LogicalActions,
+    PhysicalActions,
+    StratisActions,
+    TopActions,
+    check_stratisd_version,
+)
 from .._version import __version__
 from ._logical import LOGICAL_SUBCMDS
 from ._physical import PHYSICAL_SUBCMDS
@@ -55,7 +61,17 @@ def add_subcommand(subparser, cmd):
 
     _add_args(parser, info.get("args", []))
 
-    parser.set_defaults(func=info.get("func", PRINT_HELP(parser)))
+    def wrap_func(func):
+        if func is None:
+            return PRINT_HELP(parser)
+
+        def wrapped_func(*args):
+            check_stratisd_version()
+            func(*args)
+
+        return wrapped_func
+
+    parser.set_defaults(func=wrap_func(info.get("func", None)))
 
 
 DAEMON_SUBCMDS = [

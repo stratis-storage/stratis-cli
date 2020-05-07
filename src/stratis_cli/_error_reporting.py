@@ -33,6 +33,7 @@ from ._errors import (
     StratisCliEngineError,
     StratisCliEnginePropertyError,
     StratisCliIncoherenceError,
+    StratisCliStratisdVersionError,
     StratisCliUnknownInterfaceError,
     StratisCliUserError,
 )
@@ -187,6 +188,13 @@ def _interpret_errors(errors):
 
         if isinstance(error, StratisCliUserError):
             fmt_str = "It appears that you issued an unintended command: %s"
+            return fmt_str % error
+
+        if isinstance(error, StratisCliStratisdVersionError):
+            fmt_str = (
+                "%s. stratis can execute only the subset of its "
+                "commands that do not require stratisd."
+            )
             return fmt_str % error
 
         # An incoherence error should be pretty untestable. It can arise
