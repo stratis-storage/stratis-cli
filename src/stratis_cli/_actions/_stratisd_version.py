@@ -14,7 +14,8 @@ def check_stratisd_version():
 
     :raises StratisCliStratisdVersionError
     """
-    from ._data import MAXIMUM_STRATISD_VERSION, MINIMUM_STRATISD_VERSION, Manager
+    from ._constants import MAXIMUM_STRATISD_VERSION, MINIMUM_STRATISD_VERSION
+    from ._data import Manager
 
     version = Manager.Properties.Version.Get(get_object(TOP_OBJECT))
     version = tuple([int(x) for x in version.split(".")])

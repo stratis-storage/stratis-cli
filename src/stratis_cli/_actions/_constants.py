@@ -24,3 +24,8 @@ FETCH_PROPERTIES_INTERFACE = "org.storage.stratis2.FetchProperties.r1"
 FILESYSTEM_INTERFACE = "org.storage.stratis2.filesystem"
 POOL_INTERFACE = "org.storage.stratis2.pool.r1"
 BLOCKDEV_INTERFACE = "org.storage.stratis2.blockdev"
+
+MAXIMUM_STRATISD_VERSION = (2, 0, 1)
+MINIMUM_STRATISD_VERSION = (2, 0, 0)
+
+assert MINIMUM_STRATISD_VERSION <= MAXIMUM_STRATISD_VERSION

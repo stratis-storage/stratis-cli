@@ -71,7 +71,7 @@ def add_subcommand(subparser, cmd):
 
         return wrapped_func
 
-    parser.set_defaults(func=wrap_func(info.get("func", None)))
+    parser.set_defaults(func=wrap_func(info.get("func")))
 
 
 DAEMON_SUBCMDS = [
