@@ -29,7 +29,7 @@ jobs:
           python-dateutil==2.8.0
           wcwidth==0.1.7
           psutil==5.4.3
-          semantic_version==2.8.5
+          semantic_version==2.6.0
       script: PYTHONPATH=./src make -f Makefile lint
     - name: "check formatting using Python 3.7.6"
       python: "3.7.6"
@@ -47,7 +47,7 @@ jobs:
           python-dateutil==2.8.0
           wcwidth==0.1.7
           psutil==5.4.3
-          semantic_version==2.8.5
+          semantic_version==2.6.0
       script: PYTHONPATH=./src make -f Makefile test-travis
 
     # MANDATORY CHECKS USING LOWEST SUPPORTED INTERPRETER
@@ -64,7 +64,7 @@ jobs:
           python-dateutil
           wcwidth
           psutil
-          semantic_version=2.8.5
+          semantic_version==2.6.0
       script: PYTHONPATH=./src make -f Makefile lint
 
     # VERIFICATION OF TEST INFRASTRUCTURE

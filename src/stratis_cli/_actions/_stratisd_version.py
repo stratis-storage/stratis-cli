@@ -15,7 +15,7 @@
 Check version of stratisd
 """
 # isort: THIRDPARTY
-from semantic_version import SimpleSpec, Version
+from semantic_version import Spec, Version
 
 from .._errors import StratisCliStratisdVersionError
 from ._connection import get_object
@@ -32,7 +32,7 @@ def check_stratisd_version():
     from ._constants import MAXIMUM_STRATISD_VERSION, MINIMUM_STRATISD_VERSION
     from ._data import Manager
 
-    version_spec = SimpleSpec(
+    version_spec = Spec(
         ">=%s-,<%s-" % (MINIMUM_STRATISD_VERSION, MAXIMUM_STRATISD_VERSION)
     )
     version = Manager.Properties.Version.Get(get_object(TOP_OBJECT))
