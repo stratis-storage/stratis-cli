@@ -25,7 +25,7 @@ from ._constants import TOP_OBJECT
 def check_stratisd_version():
     """
     Checks that the version of stratisd that is running is compatible with
-    this version of the CLI
+    this version of the CLI.
 
     :raises StratisCliStratisdVersionError
     """
@@ -33,7 +33,7 @@ def check_stratisd_version():
     from ._data import Manager
 
     version_spec = Spec(
-        ">=%s-,<%s-" % (MINIMUM_STRATISD_VERSION, MAXIMUM_STRATISD_VERSION)
+        ">=%s,<%s" % (MINIMUM_STRATISD_VERSION, MAXIMUM_STRATISD_VERSION)
     )
     version = Manager.Properties.Version.Get(get_object(TOP_OBJECT))
 
