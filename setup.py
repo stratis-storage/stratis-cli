@@ -47,6 +47,7 @@ setuptools.setup(
         "dbus-python-client-gen>=0.7",
         "justbytes==0.11",
         "python-dateutil",
+        "semantic_version",
         "wcwidth",
     ],
     package_dir={"": "src"},
