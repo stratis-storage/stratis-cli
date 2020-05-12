@@ -14,6 +14,8 @@
 """
 General constants.
 """
+# isort: THIRDPARTY
+from semantic_version import Version
 
 SERVICE = "org.storage.stratis2"
 TOP_OBJECT = "/org/storage/stratis2"
@@ -24,3 +26,7 @@ FETCH_PROPERTIES_INTERFACE = "org.storage.stratis2.FetchProperties.r1"
 FILESYSTEM_INTERFACE = "org.storage.stratis2.filesystem"
 POOL_INTERFACE = "org.storage.stratis2.pool.r1"
 BLOCKDEV_INTERFACE = "org.storage.stratis2.blockdev"
+
+MAXIMUM_STRATISD_VERSION = "3.0.0"
+MINIMUM_STRATISD_VERSION = "2.1.0"
+assert Version(MINIMUM_STRATISD_VERSION) < Version(MAXIMUM_STRATISD_VERSION)
