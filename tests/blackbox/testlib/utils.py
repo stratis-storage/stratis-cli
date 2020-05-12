@@ -18,9 +18,9 @@ Utility functions for blackbox testing.
 import base64
 import os
 import random
-import shutil
 import string
 from subprocess import PIPE, Popen, run
+from tempfile import NamedTemporaryFile
 
 # isort: THIRDPARTY
 import psutil
@@ -135,60 +135,39 @@ class KernelKey:  # pylint: disable=attribute-defined-outside-init
         """
         Initialize a key with the provided key data (passphrase).
         :param bytes key_data: The desired key contents
-        :raises RuntimeError: if the keyctl command is not found in $PATH
-                              or a keyctl command returns a non-zero exit code
         """
-        if shutil.which("keyctl") is None:
-            raise RuntimeError("Executable keyctl was not found in $PATH")
-
         self.key_data = key_data
-
-    @staticmethod
-    def _raise_keyctl_error(return_code, args):
-        """
-        Raise an error if keyctl failed to complete an operation
-        successfully.
-        :param int return_code: Return code of the keyctl command
-        :param args: The command line that caused the command to fail
-        :type args: list of str
-        :raises RuntimeError
-        """
-        if return_code != 0:
-            raise RuntimeError(
-                "Command '%s' failed with exit code %s" % (" ".join(args), return_code)
-            )
+        self.key_set_command = ["/usr/bin/stratis", "key", "set"]
+        self.key_unset_command = ["/usr/bin/stratis", "key", "unset"]
 
     def __enter__(self):
         """
         This method allows KernelKey to be used with the "with" keyword.
         :return: The key description that can be used to access the
                  provided key data in __init__.
+        :raises CalledProcessError: if stratis returns a non-zero exit code
         """
         with open("/dev/urandom", "rb") as urandom_f:
-            key_desc = base64.b64encode(urandom_f.read(16)).decode("utf-8")
+            self.key_desc = base64.b64encode(urandom_f.read(16)).decode("utf-8")
 
-        args = ["keyctl", "get_persistent", "@s", "0"]
-        exit_values = run(args, stdout=PIPE, stderr=PIPE, universal_newlines=True)
-        KernelKey._raise_keyctl_error(exit_values.returncode, args)
+        with NamedTemporaryFile(mode="rw") as temp_file:
+            temp_file.write(self.key_data)
+            temp_file.flush()
 
-        self.persistent_id = exit_values.stdout.strip()
+            args = self.key_set_command + [
+                "--keyfile-path",
+                temp_file.name,
+                self.key_desc,
+            ]
+            run(args, stdout=PIPE, stderr=PIPE, checked=True)
 
-        args = ["keyctl", "add", "user", key_desc, self.key_data, self.persistent_id]
-        exit_values = run(args, stdout=PIPE, stderr=PIPE)
-        KernelKey._raise_keyctl_error(exit_values.returncode, args)
-
-        return key_desc
+        return self.key_desc
 
     def __exit__(self, exception_type, exception_value, traceback):
         try:
-            args = ["keyctl", "clear", self.persistent_id]
-            exit_values = run(args)
-            KernelKey._raise_keyctl_error(exit_values.returncode, args)
-
-            args = ["keyctl", "clear", "@s"]
-            exit_values = run(args)
-            KernelKey._raise_keyctl_error(exit_values.returncode, args)
-        except RuntimeError as rexc:
+            args = self.key_unset_command + [self.key_desc]
+            run(args, stdout=PIPE, stderr=PIPE, checked=True)
+        except Exception as rexc:
             if exception_value is None:
                 raise rexc
             raise rexc from exception_value
