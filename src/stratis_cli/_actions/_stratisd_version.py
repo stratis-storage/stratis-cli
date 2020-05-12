@@ -19,7 +19,7 @@ from semantic_version import Spec, Version
 
 from .._errors import StratisCliStratisdVersionError
 from ._connection import get_object
-from ._constants import TOP_OBJECT
+from ._constants import MAXIMUM_STRATISD_VERSION, MINIMUM_STRATISD_VERSION, TOP_OBJECT
 
 
 def check_stratisd_version():
@@ -29,7 +29,6 @@ def check_stratisd_version():
 
     :raises StratisCliStratisdVersionError
     """
-    from ._constants import MAXIMUM_STRATISD_VERSION, MINIMUM_STRATISD_VERSION
     from ._data import Manager
 
     version_spec = Spec(
