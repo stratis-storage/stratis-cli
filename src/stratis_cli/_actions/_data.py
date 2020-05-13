@@ -33,6 +33,7 @@ from ._constants import (
     FETCH_PROPERTIES_INTERFACE,
     FILESYSTEM_INTERFACE,
     POOL_INTERFACE,
+    REPORT_INTERFACE,
 )
 from ._utils import get_timeout
 
@@ -58,6 +59,16 @@ SPECS = {
 <method name="GetProperties">
 <arg name="properties" type="as" direction="in"/>
 <arg name="property_hash" type="a{s(bv)}" direction="out"/>
+</method>
+</interface>
+""",
+    "org.storage.stratis2.Report.r1": """
+<interface name="org.storage.stratis2.Report.r1">
+<method name="GetReport">
+<arg name="name" type="s" direction="in"/>
+<arg name="result" type="(bs)" direction="out"/>
+<arg name="return_code" type="q" direction="out"/>
+<arg name="return_string" type="s" direction="out"/>
 </method>
 </interface>
 """,
@@ -216,6 +227,9 @@ try:
 
     fetch_properties_spec = ET.fromstring(SPECS[FETCH_PROPERTIES_INTERFACE])
     FetchProperties = make_class("FetchProperties", fetch_properties_spec, timeout)
+
+    report_spec = ET.fromstring(SPECS[REPORT_INTERFACE])
+    Report = make_class("Report", report_spec, timeout)
 
     filesystem_spec = ET.fromstring(SPECS[FILESYSTEM_INTERFACE])
     Filesystem = make_class("Filesystem", filesystem_spec, timeout)

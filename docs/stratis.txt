@@ -10,6 +10,7 @@ SYNOPSIS
   stratis [GLOBAL OPTIONS] pool <command> [args] [COMMAND OPTIONS]
   stratis [GLOBAL OPTIONS] filesystem|fs <command> [args] [COMMAND OPTIONS]
   stratis [GLOBAL OPTIONS] blockdev <command> [args] [COMMAND OPTIONS]
+  stratis [GLOBAL OPTIONS] report <report_name>
   stratis [GLOBAL OPTIONS] daemon <redundancy|version>
 
 DESCRIPTION
@@ -66,6 +67,10 @@ filesystem rename <pool_name> <fs_name> <new_name>::
 blockdev list [pool_name]::
 	 List all blockdevs that make up the specified pool, or all pools, if
 	 no pool name is given.
+report <report_name>::
+        Get a report from the daemon regarding its internal state. This command is
+        not supported as the report names and returned JSON schemas are unstable
+        and may be changed at any time.
 daemon redundancy::
        List the redundancy levels that the Stratis service supports.
 daemon version::
