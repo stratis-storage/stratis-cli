@@ -16,6 +16,8 @@ Miscellaneous top-level actions.
 """
 
 # isort: STDLIB
+import json
+import pprint
 from collections import defaultdict
 
 # isort: THIRDPARTY
@@ -538,3 +540,22 @@ class TopActions:
                 )
                 % (namespace.pool_name, ", ".join(devnodes_added), ", ".join(blockdevs))
             )
+
+    @staticmethod
+    def get_report(namespace):
+        """
+        Get the requested report from stratisd.
+
+        :raises StratisCliEngineError:
+        """
+        from ._data import Report
+
+        ((_, report), return_code, message) = Report.Methods.GetReport(
+            get_object(TOP_OBJECT), {"name": namespace.report_name}
+        )
+
+        if return_code != StratisdErrors.OK:
+            raise StratisCliEngineError(return_code, message)
+
+        pprinter = pprint.PrettyPrinter(indent=4)
+        pprinter.pprint(json.loads(report))
