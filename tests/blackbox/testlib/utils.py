@@ -189,7 +189,8 @@ class KernelKey:  # pylint: disable=attribute-defined-outside-init
 
             if return_code != self._OK:
                 raise RuntimeError(
-                    "Setting the key using stratisd failed with an error: %s" % message
+                    "Unsetting the key using stratisd failed with an error: %s"
+                    % message
                 )
         except Exception as rexc:
             if exception_value is None:
