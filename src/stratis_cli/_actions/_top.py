@@ -17,7 +17,6 @@ Miscellaneous top-level actions.
 
 # isort: STDLIB
 import json
-import pprint
 from collections import defaultdict
 
 # isort: THIRDPARTY
@@ -557,5 +556,5 @@ class TopActions:
         if return_code != StratisdErrors.OK:
             raise StratisCliEngineError(return_code, message)
 
-        pprinter = pprint.PrettyPrinter(indent=4)
-        pprinter.pprint(json.loads(report))
+        json_report = json.loads(report)
+        print(json.dumps(json_report, indent=4, sort_keys=True))
