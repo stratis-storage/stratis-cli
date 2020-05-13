@@ -20,7 +20,7 @@ import os
 import random
 import string
 from subprocess import PIPE, Popen
-from tempfile import TemporaryFile
+from tempfile import NamedTemporaryFile
 
 # isort: THIRDPARTY
 import dbus
@@ -159,18 +159,19 @@ class KernelKey:  # pylint: disable=attribute-defined-outside-init
         with open("/dev/urandom", "rb") as urandom_f:
             self._key_desc = base64.b64encode(urandom_f.read(16)).decode("utf-8")
 
-        with TemporaryFile(mode="w+") as temp_file:
+        with NamedTemporaryFile(mode="w") as temp_file:
             temp_file.write(self._key_data)
             temp_file.flush()
 
-            (_, return_code, message) = self._manager_iface.SetKey(
-                self._top_object,
-                {
-                    "key_desc": self._key_desc,
-                    "key_fd": temp_file.fileno(),
-                    "interactive": False,
-                },
-            )
+            with open(temp_file.name, "r") as fd_for_dbus:
+                (_, return_code, message) = self._manager_iface.SetKey(
+                    self._top_object,
+                    {
+                        "key_desc": self._key_desc,
+                        "key_fd": fd_for_dbus.fileno(),
+                        "interactive": False,
+                    },
+                )
 
         if return_code != self._OK:
             raise RuntimeError(
