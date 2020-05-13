@@ -165,7 +165,11 @@ class KernelKey:  # pylint: disable=attribute-defined-outside-init
 
             (_, return_code, message) = self._manager_iface.SetKey(
                 self._top_object,
-                {"key_desc": self._key_desc, "key_fd": temp_file.fileno()},
+                {
+                    "key_desc": self._key_desc,
+                    "key_fd": temp_file.fileno(),
+                    "interactive": False,
+                },
             )
 
         if return_code != self._OK:
