@@ -116,6 +116,21 @@ ROOT_SUBCOMMANDS = [
             func=LogicalActions.list_volumes,
         ),
     ),
+    (
+        "report",
+        dict(
+            help="Commands related to reports of the daemon state",
+            func=TopActions.get_report,
+            args=[
+                (
+                    "report_name",
+                    dict(
+                        default=None, type=str, help=("Name of the report to display")
+                    ),
+                )
+            ],
+        ),
+    ),
     ("daemon", dict(help="Stratis daemon information", subcmds=DAEMON_SUBCMDS)),
 ]
 
