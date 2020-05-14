@@ -1,4 +1,4 @@
-PYTEST_OPTS = --verbose
+UNITTEST_OPTS = --verbose
 
 .PHONY: lint
 lint:
@@ -46,18 +46,18 @@ api-docs:
 	sphinx-build-3 -b html api api/_build/html
 
 dbus-tests:
-	py.test-3 ${PYTEST_OPTS} ./tests/whitebox/integration
+	python3 -m unittest discover ${UNITTEST_OPTS} --top-level-directory ./tests/whitebox --start-directory ./tests/whitebox/integration > /dev/null
 
 unittest-tests:
-	py.test-3 ${PYTEST_OPTS} ./tests/whitebox/unittest
+	python3 -m unittest discover ${UNITTEST_OPTS} --start-directory ./tests/whitebox/unittest
 
 .PHONY: coverage-no-html
 coverage-no-html:
 	python3 -m coverage --version
-	python3 -m coverage run --timid --branch -m pytest ./tests/whitebox/integration
-	python3 -m coverage run --timid --branch -a -m pytest ./tests/whitebox/unittest
-	python3 -m coverage run --timid --branch -a -m pytest ./tests/whitebox/monkey_patching/test_keyboard_interrupt.py
-	python3 -m coverage run --timid --branch -a -m pytest ./tests/whitebox/monkey_patching/test_stratisd_version.py
+	python3 -m coverage run --timid --branch -m unittest discover --quiet --top-level-directory ./tests/whitebox --start-directory ./tests/whitebox/integration > /dev/null
+	python3 -m coverage run --timid --branch -a -m unittest discover --quiet --start-directory ./tests/whitebox/unittest
+	python3 -m coverage run --timid --branch -a -m unittest --quiet tests.whitebox.monkey_patching.test_keyboard_interrupt.KeyboardInterruptTestCase
+	python3 -m coverage run --timid --branch -a -m unittest --quiet tests.whitebox.monkey_patching.test_stratisd_version.StratisdVersionTestCase
 	python3 -m coverage report -m --fail-under=100 --show-missing --include="./src/*"
 
 .PHONY: coverage
@@ -65,13 +65,12 @@ coverage: coverage-no-html
 	python3 -m coverage html --include="./src/*"
 
 keyboard-interrupt-test:
-	py.test-3 ${PYTEST_OPTS} ./tests/whitebox/monkey_patching/test_keyboard_interrupt.py
+	python3 -m unittest ${UNITTEST_OPTS} tests.whitebox.monkey_patching.test_keyboard_interrupt.KeyboardInterruptTestCase
 
 stratisd-version-test:
-	py.test-3 ${PYTEST_OPTS} ./tests/whitebox/monkey_patching/test_stratisd_version.py
+	python3 -m unittest ${UNITTEST_OPTS} tests.whitebox.monkey_patching.test_stratisd_version.StratisdVersionTestCase
 
-test-travis:
-	py.test ${PYTEST_OPS} ./tests/whitebox/unittest
+test-travis: unittest-tests
 
 .PHONY: yamllint
 yamllint:
