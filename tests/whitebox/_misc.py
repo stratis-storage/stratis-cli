@@ -154,9 +154,11 @@ class SimTestCase(RunTestCase):
         """
         for pid in psutil.pids():
             try:
-                assert psutil.Process(pid).name() != "stratisd", (
-                    "Evidently a stratisd process with process id %u is running" % pid
-                )
+                if psutil.Process(pid).name() == "stratisd":
+                    raise RuntimeError(
+                        "Evidently a stratisd process with process id %u is running"
+                        % pid
+                    )
             except psutil.NoSuchProcess:
                 pass
 
