@@ -45,7 +45,7 @@ setuptools.setup(
     install_requires=[
         "dbus-client-gen>=0.4",
         "dbus-python-client-gen>=0.7",
-        "justbytes==0.11",
+        "justbytes>=0.14",
         "python-dateutil",
         "semantic_version",
         "wcwidth",
