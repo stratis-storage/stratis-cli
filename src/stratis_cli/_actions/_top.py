@@ -170,7 +170,7 @@ def _add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
     :param bool capture_key: whether the key setting should be interactive
     :param keyfile_path: optional path to the keyfile containing the key
     :type keyfile_path: list of str or NoneType (if list, exactly one element)
-    :return: the result of the AddKey D-Bus call
+    :return: the result of the SetKey D-Bus call
     :rtype: D-Bus types (bb), q, and s
     """
     assert capture_key == (keyfile_path is None)
@@ -187,7 +187,7 @@ def _add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
         file_desc = os.open(keyfile_path[0], os.O_RDONLY)
         fd_is_terminal = False
 
-    add_ret = Manager.Methods.AddKey(
+    add_ret = Manager.Methods.SetKey(
         proxy,
         {"key_desc": key_desc, "key_fd": file_desc, "interactive": fd_is_terminal},
     )
@@ -729,14 +729,13 @@ class TopActions:
         if namespace.keydesc not in key_list:
             raise StratisCliNoChangeError("remove", namespace.keydesc)
 
-        (changed, return_code, message) = Manager.Methods.DeleteKey(
+        (changed, return_code, message) = Manager.Methods.UnsetKey(
             proxy, {"key_desc": namespace.keydesc}
         )
 
         if return_code != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(return_code, message)
 
-        # A new key was added even though there was a key reported to already exist.
         if not changed:  # pragma: no cover
             raise StratisCliIncoherenceError(
                 (
