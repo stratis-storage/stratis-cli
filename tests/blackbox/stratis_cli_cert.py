@@ -154,6 +154,20 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         """
         self.unittest_command([STRATIS_CLI, "daemon", "redundancy"], 0, True, False)
 
+    def test_engine_state_report(self):
+        """
+        Test getting the engine_state_report.
+        """
+        self.unittest_command(
+            [STRATIS_CLI, "report", "engine_state_report"], 0, True, False
+        )
+
+    def test_invalid_report(self):
+        """
+        Test getting an invalid report.
+        """
+        self.unittest_command([STRATIS_CLI, "report", "invalid_name"], 1, False, True)
+
     def test_pool_list_empty(self):
         """
         Test listing a non-existent pool.
