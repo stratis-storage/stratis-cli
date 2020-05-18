@@ -10,6 +10,7 @@ SYNOPSIS
   stratis [GLOBAL OPTIONS] pool <command> [args] [COMMAND OPTIONS]
   stratis [GLOBAL OPTIONS] filesystem|fs <command> [args] [COMMAND OPTIONS]
   stratis [GLOBAL OPTIONS] blockdev <command> [args] [COMMAND OPTIONS]
+  stratis [GLOBAL OPTIONS] key <command> [args] [COMMAND OPTIONS]
   stratis [GLOBAL OPTIONS] report <report_name>
   stratis [GLOBAL OPTIONS] daemon <redundancy|version>
 
@@ -19,7 +20,8 @@ DESCRIPTION
 and the filesystems allocated from the pool.
 
 Stratis creates a *pool* from one or more block devices (*blockdevs*), and
-then enables multiple *filesystems* to be created from the pool.
+then enables multiple *filesystems* to be created from the pool. The user can set
+*keys* for use with pool encryption.
 
 GLOBAL OPTIONS
 --------------
@@ -67,6 +69,15 @@ filesystem rename <pool_name> <fs_name> <new_name>::
 blockdev list [pool_name]::
 	 List all blockdevs that make up the specified pool, or all pools, if
 	 no pool name is given.
+key set <(--keyfile-path <path> | --capture-key)> <key_desc>::
+     Set a key in the kernel keyring for use with encryption either from a keyfile
+     or captured interactively from user input.
+key reset <(--keyfile-path <path> | --capture-key)> <key_desc>::
+     Reset the key data of an existing key in the kernel keyring either from a keyfile
+     or captured interactively from user input.
+key unset <key_desc>::
+     Unset a key in the kernel keyring so it is no longer available for encryption
+     operations.
 report <report_name>::
         Get a report from the daemon regarding its internal state. This command is
         not supported as the report names and returned JSON schemas are unstable
@@ -83,9 +94,8 @@ OPTIONS
         is also the default.
 --key-desc::
         The key description of the key that should be used to encrypt the
-        created pool. The key description must correspond to a kernel key
-        that is managed by the user and has at least one link to a searchable
-	keyring (thread, process, or session keyrings).
+        created pool. The key description must correspond to a key
+        set in the kernel keyring with the *key* command.
 
 ENVIRONMENT VARIABLES
 ---------------------
@@ -139,6 +149,12 @@ Physical Size::
 	  The size of the device.
 Tier::
 	  The data tier type ("Data" or "Cache")
+
+FIELDS for stratis key list
+
+Key Description::
+	  The key description corresponding to a key in the kernel keyring that
+	  that can be used for encryption.
 
 RESTRICTIONS
 ------------

@@ -18,11 +18,12 @@ Utility functions for blackbox testing.
 import base64
 import os
 import random
-import shutil
 import string
-from subprocess import PIPE, Popen, run
+from subprocess import PIPE, Popen
+from tempfile import NamedTemporaryFile
 
 # isort: THIRDPARTY
+import dbus
 import psutil
 
 # Name prefix, so that we hopefully don't destroy any end user data by mistake!
@@ -131,64 +132,67 @@ class KernelKey:  # pylint: disable=attribute-defined-outside-init
     keyword and will be cleaned up at the end of the scope of the with block.
     """
 
+    _OK = 0
+    _BUS = dbus.SystemBus()
+    _BUS_NAME = "org.storage.stratis2"
+    _TOP_OBJECT = "/org/storage/stratis2"
+    _MANAGER_IFACE = "org.storage.stratis2.Manager.r1"
+
     def __init__(self, key_data):
         """
         Initialize a key with the provided key data (passphrase).
         :param bytes key_data: The desired key contents
-        :raises RuntimeError: if the keyctl command is not found in $PATH
-                              or a keyctl command returns a non-zero exit code
         """
-        if shutil.which("keyctl") is None:
-            raise RuntimeError("Executable keyctl was not found in $PATH")
+        self._key_data = key_data
 
-        self.key_data = key_data
-
-    @staticmethod
-    def _raise_keyctl_error(return_code, args):
-        """
-        Raise an error if keyctl failed to complete an operation
-        successfully.
-        :param int return_code: Return code of the keyctl command
-        :param args: The command line that caused the command to fail
-        :type args: list of str
-        :raises RuntimeError
-        """
-        if return_code != 0:
-            raise RuntimeError(
-                "Command '%s' failed with exit code %s" % (" ".join(args), return_code)
-            )
+        self._top_object = self._BUS.get_object(self._BUS_NAME, self._TOP_OBJECT)
+        self._manager_iface = dbus.Interface(self._top_object, self._MANAGER_IFACE)
 
     def __enter__(self):
         """
         This method allows KernelKey to be used with the "with" keyword.
         :return: The key description that can be used to access the
                  provided key data in __init__.
+        :raises RuntimeError: if setting the key using the stratisd D-Bus API
+                              returns a non-zero return code
         """
         with open("/dev/urandom", "rb") as urandom_f:
-            key_desc = base64.b64encode(urandom_f.read(16)).decode("utf-8")
+            self._key_desc = base64.b64encode(urandom_f.read(16)).decode("utf-8")
 
-        args = ["keyctl", "get_persistent", "@s", "0"]
-        exit_values = run(args, stdout=PIPE, stderr=PIPE, universal_newlines=True)
-        KernelKey._raise_keyctl_error(exit_values.returncode, args)
+        with NamedTemporaryFile(mode="w") as temp_file:
+            temp_file.write(self._key_data)
+            temp_file.flush()
 
-        self.persistent_id = exit_values.stdout.strip()
+            with open(temp_file.name, "r") as fd_for_dbus:
+                (_, return_code, message) = self._manager_iface.SetKey(
+                    self._top_object,
+                    {
+                        "key_desc": self._key_desc,
+                        "key_fd": fd_for_dbus.fileno(),
+                        "interactive": False,
+                    },
+                )
 
-        args = ["keyctl", "add", "user", key_desc, self.key_data, self.persistent_id]
-        exit_values = run(args, stdout=PIPE, stderr=PIPE)
-        KernelKey._raise_keyctl_error(exit_values.returncode, args)
+        if return_code != self._OK:
+            raise RuntimeError(
+                "Setting the key using stratisd failed with an error: %s" % message
+            )
 
-        return key_desc
+        return self._key_desc
 
     def __exit__(self, exception_type, exception_value, traceback):
+        message = None
         try:
-            args = ["keyctl", "clear", self.persistent_id]
-            exit_values = run(args)
-            KernelKey._raise_keyctl_error(exit_values.returncode, args)
+            (_, return_code, message) = self._manager_iface.UnsetKey(
+                self._top_object, {"key_desc": self._key_desc}
+            )
 
-            args = ["keyctl", "clear", "@s"]
-            exit_values = run(args)
-            KernelKey._raise_keyctl_error(exit_values.returncode, args)
-        except RuntimeError as rexc:
+            if return_code != self._OK:
+                raise RuntimeError(
+                    "Unsetting the key using stratisd failed with an error: %s"
+                    % message
+                )
+        except Exception as rexc:
             if exception_value is None:
                 raise rexc
             raise rexc from exception_value

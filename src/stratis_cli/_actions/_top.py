@@ -17,7 +17,11 @@ Miscellaneous top-level actions.
 
 # isort: STDLIB
 import json
+import os
+import sys
 from collections import defaultdict
+from termios import TCSANOW, tcgetattr, tcsetattr
+from tty import setcbreak
 
 # isort: THIRDPARTY
 from justbytes import Range
@@ -30,11 +34,13 @@ from .._errors import (
     StratisCliNameConflictError,
     StratisCliNoChangeError,
     StratisCliPartialChangeError,
+    StratisCliResourceNotFoundError,
 )
 from .._stratisd_constants import BlockDevTiers, StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import TABLE_FAILURE_STRING, get_property, print_table
+from ._utils import fetch_property
 
 
 def _generate_pools_to_blockdevs(managed_objects, to_be_added, tier):
@@ -134,6 +140,64 @@ def _check_same_tier(pool_name, managed_objects, to_be_added, this_tier):
         )
     if owned_by_other_pools != {}:
         raise StratisCliInUseSameTierError(owned_by_other_pools, this_tier)
+
+
+def _fetch_keylist_property(proxy):
+    """
+    Fetch the KeyList property from stratisd.
+    :param proxy: proxy to the top object in stratisd
+    :return: list of keys in the kernel keyring
+    :rtype: list of str
+    :raises StratisCliPropertyNotFoundError:
+    :raises StratisCliEnginePropertyError:
+    """
+    from ._data import FetchProperties
+
+    key_list_property_name = "KeyList"
+    keys_properties = FetchProperties.Methods.GetProperties(
+        proxy, {"properties": [key_list_property_name]}
+    )
+    return fetch_property(keys_properties, key_list_property_name)
+
+
+def _add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
+    """
+    Issue a command to set or reset a key in the kernel keyring with the option
+    to set it interactively or from a keyfile.
+
+    :param proxy: proxy to the top object
+    :param str key_desc: key description for the key to be set or reset
+    :param bool capture_key: whether the key setting should be interactive
+    :param keyfile_path: optional path to the keyfile containing the key
+    :type keyfile_path: list of str or NoneType (if list, exactly one element)
+    :return: the result of the SetKey D-Bus call
+    :rtype: D-Bus types (bb), q, and s
+    """
+    assert capture_key == (keyfile_path is None)
+
+    from ._data import Manager
+
+    if capture_key:  # pragma: no cover
+        file_desc = sys.stdout.fileno()
+        terminal_attributes = tcgetattr(file_desc)
+        setcbreak(file_desc)
+        fd_is_terminal = True
+        print("Enter desired key data followed by the return key:")
+    else:
+        file_desc = os.open(keyfile_path[0], os.O_RDONLY)
+        fd_is_terminal = False
+
+    add_ret = Manager.Methods.SetKey(
+        proxy,
+        {"key_desc": key_desc, "key_fd": file_desc, "interactive": fd_is_terminal},
+    )
+
+    if fd_is_terminal:  # pragma: no cover
+        tcsetattr(file_desc, TCSANOW, terminal_attributes)
+    else:
+        os.close(file_desc)
+
+    return add_ret
 
 
 class TopActions:
@@ -558,3 +622,141 @@ class TopActions:
 
         json_report = json.loads(report)
         print(json.dumps(json_report, indent=4, sort_keys=True))
+
+    @staticmethod
+    def set_key(namespace):
+        """
+        Set a key in the kernel keyring.
+
+        :raises StratisCliEngineError:
+        :raises StratisCliEnginePropertyError:
+        :raises StratisCliPropertyNotFoundError:
+        :raises StratisCliNameConflictError:
+        :raises StratisCliIncoherenceError:
+        """
+        proxy = get_object(TOP_OBJECT)
+
+        key_list = _fetch_keylist_property(proxy)
+        if namespace.keydesc in key_list:
+            raise StratisCliNameConflictError("key", namespace.keydesc)
+
+        ((changed, existing_modified), return_code, message) = _add_update_key(
+            proxy,
+            namespace.keydesc,
+            namespace.capture_key,
+            keyfile_path=namespace.keyfile_path,
+        )
+
+        if return_code != StratisdErrors.OK:
+            raise StratisCliEngineError(return_code, message)
+
+        if not changed and not existing_modified:  # pragma: no cover
+            raise StratisCliIncoherenceError(
+                (
+                    "Key %s was reported to not exist but stratisd reported "
+                    "that no change was made to the key"
+                )
+                % namespace.keydesc
+            )
+
+        # A key was updated even though there was no key reported to already exist.
+        if changed and existing_modified:  # pragma: no cover
+            raise StratisCliIncoherenceError(
+                (
+                    "Key %s was reported to not exist but stratisd reported "
+                    "that it reset an existing key"
+                )
+                % namespace.keydesc
+            )
+
+    @staticmethod
+    def reset_key(namespace):
+        """
+        Reset the key data for an existing key in the kernel keyring.
+
+        :raises StratisCliEngineError:
+        :raises StratisCliEnginePropertyError:
+        :raises StratisCliResourceNotFoundError:
+        :raises StratisCliPropertyNotFoundError:
+        :raises StratisCliIncoherenceError:
+        """
+        proxy = get_object(TOP_OBJECT)
+
+        key_list = _fetch_keylist_property(proxy)
+        if namespace.keydesc not in key_list:
+            raise StratisCliResourceNotFoundError("reset", namespace.keydesc)
+
+        ((changed, existing_modified), return_code, message) = _add_update_key(
+            proxy,
+            namespace.keydesc,
+            namespace.capture_key,
+            keyfile_path=namespace.keyfile_path,
+        )
+
+        if return_code != StratisdErrors.OK:
+            raise StratisCliEngineError(return_code, message)
+
+        # The key description existed and the key was not changed.
+        if not changed and not existing_modified:
+            raise StratisCliNoChangeError("reset", namespace.keydesc)
+
+        # A new key was added even though there was a key reported to already exist.
+        if changed and not existing_modified:  # pragma: no cover
+            raise StratisCliIncoherenceError(
+                (
+                    "Key %s was reported to already exist but stratisd reported "
+                    "that it created a new key"
+                )
+                % namespace.keydesc
+            )
+
+    @staticmethod
+    def unset_key(namespace):
+        """
+        Unset a key in kernel keyring.
+
+        :raises StratisCliEngineError:
+        :raises StratisCliEnginePropertyError:
+        :raises StratisCliPropertyNotFoundError:
+        :raises StratisCliNoChangeError:
+        :raises StratisCliIncoherenceError:
+        """
+        from ._data import Manager
+
+        proxy = get_object(TOP_OBJECT)
+
+        key_list = _fetch_keylist_property(proxy)
+        if namespace.keydesc not in key_list:
+            raise StratisCliNoChangeError("remove", namespace.keydesc)
+
+        (changed, return_code, message) = Manager.Methods.UnsetKey(
+            proxy, {"key_desc": namespace.keydesc}
+        )
+
+        if return_code != StratisdErrors.OK:  # pragma: no cover
+            raise StratisCliEngineError(return_code, message)
+
+        if not changed:  # pragma: no cover
+            raise StratisCliIncoherenceError(
+                (
+                    "Key %s was reported to exist but stratisd reported "
+                    "that no key was unset"
+                )
+                % namespace.keydesc
+            )
+
+    @staticmethod
+    def list_keys(_):
+        """
+        List keys in kernel keyring.
+
+        :raises StratisCliPropertyNotFoundError:
+        :raises StratisCliEnginePropertyError:
+        """
+        proxy = get_object(TOP_OBJECT)
+
+        key_list = [[key_desc] for key_desc in _fetch_keylist_property(proxy)]
+
+        print_table(
+            ["Key Description"], sorted(key_list, key=lambda entry: entry[0]), ["<"]
+        )
