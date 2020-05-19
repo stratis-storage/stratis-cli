@@ -165,12 +165,7 @@ class KernelKey:  # pylint: disable=attribute-defined-outside-init
 
             with open(temp_file.name, "r") as fd_for_dbus:
                 (_, return_code, message) = self._manager_iface.SetKey(
-                    self._top_object,
-                    {
-                        "key_desc": self._key_desc,
-                        "key_fd": fd_for_dbus.fileno(),
-                        "interactive": False,
-                    },
+                    self._key_desc, fd_for_dbus.fileno(), False
                 )
 
         if return_code != self._OK:
@@ -183,9 +178,7 @@ class KernelKey:  # pylint: disable=attribute-defined-outside-init
     def __exit__(self, exception_type, exception_value, traceback):
         message = None
         try:
-            (_, return_code, message) = self._manager_iface.UnsetKey(
-                self._top_object, {"key_desc": self._key_desc}
-            )
+            (_, return_code, message) = self._manager_iface.UnsetKey(self._key_desc)
 
             if return_code != self._OK:
                 raise RuntimeError(
