@@ -613,7 +613,7 @@ class TopActions:
         """
         from ._data import Report
 
-        ((_, report), return_code, message) = Report.Methods.GetReport(
+        (report, return_code, message) = Report.Methods.GetReport(
             get_object(TOP_OBJECT), {"name": namespace.report_name}
         )
 

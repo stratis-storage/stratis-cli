@@ -365,17 +365,13 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         """
         Test getting a valid and invalid report.
         """
-        ((is_some, result), return_code, _) = StratisDbus.get_report(
-            "errored_pool_report"
-        )
-        self._inequality_test(is_some, dbus.Boolean(False))
+        (result, return_code, _) = StratisDbus.get_report("errored_pool_report")
         self._inequality_test(result, dbus.String(""))
         self.assertEqual(return_code, dbus.UInt16(0))
         # Test that we have received valid JSON.
         json.loads(result)
 
-        ((is_some, result), return_code, _) = StratisDbus.get_report("invalid_report")
-        self.assertEqual(is_some, dbus.Boolean(False))
+        (result, return_code, _) = StratisDbus.get_report("invalid_report")
         self.assertEqual(result, dbus.String(""))
         self._inequality_test(return_code, dbus.UInt16(0))
 

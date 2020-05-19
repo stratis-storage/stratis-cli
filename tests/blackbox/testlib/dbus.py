@@ -405,7 +405,7 @@ class StratisDbus:
         Get the report with the given name.
         :param str report_name: The name of the report
         :return: The JSON report as a string with a status code and string
-        :rtype: The D-Bus types (bs), q, and s
+        :rtype: The D-Bus types s, q, and s
         """
         iface = dbus.Interface(
             StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, StratisDbus._TOP_OBJECT),
