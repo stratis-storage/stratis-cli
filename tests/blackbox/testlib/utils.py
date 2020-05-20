@@ -189,3 +189,50 @@ class KernelKey:  # pylint: disable=attribute-defined-outside-init
             if exception_value is None:
                 raise rexc
             raise rexc from exception_value
+
+
+class RandomKeyTmpFile:
+    """
+    Generate a random passphrase and put it in a temporary file.
+    """
+
+    def __init__(self, key_bytes=32):
+        """
+        Initializer
+
+        :param int key_bytes: the desired length of the key in bytes
+        """
+        self._tmpfile = NamedTemporaryFile("wb")
+        with open("/dev/urandom", "rb") as urandom_f:
+            random_bytes = urandom_f.read(key_bytes)
+            self._tmpfile.write(random_bytes)
+            self._tmpfile.flush()
+
+    def tmpfile_name(self):
+        """
+        Get the name of the temporary file.
+        """
+        return self._tmpfile.name
+
+    def close(self):
+        """
+        Close and delete the temporary file.
+        """
+        self._tmpfile.close()
+
+    def __enter__(self):
+        """
+        For use with the "with" keyword.
+
+        :return str: the path of the file with the random key
+        """
+        return self._tmpfile.name
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        try:
+            self._tmpfile.close()
+        except Exception as error:
+            if exc_value is None:
+                raise error
+
+            raise error from exc_value

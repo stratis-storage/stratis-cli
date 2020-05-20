@@ -26,6 +26,7 @@ import unittest
 from testlib.stratis import STRATIS_CLI, clean_up
 from testlib.utils import (
     KernelKey,
+    RandomKeyTmpFile,
     exec_command,
     exec_test_command,
     fs_n,
@@ -179,6 +180,47 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         Test listing an non-existent filesystem.
         """
         self.unittest_command([STRATIS_CLI, "filesystem", "list"], 0, True, False)
+
+    def test_key_set_unset(self):
+        """
+        Test setting and unsetting a key.
+        """
+        with RandomKeyTmpFile() as fname:
+            self.unittest_command(
+                [STRATIS_CLI, "key", "set", "testkey1", "--keyfile-path", fname],
+                0,
+                True,
+                True,
+            )
+
+        self.unittest_command([STRATIS_CLI, "key", "unset", "testkey1"], 0, True, True)
+
+    def test_key_set_reset_unset(self):
+        """
+        Test setting, resetting, and unsetting a key.
+        """
+        with RandomKeyTmpFile() as first_fname, RandomKeyTmpFile() as second_fname:
+            self.unittest_command(
+                [STRATIS_CLI, "key", "set", "testkey2", "--keyfile-path", first_fname],
+                0,
+                True,
+                True,
+            )
+            self.unittest_command(
+                [
+                    STRATIS_CLI,
+                    "key",
+                    "reset",
+                    "testkey2",
+                    "--keyfile-path",
+                    second_fname,
+                ],
+                0,
+                True,
+                True,
+            )
+
+        self.unittest_command([STRATIS_CLI, "key", "unset", "testkey2"], 0, True, True)
 
     def test_pool_create(self):
         """
