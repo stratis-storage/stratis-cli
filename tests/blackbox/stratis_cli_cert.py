@@ -190,10 +190,10 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
                 [STRATIS_CLI, "key", "set", "testkey1", "--keyfile-path", fname],
                 0,
                 True,
-                False,
+                True,
             )
 
-        self.unittest_command([STRATIS_CLI, "key", "unset", "testkey1"], 0, True, False)
+        self.unittest_command([STRATIS_CLI, "key", "unset", "testkey1"], 0, True, True)
 
     def test_key_set_reset_unset(self):
         """
@@ -204,7 +204,7 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
                 [STRATIS_CLI, "key", "set", "testkey2", "--keyfile-path", first_fname],
                 0,
                 True,
-                False,
+                True,
             )
             self.unittest_command(
                 [
@@ -217,10 +217,10 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
                 ],
                 0,
                 True,
-                False,
+                True,
             )
 
-        self.unittest_command([STRATIS_CLI, "key", "unset", "testkey2"], 0, True, False)
+        self.unittest_command([STRATIS_CLI, "key", "unset", "testkey2"], 0, True, True)
 
     def test_pool_create(self):
         """
