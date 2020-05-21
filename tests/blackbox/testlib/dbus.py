@@ -151,6 +151,33 @@ class StratisDbus:
         return [blockdev_obj["Name"] for blockdev_obj in blockdev_objects]
 
     @staticmethod
+    def set_key(key_desc, temp_file):
+        """
+        Set a key
+        :param str key_desc: The key description
+        :param temp_file:
+        """
+        manager_iface = dbus.Interface(
+            StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, StratisDbus._TOP_OBJECT),
+            StratisDbus._MNGR_IFACE,
+        )
+
+        with open(temp_file.name, "r") as fd_for_dbus:
+            return manager_iface.SetKey(key_desc, fd_for_dbus.fileno(), False)
+
+    @staticmethod
+    def unset_key(key_desc):
+        """
+        Unset a key
+        """
+        manager_iface = dbus.Interface(
+            StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, StratisDbus._TOP_OBJECT),
+            StratisDbus._MNGR_IFACE,
+        )
+
+        return manager_iface.UnsetKey(key_desc)
+
+    @staticmethod
     def pool_create(pool_name, devices, key_desc):
         """
         Create a pool
