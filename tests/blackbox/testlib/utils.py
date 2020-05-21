@@ -190,6 +190,7 @@ class KernelKey:  # pylint: disable=attribute-defined-outside-init
                 raise rexc
             raise rexc from exception_value
 
+
 class RandomKeyTmpFile:
     """
     Generate a random passphrase and put it in a temporary file.
@@ -202,8 +203,8 @@ class RandomKeyTmpFile:
         :param int key_bytes: the desired length of the key in bytes
         """
         self._tmpfile = NamedTemporaryFile("wb")
-        with open("/dev/urandom", "rb") as random:
-            random_bytes = random.read(key_bytes)
+        with open("/dev/urandom", "rb") as urandom_f:
+            random_bytes = urandom_f.read(key_bytes)
             self._tmpfile.write(random_bytes)
             self._tmpfile.flush()
 

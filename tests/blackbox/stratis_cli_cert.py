@@ -186,17 +186,41 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         Test setting and unsetting a key.
         """
         with RandomKeyTmpFile() as fname:
-            self.unittest_command([STRATIS_CLI, "key", "set", "testkey1", "--keyfile-path", fname], 0, True, False)
-            self.unittest_command([STRATIS_CLI, "key", "unset", "testkey1"], 0, True, False)
+            self.unittest_command(
+                [STRATIS_CLI, "key", "set", "testkey1", "--keyfile-path", fname],
+                0,
+                True,
+                False,
+            )
+
+        self.unittest_command([STRATIS_CLI, "key", "unset", "testkey1"], 0, True, False)
 
     def test_key_set_reset_unset(self):
         """
         Test setting, resetting, and unsetting a key.
         """
         with RandomKeyTmpFile() as first_fname, RandomKeyTmpFile() as second_fname:
-            self.unittest_command([STRATIS_CLI, "key", "set", "testkey2", "--keyfile-path", first_fname], 0, True, False)
-            self.unittest_command([STRATIS_CLI, "key", "reset", "testkey2", "--keyfile-path", second_fname], 0, True, False)
-            self.unittest_command([STRATIS_CLI, "key", "unset", "testkey2"], 0, True, False)
+            self.unittest_command(
+                [STRATIS_CLI, "key", "set", "testkey2", "--keyfile-path", first_fname],
+                0,
+                True,
+                False,
+            )
+            self.unittest_command(
+                [
+                    STRATIS_CLI,
+                    "key",
+                    "reset",
+                    "testkey2",
+                    "--keyfile-path",
+                    second_fname,
+                ],
+                0,
+                True,
+                False,
+            )
+
+        self.unittest_command([STRATIS_CLI, "key", "unset", "testkey2"], 0, True, False)
 
     def test_pool_create(self):
         """
