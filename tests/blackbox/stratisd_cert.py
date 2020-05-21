@@ -172,7 +172,7 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         Test setting a key.
         """
         with open("/dev/urandom", "rb") as urandom_f:
-            _key_desc = base64.b64encode(urandom_f.read(16)).decode("utf-8")
+            key_desc = base64.b64encode(urandom_f.read(16)).decode("utf-8")
 
             with NamedTemporaryFile(mode="w") as temp_file:
                 temp_file.write("test-password")
