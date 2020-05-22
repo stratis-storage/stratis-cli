@@ -158,14 +158,12 @@ class StratisDbus:
         :param temp_file:
         """
         manager_iface = dbus.Interface(
-                StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, StratisDbus._TOP_OBJECT),
-                StratisDbus._MNGR_IFACE,
+            StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, StratisDbus._TOP_OBJECT),
+            StratisDbus._MNGR_IFACE,
         )
 
         with open(temp_file.name, "r") as fd_for_dbus:
-            return manager_iface.SetKey(
-                key_desc, fd_for_dbus.fileno(), False
-                )
+            return manager_iface.SetKey(key_desc, fd_for_dbus.fileno(), False)
 
     @staticmethod
     def unset_key(key_desc):
@@ -173,12 +171,11 @@ class StratisDbus:
         Unset a key
         """
         manager_iface = dbus.Interface(
-                StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, StratisDbus._TOP_OBJECT),
-                StratisDbus._MNGR_IFACE,
+            StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, StratisDbus._TOP_OBJECT),
+            StratisDbus._MNGR_IFACE,
         )
 
         return manager_iface.UnsetKey(key_desc)
-
 
     @staticmethod
     def pool_create(pool_name, devices, key_desc):
