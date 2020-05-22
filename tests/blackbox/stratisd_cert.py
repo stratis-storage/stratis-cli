@@ -21,6 +21,7 @@ import json
 import sys
 import time
 import unittest
+from tempfile import NamedTemporaryFile
 
 # isort: THIRDPARTY
 import dbus
@@ -166,6 +167,22 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         """
         result = StratisDbus.fs_list()
         self.assertEqual(result, {})
+
+    def test_key_set_unset(self):
+        """
+        Test setting a key.
+        """
+        key_desc = "test-description"
+
+        with NamedTemporaryFile(mode="w") as temp_file:
+            temp_file.write("test-password")
+            temp_file.flush()
+
+            self._unittest_command(
+                StratisDbus.set_key(key_desc, temp_file), dbus.UInt16(0)
+            )
+
+        self._unittest_command(StratisDbus.unset_key(key_desc), dbus.UInt16(0))
 
     def test_pool_create(self):
         """
