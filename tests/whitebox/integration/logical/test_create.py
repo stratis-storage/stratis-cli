@@ -15,93 +15,14 @@
 Test 'create'.
 """
 
-# isort: STDLIB
-import unittest
-
-# isort: FIRSTPARTY
-from dbus_client_gen import DbusClientUniqueResultError
-
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
-from stratis_cli._errors import StratisCliEngineError, StratisCliPartialChangeError
+from stratis_cli._errors import StratisCliPartialChangeError
 
 from .._misc import RUNNER, SimTestCase, device_name_list
 
 _DEVICE_STRATEGY = device_name_list(1)
 _ERROR = StratisCliErrorCodes.ERROR
-
-
-@unittest.skip("Temporarily unable to create multiple filesystems at same time")
-class CreateTestCase(SimTestCase):
-    """
-    Test creating a volume w/out a pool.
-    """
-
-    _MENU = ["--propagate", "filesystem", "create"]
-    _POOLNAME = "deadpool"
-    _VOLNAMES = ["oubliette", "mnemosyne"]
-
-    def test_creation(self):
-        """
-        Creation of the volume must fail since pool is not specified.
-        """
-        command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
-        self.check_error(DbusClientUniqueResultError, command_line, _ERROR)
-
-
-@unittest.skip("Temporarily unable to create multiple filesystems at same time")
-class Create2TestCase(SimTestCase):
-    """
-    Test creating a volume w/ a pool.
-    """
-
-    _MENU = ["--propagate", "filesystem", "create"]
-    _POOLNAME = "deadpool"
-    _VOLNAMES = ["oubliette", "mnemosyne"]
-
-    def setUp(self):
-        """
-        Start the stratisd daemon with the simulator.
-        """
-        super().setUp()
-        command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
-        RUNNER(command_line)
-
-    def test_creation(self):
-        """
-        Creation of the volume should succeed since pool is available.
-        """
-        command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
-        RUNNER(command_line)
-
-
-@unittest.skip("Temporarily unable to create multiple filesystems at same time")
-class Create3TestCase(SimTestCase):
-    """
-    Test creating a volume w/ a pool when volume of same name already exists.
-    """
-
-    _MENU = ["--propagate", "filesystem", "create"]
-    _POOLNAME = "deadpool"
-    _VOLNAMES = ["oubliette", "mnemosyne"]
-
-    def setUp(self):
-        """
-        Start the stratisd daemon with the simulator.
-        """
-        super().setUp()
-        command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
-        RUNNER(command_line)
-        command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
-        RUNNER(command_line)
-
-    def test_creation(self):
-        """
-        Creation of this volume should fail, because there is an existing
-        volume of the same name.
-        """
-        command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
-        self.check_error(StratisCliEngineError, command_line, _ERROR)
 
 
 class Create4TestCase(SimTestCase):

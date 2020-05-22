@@ -15,9 +15,6 @@
 Test 'list'.
 """
 
-# isort: STDLIB
-import unittest
-
 # isort: FIRSTPARTY
 from dbus_client_gen import DbusClientUniqueResultError
 
@@ -66,34 +63,6 @@ class List2TestCase(SimTestCase):
     def test_list(self):
         """
         Listing the volumes in an empty pool should succeed.
-        """
-        command_line = self._MENU + [self._POOLNAME]
-        RUNNER(command_line)
-
-
-@unittest.skip("Temporarily unable to create multiple filesystems at same time")
-class List3TestCase(SimTestCase):
-    """
-    Test listing volumes in an existing pool with some volumes.
-    """
-
-    _MENU = ["--propagate", "filesystem", "list"]
-    _POOLNAME = "deadpool"
-    _VOLUMES = ["livery", "liberty", "library"]
-
-    def setUp(self):
-        """
-        Start the stratisd daemon with the simulator.
-        """
-        super().setUp()
-        command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
-        RUNNER(command_line)
-        command_line = ["filesystem", "create", self._POOLNAME] + self._VOLUMES
-        RUNNER(command_line)
-
-    def test_list(self):
-        """
-        Listing the volumes in a non-empty pool should succeed.
         """
         command_line = self._MENU + [self._POOLNAME]
         RUNNER(command_line)
