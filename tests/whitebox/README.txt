@@ -6,7 +6,8 @@ There are three directories containing three types of tests:
 * integration - straightforward tests of functionality
 
 The project Makefile has make targets for running these different categories
-of tests. In general, all targets require pytest for test discovery.
+of tests.
+
 As is usual with Python projects, it is essential to set the PYTHONPATH
 environment variable correctly when running the tests.
 
