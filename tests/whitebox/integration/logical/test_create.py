@@ -15,15 +15,9 @@
 Test 'create'.
 """
 
-# isort: STDLIB
-import unittest
-
-# isort: FIRSTPARTY
-from dbus_client_gen import DbusClientUniqueResultError
-
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
-from stratis_cli._errors import StratisCliEngineError, StratisCliPartialChangeError
+from stratis_cli._errors import StratisCliPartialChangeError
 
 from .._misc import RUNNER, SimTestCase, device_name_list
 

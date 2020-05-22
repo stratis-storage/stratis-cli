@@ -15,9 +15,6 @@
 Test 'list'.
 """
 
-# isort: STDLIB
-import unittest
-
 # isort: FIRSTPARTY
 from dbus_client_gen import DbusClientUniqueResultError
 
