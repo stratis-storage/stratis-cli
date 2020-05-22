@@ -21,6 +21,7 @@ import json
 import sys
 import time
 import unittest
+from tempfile import NamedTemporaryFile
 
 # isort: THIRDPARTY
 import dbus
@@ -171,16 +172,17 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         """
         Test setting a key.
         """
-        with open("/dev/urandom", "rb") as urandom_f:
-            key_desc = base64.b64encode(urandom_f.read(16)).decode("utf-8")
+        key_desc = "test-description"
 
-            with NamedTemporaryFile(mode="w") as temp_file:
-                temp_file.write("test-password")
-                temp_file.flush()
+        with NamedTemporaryFile(mode="w") as temp_file:
+            temp_file.write("test-password")
+            temp_file.flush()
 
-                self._unittest_command(StratisDbus.set_key(key_desc, temp_file))
-            
-            self._unittest_command(StratisDbus.unset_key(key_desc))
+            self._unittest_command(
+                StratisDbus.set_key(key_desc, temp_file), dbus.UInt16(0)
+            )
+
+        self._unittest_command(StratisDbus.unset_key(key_desc), dbus.UInt16(0))
 
     def test_pool_create(self):
         """
