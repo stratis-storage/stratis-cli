@@ -179,6 +179,12 @@ EXAMPLES
 ====
 stratis pool create mypool /dev/sdb /dev/sdc
 ====
+.Creating an encrypted pool
+====
+stratis key set --capture-key someKeyDescription
+
+stratis pool create --key-desc someKeyDescription mypool /dev/sdb /dev/sdc
+====
 .Creating a filesystem from a pool
 ====
 stratis filesystem create mypool data1
