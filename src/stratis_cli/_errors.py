@@ -15,6 +15,9 @@
 Error heirarchy for stratis cli.
 """
 
+# isort: STDLIB
+import os
+
 from ._stratisd_constants import (
     BLOCK_DEV_TIER_TO_NAME,
     STRATISD_ERROR_TO_NAME,
@@ -426,4 +429,33 @@ class StratisCliStratisdVersionError(StratisCliRuntimeError):
             self.actual_version,
             self.minimum_version,
             self.maximum_version,
+        )
+
+
+class StratisCliAggregateError(StratisCliRuntimeError):
+    """
+    Raised when multiple errors have occured in a looping operation.
+    """
+
+    def __init__(self, operation, type_, errors):
+        """
+        Initializer.
+        :param str operation: the looping operation that failed.
+        :param str type_: the type of the resource for which the operation failed.
+        :param errors: list of all errors that occurred during the looping operation.
+        :type errors: list of Exception
+        """
+        # pylint: disable=super-init-not-called
+        self.operation = operation
+        self.type = type_
+        self.errors = errors
+
+    def __str__(self):
+        return (
+            "The operation '%s' on a resource of type %s failed. The following"
+            "errors occurred:\n%s"
+        ) % (
+            self.operation,
+            self.type,
+            os.linesep.join([str(error) for error in self.errors]),
         )

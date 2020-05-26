@@ -139,4 +139,11 @@ POOL_SUBCMDS = [
             func=TopActions.add_cache_devices,
         ),
     ),
+    (
+        "unlock",
+        dict(
+            help="Unlock all of the currently locked encrypted pools",
+            func=TopActions.unlock_pools,
+        ),
+    ),
 ]

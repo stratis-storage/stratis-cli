@@ -52,6 +52,9 @@ pool init-cache <pool_name> <blockdev> [<blockdev>..]::
 	 drives, such as SSDs, are used for this purpose.
 pool add-cache <pool_name> <blockdev> [<blockdev>..]::
 	 Add one or more blockdevs to an existing pool with an initialized cache.
+pool unlock::
+     Unlock all devices that are part of an encrypted pool registered with stratisd
+     but that have not yet been opened.
 filesystem create <pool_name> <fs_name> [<fs_name>..]::
 	   Create one or more filesystems from the specified pool.
            NOTE: There is a temporary restriction on the number of filesystems
