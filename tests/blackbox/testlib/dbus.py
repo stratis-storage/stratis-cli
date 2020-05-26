@@ -20,7 +20,25 @@ import os
 # isort: THIRDPARTY
 import dbus
 
-from .utils import TEST_PREF
+from .utils import random_string
+
+_TEST_PREF = os.getenv("STRATIS_UT_PREFIX", "STRATI$_DE$TROY_ME!_")
+
+
+def p_n():
+    """
+    Return a random pool name
+    :return: Random String
+    """
+    return _TEST_PREF + "pool" + random_string()
+
+
+def fs_n():
+    """
+    Return a random FS name
+    :return: Random String
+    """
+    return _TEST_PREF + "fs" + random_string()
 
 
 # This function is an exact copy of the get_timeout function in
@@ -129,7 +147,7 @@ class StratisDbus:
             obj_data[StratisDbus._POOL_IFACE]
             for _, obj_data in StratisDbus.get_managed_objects().items()
             if StratisDbus._POOL_IFACE in obj_data
-            and obj_data[StratisDbus._POOL_IFACE]["Name"].startswith(TEST_PREF)
+            and obj_data[StratisDbus._POOL_IFACE]["Name"].startswith(_TEST_PREF)
         ]
 
         return [pool_obj["Name"] for pool_obj in pool_objects]
@@ -145,7 +163,7 @@ class StratisDbus:
             obj_data[StratisDbus._BLKDEV_IFACE]
             for _, obj_data in StratisDbus.get_managed_objects().items()
             if StratisDbus._BLKDEV_IFACE in obj_data
-            and obj_data[StratisDbus._BLKDEV_IFACE]["Name"].startswith(TEST_PREF)
+            and obj_data[StratisDbus._BLKDEV_IFACE]["Name"].startswith(_TEST_PREF)
         ]
 
         return [blockdev_obj["Name"] for blockdev_obj in blockdev_objects]
@@ -212,7 +230,7 @@ class StratisDbus:
             path: obj_data[StratisDbus._POOL_IFACE]
             for path, obj_data in StratisDbus.get_managed_objects().items()
             if StratisDbus._POOL_IFACE in obj_data
-            and obj_data[StratisDbus._POOL_IFACE]["Name"].startswith(TEST_PREF)
+            and obj_data[StratisDbus._POOL_IFACE]["Name"].startswith(_TEST_PREF)
         }
 
         pool_paths = [
@@ -242,14 +260,14 @@ class StratisDbus:
             obj_data[StratisDbus._FS_IFACE]
             for _, obj_data in objects
             if StratisDbus._FS_IFACE in obj_data
-            and obj_data[StratisDbus._FS_IFACE]["Name"].startswith(TEST_PREF)
+            and obj_data[StratisDbus._FS_IFACE]["Name"].startswith(_TEST_PREF)
         ]
 
         pool_path_to_name = {
             obj: obj_data[StratisDbus._POOL_IFACE]["Name"]
             for obj, obj_data in objects
             if StratisDbus._POOL_IFACE in obj_data
-            and obj_data[StratisDbus._POOL_IFACE]["Name"].startswith(TEST_PREF)
+            and obj_data[StratisDbus._POOL_IFACE]["Name"].startswith(_TEST_PREF)
         }
 
         return {
@@ -333,13 +351,13 @@ class StratisDbus:
             path: obj_data[StratisDbus._POOL_IFACE]
             for path, obj_data in objects
             if StratisDbus._POOL_IFACE in obj_data
-            and obj_data[StratisDbus._POOL_IFACE]["Name"].startswith(TEST_PREF)
+            and obj_data[StratisDbus._POOL_IFACE]["Name"].startswith(_TEST_PREF)
         }
         fs_objects = {
             path: obj_data[StratisDbus._FS_IFACE]
             for path, obj_data in objects
             if StratisDbus._FS_IFACE in obj_data
-            and obj_data[StratisDbus._FS_IFACE]["Name"].startswith(TEST_PREF)
+            and obj_data[StratisDbus._FS_IFACE]["Name"].startswith(_TEST_PREF)
         }
 
         pool_paths = [
@@ -377,7 +395,7 @@ class StratisDbus:
             path: obj_data[StratisDbus._FS_IFACE]
             for path, obj_data in objects
             if StratisDbus._FS_IFACE in obj_data
-            and obj_data[StratisDbus._FS_IFACE]["Name"].startswith(TEST_PREF)
+            and obj_data[StratisDbus._FS_IFACE]["Name"].startswith(_TEST_PREF)
         }
 
         fs_paths = [

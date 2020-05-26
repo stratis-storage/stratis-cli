@@ -24,25 +24,6 @@ from tempfile import NamedTemporaryFile
 # isort: THIRDPARTY
 import psutil
 
-# Name prefix, so that we hopefully don't destroy any end user data by mistake!
-TEST_PREF = os.getenv("STRATIS_UT_PREFIX", "STRATI$_DE$TROY_ME!_")
-
-
-def p_n():
-    """
-    Return a random pool name
-    :return: Random String
-    """
-    return TEST_PREF + "pool" + random_string()
-
-
-def fs_n():
-    """
-    Return a random FS name
-    :return: Random String
-    """
-    return TEST_PREF + "fs" + random_string()
-
 
 def random_string(length=4):
     """

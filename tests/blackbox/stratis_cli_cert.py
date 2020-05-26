@@ -23,13 +23,12 @@ import time
 import unittest
 
 # isort: THIRDPARTY
+from testlib.dbus import fs_n, p_n
 from testlib.infra import KernelKey, clean_up
 from testlib.utils import (
     RandomKeyTmpFile,
     exec_command,
     exec_test_command,
-    fs_n,
-    p_n,
     process_exists,
 )
 
