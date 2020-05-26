@@ -146,18 +146,41 @@ def _fetch_keylist_property(proxy):
     """
     Fetch the KeyList property from stratisd.
     :param proxy: proxy to the top object in stratisd
-    :return: list of keys in the kernel keyring
+    :return: list of key descriptions
     :rtype: list of str
+    :raises StratisCliPropertyNotFoundError:
+    :raises StratisCliEnginePropertyError:
+    """
+    return _fetch_property(proxy, "KeyList")
+
+
+def _fetch_locked_pools_property(proxy):
+    """
+    Fetch the LockedPoolUuids property from stratisd.
+    :param proxy: proxy to the top object in stratisd
+    :return: list of pool UUIDs as strings
+    :rtype: list of str
+    :raises StratisCliPropertyNotFoundError:
+    :raises StratisCliEnginePropertyError:
+    """
+    return _fetch_property(proxy, "LockedPoolUuids")
+
+
+def _fetch_property(proxy, property_name):
+    """
+    Fetch a property from stratisd.
+    :param proxy: proxy to the top object in stratisd
+    :param str property_name: name of the property to fetch
+    :return: value associated with the requested property name
     :raises StratisCliPropertyNotFoundError:
     :raises StratisCliEnginePropertyError:
     """
     from ._data import FetchProperties
 
-    key_list_property_name = "KeyList"
-    keys_properties = FetchProperties.Methods.GetProperties(
-        proxy, {"properties": [key_list_property_name]}
+    properties = FetchProperties.Methods.GetProperties(
+        proxy, {"properties": [property_name]}
     )
-    return fetch_property(keys_properties, key_list_property_name)
+    return fetch_property(properties, property_name)
 
 
 def _add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
@@ -760,3 +783,35 @@ class TopActions:
         print_table(
             ["Key Description"], sorted(key_list, key=lambda entry: entry[0]), ["<"]
         )
+
+    @staticmethod
+    def unlock_pools(_):
+        """
+        Unlock all of the encrypted pools that have been detected by the daemon
+        but are still locked.
+        """
+        from ._data import Manager
+
+        proxy = get_object(TOP_OBJECT)
+
+        pool_uuid_list = _fetch_locked_pools_property(proxy)
+        if pool_uuid_list == []:
+            raise StratisCliNoChangeError("unlock", "pools")
+
+        # This block is not covered as it would require a relatively complicated
+        # simulation in the stratisd sim_engine.
+        for uuid in pool_uuid_list:  # pragma: no cover
+            ((is_some, _), return_code, message) = Manager.Methods.UnlockPool(
+                proxy, {"pool_uuid": uuid}
+            )
+
+            if return_code != StratisdErrors.OK:  # pragma: no cover
+                raise StratisCliEngineError(return_code, message)
+
+            if not is_some:
+                raise StratisCliIncoherenceError(
+                    (
+                        "stratisd reported that some existing pools are locked but "
+                        "no new pools were unlocked during this operation"
+                    )
+                )
