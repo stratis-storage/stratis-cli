@@ -83,7 +83,7 @@ class LogicalActions:
             get_object(pool_object_path), {"specs": list(requested_names)}
         )
 
-        if return_code != StratisdErrors.OK:  # pragma: no cover
+        if return_code != StratisdErrors.OK:
             raise StratisCliEngineError(return_code, message)
 
         if not created or len(list_created) < len(requested_names):  # pragma: no cover
