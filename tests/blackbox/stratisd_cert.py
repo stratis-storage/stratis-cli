@@ -25,8 +25,8 @@ from tempfile import NamedTemporaryFile
 
 # isort: THIRDPARTY
 import dbus
-from testlib.dbus import StratisDbus, clean_up
-from testlib.utils import KernelKey, exec_command, fs_n, p_n, process_exists
+from testlib.dbus import KernelKey, StratisDbus, clean_up
+from testlib.utils import exec_command, fs_n, p_n, process_exists
 
 
 def _raise_error_exception(return_code, msg, return_value_exists):

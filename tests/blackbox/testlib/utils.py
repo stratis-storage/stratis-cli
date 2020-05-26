@@ -15,7 +15,6 @@
 Utility functions for blackbox testing.
 """
 # isort: STDLIB
-import base64
 import os
 import random
 import string
@@ -23,7 +22,6 @@ from subprocess import PIPE, Popen
 from tempfile import NamedTemporaryFile
 
 # isort: THIRDPARTY
-import dbus
 import psutil
 
 # Name prefix, so that we hopefully don't destroy any end user data by mistake!
@@ -123,72 +121,6 @@ def exec_test_command(cmd):
         bytes(result[0]).decode("utf-8"),
         bytes(result[1]).decode("utf-8"),
     )
-
-
-class KernelKey:  # pylint: disable=attribute-defined-outside-init
-    """
-    A handle for operating on keys in the kernel keyring. The specified key will
-    be available for the lifetime of the test when used with the Python with
-    keyword and will be cleaned up at the end of the scope of the with block.
-    """
-
-    _OK = 0
-    _BUS = dbus.SystemBus()
-    _BUS_NAME = "org.storage.stratis2"
-    _TOP_OBJECT = "/org/storage/stratis2"
-    _MANAGER_IFACE = "org.storage.stratis2.Manager.r1"
-
-    def __init__(self, key_data):
-        """
-        Initialize a key with the provided key data (passphrase).
-        :param bytes key_data: The desired key contents
-        """
-        self._key_data = key_data
-
-        self._top_object = self._BUS.get_object(self._BUS_NAME, self._TOP_OBJECT)
-        self._manager_iface = dbus.Interface(self._top_object, self._MANAGER_IFACE)
-
-    def __enter__(self):
-        """
-        This method allows KernelKey to be used with the "with" keyword.
-        :return: The key description that can be used to access the
-                 provided key data in __init__.
-        :raises RuntimeError: if setting the key using the stratisd D-Bus API
-                              returns a non-zero return code
-        """
-        with open("/dev/urandom", "rb") as urandom_f:
-            self._key_desc = base64.b64encode(urandom_f.read(16)).decode("utf-8")
-
-        with NamedTemporaryFile(mode="w") as temp_file:
-            temp_file.write(self._key_data)
-            temp_file.flush()
-
-            with open(temp_file.name, "r") as fd_for_dbus:
-                (_, return_code, message) = self._manager_iface.SetKey(
-                    self._key_desc, fd_for_dbus.fileno(), False
-                )
-
-        if return_code != self._OK:
-            raise RuntimeError(
-                "Setting the key using stratisd failed with an error: %s" % message
-            )
-
-        return self._key_desc
-
-    def __exit__(self, exception_type, exception_value, traceback):
-        message = None
-        try:
-            (_, return_code, message) = self._manager_iface.UnsetKey(self._key_desc)
-
-            if return_code != self._OK:
-                raise RuntimeError(
-                    "Unsetting the key using stratisd failed with an error: %s"
-                    % message
-                )
-        except Exception as rexc:
-            if exception_value is None:
-                raise rexc
-            raise rexc from exception_value
 
 
 class RandomKeyTmpFile:

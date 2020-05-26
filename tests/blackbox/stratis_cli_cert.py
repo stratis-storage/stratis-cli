@@ -23,10 +23,9 @@ import time
 import unittest
 
 # isort: THIRDPARTY
-from testlib.dbus import clean_up
+from testlib.dbus import KernelKey, clean_up
 from testlib.stratis import STRATIS_CLI
 from testlib.utils import (
-    KernelKey,
     RandomKeyTmpFile,
     exec_command,
     exec_test_command,
