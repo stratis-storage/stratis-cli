@@ -50,10 +50,20 @@ def clean_up():
     for name in StratisDbus.pool_list():
         StratisDbus.pool_destroy(name)
 
+    # Unset all Stratis keys
+    for key in StratisDbus.get_keys():
+        StratisDbus.unset_key(key)
+
     remnant_pools = StratisDbus.pool_list()
     if remnant_pools != []:
         raise RuntimeError(
             "clean_up failed; remnant pools: %s" % ", ".join(remnant_pools)
+        )
+
+    remnant_keys = StratisDbus.get_keys()
+    if remnant_keys != []:
+        raise RuntimeError(
+            "clean_up failed: remnant keys: %s" % ", ".join(remnant_keys)
         )
 
 

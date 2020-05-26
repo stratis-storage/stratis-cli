@@ -101,6 +101,7 @@ class StratisDbus:
     _POOL_IFACE = "org.storage.stratis2.pool.r1"
     _FS_IFACE = "org.storage.stratis2.filesystem"
     _BLKDEV_IFACE = "org.storage.stratis2.blockdev"
+    _FETCH_PROPERTIES_IFACE = "org.storage.stratis2.FetchProperties.r1"
 
     _DBUS_TIMEOUT_SECONDS = 120
     _TIMEOUT = _get_timeout(
@@ -194,6 +195,30 @@ class StratisDbus:
         )
 
         return manager_iface.UnsetKey(key_desc)
+
+    @staticmethod
+    def get_keys():
+        """
+        Return a list of the key descriptions of all keys with a
+        distinguishing Stratis prefix.
+
+        :returns: a list of key descriptions
+        :rtype: list of str
+        :raises RuntimeError: if key descriptions could not be returned
+        """
+        prop_name = "KeyList"
+        iface = dbus.Interface(
+            StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, StratisDbus._TOP_OBJECT),
+            StratisDbus._FETCH_PROPERTIES_IFACE,
+        )
+        result = iface.GetProperties([prop_name], timeout=StratisDbus._TIMEOUT)
+        (success, key_descriptions) = result[prop_name]
+        if not success:
+            raise RuntimeError(
+                "The daemon encountered an error while getting the Stratis key descriptions: %s"
+                % key_descriptions
+            )
+        return key_descriptions
 
     @staticmethod
     def pool_create(pool_name, devices, key_desc):
