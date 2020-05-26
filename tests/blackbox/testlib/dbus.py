@@ -15,14 +15,12 @@
 DBus methods for blackbox testing.
 """
 # isort: STDLIB
-import base64
 import os
-from tempfile import NamedTemporaryFile
 
 # isort: THIRDPARTY
 import dbus
 
-from .utils import TEST_PREF, umount_mdv
+from .utils import TEST_PREF
 
 
 # This function is an exact copy of the get_timeout function in
@@ -425,83 +423,3 @@ class StratisDbus:
             StratisDbus._REPORT_IFACE,
         )
         return iface.GetReport(report_name, timeout=StratisDbus._TIMEOUT)
-
-
-def clean_up():
-    """
-    Try to clean up after a test failure.
-
-    :return: None
-    """
-    umount_mdv()
-
-    # Remove FS
-    for name, pool_name in StratisDbus.fs_list().items():
-        StratisDbus.fs_destroy(pool_name, name)
-
-    # Remove Pools
-    for name in StratisDbus.pool_list():
-        StratisDbus.pool_destroy(name)
-
-    remnant_pools = StratisDbus.pool_list()
-    if remnant_pools != []:
-        raise RuntimeError(
-            "testlib dbus: clean_up failed; remnant pools: %s"
-            % ", ".join(remnant_pools)
-        )
-
-
-class KernelKey:  # pylint: disable=attribute-defined-outside-init
-    """
-    A handle for operating on keys in the kernel keyring. The specified key will
-    be available for the lifetime of the test when used with the Python with
-    keyword and will be cleaned up at the end of the scope of the with block.
-    """
-
-    _OK = 0
-
-    def __init__(self, key_data):
-        """
-        Initialize a key with the provided key data (passphrase).
-        :param bytes key_data: The desired key contents
-        """
-        self._key_data = key_data
-
-    def __enter__(self):
-        """
-        This method allows KernelKey to be used with the "with" keyword.
-        :return: The key description that can be used to access the
-                 provided key data in __init__.
-        :raises RuntimeError: if setting the key using the stratisd D-Bus API
-                              returns a non-zero return code
-        """
-        with open("/dev/urandom", "rb") as urandom_f:
-            self._key_desc = base64.b64encode(urandom_f.read(16)).decode("utf-8")
-
-        with NamedTemporaryFile(mode="w") as temp_file:
-            temp_file.write(self._key_data)
-            temp_file.flush()
-
-            (_, return_code, message) = StratisDbus.set_key(self._key_desc, temp_file)
-
-        if return_code != KernelKey._OK:
-            raise RuntimeError(
-                "Setting the key using stratisd failed with an error: %s" % message
-            )
-
-        return self._key_desc
-
-    def __exit__(self, exception_type, exception_value, traceback):
-        message = None
-        try:
-            (_, return_code, message) = StratisDbus.unset_key(self._key_desc)
-
-            if return_code != KernelKey._OK:
-                raise RuntimeError(
-                    "Unsetting the key using stratisd failed with an error: %s"
-                    % message
-                )
-        except Exception as rexc:
-            if exception_value is None:
-                raise rexc
-            raise rexc from exception_value

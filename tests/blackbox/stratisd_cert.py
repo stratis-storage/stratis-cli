@@ -25,7 +25,8 @@ from tempfile import NamedTemporaryFile
 
 # isort: THIRDPARTY
 import dbus
-from testlib.dbus import KernelKey, StratisDbus, clean_up
+from testlib.dbus import StratisDbus
+from testlib.infra import KernelKey, clean_up
 from testlib.utils import exec_command, fs_n, p_n, process_exists
 
 
