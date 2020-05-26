@@ -413,22 +413,6 @@ class StratisDbus:
         )
 
     @staticmethod
-    def destroy_all():
-        """
-        Destroys all Stratis FS and pools!
-        :return: None
-        """
-        umount_mdv()
-
-        # Remove FS
-        for name, pool_name in StratisDbus.fs_list().items():
-            StratisDbus.fs_destroy(pool_name, name)
-
-        # Remove Pools
-        for name in StratisDbus.pool_list():
-            StratisDbus.pool_destroy(name)
-
-    @staticmethod
     def get_report(report_name):
         """
         Get the report with the given name.
@@ -449,7 +433,16 @@ def clean_up():
 
     :return: None
     """
-    StratisDbus.destroy_all()
+    umount_mdv()
+
+    # Remove FS
+    for name, pool_name in StratisDbus.fs_list().items():
+        StratisDbus.fs_destroy(pool_name, name)
+
+    # Remove Pools
+    for name in StratisDbus.pool_list():
+        StratisDbus.pool_destroy(name)
+
     remnant_pools = StratisDbus.pool_list()
     if remnant_pools != []:
         raise RuntimeError(
