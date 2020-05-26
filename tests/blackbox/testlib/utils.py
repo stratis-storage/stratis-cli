@@ -74,18 +74,6 @@ def process_exists(name):
     return None
 
 
-def umount_mdv():
-    """
-    Locate and umount any stratis mdv mounts
-    :return: None
-    """
-    with open("/proc/self/mounts", "r") as mounts:
-        for line in mounts.readlines():
-            if "/stratis/.mdv-" in line:
-                mountpoint = line.split()[1]
-                exec_command(["umount", mountpoint])
-
-
 def exec_command(cmd):
     """
     Executes the specified infrastructure command.

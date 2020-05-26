@@ -19,7 +19,19 @@ import base64
 from tempfile import NamedTemporaryFile
 
 from .dbus import StratisDbus
-from .utils import umount_mdv
+from .utils import exec_command
+
+
+def umount_mdv():
+    """
+    Locate and umount any stratis mdv mounts
+    :return: None
+    """
+    with open("/proc/self/mounts", "r") as mounts:
+        for line in mounts.readlines():
+            if "/stratis/.mdv-" in line:
+                mountpoint = line.split()[1]
+                exec_command(["umount", mountpoint])
 
 
 def clean_up():
