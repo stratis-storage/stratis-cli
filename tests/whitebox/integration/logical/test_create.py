@@ -17,12 +17,37 @@ Test 'create'.
 
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
-from stratis_cli._errors import StratisCliPartialChangeError
+from stratis_cli._errors import StratisCliEngineError, StratisCliPartialChangeError
 
 from .._misc import RUNNER, SimTestCase, device_name_list
 
 _DEVICE_STRATEGY = device_name_list(1)
 _ERROR = StratisCliErrorCodes.ERROR
+
+
+class Create2TestCase(SimTestCase):
+    """
+    Test creating two volumes w/ a pool.
+    """
+
+    _MENU = ["--propagate", "filesystem", "create"]
+    _POOLNAME = "deadpool"
+    _VOLNAMES = ["oubliette", "mnemosyne"]
+
+    def setUp(self):
+        """
+        Start the stratisd daemon with the simulator.
+        """
+        super().setUp()
+        command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
+        RUNNER(command_line)
+
+    def test_creation(self):
+        """
+        Creation of two volumes at once should fail.
+        """
+        command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
+        self.check_error(StratisCliEngineError, command_line, _ERROR)
 
 
 class Create4TestCase(SimTestCase):
