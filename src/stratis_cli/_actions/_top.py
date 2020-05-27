@@ -811,7 +811,7 @@ class TopActions:
             if not is_some:
                 raise StratisCliIncoherenceError(
                     (
-                        "stratisd reported that some existing pools are locked but "
-                        "no new pools were unlocked during this operation"
+                        "stratisd reported that some existing devices are locked but "
+                        "no new devices were unlocked during this operation"
                     )
                 )
