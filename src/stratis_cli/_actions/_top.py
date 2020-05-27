@@ -27,6 +27,7 @@ from tty import setcbreak
 from justbytes import Range
 
 from .._errors import (
+    StratisCliAggregateError,
     StratisCliEngineError,
     StratisCliIncoherenceError,
     StratisCliInUseOtherTierError,
@@ -789,6 +790,9 @@ class TopActions:
         """
         Unlock all of the encrypted pools that have been detected by the daemon
         but are still locked.
+        :raises StratisCliIncoherenceError:
+        :raises StratisCliNoChangeError:
+        :raises StratisCliAggregateError:
         """
         from ._data import Manager
 
@@ -798,6 +802,7 @@ class TopActions:
         if pool_uuid_list == []:
             raise StratisCliNoChangeError("unlock", "pools")
 
+        errors = []
         # This block is not covered as it would require a relatively complicated
         # simulation in the stratisd sim_engine.
         for uuid in pool_uuid_list:  # pragma: no cover
@@ -806,7 +811,7 @@ class TopActions:
             )
 
             if return_code != StratisdErrors.OK:  # pragma: no cover
-                raise StratisCliEngineError(return_code, message)
+                errors.append(StratisCliEngineError(return_code, message))
 
             if not is_some:
                 raise StratisCliIncoherenceError(
@@ -815,3 +820,6 @@ class TopActions:
                         "no new devices were unlocked during this operation"
                     )
                 )
+
+        if errors != []:
+            raise StratisCliAggregateError("unlock", "device", errors)
