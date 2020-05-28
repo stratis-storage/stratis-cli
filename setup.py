@@ -1,26 +1,29 @@
+"""
+Python packaging file for setup tools.
+"""
+
 # isort: STDLIB
 import os
-import sys
 
 # isort: THIRDPARTY
 import setuptools
 
-if sys.version_info[0] < 3:
-    from codecs import open
-
 
 def local_file(name):
+    """
+    Function to obtain the relative path of a filename.
+    """
     return os.path.relpath(os.path.join(os.path.dirname(__file__), name))
 
 
 README = local_file("README.rst")
 
 with open(local_file("src/stratis_cli/_version.py")) as o:
-    exec(o.read())
+    exec(o.read())  # pylint: disable=exec-used
 
 setuptools.setup(
     name="stratis-cli",
-    version=__version__,
+    version=__version__,  # pylint: disable=undefined-variable
     author="Anne Mulhern",
     author_email="amulhern@redhat.com",
     description="prototype stratis cli",

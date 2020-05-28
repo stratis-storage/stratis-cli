@@ -3,6 +3,7 @@ UNITTEST_OPTS = --verbose
 .PHONY: lint
 lint:
 	./check.py check.py
+	./check.py setup.py
 	./check.py bin/stratis
 	./check.py src/stratis_cli
 	./check.py tests/blackbox/stratis_cli_cert.py

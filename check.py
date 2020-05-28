@@ -15,6 +15,11 @@ ARG_MAP = {
         "--disable=I",
         "--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}'",
     ],
+    "setup.py": [
+        "--reports=no",
+        "--disable=I",
+        "--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}'",
+    ],
     "src/stratis_cli": [
         "--reports=no",
         "--disable=I",
