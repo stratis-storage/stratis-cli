@@ -16,8 +16,8 @@ Methods and classes that do infrastructure tasks.
 """
 # isort: STDLIB
 import base64
-from tempfile import NamedTemporaryFile
 import os
+from tempfile import NamedTemporaryFile
 
 # isort: THIRDPARTY
 import dbus
@@ -129,8 +129,10 @@ class KernelKey:  # pylint: disable=attribute-defined-outside-init
 
 def test_permissions(dbus_method, *args, permissions):
     """
-    Permissions: True if should fail with dropped permissions,
-    False if should succeed with dropped permissions.
+    Test running dbus_method with and without root permissions.
+    param dbus_method: StratisDbus wrapper method
+    param bool permissions: True if dbus_method needs root permissions to succeed.
+                            False if dbus_method should succeed without root permissions.
     """
     _ROOT = 0
     _NON_ROOT = 1
