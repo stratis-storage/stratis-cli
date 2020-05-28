@@ -145,19 +145,20 @@ def test_permissions(dbus_method, *args, permissions):
             % euid
         )
     dbus_method(*args)
-    StratisDbus.close_connection()
+    StratisDbus.reconnect()
 
     os.seteuid(_NON_ROOT)
     try:
         dbus_method(*args)
-    except dbus.exceptions.DBusException as exception:
-        if exception.get_dbus_name() == "org.freedesktop.DBus.Error.AccessDenied":
+    except dbus.exceptions.DBusException as err:
+        if err.get_dbus_name() == "org.freedesktop.DBus.Error.AccessDenied":
             _PERMISSIONS = True
         else:
-            raise exception
-    except Exception as exception:
+            os.seteuid(_ROOT)
+            raise err
+    except Exception as err:
         os.seteuid(_ROOT)
-        raise exception
+        raise err
 
     os.seteuid(_ROOT)
     assert _PERMISSIONS == permissions

@@ -468,8 +468,9 @@ class StratisDbus:
         return iface.GetReport(report_name, timeout=StratisDbus._TIMEOUT)
 
     @staticmethod
-    def close_connection():
+    def reconnect():
         """
-        Close bus connection.
+        Close and reopen bus connection.
         """
         StratisDbus._BUS.close()
+        StratisDbus._BUS = dbus.SystemBus()
