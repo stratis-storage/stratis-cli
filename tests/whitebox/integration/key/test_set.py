@@ -20,7 +20,7 @@ from stratis_cli import StratisCliErrorCodes
 from stratis_cli._errors import StratisCliEngineError, StratisCliNameConflictError
 
 from .._keyutils import RandomKeyTmpFile
-from .._misc import RUNNER, SimTestCase
+from .._misc import RUNNER, TEST_RUNNER, SimTestCase
 
 _ERROR = StratisCliErrorCodes.ERROR
 
@@ -39,7 +39,7 @@ class TestKeySet(SimTestCase):
         """
         with RandomKeyTmpFile() as fname:
             command_line = self._MENU + [self._KEYNAME, "--keyfile-path", fname]
-            RUNNER(command_line)
+            TEST_RUNNER(command_line)
 
     def test_set_conflict(self):
         """

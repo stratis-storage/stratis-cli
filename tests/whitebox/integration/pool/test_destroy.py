@@ -22,7 +22,7 @@ from dbus_client_gen import DbusClientUniqueResultError
 from stratis_cli import StratisCliErrorCodes
 from stratis_cli._errors import StratisCliEngineError
 
-from .._misc import RUNNER, SimTestCase, device_name_list
+from .._misc import RUNNER, TEST_RUNNER, SimTestCase, device_name_list
 
 _DEVICE_STRATEGY = device_name_list(1)
 _ERROR = StratisCliErrorCodes.ERROR
@@ -67,7 +67,7 @@ class Destroy2TestCase(SimTestCase):
         The pool was just created, so must be destroyable.
         """
         command_line = self._MENU + [self._POOLNAME]
-        RUNNER(command_line)
+        TEST_RUNNER(command_line)
 
 
 class Destroy3TestCase(SimTestCase):
@@ -102,6 +102,6 @@ class Destroy3TestCase(SimTestCase):
         This should succeed since the filesystem is removed first.
         """
         command_line = ["filesystem", "destroy", self._POOLNAME, self._VOLNAME]
-        RUNNER(command_line)
+        TEST_RUNNER(command_line)
         command_line = self._MENU + [self._POOLNAME]
-        RUNNER(command_line)
+        TEST_RUNNER(command_line)

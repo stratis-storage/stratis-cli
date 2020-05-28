@@ -20,7 +20,7 @@ from stratis_cli import StratisCliErrorCodes
 from stratis_cli._errors import StratisCliNoChangeError
 
 from .._keyutils import RandomKeyTmpFile
-from .._misc import RUNNER, SimTestCase
+from .._misc import RUNNER, TEST_RUNNER, SimTestCase
 
 _ERROR = StratisCliErrorCodes.ERROR
 
@@ -45,7 +45,7 @@ class TestKeyUnset(SimTestCase):
         Unsetting should succeed.
         """
         command_line = self._MENU + [self._KEYNAME]
-        RUNNER(command_line)
+        TEST_RUNNER(command_line)
 
     def test_unset_does_not_exist(self):
         """

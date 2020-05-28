@@ -170,3 +170,29 @@ class SimTestCase(RunTestCase):
 
 
 RUNNER = run()
+
+
+class StratisCliTestRunError(AssertionError):
+    """
+    Exception that occurs after a TEST_RUNNER failure.
+    """
+
+    def __str__(self):
+        return "Unexpected failure of command-line call in test"
+
+
+def test_runner(command_line):
+    """
+    Execute the RUNNER method, and if it encounters a StratisCliActionError,
+    raise a StratisCliTestRunError to display the exception contents.
+
+    :param command_line: the command line arguments
+    :type command_line: list
+    """
+    try:
+        RUNNER(command_line)
+    except StratisCliActionError as err:
+        raise StratisCliTestRunError from err
+
+
+TEST_RUNNER = test_runner
