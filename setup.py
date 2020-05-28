@@ -26,12 +26,12 @@ setuptools.setup(
     version=__version__,  # pylint: disable=undefined-variable
     author="Anne Mulhern",
     author_email="amulhern@redhat.com",
-    description="prototype stratis cli",
+    description="Stratis CLI",
     long_description=open(README, encoding="utf-8").read(),
     platforms=["Linux"],
     license="Apache 2.0",
     classifiers=[
-        "Development Status :: 2 - Pre-Alpha",
+        "Development Status :: 5 - Production/Stable",
         "Environment :: Console",
         "Intended Audience :: Developers",
         "Intended Audience :: System Administrators",
