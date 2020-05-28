@@ -799,18 +799,18 @@ class TopActions:
         proxy = get_object(TOP_OBJECT)
 
         pool_uuid_list = _fetch_locked_pools_property(proxy)
-        if pool_uuid_list == []:
+        if pool_uuid_list == []:  # pragma: no cover
             raise StratisCliNoChangeError("unlock", "pools")
 
-        errors = []
-        # This block is not covered as it would require a relatively complicated
-        # simulation in the stratisd sim_engine.
+        # This block is not covered as the sim engine does not simulate the
+        # management of unlocked devices, so pool_uuid_list is always empty.
+        errors = []  # pragma: no cover
         for uuid in pool_uuid_list:  # pragma: no cover
             ((is_some, _), return_code, message) = Manager.Methods.UnlockPool(
                 proxy, {"pool_uuid": uuid}
             )
 
-            if return_code != StratisdErrors.OK:  # pragma: no cover
+            if return_code != StratisdErrors.OK:
                 errors.append(StratisCliEngineError(return_code, message))
 
             if not is_some:
@@ -821,5 +821,5 @@ class TopActions:
                     )
                 )
 
-        if errors != []:
+        if errors != []:  # pragma: no cover
             raise StratisCliAggregateError("unlock", "device", errors)
