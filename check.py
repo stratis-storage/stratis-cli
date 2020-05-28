@@ -53,6 +53,19 @@ ARG_MAP = {
     ],
 }
 
+# FIXME: omit once disabling the new lint in the source # pylint: disable=fixme
+# See https://github.com/stratis-storage/project/issues/175
+try:
+    import pylint
+
+    if pylint.__pkginfo__.numversion == (2, 4, 4):
+        ARG_MAP["src/stratis_cli"].append("--disable=import-outside-toplevel")
+        ARG_MAP["tests/whitebox"].append("--disable=import-outside-toplevel")
+except ImportError:
+    # Must be running on Travis, and check.py is running outside the virtual
+    # environment
+    pass
+
 
 def get_parser():
     """
