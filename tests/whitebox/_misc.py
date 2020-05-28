@@ -170,3 +170,5 @@ class SimTestCase(RunTestCase):
 
 
 RUNNER = run()
+
+TEST_RUNNER = RUNNER
