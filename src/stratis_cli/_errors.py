@@ -15,6 +15,9 @@
 Error heirarchy for stratis cli.
 """
 
+# isort: STDLIB
+import os
+
 from ._stratisd_constants import (
     BLOCK_DEV_TIER_TO_NAME,
     STRATISD_ERROR_TO_NAME,
@@ -451,4 +454,8 @@ class StratisCliAggregateError(StratisCliRuntimeError):
         return (
             "The operation '%s' on a resource of type %s failed. The following"
             "errors occurred:\n%s"
-        ) % (self.operation, self.type, "\n".join(self.errors))
+        ) % (
+            self.operation,
+            self.type,
+            os.linesep.join([str(error) for error in self.errors]),
+        )
