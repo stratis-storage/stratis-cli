@@ -24,7 +24,7 @@ from stratis_cli._errors import (
 )
 
 from .._keyutils import RandomKeyTmpFile
-from .._misc import RUNNER, SimTestCase
+from .._misc import RUNNER, SimTestCase, TEST_RUNNER
 
 _ERROR = StratisCliErrorCodes.ERROR
 
@@ -54,7 +54,7 @@ class TestKeyReset(SimTestCase):
         """
         with RandomKeyTmpFile() as fname:
             command_line = self._MENU + [self._KEYNAME, "--keyfile-path", fname]
-            RUNNER(command_line)
+            TEST_RUNNER(command_line)
 
     def test_reset_no_change(self):
         """
