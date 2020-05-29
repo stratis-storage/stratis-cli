@@ -145,9 +145,10 @@ def test_permissions(dbus_method, permissions, *args):
             % euid
         )
     dbus_method(*args)
-    StratisDbus.reconnect()
 
     os.seteuid(_NON_ROOT)
+    StratisDbus.reconnect()
+
     try:
         dbus_method(*args)
     except dbus.exceptions.DBusException as err:
