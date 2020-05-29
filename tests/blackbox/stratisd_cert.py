@@ -26,7 +26,7 @@ from tempfile import NamedTemporaryFile
 # isort: THIRDPARTY
 import dbus
 from testlib.dbus import StratisDbus, fs_n, p_n
-from testlib.infra import KernelKey, clean_up
+from testlib.infra import KernelKey, clean_up, test_permissions
 from testlib.utils import exec_command, process_exists
 
 
@@ -142,11 +142,23 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         """
         self._inequality_test(StratisDbus.get_managed_objects(), {})
 
+    def test_get_managed_objects_permissions(self):
+        """
+        Test that GetManagedObjects succeeds when root permissions are dropped.
+        """
+        test_permissions(StratisDbus.get_managed_objects, False)
+
     def test_stratisd_version(self):
         """
         Test getting the daemon version.
         """
         self._inequality_test(StratisDbus.stratisd_version(), "")
+
+    def test_stratisd_version_permissions(self):
+        """
+        Test that getting daemon version succeeds when permissions are dropped.
+        """
+        test_permissions(StratisDbus.stratisd_version, False)
 
     def test_pool_list_empty(self):
         """
@@ -155,6 +167,12 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         result = StratisDbus.pool_list()
         self.assertEqual(result, [])
 
+    def test_pool_list_permissions(self):
+        """
+        Test listing pool succeeds when root permissions are dropped.
+        """
+        test_permissions(StratisDbus.pool_list, False)
+
     def test_blockdev_list(self):
         """
         Test listing a blockdev.
@@ -162,12 +180,24 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         result = StratisDbus.blockdev_list()
         self.assertEqual(result, [])
 
+    def test_blockdev_list_permissions(self):
+        """
+        Test that listing blockdevs suceeds when root permissions are dropped.
+        """
+        test_permissions(StratisDbus.blockdev_list, False)
+
     def test_filesystem_list_empty(self):
         """
         Test listing an non-existent filesystem.
         """
         result = StratisDbus.fs_list()
         self.assertEqual(result, {})
+
+    def test_filesystem_list_permissions(self):
+        """
+        Test that listing filesystem suceeds when root permissions are dropped.
+        """
+        test_permissions(StratisDbus.fs_list, False)
 
     def test_key_set_unset(self):
         """
@@ -185,6 +215,20 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
 
         self._unittest_command(StratisDbus.unset_key(key_desc), dbus.UInt16(0))
 
+    def test_key_set_unset_permissions(self):
+        """
+        Test setting and unsetting a key fails when root permissions are dropped.
+        """
+        key_desc = "test-description"
+
+        with NamedTemporaryFile(mode="w") as temp_file:
+            temp_file.write("test-password")
+            temp_file.flush()
+
+            test_permissions(StratisDbus.set_key, True, key_desc, temp_file)
+
+        test_permissions(StratisDbus.unset_key, True, key_desc)
+
     def test_pool_create(self):
         """
         Test creating a pool.
@@ -194,6 +238,15 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         self._unittest_command(
             StratisDbus.pool_create(pool_name, StratisCertify.DISKS, None),
             dbus.UInt16(0),
+        )
+
+    def test_pool_create_permissions(self):
+        """
+        Test that creating a pool fails when root permissions are dropped.
+        """
+        pool_name = p_n()
+        test_permissions(
+            StratisDbus.pool_create, True, pool_name, StratisCertify.DISKS, None
         )
 
     def test_pool_create_encrypted(self):
@@ -224,6 +277,20 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
             dbus.UInt16(0),
         )
 
+    def test_pool_add_cache_permissions(self):
+        """
+        Test that adding cache to pool fails when root permissions are dropped.
+        """
+        pool_name = p_n()
+        pool_path = make_test_pool(pool_name, StratisCertify.DISKS[0:1])
+
+        test_permissions(
+            StratisDbus.pool_init_cache, True, pool_path, StratisCertify.DISKS[1:2]
+        )
+        test_permissions(
+            StratisDbus.pool_add_cache, True, pool_path, StratisCertify.DISKS[2:3]
+        )
+
     def test_pool_add_data(self):
         """
         Test adding data to a pool.
@@ -234,6 +301,17 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         self._unittest_command(
             StratisDbus.pool_add_data(pool_path, StratisCertify.DISKS[2:3]),
             dbus.UInt16(0),
+        )
+
+    def test_pool_add_data_permissions(self):
+        """
+        Test that adding data to a pool fails when root permissions are dropped.
+        """
+        pool_name = p_n()
+        pool_path = make_test_pool(pool_name, StratisCertify.DISKS[0:2])
+
+        test_permissions(
+            StratisDbus.pool_add_data, True, pool_path, StratisCertify.DISKS[2:3]
         )
 
     def test_pool_list_not_empty(self):
@@ -280,6 +358,15 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
 
         self.assertEqual(StratisDbus.fs_list(), {})
 
+    def test_pool_destroy_permissions(self):
+        """
+        Test that destroying a pool fails when root permissions are dropped.
+        """
+        pool_name = p_n()
+        make_test_pool(pool_name, StratisCertify.DISKS[0:1])
+
+        test_permissions(StratisDbus.pool_destroy, True, pool_name)
+
     def test_filesystem_create(self):
         """
         Test creating a filesystem.
@@ -292,6 +379,17 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         self._unittest_command(
             StratisDbus.fs_create(pool_path, fs_name), dbus.UInt16(0)
         )
+
+    def test_filesystem_create_permissions(self):
+        """
+        Test that creating a filesystem fails when root permissions are dropped.
+        """
+        pool_name = p_n()
+        pool_path = make_test_pool(pool_name, StratisCertify.DISKS[0:1])
+
+        fs_name = fs_n()
+
+        test_permissions(StratisDbus.fs_create, True, pool_path, fs_name)
 
     def test_filesystem_rename(self):
         """
@@ -308,6 +406,20 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         self._unittest_command(
             StratisDbus.fs_rename(fs_name, fs_name_rename), dbus.UInt16(0)
         )
+
+    def test_filesystem_rename_permissions(self):
+        """
+        Test that renaming a filesystem fails when root permissions are dropped.
+        """
+        pool_name = p_n()
+        pool_path = make_test_pool(pool_name, StratisCertify.DISKS[0:1])
+
+        fs_name = fs_n()
+        make_test_filesystem(pool_path, fs_name)
+
+        fs_name_rename = fs_n()
+
+        test_permissions(StratisDbus.fs_rename, True, fs_name, fs_name_rename)
 
     def test_filesystem_rename_same_name(self):
         """
@@ -335,6 +447,22 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
 
         self._unittest_command(
             StratisDbus.fs_snapshot(pool_path, fs_path, snapshot_name), dbus.UInt16(0)
+        )
+
+    def test_filesystem_snapshot_permissions(self):
+        """
+        Test snapshotting a filesystem fails when root permissions are dropped.
+        """
+        pool_name = p_n()
+        pool_path = make_test_pool(pool_name, StratisCertify.DISKS[0:1])
+
+        fs_name = fs_n()
+        fs_path = make_test_filesystem(pool_path, fs_name)
+
+        snapshot_name = fs_n()
+
+        test_permissions(
+            StratisDbus.fs_snapshot, True, pool_path, fs_path, snapshot_name
         )
 
     def test_filesystem_list_not_empty(self):
@@ -392,6 +520,12 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         (result, return_code, _) = StratisDbus.get_report("invalid_report")
         self.assertEqual(result, dbus.String(""))
         self._inequality_test(return_code, dbus.UInt16(0))
+
+    def test_get_report_permissions(self):
+        """
+        Test that getting a valid report fails when root permissions are dropped.
+        """
+        test_permissions(StratisDbus.get_report, True, "errored_pool_report")
 
 
 def main():
