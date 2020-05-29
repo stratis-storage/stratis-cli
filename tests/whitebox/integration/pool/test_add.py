@@ -27,7 +27,7 @@ from stratis_cli._errors import (
     StratisCliPartialChangeError,
 )
 
-from .._misc import RUNNER, SimTestCase, TEST_RUNNER, device_name_list
+from .._misc import RUNNER, TEST_RUNNER, SimTestCase, device_name_list
 
 _DEVICE_STRATEGY = device_name_list(1, 1)
 _DEVICE_STRATEGY_2 = device_name_list(2, 2)

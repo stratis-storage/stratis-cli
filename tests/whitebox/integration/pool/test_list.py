@@ -15,7 +15,7 @@
 Test 'list'.
 """
 
-from .._misc import RUNNER, SimTestCase, TEST_RUNNER, device_name_list
+from .._misc import RUNNER, TEST_RUNNER, SimTestCase, device_name_list
 
 _DEVICE_STRATEGY = device_name_list(1)
 

@@ -21,7 +21,7 @@ import dbus
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
 
-from ._misc import RUNNER, RunTestCase, SimTestCase, TEST_RUNNER
+from ._misc import RUNNER, TEST_RUNNER, RunTestCase, SimTestCase
 
 _ERROR = StratisCliErrorCodes.ERROR
 
