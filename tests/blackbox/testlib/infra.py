@@ -160,6 +160,7 @@ def test_permissions(dbus_method, permissions, *args):
     except Exception as err:
         os.seteuid(_ROOT)
         raise err
-
+    
     os.seteuid(_ROOT)
+    StratisDbus.reconnect()
     assert _PERMISSIONS == permissions
