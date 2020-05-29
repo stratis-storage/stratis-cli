@@ -21,7 +21,7 @@ import dbus
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
 
-from ._misc import RUNNER, RunTestCase, SimTestCase
+from ._misc import RUNNER, RunTestCase, SimTestCase, TEST_RUNNER
 
 _ERROR = StratisCliErrorCodes.ERROR
 
@@ -38,14 +38,14 @@ class StratisTestCase(SimTestCase):
         Getting version should just succeed.
         """
         command_line = self._MENU + ["version"]
-        RUNNER(command_line)
+        TEST_RUNNER(command_line)
 
     def test_stratis_redundancy(self):
         """
         Getting redundancy should just succeed.
         """
         command_line = self._MENU + ["redundancy"]
-        RUNNER(command_line)
+        TEST_RUNNER(command_line)
 
 
 class PropagateTestCase(RunTestCase):
