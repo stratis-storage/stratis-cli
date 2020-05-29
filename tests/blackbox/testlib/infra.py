@@ -127,7 +127,7 @@ class KernelKey:  # pylint: disable=attribute-defined-outside-init
             raise rexc from exception_value
 
 
-def test_permissions(dbus_method, *args, permissions):
+def test_permissions(dbus_method, permissions, *args):
     """
     Test running dbus_method with and without root permissions.
     param dbus_method: StratisDbus wrapper method
