@@ -21,7 +21,7 @@ from dbus_client_gen import DbusClientUniqueResultError
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
 
-from .._misc import RUNNER, SimTestCase, device_name_list
+from .._misc import RUNNER, SimTestCase, TEST_RUNNER, device_name_list
 
 _DEVICE_STRATEGY = device_name_list(1)
 
@@ -49,7 +49,7 @@ class ListTestCase(SimTestCase):
         The list should be empty.
         """
         command_line = self._MENU
-        RUNNER(command_line)
+        TEST_RUNNER(command_line)
 
     def test_list_default(self):
         """
@@ -57,7 +57,7 @@ class ListTestCase(SimTestCase):
         pools. The list should be empty.
         """
         command_line = self._MENU[:-1]
-        RUNNER(command_line)
+        TEST_RUNNER(command_line)
 
 
 class List2TestCase(SimTestCase):
@@ -81,14 +81,14 @@ class List2TestCase(SimTestCase):
         Listing the devices should succeed.
         """
         command_line = self._MENU + [self._POOLNAME]
-        RUNNER(command_line)
+        TEST_RUNNER(command_line)
 
     def test_list_empty(self):
         """
         Listing the devices should succeed without a pool name specified.
         """
         command_line = self._MENU
-        RUNNER(command_line)
+        TEST_RUNNER(command_line)
 
     def test_list_default(self):
         """
@@ -96,4 +96,4 @@ class List2TestCase(SimTestCase):
         pools.
         """
         command_line = self._MENU[:-1]
-        RUNNER(command_line)
+        TEST_RUNNER(command_line)
