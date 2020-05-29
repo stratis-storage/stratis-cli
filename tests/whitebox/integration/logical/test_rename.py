@@ -22,7 +22,7 @@ from dbus_client_gen import DbusClientUniqueResultError
 from stratis_cli import StratisCliErrorCodes
 from stratis_cli._errors import StratisCliNoChangeError
 
-from .._misc import RUNNER, SimTestCase, device_name_list
+from .._misc import RUNNER, SimTestCase, TEST_RUNNER, device_name_list
 
 _DEVICE_STRATEGY = device_name_list(1)
 _ERROR = StratisCliErrorCodes.ERROR
@@ -55,7 +55,7 @@ class RenameTestCase(SimTestCase):
         because origin the pool and filesytem are available.
         """
         command_line = self._MENU + [self._POOLNAME, self._FSNAME, self._RENAMEFSNAME]
-        RUNNER(command_line)
+        TEST_RUNNER(command_line)
 
     def test_same_name(self):
         """
