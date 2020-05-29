@@ -19,7 +19,7 @@ Test 'stratis report'.
 from stratis_cli import StratisCliErrorCodes
 from stratis_cli._errors import StratisCliEngineError
 
-from .._misc import SimTestCase, TEST_RUNNER
+from .._misc import TEST_RUNNER, SimTestCase
 
 _ERROR = StratisCliErrorCodes.ERROR
 

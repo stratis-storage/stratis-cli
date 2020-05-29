@@ -24,7 +24,7 @@ from stratis_cli._errors import (
 )
 
 from .._keyutils import RandomKeyTmpFile
-from .._misc import RUNNER, SimTestCase, TEST_RUNNER
+from .._misc import RUNNER, TEST_RUNNER, SimTestCase
 
 _ERROR = StratisCliErrorCodes.ERROR
 
