@@ -402,6 +402,12 @@ class StratisCliEnvironmentError(StratisCliError):
     """
 
 
+class StratisCliTestRunError(StratisCliError):
+    """
+    Exception that occurs after a TEST_RUNNER failure.
+    """
+
+
 class StratisCliStratisdVersionError(StratisCliRuntimeError):
     """
     Raised if stratisd version does not meet CLI version requirements.
