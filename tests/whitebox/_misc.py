@@ -29,7 +29,7 @@ import psutil
 # isort: LOCAL
 from stratis_cli import run
 from stratis_cli._error_reporting import handle_error
-from stratis_cli._errors import StratisCliActionError
+from stratis_cli._errors import StratisCliActionError, StratisCliTestRunError
 
 
 def device_name_list(min_devices=0, max_devices=10):
@@ -171,4 +171,19 @@ class SimTestCase(RunTestCase):
 
 RUNNER = run()
 
-TEST_RUNNER = RUNNER
+
+def test_runner(command_line):
+    """
+    Execute the RUNNER method, and if it encounters a StratisCliActionError,
+    raise a StratisCliTestRunError to display the exception contents.
+
+    :param command_line: the command line arguments
+    :type command_line: list
+    """
+    try:
+        RUNNER(command_line)
+    except StratisCliActionError as err:
+        raise StratisCliTestRunError from err
+
+
+TEST_RUNNER = test_runner
