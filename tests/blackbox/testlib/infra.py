@@ -16,11 +16,7 @@ Methods and classes that do infrastructure tasks.
 """
 # isort: STDLIB
 import base64
-import os
 from tempfile import NamedTemporaryFile
-
-# isort: THIRDPARTY
-import dbus
 
 from .dbus import StratisDbus
 from .utils import exec_command
@@ -125,42 +121,3 @@ class KernelKey:  # pylint: disable=attribute-defined-outside-init
             if exception_value is None:
                 raise rexc
             raise rexc from exception_value
-
-
-def test_permissions(dbus_method, permissions, *args):
-    """
-    Test running dbus_method with and without root permissions.
-    param dbus_method: StratisDbus wrapper method
-    param bool permissions: True if dbus_method needs root permissions to succeed.
-                            False if dbus_method should succeed without root permissions.
-    """
-    _ROOT = 0
-    _NON_ROOT = 1
-    _PERMISSIONS = False
-
-    euid = os.geteuid()
-    if euid != _ROOT:
-        raise RuntimeError(
-            "The current process should be running with a euid of 0, but the current euid is %d."
-            % euid
-        )
-    dbus_method(*args)
-
-    os.seteuid(_NON_ROOT)
-    StratisDbus.reconnect()
-
-    try:
-        dbus_method(*args)
-    except dbus.exceptions.DBusException as err:
-        if err.get_dbus_name() == "org.freedesktop.DBus.Error.AccessDenied":
-            _PERMISSIONS = True
-        else:
-            os.seteuid(_ROOT)
-            raise err
-    except Exception as err:
-        os.seteuid(_ROOT)
-        raise err
-
-    os.seteuid(_ROOT)
-    StratisDbus.reconnect()
-    assert _PERMISSIONS == permissions
