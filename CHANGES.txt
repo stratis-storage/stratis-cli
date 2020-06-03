@@ -61,6 +61,7 @@ Python import sorter: isort (4.3.4)
   https://github.com/stratis-storage/stratis-cli/pull/465
 
 - Improvements to blackbox tests:
+  https://github.com/stratis-storage/stratis-cli/pull/598
   https://github.com/stratis-storage/stratis-cli/pull/596
   https://github.com/stratis-storage/stratis-cli/pull/537
   https://github.com/stratis-storage/stratis-cli/pull/531
