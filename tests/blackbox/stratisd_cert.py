@@ -266,11 +266,18 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         """
         key_desc = "test-description"
 
-        with NamedTemporaryFile(mode="w") as temp_file:
-            temp_file.write("test-password")
-            temp_file.flush()
+        def set_key():
+            """
+            Set up a keyfile and set the value of the key in the kernel
+            keyring.
+            """
+            with NamedTemporaryFile(mode="w") as temp_file:
+                temp_file.write("test-password")
+                temp_file.flush()
 
-            self._test_permissions(StratisDbus.set_key, [key_desc, temp_file], True)
+                StratisDbus.set_key(key_desc, temp_file)
+
+        self._test_permissions(set_key, [], True)
 
         self._test_permissions(StratisDbus.unset_key, [key_desc], True)
 
