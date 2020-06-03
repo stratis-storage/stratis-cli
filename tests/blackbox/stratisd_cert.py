@@ -158,7 +158,6 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
                 "This process should be running as root, but the current euid is %d."
                 % euid
             )
-        dbus_method(*args)
 
         os.seteuid(_NON_ROOT)
         StratisDbus.reconnect()
@@ -177,6 +176,9 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
 
         os.seteuid(_ROOT)
         StratisDbus.reconnect()
+
+        dbus_method(*args)
+
         self.assertEqual(_permissions_flag, permissions)
 
     def test_get_managed_objects(self):
@@ -264,11 +266,18 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         """
         key_desc = "test-description"
 
-        with NamedTemporaryFile(mode="w") as temp_file:
-            temp_file.write("test-password")
-            temp_file.flush()
+        def set_key():
+            """
+            Set up a keyfile and set the value of the key in the kernel
+            keyring.
+            """
+            with NamedTemporaryFile(mode="w") as temp_file:
+                temp_file.write("test-password")
+                temp_file.flush()
 
-            self._test_permissions(StratisDbus.set_key, [key_desc, temp_file], True)
+                StratisDbus.set_key(key_desc, temp_file)
+
+        self._test_permissions(set_key, [], True)
 
         self._test_permissions(StratisDbus.unset_key, [key_desc], True)
 
@@ -566,9 +575,9 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
 
     def test_get_report_permissions(self):
         """
-        Test that getting a valid report fails when root permissions are dropped.
+        Test that getting a valid report succeeds when root permissions are dropped.
         """
-        self._test_permissions(StratisDbus.get_report, ["errored_pool_report"], True)
+        self._test_permissions(StratisDbus.get_report, ["errored_pool_report"], False)
 
 
 def main():
