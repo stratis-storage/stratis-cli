@@ -568,7 +568,7 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         """
         Test that getting a valid report fails when root permissions are dropped.
         """
-        self._test_permissions(StratisDbus.get_report, ["errored_pool_report"], True)
+        self._test_permissions(StratisDbus.get_report, ["errored_pool_report"], False)
 
 
 def main():
