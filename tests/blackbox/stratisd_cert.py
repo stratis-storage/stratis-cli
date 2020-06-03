@@ -158,7 +158,6 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
                 "This process should be running as root, but the current euid is %d."
                 % euid
             )
-        dbus_method(*args)
 
         os.seteuid(_NON_ROOT)
         StratisDbus.reconnect()
@@ -177,6 +176,9 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
 
         os.seteuid(_ROOT)
         StratisDbus.reconnect()
+
+        dbus_method(*args)
+
         self.assertEqual(_permissions_flag, permissions)
 
     def test_get_managed_objects(self):
