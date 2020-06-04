@@ -20,7 +20,7 @@ import io
 import unittest
 
 # isort: LOCAL
-from stratis_cli._actions._formatting import maybe_wcswidth, print_table
+from stratis_cli._actions._formatting import MAYBE_WCSWIDTH, print_table
 
 
 # pylint: disable=fixme
@@ -73,15 +73,15 @@ class FormattingTestCase1(unittest.TestCase):
             self.table[0], self.table[1:], ["<", "<", "<", "<", "<", "<"], self.output
         )
 
-    def testContainsEquallyLongRows(self):
+    def test_contains_equally_long_rows(self):
         """
         Test that the table's rows are of equal length
         """
         self.output.seek(0)
-        row_lengths = map(maybe_wcswidth, self.output.readlines())
+        row_lengths = map(MAYBE_WCSWIDTH, self.output.readlines())
         self.assertEqual(len(frozenset(row_lengths)), 1)
 
-    def testContainsCorrectNumberOfLines(self):
+    def test_contains_correct_number_of_lines(self):
         """
         Test that the table contains the correct number of lines
         """

@@ -15,6 +15,9 @@
 Error heirarchy for stratis cli.
 """
 
+# isort: STDLIB
+import os
+
 from ._stratisd_constants import (
     BLOCK_DEV_TIER_TO_NAME,
     STRATISD_ERROR_TO_NAME,
@@ -41,28 +44,49 @@ class StratisCliUserError(StratisCliRuntimeError):
     """
 
 
-# This indicates a bug.
+class StratisCliResourceNotFoundError(StratisCliUserError):
+    """
+    Raised if a request was made to stratisd to update a resource
+    that was expected to exist but was not found.
+    """
+
+    def __init__(self, command, resource):
+        """
+        Initializer.
+
+        :param str command: the executed command
+        :param str resource: the target resource
+        """
+        # pylint: disable=super-init-not-called
+        self.command = command
+        self.resource = resource
+
+    def __str__(self):
+        return (
+            "Command '%s' assumes that resource '%s' exists but it was not "
+            "found." % (self.command, self.resource)
+        )
+
+
 class StratisCliPropertyNotFoundError(StratisCliRuntimeError):
     """
-    Exception raised when a requested property from FetchProperties DBus interface
-    does not exist.
+    Exception raised when a property can not be found in the result of
+    a FetchProperties call. This can be due to a bug in our code or to
+    a property being unavailable via the FetchProperties interface.
     """
 
-    def __init__(self, iface_name, prop_name):
+    def __init__(self, prop_name):
         """ Initializer.
 
-            :param str type_name: the full name of the DBus interface that does not
-                                  support this property name
             :param str prop_name: the property that did not exist
         """
         # pylint: disable=super-init-not-called
-        self.iface_name = iface_name
         self.prop_name = prop_name
 
     def __str__(self):
         return (
-            "The requested property '%s' is not supported by FetchProperties "
-            "for object implementing interface %s" % (self.prop_name, self.iface_name)
+            "The requested property '%s' was not found in the FetchProperties "
+            "result for a D-Bus object" % self.prop_name
         )
 
 
@@ -294,6 +318,34 @@ class StratisCliUnknownInterfaceError(StratisCliRuntimeError):
         return "unexpected interface name %s" % self._interface_name
 
 
+class StratisCliEnginePropertyError(StratisCliRuntimeError):
+    """
+    Raised if there was a failure to obtain a property due to an error in
+    stratisd's engine.
+
+    In this case, stratisd does not return an error code, but an error message
+    is still transmitted.
+    """
+
+    def __init__(self, prop_name, message):
+        """ Initializer.
+
+            :param str prop_name: the property that could not be obtained
+            :param str message: the error message returned by the engine in
+                                place of the property
+        """
+        # pylint: disable=super-init-not-called
+        self.prop_name = prop_name
+        self.message = message
+
+    def __str__(self):
+        return (
+            "stratisd encountered the following error while obtaining the "
+            "requested property '%s' via the FetchProperties interface for a "
+            "D-Bus object: %s"
+        ) % (self.prop_name, self.message)
+
+
 class StratisCliEngineError(StratisCliRuntimeError):
     """
     Raised if there was a failure due to an error in stratisd's engine.
@@ -306,11 +358,11 @@ class StratisCliEngineError(StratisCliRuntimeError):
             :param str message: whatever message accompanied the error code
         """
         # pylint: disable=super-init-not-called
-        self.rc = rc
+        self.error_code = rc
         self.message = message
 
     def __str__(self):
-        return "%s: %s" % (STRATISD_ERROR_TO_NAME(self.rc), self.message)
+        return "%s: %s" % (STRATISD_ERROR_TO_NAME(self.error_code), self.message)
 
 
 class StratisCliActionError(StratisCliRuntimeError):
@@ -348,3 +400,62 @@ class StratisCliEnvironmentError(StratisCliError):
     """
     Exception that occurs during processing of environment variables.
     """
+
+
+class StratisCliStratisdVersionError(StratisCliRuntimeError):
+    """
+    Raised if stratisd version does not meet CLI version requirements.
+    """
+
+    def __init__(self, actual_version, minimum_version, maximum_version):
+        """
+        Initializer.
+        :param tuple actual_version: stratisd's actual version
+        :param tuple minimum_version: the minimum version required
+        :param tuple maximum_version: the maximum version allowed
+        """
+        # pylint: disable=super-init-not-called
+        self.actual_version = actual_version
+        self.minimum_version = minimum_version
+        self.maximum_version = maximum_version
+
+    def __str__(self):
+        fmt_str = (
+            "stratisd version %s does not meet stratis version "
+            "requirements; the version must be at least %s and no more "
+            "than %s"
+        )
+        return fmt_str % (
+            self.actual_version,
+            self.minimum_version,
+            self.maximum_version,
+        )
+
+
+class StratisCliAggregateError(StratisCliRuntimeError):
+    """
+    Raised when multiple errors have occured in a looping operation.
+    """
+
+    def __init__(self, operation, type_, errors):
+        """
+        Initializer.
+        :param str operation: the looping operation that failed.
+        :param str type_: the type of the resource for which the operation failed.
+        :param errors: list of all errors that occurred during the looping operation.
+        :type errors: list of Exception
+        """
+        # pylint: disable=super-init-not-called
+        self.operation = operation
+        self.type = type_
+        self.errors = errors
+
+    def __str__(self):
+        return (
+            "The operation '%s' on a resource of type %s failed. The following"
+            "errors occurred:\n%s"
+        ) % (
+            self.operation,
+            self.type,
+            os.linesep.join([str(error) for error in self.errors]),
+        )

@@ -19,11 +19,13 @@ Test 'rename'.
 from dbus_client_gen import DbusClientUniqueResultError
 
 # isort: LOCAL
-from stratis_cli._errors import StratisCliActionError, StratisCliNoChangeError
+from stratis_cli import StratisCliErrorCodes
+from stratis_cli._errors import StratisCliNoChangeError
 
 from .._misc import RUNNER, SimTestCase, device_name_list
 
 _DEVICE_STRATEGY = device_name_list(1)
+_ERROR = StratisCliErrorCodes.ERROR
 
 
 class RenameTestCase(SimTestCase):
@@ -47,7 +49,7 @@ class RenameTestCase(SimTestCase):
         command_line = ["filesystem", "create", self._POOLNAME, self._FSNAME]
         RUNNER(command_line)
 
-    def testRename(self):
+    def test_rename(self):
         """
         Renaming the filesystem should succeed,
         because origin the pool and filesytem are available.
@@ -55,15 +57,12 @@ class RenameTestCase(SimTestCase):
         command_line = self._MENU + [self._POOLNAME, self._FSNAME, self._RENAMEFSNAME]
         RUNNER(command_line)
 
-    def testSameName(self):
+    def test_same_name(self):
         """
         Renaming the filesystem must fail, because this performs no action.
         """
         command_line = self._MENU + [self._POOLNAME, self._FSNAME, self._FSNAME]
-        with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(command_line)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, StratisCliNoChangeError)
+        self.check_error(StratisCliNoChangeError, command_line, _ERROR)
 
 
 class Rename1TestCase(SimTestCase):
@@ -76,25 +75,20 @@ class Rename1TestCase(SimTestCase):
     _FSNAME = "fs"
     _RENAMEFSNAME = "renamefs"
 
-    def testNonExistentPool(self):
+    def test_non_existent_pool(self):
         """
         Renaming the filesystem must fail, because the pool does not exist.
         """
         command_line = self._MENU + [self._POOLNAME, self._FSNAME, self._RENAMEFSNAME]
-        with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(command_line)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, DbusClientUniqueResultError)
 
-    def testNonExistentPoolSameName(self):
+        self.check_error(DbusClientUniqueResultError, command_line, _ERROR)
+
+    def test_non_existent_pool_same_name(self):
         """
         Renaming the filesystem must fail, because the pool does not exist.
         """
         command_line = self._MENU + [self._POOLNAME, self._FSNAME, self._RENAMEFSNAME]
-        with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(command_line)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, DbusClientUniqueResultError)
+        self.check_error(DbusClientUniqueResultError, command_line, _ERROR)
 
 
 class Rename2TestCase(SimTestCase):
@@ -115,22 +109,16 @@ class Rename2TestCase(SimTestCase):
         command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
         RUNNER(command_line)
 
-    def testNonExistentFilesystem(self):
+    def test_non_existent_filesystem(self):
         """
         Renaming the filesystem must fail, because filesystem does not exist.
         """
         command_line = self._MENU + [self._POOLNAME, self._FSNAME, self._RENAMEFSNAME]
-        with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(command_line)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, DbusClientUniqueResultError)
+        self.check_error(DbusClientUniqueResultError, command_line, _ERROR)
 
-    def testNonExistentFilesystemSameName(self):
+    def test_non_existent_filesystem_same_name(self):
         """
         Renaming the filesystem must fail, because the filesystem does not exist.
         """
         command_line = self._MENU + [self._POOLNAME, self._FSNAME, self._RENAMEFSNAME]
-        with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(command_line)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, DbusClientUniqueResultError)
+        self.check_error(DbusClientUniqueResultError, command_line, _ERROR)

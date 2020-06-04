@@ -10,6 +10,8 @@ SYNOPSIS
   stratis [GLOBAL OPTIONS] pool <command> [args] [COMMAND OPTIONS]
   stratis [GLOBAL OPTIONS] filesystem|fs <command> [args] [COMMAND OPTIONS]
   stratis [GLOBAL OPTIONS] blockdev <command> [args] [COMMAND OPTIONS]
+  stratis [GLOBAL OPTIONS] key <command> [args] [COMMAND OPTIONS]
+  stratis [GLOBAL OPTIONS] report <report_name>
   stratis [GLOBAL OPTIONS] daemon <redundancy|version>
 
 DESCRIPTION
@@ -18,7 +20,8 @@ DESCRIPTION
 and the filesystems allocated from the pool.
 
 Stratis creates a *pool* from one or more block devices (*blockdevs*), and
-then enables multiple *filesystems* to be created from the pool.
+then enables multiple *filesystems* to be created from the pool. The user can set
+*keys* for use with pool encryption.
 
 GLOBAL OPTIONS
 --------------
@@ -31,7 +34,7 @@ GLOBAL OPTIONS
 
 COMMANDS
 --------
-pool create <pool_name> <blockdev> [<blockdev>..]::
+pool create [--redundancy <redundancy>] [--key-desc <key_desc>] <pool_name> <blockdev> [<blockdev>..]::
      Create a pool from one or more block devices, with the given pool name.
 pool list::
      List all pools on the system.
@@ -42,14 +45,16 @@ pool destroy <pool_name>::
 pool add-data <pool_name> <blockdev> [<blockdev>..]::
 	 Add one or more blockdevs to an existing pool, to enlarge its storage
 	 capacity.
+pool init-cache <pool_name> <blockdev> [<blockdev>..]::
+	 Initialize a cache for an existing pool.
+	 Add one or more blockdevs to a pool, to be used as cache
+	 instead of additional storage. Typically, smaller and faster
+	 drives, such as SSDs, are used for this purpose.
 pool add-cache <pool_name> <blockdev> [<blockdev>..]::
-	 Add one or more blockdevs to an existing pool, to be used as a cache
-	 instead of additional storage. Typically, smaller and faster drives,
-	 such as SSDs, are used for this purpose.
-         NOTE: There is a temporary restriction on the total size of the
-         cache device of 32 TiB. Adding devices to the cache so that the
-         cumulative size of all the devices in the cache exceeds 32 TiB will
-         result in an error.
+	 Add one or more blockdevs to an existing pool with an initialized cache.
+pool unlock::
+     Unlock all devices that are part of an encrypted pool registered with stratisd
+     but that have not yet been opened.
 filesystem create <pool_name> <fs_name> [<fs_name>..]::
 	   Create one or more filesystems from the specified pool.
            NOTE: There is a temporary restriction on the number of filesystems
@@ -67,10 +72,33 @@ filesystem rename <pool_name> <fs_name> <new_name>::
 blockdev list [pool_name]::
 	 List all blockdevs that make up the specified pool, or all pools, if
 	 no pool name is given.
+key set <(--keyfile-path <path> | --capture-key)> <key_desc>::
+     Set a key in the kernel keyring for use with encryption either from a keyfile
+     or captured interactively from user input.
+key reset <(--keyfile-path <path> | --capture-key)> <key_desc>::
+     Reset the key data of an existing key in the kernel keyring either from a keyfile
+     or captured interactively from user input.
+key unset <key_desc>::
+     Unset a key in the kernel keyring so it is no longer available for encryption
+     operations.
+report <report_name>::
+        Get a report from the daemon regarding its internal state. This command is
+        not supported as the report names and returned JSON schemas are unstable
+        and may be changed at any time.
 daemon redundancy::
        List the redundancy levels that the Stratis service supports.
 daemon version::
        Show the Stratis service's version.
+
+OPTIONS
+-------
+--redundancy::
+        The redundancy for the created pool. The only option is "none" which
+        is also the default.
+--key-desc::
+        The key description of the key that should be used to encrypt the
+        created pool. The key description must correspond to a key
+        set in the kernel keyring with the *key* command.
 
 ENVIRONMENT VARIABLES
 ---------------------
@@ -91,6 +119,14 @@ Name::
 	  The name of the pool.
 Total Physical::
 	  The physical usage statistics for the pool (Total / Used / Free).
+Properties::
+          Boolean valued properties that the pool may have. Each property has
+          a two-letter camel-case code. If the pool does not have the
+          property, a '~', for negation, is prepended to the property code.
+          If the engine experienced an error when obtaining the property, a
+          "?", representing "unknown", is prepended to the property code.
+          The property codes are: Ca - indicates the pool has a cache,
+          Cr - indicates the pool is encrypted.
 
 FIELDS for stratis filesystem list
 
@@ -117,6 +153,22 @@ Physical Size::
 Tier::
 	  The data tier type ("Data" or "Cache")
 
+FIELDS for stratis key list
+
+Key Description::
+	  The key description corresponding to a key in the kernel keyring that
+	  that can be used for encryption.
+
+RESTRICTIONS
+------------
+Encryption and a cache are mutually exclusive choices. If a pool is encrypted,
+an attempt to initialize a cache will result in an error.
+
+There is a restriction on the total size of the
+cache device of 32 TiB. Adding devices to the cache so that the
+cumulative size of all the devices in the cache exceeds 32 TiB will
+result in an error.
+
 NOTES
 -----
 If a block device appears to be already in use, stratisd will refuse to
@@ -129,6 +181,12 @@ EXAMPLES
 .Creating a Stratis pool
 ====
 stratis pool create mypool /dev/sdb /dev/sdc
+====
+.Creating an encrypted pool
+====
+stratis key set --capture-key someKeyDescription
+
+stratis pool create --key-desc someKeyDescription mypool /dev/sdb /dev/sdc
 ====
 .Creating a filesystem from a pool
 ====

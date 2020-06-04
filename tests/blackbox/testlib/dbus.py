@@ -20,18 +20,40 @@ import os
 # isort: THIRDPARTY
 import dbus
 
-from .utils import TEST_PREF, umount_mdv
+from .utils import random_string
+
+_TEST_PREF = os.getenv("STRATIS_UT_PREFIX", "STRATI$_DE$TROY_ME!_")
 
 
-# This method is based off of the STRATIS_DBUS_TIMEOUT environment variable parsing
-# function in src/stratis_cli/_actions/_data.py
+def p_n():
+    """
+    Return a random pool name
+    :return: Random String
+    """
+    return _TEST_PREF + "pool" + random_string()
+
+
+def fs_n():
+    """
+    Return a random FS name
+    :return: Random String
+    """
+    return _TEST_PREF + "fs" + random_string()
+
+
+# This function is an exact copy of the get_timeout function in
+# the stratis_cli source code, except that it raises RuntimeError where
+# that function raises StratisCliEnvironmentError.
+# The function should not be imported, as these tests are intended to be
+# run in an environment where the Stratis CLI source code is not certainly
+# available.
 def _get_timeout(value):
     """
     Turn an input str or int into a float timeout value.
 
     :param value: the input str or int
     :type value: str or int
-    :raises ValueError:
+    :raises RuntimeError:
     :returns: float
     """
 
@@ -39,18 +61,25 @@ def _get_timeout(value):
 
     # Ensure the input str is not a float
     if isinstance(value, float):
-        raise ValueError(
+        raise RuntimeError(
             "The timeout value provided is a float; it should be an integer."
         )
 
     try:
         timeout_int = int(value)
+
     except ValueError:
-        raise ValueError("The timeout value provided is not an integer.")
+        raise RuntimeError("The timeout value provided is not an integer.")
+
+    # Ensure the integer is not too small
+    if timeout_int < -1:
+        raise RuntimeError(
+            "The timeout value provided is smaller than the smallest acceptable value, -1."
+        )
 
     # Ensure the integer is not too large
     if timeout_int > maximum_dbus_timeout_ms:
-        raise ValueError(
+        raise RuntimeError(
             "The timeout value provided exceeds the largest acceptable value, %s."
             % maximum_dbus_timeout_ms
         )
@@ -67,10 +96,12 @@ class StratisDbus:
     _BUS_NAME = "org.storage.stratis2"
     _TOP_OBJECT = "/org/storage/stratis2"
 
-    _MNGR_IFACE = "org.storage.stratis2.Manager"
-    _POOL_IFACE = "org.storage.stratis2.pool"
+    _MNGR_IFACE = "org.storage.stratis2.Manager.r1"
+    _REPORT_IFACE = "org.storage.stratis2.Report.r1"
+    _POOL_IFACE = "org.storage.stratis2.pool.r1"
     _FS_IFACE = "org.storage.stratis2.filesystem"
     _BLKDEV_IFACE = "org.storage.stratis2.blockdev"
+    _FETCH_PROPERTIES_IFACE = "org.storage.stratis2.FetchProperties.r1"
 
     _DBUS_TIMEOUT_SECONDS = 120
     _TIMEOUT = _get_timeout(
@@ -98,13 +129,13 @@ class StratisDbus:
         :return: The current stratisd version
         :rtype: str
         """
-        versions = [
-            obj_data[StratisDbus._MNGR_IFACE]["Version"]
-            for _, obj_data in StratisDbus.get_managed_objects().items()
-            if StratisDbus._MNGR_IFACE in obj_data
-        ]
-
-        return versions[0]
+        iface = dbus.Interface(
+            StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, StratisDbus._TOP_OBJECT),
+            dbus.PROPERTIES_IFACE,
+        )
+        return iface.Get(
+            StratisDbus._MNGR_IFACE, "Version", timeout=StratisDbus._TIMEOUT
+        )
 
     @staticmethod
     def pool_list():
@@ -117,7 +148,7 @@ class StratisDbus:
             obj_data[StratisDbus._POOL_IFACE]
             for _, obj_data in StratisDbus.get_managed_objects().items()
             if StratisDbus._POOL_IFACE in obj_data
-            and obj_data[StratisDbus._POOL_IFACE]["Name"].startswith(TEST_PREF)
+            and obj_data[StratisDbus._POOL_IFACE]["Name"].startswith(_TEST_PREF)
         ]
 
         return [pool_obj["Name"] for pool_obj in pool_objects]
@@ -133,17 +164,70 @@ class StratisDbus:
             obj_data[StratisDbus._BLKDEV_IFACE]
             for _, obj_data in StratisDbus.get_managed_objects().items()
             if StratisDbus._BLKDEV_IFACE in obj_data
-            and obj_data[StratisDbus._BLKDEV_IFACE]["Name"].startswith(TEST_PREF)
+            and obj_data[StratisDbus._BLKDEV_IFACE]["Name"].startswith(_TEST_PREF)
         ]
 
         return [blockdev_obj["Name"] for blockdev_obj in blockdev_objects]
 
     @staticmethod
-    def pool_create(pool_name, devices):
+    def set_key(key_desc, temp_file):
+        """
+        Set a key
+        :param str key_desc: The key description
+        :param temp_file:
+        """
+        manager_iface = dbus.Interface(
+            StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, StratisDbus._TOP_OBJECT),
+            StratisDbus._MNGR_IFACE,
+        )
+
+        with open(temp_file.name, "r") as fd_for_dbus:
+            return manager_iface.SetKey(key_desc, fd_for_dbus.fileno(), False)
+
+    @staticmethod
+    def unset_key(key_desc):
+        """
+        Unset a key
+        """
+        manager_iface = dbus.Interface(
+            StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, StratisDbus._TOP_OBJECT),
+            StratisDbus._MNGR_IFACE,
+        )
+
+        return manager_iface.UnsetKey(key_desc)
+
+    @staticmethod
+    def get_keys():
+        """
+        Return a list of the key descriptions of all keys with a
+        distinguishing Stratis prefix.
+
+        :returns: a list of key descriptions
+        :rtype: list of str
+        :raises RuntimeError: if key descriptions could not be returned
+        """
+        prop_name = "KeyList"
+        iface = dbus.Interface(
+            StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, StratisDbus._TOP_OBJECT),
+            StratisDbus._FETCH_PROPERTIES_IFACE,
+        )
+        result = iface.GetProperties([prop_name], timeout=StratisDbus._TIMEOUT)
+        (success, key_descriptions) = result[prop_name]
+        if not success:
+            raise RuntimeError(
+                "The daemon encountered an error while getting the Stratis key descriptions: %s"
+                % key_descriptions
+            )
+        return key_descriptions
+
+    @staticmethod
+    def pool_create(pool_name, devices, key_desc):
         """
         Create a pool
-        :param pool_name: The name of the pool to create
+        :param str pool_name: The name of the pool to create
         :param str devices: A list of devices that can be used to create the pool
+        :param key_desc: Key description
+        :type key_desc: str or NoneType
         :return: The return values of the CreatePool call
         :rtype: The D-Bus types (b(oao)), q, and s
         """
@@ -155,6 +239,7 @@ class StratisDbus:
             pool_name,
             (dbus.Boolean(False), dbus.UInt16(0)),
             devices,
+            (True, key_desc) if key_desc is not None else (False, ""),
             timeout=StratisDbus._TIMEOUT,
         )
 
@@ -162,7 +247,7 @@ class StratisDbus:
     def pool_destroy(pool_name):
         """
         Destroy a pool
-        :param pool_name: The name of the pool to destroy
+        :param str pool_name: The name of the pool to destroy
         :return: The object path of the DestroyPool call, or None
         :rtype: The D-Bus types (bs), q, and s, or None
         """
@@ -170,7 +255,7 @@ class StratisDbus:
             path: obj_data[StratisDbus._POOL_IFACE]
             for path, obj_data in StratisDbus.get_managed_objects().items()
             if StratisDbus._POOL_IFACE in obj_data
-            and obj_data[StratisDbus._POOL_IFACE]["Name"].startswith(TEST_PREF)
+            and obj_data[StratisDbus._POOL_IFACE]["Name"].startswith(_TEST_PREF)
         }
 
         pool_paths = [
@@ -200,20 +285,35 @@ class StratisDbus:
             obj_data[StratisDbus._FS_IFACE]
             for _, obj_data in objects
             if StratisDbus._FS_IFACE in obj_data
-            and obj_data[StratisDbus._FS_IFACE]["Name"].startswith(TEST_PREF)
+            and obj_data[StratisDbus._FS_IFACE]["Name"].startswith(_TEST_PREF)
         ]
 
         pool_path_to_name = {
             obj: obj_data[StratisDbus._POOL_IFACE]["Name"]
             for obj, obj_data in objects
             if StratisDbus._POOL_IFACE in obj_data
-            and obj_data[StratisDbus._POOL_IFACE]["Name"].startswith(TEST_PREF)
+            and obj_data[StratisDbus._POOL_IFACE]["Name"].startswith(_TEST_PREF)
         }
 
         return {
             fs_object["Name"]: pool_path_to_name[fs_object["Pool"]]
             for fs_object in fs_objects
         }
+
+    @staticmethod
+    def pool_init_cache(pool_path, devices):
+        """
+        Initialize the cache for a pool with a list of devices.
+        :param str pool_path: The object path of the pool to which the cache device will be added
+        :param str devices: A list of devices that can be initialized as a cache device
+        :return: The return values of the InitCache call
+        :rtype: The D-Bus types (bao), q, and s
+        """
+        iface = dbus.Interface(
+            StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, pool_path),
+            StratisDbus._POOL_IFACE,
+        )
+        return iface.InitCache(devices, timeout=StratisDbus._TIMEOUT)
 
     @staticmethod
     def pool_add_cache(pool_path, devices):
@@ -276,13 +376,13 @@ class StratisDbus:
             path: obj_data[StratisDbus._POOL_IFACE]
             for path, obj_data in objects
             if StratisDbus._POOL_IFACE in obj_data
-            and obj_data[StratisDbus._POOL_IFACE]["Name"].startswith(TEST_PREF)
+            and obj_data[StratisDbus._POOL_IFACE]["Name"].startswith(_TEST_PREF)
         }
         fs_objects = {
             path: obj_data[StratisDbus._FS_IFACE]
             for path, obj_data in objects
             if StratisDbus._FS_IFACE in obj_data
-            and obj_data[StratisDbus._FS_IFACE]["Name"].startswith(TEST_PREF)
+            and obj_data[StratisDbus._FS_IFACE]["Name"].startswith(_TEST_PREF)
         }
 
         pool_paths = [
@@ -320,7 +420,7 @@ class StratisDbus:
             path: obj_data[StratisDbus._FS_IFACE]
             for path, obj_data in objects
             if StratisDbus._FS_IFACE in obj_data
-            and obj_data[StratisDbus._FS_IFACE]["Name"].startswith(TEST_PREF)
+            and obj_data[StratisDbus._FS_IFACE]["Name"].startswith(_TEST_PREF)
         }
 
         fs_paths = [
@@ -354,27 +454,23 @@ class StratisDbus:
         )
 
     @staticmethod
-    def destroy_all():
+    def get_report(report_name):
         """
-        Destroys all Stratis FS and pools!
-        :return: None
+        Get the report with the given name.
+        :param str report_name: The name of the report
+        :return: The JSON report as a string with a status code and string
+        :rtype: The D-Bus types s, q, and s
         """
-        umount_mdv()
+        iface = dbus.Interface(
+            StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, StratisDbus._TOP_OBJECT),
+            StratisDbus._REPORT_IFACE,
+        )
+        return iface.GetReport(report_name, timeout=StratisDbus._TIMEOUT)
 
-        # Remove FS
-        for name, pool_name in StratisDbus.fs_list().items():
-            StratisDbus.fs_destroy(pool_name, name)
-
-        # Remove Pools
-        for name in StratisDbus.pool_list():
-            StratisDbus.pool_destroy(name)
-
-
-def clean_up():
-    """
-    Try to clean up after a test failure.
-
-    :return: None
-    """
-    StratisDbus.destroy_all()
-    assert StratisDbus.pool_list() == []
+    @staticmethod
+    def reconnect():
+        """
+        Close and reopen bus connection.
+        """
+        StratisDbus._BUS.close()
+        StratisDbus._BUS = dbus.SystemBus()

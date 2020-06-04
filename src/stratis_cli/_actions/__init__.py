@@ -21,4 +21,5 @@ from ._constants import POOL_INTERFACE
 from ._logical import LogicalActions
 from ._physical import PhysicalActions
 from ._stratis import StratisActions
+from ._stratisd_version import check_stratisd_version
 from ._top import TopActions

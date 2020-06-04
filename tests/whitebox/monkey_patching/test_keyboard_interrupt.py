@@ -26,7 +26,7 @@ class KeyboardInterruptTestCase(SimTestCase):
     Test behavior of stratis on KeyboardInterrupt.
     """
 
-    def testCatchKeyboardException(self):
+    def test_catch_keyboard_exception(self):
         """
         Verify that the KeyboardInterrupt is propagated by the run() method.
         ./bin/stratis contains a try block at the outermost level which
@@ -43,7 +43,6 @@ class KeyboardInterruptTestCase(SimTestCase):
             """
             raise KeyboardInterrupt()
 
-        # pylint: disable=import-outside-toplevel
         from stratis_cli._actions import _data
 
         # pylint: disable=protected-access

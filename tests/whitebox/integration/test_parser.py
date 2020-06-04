@@ -15,13 +15,15 @@
 Test command-line argument parsing.
 """
 
-# isort: STDLIB
-import unittest
+# isort: LOCAL
+from stratis_cli import StratisCliErrorCodes
 
-from ._misc import RUNNER, SimTestCase
+from ._misc import RUNNER, RunTestCase, SimTestCase
+
+_PARSE_ERROR = StratisCliErrorCodes.PARSE_ERROR
 
 
-class ParserTestCase(unittest.TestCase):
+class ParserTestCase(RunTestCase):
     """
     Test parser behavior. The behavior should be identical, regardless of
     whether the "--propagate" flag is set. That is, stratis should never produce
@@ -30,7 +32,7 @@ class ParserTestCase(unittest.TestCase):
     during an action.
     """
 
-    def testStratisNoSubcommand(self):
+    def test_stratis_no_subcommand(self):
         """
         If missing subcommand, or missing "daemon" subcommand return exit code
         of 2. There can't be a missing subcommand for "blockdev", "pool", or
@@ -38,24 +40,18 @@ class ParserTestCase(unittest.TestCase):
         """
         for command_line in [[], ["daemon"]]:
             for prefix in [[], ["--propagate"]]:
-                with self.assertRaises(SystemExit) as context:
-                    RUNNER(prefix + command_line)
-                exit_code = context.exception.code
-                self.assertEqual(exit_code, 2)
+                self.check_system_exit(prefix + command_line, _PARSE_ERROR)
 
-    def testStratisTwoOptions(self):
+    def test_stratis_two_options(self):
         """
         Exactly one option should be set, so this should fail,
         but only because redundancy accepts no arguments.
         """
         for prefix in [[], ["--propagate"]]:
             command_line = ["daemon", "redundancy", "version"]
-            with self.assertRaises(SystemExit) as context:
-                RUNNER(prefix + command_line)
-            exit_code = context.exception.code
-            self.assertEqual(exit_code, 2)
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
 
-    def testStratisBadSubcommand(self):
+    def test_stratis_bad_subcommand(self):
         """
         If an unknown subcommand return exit code of 2.
         """
@@ -68,12 +64,9 @@ class ParserTestCase(unittest.TestCase):
             ["filesystem", "notasub"],
         ]:
             for prefix in [[], ["--propagate"]]:
-                with self.assertRaises(SystemExit) as context:
-                    RUNNER(prefix + command_line)
-                exit_code = context.exception.code
-                self.assertEqual(exit_code, 2)
+                self.check_system_exit(prefix + command_line, _PARSE_ERROR)
 
-    def testRedundancy(self):
+    def test_redundancy(self):
         """
         Verify that there is a parser error if redundancy is not "none" in
         pool creation.
@@ -89,10 +82,7 @@ class ParserTestCase(unittest.TestCase):
         ]
 
         for prefix in [[], ["--propagate"]]:
-            with self.assertRaises(SystemExit) as context:
-                RUNNER(prefix + command_line)
-            exit_code = context.exception.code
-            self.assertEqual(exit_code, 2)
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
 
 
 class ParserSimTestCase(SimTestCase):
@@ -100,7 +90,7 @@ class ParserSimTestCase(SimTestCase):
     Parser tests which require the sim engine to be running.
     """
 
-    def testStratisListDefault(self):
+    def test_stratis_list_default(self):
         """
         Verify that pool, filesystem, and blockdev subcommands execute
         without any additional command.

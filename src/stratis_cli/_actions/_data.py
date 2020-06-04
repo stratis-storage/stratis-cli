@@ -27,13 +27,15 @@ from dbus_client_gen import (
 )
 from dbus_python_client_gen import DPClientGenerationError, make_class
 
-from .._errors import StratisCliEnvironmentError, StratisCliGenerationError
+from .._errors import StratisCliGenerationError
 from ._constants import (
     BLOCKDEV_INTERFACE,
     FETCH_PROPERTIES_INTERFACE,
     FILESYSTEM_INTERFACE,
     POOL_INTERFACE,
+    REPORT_INTERFACE,
 )
+from ._utils import get_timeout
 
 assert hasattr(sys.modules.get("stratis_cli"), "run"), (
     "This module is being loaded too eagerly. Make sure that loading it is "
@@ -49,8 +51,8 @@ SPECS = {
 </method>
 </interface>
 """,
-    "org.storage.stratis2.FetchProperties": """
-<interface name="org.storage.stratis2.FetchProperties">
+    "org.storage.stratis2.FetchProperties.r1": """
+<interface name="org.storage.stratis2.FetchProperties.r1">
 <method name="GetAllProperties">
 <arg name="property_hash" type="a{s(bv)}" direction="out"/>
 </method>
@@ -60,10 +62,40 @@ SPECS = {
 </method>
 </interface>
 """,
-    "org.storage.stratis2.Manager": """
-<interface name="org.storage.stratis2.Manager">
+    "org.storage.stratis2.Report.r1": """
+<interface name="org.storage.stratis2.Report.r1">
+<method name="GetReport">
+<arg name="name" type="s" direction="in"/>
+<arg name="result" type="s" direction="out"/>
+<arg name="return_code" type="q" direction="out"/>
+<arg name="return_string" type="s" direction="out"/>
+</method>
+</interface>
+""",
+    "org.storage.stratis2.Manager.r1": """
+<interface name="org.storage.stratis2.Manager.r1">
 <method name="ConfigureSimulator">
 <arg name="denominator" type="u" direction="in"/>
+<arg name="return_code" type="q" direction="out"/>
+<arg name="return_string" type="s" direction="out"/>
+</method>
+<method name="SetKey">
+<arg name="key_desc" type="s" direction="in"/>
+<arg name="key_fd" type="h" direction="in"/>
+<arg name="interactive" type="b" direction="in"/>
+<arg name="result" type="(bb)" direction="out"/>
+<arg name="return_code" type="q" direction="out"/>
+<arg name="return_string" type="s" direction="out"/>
+</method>
+<method name="UnsetKey">
+<arg name="key_desc" type="s" direction="in"/>
+<arg name="result" type="b" direction="out"/>
+<arg name="return_code" type="q" direction="out"/>
+<arg name="return_string" type="s" direction="out"/>
+</method>
+<method name="UnlockPool">
+<arg name="pool_uuid" type="s" direction="in"/>
+<arg name="result" type="(bas)" direction="out"/>
 <arg name="return_code" type="q" direction="out"/>
 <arg name="return_string" type="s" direction="out"/>
 </method>
@@ -71,6 +103,7 @@ SPECS = {
 <arg name="name" type="s" direction="in"/>
 <arg name="redundancy" type="(bq)" direction="in"/>
 <arg name="devices" type="as" direction="in"/>
+<arg name="key_desc" type="(bs)" direction="in"/>
 <arg name="result" type="(b(oao))" direction="out"/>
 <arg name="return_code" type="q" direction="out"/>
 <arg name="return_string" type="s" direction="out"/>
@@ -86,8 +119,14 @@ SPECS = {
 </property>
 </interface>
 """,
-    "org.storage.stratis2.pool": """
-<interface name="org.storage.stratis2.pool">
+    "org.storage.stratis2.pool.r1": """
+<interface name="org.storage.stratis2.pool.r1">
+<method name="InitCache">
+<arg name="devices" type="as" direction="in"/>
+<arg name="results" type="(bao)" direction="out"/>
+<arg name="return_code" type="q" direction="out"/>
+<arg name="return_string" type="s" direction="out"/>
+</method>
 <method name="AddCacheDevs">
 <arg name="devices" type="as" direction="in"/>
 <arg name="results" type="(bao)" direction="out"/>
@@ -129,6 +168,9 @@ SPECS = {
 <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="true"/>
 </property>
 <property name="Uuid" type="s" access="read">
+<annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const"/>
+</property>
+<property name="Encrypted" type="b" access="read">
 <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const"/>
 </property>
 </interface>
@@ -191,60 +233,23 @@ SPECS = {
 """,
 }
 
-_MANAGER_INTERFACE = "org.storage.stratis2.Manager"
+_MANAGER_INTERFACE = "org.storage.stratis2.Manager.r1"
 
 DBUS_TIMEOUT_SECONDS = 120
-MAXIMUM_DBUS_TIMEOUT_MS = 1073741823
-
-
-def _get_timeout(value):
-    """
-    Turn an input str or int into a float timeout value.
-
-    :param value: the input str or int
-    :type value: str or int
-    :raises StratisCliEnvironmentError:
-    :returns: float
-    """
-    # Ensure the input str is not a float
-    if isinstance(value, float):
-        raise StratisCliEnvironmentError(
-            "The timeout value provided is a float; it should be an integer."
-        )
-
-    try:
-        timeout_int = int(value)
-
-    except ValueError:
-        raise StratisCliEnvironmentError(
-            "The timeout value provided is not an integer."
-        )
-
-    # Ensure the integer is not too small
-    if timeout_int < -1:
-        raise StratisCliEnvironmentError(
-            "The timeout value provided is smaller than the smallest acceptable value, -1."
-        )
-
-    # Ensure the integer is not too large
-    if timeout_int > MAXIMUM_DBUS_TIMEOUT_MS:
-        raise StratisCliEnvironmentError(
-            "The timeout value provided exceeds the largest acceptable value, %s."
-            % MAXIMUM_DBUS_TIMEOUT_MS
-        )
-
-    # Convert from milliseconds to seconds
-    return timeout_int / 1000
 
 
 try:
+    # pylint: disable=invalid-name
 
-    timeout = _get_timeout(
+    timeout = get_timeout(
         environ.get("STRATIS_DBUS_TIMEOUT", DBUS_TIMEOUT_SECONDS * 1000)
     )
 
     fetch_properties_spec = ET.fromstring(SPECS[FETCH_PROPERTIES_INTERFACE])
     FetchProperties = make_class("FetchProperties", fetch_properties_spec, timeout)
+
+    report_spec = ET.fromstring(SPECS[REPORT_INTERFACE])
+    Report = make_class("Report", report_spec, timeout)
 
     filesystem_spec = ET.fromstring(SPECS[FILESYSTEM_INTERFACE])
     Filesystem = make_class("Filesystem", filesystem_spec, timeout)

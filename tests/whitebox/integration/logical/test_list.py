@@ -12,17 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """
-Test 'create'.
+Test 'list'.
 """
-
-# isort: STDLIB
-import unittest
 
 # isort: FIRSTPARTY
 from dbus_client_gen import DbusClientUniqueResultError
 
 # isort: LOCAL
-from stratis_cli._errors import StratisCliActionError
+from stratis_cli import StratisCliErrorCodes
 
 from .._misc import RUNNER, SimTestCase, device_name_list
 
@@ -37,15 +34,14 @@ class ListTestCase(SimTestCase):
     _MENU = ["--propagate", "filesystem", "list"]
     _POOLNAME = "deadpool"
 
-    def testList(self):
+    def test_list(self):
         """
         Listing the volume must fail since the pool does not exist.
         """
         command_line = self._MENU + [self._POOLNAME]
-        with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(command_line)
-        cause = context.exception.__cause__
-        self.assertIsInstance(cause, DbusClientUniqueResultError)
+        self.check_error(
+            DbusClientUniqueResultError, command_line, StratisCliErrorCodes.ERROR
+        )
 
 
 class List2TestCase(SimTestCase):
@@ -64,37 +60,9 @@ class List2TestCase(SimTestCase):
         command_line = ["pool", "create"] + [self._POOLNAME] + _DEVICE_STRATEGY()
         RUNNER(command_line)
 
-    def testList(self):
+    def test_list(self):
         """
         Listing the volumes in an empty pool should succeed.
-        """
-        command_line = self._MENU + [self._POOLNAME]
-        RUNNER(command_line)
-
-
-@unittest.skip("Temporarily unable to create multiple filesystems at same time")
-class List3TestCase(SimTestCase):
-    """
-    Test listing volumes in an existing pool with some volumes.
-    """
-
-    _MENU = ["--propagate", "filesystem", "list"]
-    _POOLNAME = "deadpool"
-    _VOLUMES = ["livery", "liberty", "library"]
-
-    def setUp(self):
-        """
-        Start the stratisd daemon with the simulator.
-        """
-        super().setUp()
-        command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
-        RUNNER(command_line)
-        command_line = ["filesystem", "create", self._POOLNAME] + self._VOLUMES
-        RUNNER(command_line)
-
-    def testList(self):
-        """
-        Listing the volumes in a non-empty pool should succeed.
         """
         command_line = self._MENU + [self._POOLNAME]
         RUNNER(command_line)
@@ -123,7 +91,7 @@ class List4TestCase(SimTestCase):
         command_line = ["filesystem", "create", self._POOLNAME, self._VOLUMES[2]]
         RUNNER(command_line)
 
-    def testList(self):
+    def test_list(self):
         """
         Listing multiple volumes in a non-empty pool should succeed.
         """
@@ -159,14 +127,14 @@ class List5TestCase(SimTestCase):
         command_line = ["pool", "create", self._POOLNAMES[2]] + _DEVICE_STRATEGY()
         RUNNER(command_line)
 
-    def testListOne(self):
+    def test_list_one(self):
         """
         Specifying a pool name should yield only filesystems for that pool.
         """
         command_line = self._MENU + [self._POOLNAMES[1]]
         RUNNER(command_line)
 
-    def testListNoPool(self):
+    def test_list_no_pool(self):
         """
         If pool name is not specified, all filesystems for all pools should
         be listed.
@@ -174,7 +142,7 @@ class List5TestCase(SimTestCase):
         command_line = self._MENU
         RUNNER(command_line)
 
-    def testListDefault(self):
+    def test_list_default(self):
         """
         filesystem or fs subcommand should default to listing all pools.
         """

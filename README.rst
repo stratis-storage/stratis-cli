@@ -28,11 +28,11 @@ You will also need to obtain the following related Stratis repos:
 dbus-client-gen, dbus-python-client-gen, into-dbus-python,
 dbus-signature-pyparsing.
 
-Finally, ensure you have python3-pyparsing package installed.
+Finally, ensure you have the pyparsing package installed.
 
 Running
 -------
-After installing, running just requires invoking the script, as::
+After installing, running requires invoking the script, as::
 
    > stratis --help
 
@@ -52,24 +52,11 @@ unless you are also running the `Stratis daemon <https://github.com/stratis-stor
 
 Testing
 -------
-There are unit and integration tests in the ``tests`` directory.
+Various testing modalities are used to verify various properties of
+``stratis``.  Please consult the README files in the ``tests`` subdirectory
+for further information.
 
-python3-pytest is required in order to run the tests.
-
-These can be run by setting the PYTHONPATH environment variable as
-shown above, and also setting the STRATIS environment variable to the
-absolute or relative path to your stratisd executable. For example
-(again using bash shell)::
-
-  > STRATISD=../stratisd/target/debug/stratisd make dbus-tests
-
-*Note:* Since the tests invoke ``stratisd``, it should not be running
-independently when the tests are run.
-
-To run ``tox``, ensure python3-tox and dbus-glib-devel packages are
-installed, and then run::
-
-  > tox
+The project has, and will continue to maintain, 100% code coverage.
 
 Internal Software Architecture
 ------------------------------

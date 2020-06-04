@@ -19,25 +19,10 @@ import os
 import random
 import string
 from subprocess import PIPE, Popen
+from tempfile import NamedTemporaryFile
 
-# Name prefix, so that we hopefully don't destroy any end user data by mistake!
-TEST_PREF = os.getenv("STRATIS_UT_PREFIX", "STRATI$_DE$TROY_ME!_")
-
-
-def p_n():
-    """
-    Return a random pool name
-    :return: Random String
-    """
-    return TEST_PREF + "pool" + random_string()
-
-
-def fs_n():
-    """
-    Return a random FS name
-    :return: Random String
-    """
-    return TEST_PREF + "fs" + random_string()
+# isort: THIRDPARTY
+import psutil
 
 
 def random_string(length=4):
@@ -53,29 +38,21 @@ def random_string(length=4):
 
 def process_exists(name):
     """
-    Walk the process table looking for executable 'name', returns pid if one
-    found, else return None
+    Look through processes, using their pids, to find one matching 'name'.
+    Return None if no such process found, else return the pid.
+    :param name: name of process to check
+    :type name: str
+    :return: pid or None
+    :rtype: int or NoneType
     """
-    for pid in [pid for pid in os.listdir("/proc") if pid.isdigit()]:
+    for proc in psutil.process_iter(["name"]):
         try:
-            exe_name = os.readlink(os.path.join("/proc/", pid, "exe"))
-        except OSError:
-            continue
-        if exe_name and exe_name.endswith(os.path.join("/", name)):
-            return pid
+            if proc.name() == name:
+                return proc.pid
+        except psutil.NoSuchProcess:
+            pass
+
     return None
-
-
-def umount_mdv():
-    """
-    Locate and umount any stratis mdv mounts
-    :return: None
-    """
-    with open("/proc/self/mounts", "r") as mounts:
-        for line in mounts.readlines():
-            if "/stratis/.mdv-" in line:
-                mountpoint = line.split()[1]
-                exec_command(["umount", mountpoint])
 
 
 def exec_command(cmd):
@@ -86,18 +63,15 @@ def exec_command(cmd):
     :type cmd: list of str
     :returns: standard output
     :rtype: str
-    :raises AssertionError: if exit code is non-zero
+    :raises RuntimeError: if exit code is non-zero
     """
     exit_code, stdout_text, stderr_text = exec_test_command(cmd)
 
-    expected_exit_code = 0
-
-    if expected_exit_code != exit_code:
-        print("cmd = %s [%d != %d]" % (str(cmd), expected_exit_code, exit_code))
-        print("STDOUT= %s" % stdout_text)
-        print("STDERR= %s" % stderr_text)
-
-    assert expected_exit_code == exit_code
+    if exit_code != 0:
+        raise RuntimeError(
+            "exec_command: non-zero exit code: %d\nSTDOUT=%s\nSTDERR=%s"
+            % (exit_code, stdout_text, stderr_text)
+        )
     return stdout_text
 
 
@@ -116,3 +90,50 @@ def exec_test_command(cmd):
         bytes(result[0]).decode("utf-8"),
         bytes(result[1]).decode("utf-8"),
     )
+
+
+class RandomKeyTmpFile:
+    """
+    Generate a random passphrase and put it in a temporary file.
+    """
+
+    def __init__(self, key_bytes=32):
+        """
+        Initializer
+
+        :param int key_bytes: the desired length of the key in bytes
+        """
+        self._tmpfile = NamedTemporaryFile("wb")
+        with open("/dev/urandom", "rb") as urandom_f:
+            random_bytes = urandom_f.read(key_bytes)
+            self._tmpfile.write(random_bytes)
+            self._tmpfile.flush()
+
+    def tmpfile_name(self):
+        """
+        Get the name of the temporary file.
+        """
+        return self._tmpfile.name
+
+    def close(self):
+        """
+        Close and delete the temporary file.
+        """
+        self._tmpfile.close()
+
+    def __enter__(self):
+        """
+        For use with the "with" keyword.
+
+        :return str: the path of the file with the random key
+        """
+        return self._tmpfile.name
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        try:
+            self._tmpfile.close()
+        except Exception as error:
+            if exc_value is None:
+                raise error
+
+            raise error from exc_value

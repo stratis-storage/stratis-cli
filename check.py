@@ -1,16 +1,29 @@
-#!/usr/bin/python
+#!/usr/bin/python3
+
+"""
+Invoke pylint with pre-selected-options.
+"""
 
 # isort: STDLIB
 import argparse
 import subprocess
 import sys
 
-arg_map = {
+ARG_MAP = {
+    "check.py": [
+        "--reports=no",
+        "--disable=I",
+        "--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}'",
+    ],
+    "setup.py": [
+        "--reports=no",
+        "--disable=I",
+        "--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}'",
+    ],
     "src/stratis_cli": [
         "--reports=no",
         "--disable=I",
         "--disable=duplicate-code",
-        "--disable=invalid-name",
         "--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}'",
     ],
     "tests/blackbox/stratisd_cert.py": [
@@ -32,7 +45,6 @@ arg_map = {
         "--reports=no",
         "--disable=I",
         "--disable=duplicate-code",
-        "--disable=invalid-name",
         "--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}'",
     ],
     "bin/stratis": [
@@ -40,6 +52,19 @@ arg_map = {
         "--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}'",
     ],
 }
+
+# FIXME: omit once disabling the new lint in the source # pylint: disable=fixme
+# See https://github.com/stratis-storage/project/issues/175
+try:
+    import pylint
+
+    if pylint.__pkginfo__.numversion == (2, 4, 4):
+        ARG_MAP["src/stratis_cli"].append("--disable=import-outside-toplevel")
+        ARG_MAP["tests/whitebox"].append("--disable=import-outside-toplevel")
+except ImportError:
+    # Must be running on Travis, and check.py is running outside the virtual
+    # environment
+    pass
 
 
 def get_parser():
@@ -51,9 +76,8 @@ def get_parser():
     """
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "package", choices=arg_map.keys(), help="designates the package to test"
+        "package", choices=ARG_MAP.keys(), help="designates the package to test"
     )
-    parser.add_argument("--ignore", help="ignore these files")
     return parser
 
 
@@ -63,13 +87,13 @@ def get_command(namespace):
 
     :param `Namespace` namespace: the namespace
     """
-    cmd = ["pylint", namespace.package] + arg_map[namespace.package]
-    if namespace.ignore:
-        cmd.append("--ignore=%s" % namespace.ignore)
-    return cmd
+    return ["pylint", namespace.package] + ARG_MAP[namespace.package]
 
 
 def main():
+    """
+    Run the linter on a single directory or file.
+    """
     args = get_parser().parse_args()
     return subprocess.call(get_command(args), stdout=sys.stdout)
 

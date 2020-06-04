@@ -30,11 +30,16 @@ from dbus_client_gen import (
 
 from ._actions import BLOCKDEV_INTERFACE, FILESYSTEM_INTERFACE, POOL_INTERFACE
 from ._errors import (
+    StratisCliActionError,
+    StratisCliAggregateError,
     StratisCliEngineError,
+    StratisCliEnginePropertyError,
     StratisCliIncoherenceError,
+    StratisCliStratisdVersionError,
     StratisCliUnknownInterfaceError,
     StratisCliUserError,
 )
+from ._exit import StratisCliErrorCodes, exit_
 
 _DBUS_INTERFACE_MSG = (
     "The version of stratis you are running expects a different "
@@ -44,9 +49,7 @@ _DBUS_INTERFACE_MSG = (
 )
 
 
-# pylint: disable=fixme
-# FIXME: remove no coverage pragma when adequate testing for CLI output exists.
-def _interface_name_to_common_name(interface_name):  # pragma: no cover
+def _interface_name_to_common_name(interface_name):
     """
     Maps a D-Bus interface name to the common name that identifies the type
     of stratisd thing that the interface represents.
@@ -55,7 +58,11 @@ def _interface_name_to_common_name(interface_name):  # pragma: no cover
     :returns: a common name
     :rtype: str
     """
-    if interface_name == BLOCKDEV_INTERFACE:
+    # There is no action which specifies a block device once it has been
+    # added to a pool. Consequently, we cannot test that a non-existent block
+    # device has been specified. In the future, if such an action is created,
+    # this no cover may be removed.
+    if interface_name == BLOCKDEV_INTERFACE:  # pragma: no cover
         return "block device"
 
     if interface_name == FILESYSTEM_INTERFACE:
@@ -64,7 +71,8 @@ def _interface_name_to_common_name(interface_name):  # pragma: no cover
     if interface_name == POOL_INTERFACE:
         return "pool"
 
-    raise StratisCliUnknownInterfaceError(interface_name)
+    # This is a permanent no cover. There should never be an unknown interface.
+    raise StratisCliUnknownInterfaceError(interface_name)  # pragma: no cover
 
 
 def get_errors(exc):
@@ -79,107 +87,164 @@ def get_errors(exc):
             return
 
 
-# pylint: disable=too-many-return-statements
-# pylint: disable=too-many-branches
+def _interpret_errors_0(error):
+    """
+    Handle match on SCAE .*  DBE
+      where:
+         SCAE is StratisCliActionError
+         DBE is dbus.exceptions.DBusException
+
+    :param error: a specific error
+    :type error: dbus.exceptions.DBusException
+    :returns: the interpretation of the error if found, otherwise None
+    :rtype: None or str
+    """
+
+    # The permissions with which stratis-cli makes requests on the D-Bus
+    # are controlled by the "stratisd.conf" file. The CLI tests do not
+    # control the contents or installation of "stratisd.conf"
+    # and therefore, we cannot test this case reliably.
+    if (
+        # pylint: disable=bad-continuation
+        error.get_dbus_name()
+        == "org.freedesktop.DBus.Error.AccessDenied"
+    ):  # pragma: no cover
+        return (
+            "Most likely stratis has insufficient permissions for the action requested."
+        )
+
+    # We have observed two causes of this problem. The first is that
+    # stratisd is not running at all. The second is that stratisd has not
+    # yet established its D-Bus service.
+    if error.get_dbus_name() == "org.freedesktop.DBus.Error.NameHasNoOwner":
+        return "Most likely stratis is unable to connect to the stratisd D-Bus service."
+
+    # Due to the uncertain behavior with which libdbus
+    # treats a timeout value of 0, it proves difficult to test this case,
+    # as seen here: https://github.com/stratis-storage/stratis-cli/pull/476
+    # Additional information may be found in the issue filed against libdbus
+    # here: https://gitlab.freedesktop.org/dbus/dbus/issues/293
+    if (
+        # pylint: disable=bad-continuation
+        error.get_dbus_name()
+        == "org.freedesktop.DBus.Error.NoReply"
+    ):  # pragma: no cover
+        return (
+            "stratis attempted communication with the daemon, stratisd, "
+            "over the D-Bus, but stratisd did not respond in the allowed time."
+        )
+
+    # The goal is to have an explanation for every type of D-Bus error that
+    # is encountered. If there is none, then this will rapidly be fixed, so it
+    # will be unnecessary to maintain coverage for this branch.
+    return None  # pragma: no cover
+
+
+def _interpret_errors_1(errors):  # pylint: disable=too-many-return-statements
+    """
+    Interpret the subchain of errors after the first error.
+
+    :param errors: the chain of errors
+    :type errors: list of Exception
+    :returns: None if no interpretation found, otherwise str
+    """
+    error = errors[0]
+
+    if (
+        # pylint: disable=bad-continuation
+        isinstance(error, DbusClientUniqueResultError)
+        and error.result == []
+    ):
+        fmt_str = "Most likely you specified a %s which does not exist."
+        return fmt_str % _interface_name_to_common_name(error.interface_name)
+
+    # These errors can only arise if there is a bug in the way automatically
+    # generated code is constructed, or if the introspection data from
+    # which the auto-generated code is constructed does not match the
+    # daemon interface. This situation is unlikely and difficult to
+    # elicit in a test.
+    if isinstance(
+        # pylint: disable=bad-continuation
+        error,
+        (DbusClientMissingSearchPropertiesError, DbusClientMissingPropertyError),
+    ):  # pragma: no cover
+        return _DBUS_INTERFACE_MSG
+
+    if isinstance(error, StratisCliEngineError):
+        fmt_str = (
+            "stratisd failed to perform the operation that you "
+            "requested. It returned the following information via "
+            "the D-Bus: %s."
+        )
+        return fmt_str % error
+
+    # This should arise only if the engine encounters an error while
+    # obtaining a property. Therefore, it is not tested.
+    if isinstance(error, StratisCliEnginePropertyError):  # pragma: no cover
+        return str(error)
+
+    if isinstance(error, StratisCliUserError):
+        fmt_str = "It appears that you issued an unintended command: %s"
+        return fmt_str % error
+
+    # The only situation in which an AggregateError can be raised is if there
+    # is a problem activating devcies, but the sim engine does not simulate
+    # activation of locked devices.
+    if isinstance(error, StratisCliAggregateError):  # pragma: no cover
+        fmt_str = "An iterative command generated one or more errors: %s"
+        return fmt_str % error
+
+    if isinstance(error, StratisCliStratisdVersionError):
+        fmt_str = (
+            "%s. stratis can execute only the subset of its "
+            "commands that do not require stratisd."
+        )
+        return fmt_str % error
+
+    # An incoherence error should be pretty untestable. It can arise
+    # * in the case of a stratisd bug. We would expect to fix that very
+    # soon, so should not have a test in that case.
+    # * in the case where another client of stratisd is running and alters
+    # state while a command is being executed. This could be tested for,
+    # but only with considerable difficulty, so we choose not to test.
+    if isinstance(error, StratisCliIncoherenceError):  # pragma: no cover
+        fmt_str = (
+            "stratisd reported that it did not execute every action "
+            "that it would have been expected to execute as a result "
+            "of the command that you requested: %s"
+        )
+        return fmt_str % error
+
+    # Inspect lowest error
+    error = errors[-1]
+
+    if isinstance(error, dbus.exceptions.DBusException):
+        explanation = _interpret_errors_0(error)
+        if explanation is not None:
+            return explanation
+
+    # The goal is to have an explanation for every error chain. If there is
+    # none, then this will rapidly be fixed, so it will be difficult to
+    # maintain coverage for this branch.
+    return None  # pragma: no cover
+
+
 def _interpret_errors(errors):
     """
     Laboriously add best guesses at the cause of the error, based on
     developer knowledge and possibly further information that is gathered
     in this method.
 
+    Precondition: Every error chain starts with a StratisCliActionError
+
     :param errors: the chain of errors
     :type errors: list of Exception
     :returns: None if no interpretation found, otherwise str
     """
-    # pylint: disable=fixme
-    # FIXME: remove no coverage pragma when adequate testing for CLI output
-    # exists.
-    try:  # pragma: no cover
-        # Inspect top-most error after StratisCliActionError
-        error = errors[1]
+    try:
+        assert isinstance(errors[0], StratisCliActionError)
 
-        if (
-            # pylint: disable=bad-continuation
-            isinstance(error, DbusClientUniqueResultError)
-            and error.result == []
-        ):
-            fmt_str = "Most likely you specified a %s which does not exist."
-            return fmt_str % _interface_name_to_common_name(error.interface_name)
-
-        # These errors can only arise if there is a bug in the way automatically
-        # generated code is constructed, or if the introspection data from
-        # which the auto-generated code is constructed does not match the
-        # daemon interface. This situation is unlikely and difficult to
-        # elicit in a test.
-        if isinstance(
-            # pylint: disable=bad-continuation
-            error,
-            DbusClientMissingSearchPropertiesError,
-        ):  # pragma: no cover
-            return _DBUS_INTERFACE_MSG
-        if isinstance(error, DbusClientMissingPropertyError):  # pragma: no cover
-            return _DBUS_INTERFACE_MSG
-
-        if isinstance(error, StratisCliEngineError):
-            fmt_str = (
-                "stratisd failed to perform the operation that you "
-                "requested. It returned the following information via "
-                "the D-Bus: %s."
-            )
-            return fmt_str % error
-
-        if isinstance(error, StratisCliUserError):
-            fmt_str = "It appears that you issued an unintended command: %s"
-            return fmt_str % error
-
-        # An incoherence error should be pretty untestable. It can arise
-        # * in the case of a stratisd bug. We would expect to fix that very
-        # soon, so should not have a test in that case.
-        # * in the case where another client of stratisd is running and alters
-        # state while a command is being executed. This could be tested for,
-        # but only with considerable difficulty, so we choose not to test.
-        if isinstance(error, StratisCliIncoherenceError):  # pragma: no cover
-            fmt_str = (
-                "stratisd reported that it did not execute every action "
-                "that it would have been expected to execute as a result "
-                "of the command that you requested: %s"
-            )
-            return fmt_str % error
-
-        # Inspect lowest error
-        error = errors[-1]
-
-        if (
-            # pylint: disable=bad-continuation
-            isinstance(error, dbus.exceptions.DBusException)
-            and error.get_dbus_name() == "org.freedesktop.DBus.Error.AccessDenied"
-        ):
-            return "Most likely stratis has insufficient permissions for the action requested."
-        # We have observed two causes of this problem. The first is that
-        # stratisd is not running at all. The second is that stratisd has not
-        # yet established its D-Bus service.
-        if (
-            # pylint: disable=bad-continuation
-            isinstance(error, dbus.exceptions.DBusException)
-            and error.get_dbus_name() == "org.freedesktop.DBus.Error.NameHasNoOwner"
-        ):
-            return "Most likely stratis is unable to connect to the stratisd D-Bus service."
-
-        if (
-            # pylint: disable=bad-continuation
-            isinstance(error, dbus.exceptions.DBusException)
-            and error.get_dbus_name() == "org.freedesktop.DBus.Error.NoReply"
-        ):
-            fmt_str = (
-                "stratis attempted communication with the daemon, stratisd, "
-                "over the D-Bus, but stratisd did not respond in the allowed time."
-            )
-            return fmt_str % error
-
-        # The goal is to have an explanation for every error chain. If there is
-        # none, then this will rapidly be fixed, so it will be difficult to
-        # maintain coverage for this branch.
-        return None  # pragma: no cover
+        return _interpret_errors_1(errors[1:])
 
     # This indicates that an exception has occurred while an explanation was
     # being constructed. This would be hard to cause, since the code is
@@ -214,4 +279,4 @@ def handle_error(err):
         raise err
 
     exit_msg = "Execution failed:%s%s" % (os.linesep, explanation)
-    sys.exit(exit_msg)
+    exit_(StratisCliErrorCodes.ERROR, exit_msg)

@@ -27,8 +27,8 @@ from .._errors import (
 )
 from .._stratisd_constants import StratisdErrors
 from ._connection import get_object
-from ._constants import FILESYSTEM_INTERFACE, TOP_OBJECT
-from ._formatting import TABLE_FAILURE_STRING, fetch_property, print_table
+from ._constants import TOP_OBJECT
+from ._formatting import TABLE_FAILURE_STRING, get_property, print_table
 
 
 class LogicalActions:
@@ -46,7 +46,6 @@ class LogicalActions:
         :raises StratisCliPartialChangeError:
         """
         # pylint: disable=too-many-locals
-        # pylint: disable=import-outside-toplevel
         from ._data import MOFilesystem
         from ._data import ObjectManager
         from ._data import Pool
@@ -76,12 +75,16 @@ class LogicalActions:
                 "create", requested_names.difference(already_names), already_names
             )
 
-        ((created, list_created), rc, message) = Pool.Methods.CreateFilesystems(
+        (
+            (created, list_created),
+            return_code,
+            message,
+        ) = Pool.Methods.CreateFilesystems(
             get_object(pool_object_path), {"specs": list(requested_names)}
         )
 
-        if rc != StratisdErrors.OK:  # pragma: no cover
-            raise StratisCliEngineError(rc, message)
+        if return_code != StratisdErrors.OK:
+            raise StratisCliEngineError(return_code, message)
 
         if not created or len(list_created) < len(requested_names):  # pragma: no cover
             raise StratisCliIncoherenceError(
@@ -98,7 +101,6 @@ class LogicalActions:
         """
         List the volumes in a pool.
         """
-        # pylint: disable=import-outside-toplevel
         from ._data import FetchProperties
         from ._data import MOFilesystem
         from ._data import MOPool
@@ -149,11 +151,8 @@ class LogicalActions:
             :returns: a string to display in the resulting list output
             :rtype: str
             """
-            filesystem_used = fetch_property(FILESYSTEM_INTERFACE, props, "Used", Range)
-            return (
-                TABLE_FAILURE_STRING
-                if filesystem_used is None
-                else str(filesystem_used)
+            return get_property(
+                props, "Used", lambda x: str(Range(x)), TABLE_FAILURE_STRING
             )
 
         tables = [
@@ -186,7 +185,6 @@ class LogicalActions:
         :raises StratisCliPartialChangeError:
         """
         # pylint: disable=too-many-locals
-        # pylint: disable=import-outside-toplevel
         from ._data import MOFilesystem
         from ._data import ObjectManager
         from ._data import Pool
@@ -221,12 +219,16 @@ class LogicalActions:
             op for (name, op) in pool_filesystems.items() if name in requested_names
         ]
 
-        ((destroyed, list_destroyed), rc, message) = Pool.Methods.DestroyFilesystems(
+        (
+            (destroyed, list_destroyed),
+            return_code,
+            message,
+        ) = Pool.Methods.DestroyFilesystems(
             get_object(pool_object_path), {"filesystems": fs_object_paths}
         )
 
-        if rc != StratisdErrors.OK:  # pragma: no cover
-            raise StratisCliEngineError(rc, message)
+        if return_code != StratisdErrors.OK:  # pragma: no cover
+            raise StratisCliEngineError(return_code, message)
 
         if not destroyed or len(list_destroyed) < len(
             # pylint: disable=bad-continuation
@@ -249,7 +251,6 @@ class LogicalActions:
         :raises StratisCliEngineError:
         :raises StratisCliNoChangeError:
         """
-        # pylint: disable=import-outside-toplevel
         from ._data import ObjectManager
         from ._data import Pool
         from ._data import filesystems
@@ -269,13 +270,13 @@ class LogicalActions:
             .search(managed_objects)
         )
 
-        ((changed, _), rc, message) = Pool.Methods.SnapshotFilesystem(
+        ((changed, _), return_code, message) = Pool.Methods.SnapshotFilesystem(
             get_object(pool_object_path),
             {"origin": origin_fs_object_path, "snapshot_name": namespace.snapshot_name},
         )
 
-        if rc != StratisdErrors.OK:  # pragma: no cover
-            raise StratisCliEngineError(rc, message)
+        if return_code != StratisdErrors.OK:  # pragma: no cover
+            raise StratisCliEngineError(return_code, message)
 
         if not changed:
             raise StratisCliNoChangeError("snapshot", namespace.snapshot_name)
@@ -288,7 +289,6 @@ class LogicalActions:
         :raises StratisCliEngineError:
         :raises StratisCliNoChangeError:
         """
-        # pylint: disable=import-outside-toplevel
         from ._data import ObjectManager
         from ._data import Filesystem
         from ._data import filesystems
@@ -307,12 +307,12 @@ class LogicalActions:
             .search(managed_objects)
         )
 
-        ((changed, _), rc, message) = Filesystem.Methods.SetName(
+        ((changed, _), return_code, message) = Filesystem.Methods.SetName(
             get_object(fs_object_path), {"name": namespace.new_name}
         )
 
-        if rc != StratisdErrors.OK:  # pragma: no cover
-            raise StratisCliEngineError(rc, message)
+        if return_code != StratisdErrors.OK:  # pragma: no cover
+            raise StratisCliEngineError(return_code, message)
 
         if not changed:
             raise StratisCliNoChangeError("rename", namespace.new_name)

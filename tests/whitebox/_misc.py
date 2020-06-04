@@ -20,7 +20,6 @@ import os
 import random
 import string
 import subprocess
-import sys
 import time
 import unittest
 
@@ -29,12 +28,8 @@ import psutil
 
 # isort: LOCAL
 from stratis_cli import run
-
-try:
-    _STRATISD = os.environ["STRATISD"]
-except KeyError:
-    message = "STRATISD environment variable must be set to absolute path of stratisd executable"
-    sys.exit(message)
+from stratis_cli._error_reporting import handle_error
+from stratis_cli._errors import StratisCliActionError
 
 
 def device_name_list(min_devices=0, max_devices=10):
@@ -57,17 +52,25 @@ def device_name_list(min_devices=0, max_devices=10):
 
 class _Service:
     """
-    Handle starting and stopping the Rust service.
+    Handle starting and stopping the stratisd daemon.
     """
 
-    def setUp(self):
+    def setup(self):
         """
         Start the stratisd daemon with the simulator.
         """
-        self._stratisd = subprocess.Popen([os.path.join(_STRATISD), "--sim"])
+        try:
+            stratisd_var = os.environ["STRATISD"]
+        except KeyError:
+            raise RuntimeError(
+                "STRATISD environment variable must be set to absolute path of stratisd executable"
+            )
+        self._stratisd = subprocess.Popen(  # pylint: disable=attribute-defined-outside-init
+            [os.path.join(stratisd_var), "--sim"]
+        )
         time.sleep(1)
 
-    def tearDown(self):
+    def teardown(self):
         """
         Stop the stratisd simulator and daemon.
         """
@@ -79,10 +82,65 @@ class _Service:
         Stop the daemon if it has been started.
         """
         if hasattr(self, "_stratisd"):
-            self.tearDown()
+            self.teardown()
 
 
-class SimTestCase(unittest.TestCase):
+class RunTestCase(unittest.TestCase):
+    """
+    Test case for running the program.
+    """
+
+    def check_error(self, expected_cause, command_line, expected_code):
+        """
+        Check that the expected exception was raised, and that the cause
+        and exit codes were also as expected, based on the command line
+        arguments passed to the program.
+
+        Precondition: command_line contains the "--propagate" flag, so that
+        the exception is propagated by the source, and can thus be caught
+        in the test.
+
+        :param expected_cause: the expected exception below the StratisCliActionError
+        :type expected_cause: Exception
+        :param command_line: the command line arguments
+        :type command_line: list
+        :param expected_code: the expected error code
+        :type expected_code: int
+        """
+        with self.assertRaises(StratisCliActionError) as context:
+            RUNNER(command_line)
+
+        exception = context.exception
+        cause = exception.__cause__
+        self.assertIsInstance(cause, expected_cause)
+
+        error_string = str(exception)
+        self.assertIsInstance(error_string, str)
+        self.assertNotEqual(error_string, "")
+
+        with self.assertRaises(SystemExit) as final_err:
+            handle_error(exception)
+
+        final_code = final_err.exception.code
+        self.assertEqual(final_code, expected_code)
+
+    def check_system_exit(self, command_line, expected_code):
+        """
+        Check that SystemExit exception was raised with the expected error
+        code as a result of running the program.
+
+        :param command_line: the command line arguments
+        :type command_line: list
+        :param expected_code: the expected error code
+        :type expected_code: int
+        """
+        with self.assertRaises(SystemExit) as context:
+            RUNNER(command_line)
+        exit_code = context.exception.code
+        self.assertEqual(exit_code, expected_code)
+
+
+class SimTestCase(RunTestCase):
     """
     A SimTestCase must always start and stop stratisd (simulator vesion).
     """
@@ -94,9 +152,11 @@ class SimTestCase(unittest.TestCase):
         """
         for pid in psutil.pids():
             try:
-                assert psutil.Process(pid).name() != "stratisd", (
-                    "Evidently a stratisd process with process id %u is running" % pid
-                )
+                if psutil.Process(pid).name() == "stratisd":
+                    raise RuntimeError(
+                        "Evidently a stratisd process with process id %u is running"
+                        % pid
+                    )
             except psutil.NoSuchProcess:
                 pass
 
@@ -106,7 +166,7 @@ class SimTestCase(unittest.TestCase):
         """
         self._service = _Service()
         self.addCleanup(self._service.cleanup)
-        self._service.setUp()
+        self._service.setup()
 
 
 RUNNER = run()

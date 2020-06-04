@@ -37,8 +37,43 @@ POOL_SUBCMDS = [
                         help="Redundancy level for this pool",
                     ),
                 ),
+                (
+                    "--key-desc",
+                    dict(
+                        default=None,
+                        type=str,
+                        help=(
+                            "Key description of key in kernel keyring to use "
+                            "for encryption"
+                        ),
+                        dest="key_desc",
+                    ),
+                ),
             ],
             func=TopActions.create_pool,
+        ),
+    ),
+    (
+        "init-cache",
+        dict(
+            help="Initialize the cache with block devices",
+            args=[
+                (
+                    "pool_name",
+                    dict(
+                        action="store",
+                        help=("Name of the pool for which to initialize the cache"),
+                    ),
+                ),
+                (
+                    "blockdevs",
+                    dict(
+                        help="Initialize the pool cache using these block devs",
+                        nargs="+",
+                    ),
+                ),
+            ],
+            func=TopActions.init_cache,
         ),
     ),
     (
@@ -102,6 +137,13 @@ POOL_SUBCMDS = [
                 ),
             ],
             func=TopActions.add_cache_devices,
+        ),
+    ),
+    (
+        "unlock",
+        dict(
+            help="Unlock all of the currently locked encrypted pools",
+            func=TopActions.unlock_pools,
         ),
     ),
 ]
