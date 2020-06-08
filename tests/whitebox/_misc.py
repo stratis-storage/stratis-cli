@@ -172,7 +172,7 @@ class SimTestCase(RunTestCase):
 RUNNER = run()
 
 
-class StratisCliTestRunError(Exception):
+class StratisCliTestRunError(AssertionError):
     """
     Exception that occurs after a TEST_RUNNER failure.
     """
