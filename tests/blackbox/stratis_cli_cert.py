@@ -171,9 +171,9 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         """
         self.unittest_command([_STRATIS_CLI, "daemon", "version"], 0, True, False)
 
-    def test_permissions_stratisd_version(self):
+    def test_stratisd_version_permissions(self):
         """
-        Test that gettign the daemon version succeeds with dropped permissions.
+        Test that getting the daemon version succeeds with dropped permissions.
         """
         self.test_permissions([_STRATIS_CLI, "daemon", "version"], False, False)
 
@@ -183,12 +183,26 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         """
         self.unittest_command([_STRATIS_CLI, "daemon", "redundancy"], 0, True, False)
 
+    def test_stratisd_redundancy_permissions(self):
+        """
+        Test listing the redundancy levels succeeds with dropped permissions.
+        """
+        self.test_permissions([_STRATIS_CLI, "daemon", "redundancy"], False, False)
+
     def test_engine_state_report(self):
         """
         Test getting the engine_state_report.
         """
         self.unittest_command(
             [_STRATIS_CLI, "report", "engine_state_report"], 0, True, False
+        )
+
+    def test_engine_state_report_permissions(self):
+        """
+        Test getting the engine_state_report succeeds with dropped permissions.
+        """
+        self.test_permissions(
+            [_STRATIS_CLI, "report", "engine_state_report"], False, False
         )
 
     def test_invalid_report(self):
@@ -203,11 +217,23 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         """
         self.unittest_command([_STRATIS_CLI, "pool", "list"], 0, True, False)
 
+    def test_pool_list_empty_permissions(self):
+        """
+        Test listing a non-existent pool succeeds with dropped permissions.
+        """
+        self.unittest_command([_STRATIS_CLI, "pool", "list"], False, False)
+
     def test_filesystem_list_empty(self):
         """
         Test listing an non-existent filesystem.
         """
         self.unittest_command([_STRATIS_CLI, "filesystem", "list"], 0, True, False)
+
+    def test_filesystem_list_empty_permissions(self):
+        """
+        Test listing an non-existent filesystem succeeds with dropped permissions.
+        """
+        self.unittest_command([_STRATIS_CLI, "filesystem", "list"], False, False)
 
     def test_key_set_unset(self):
         """
