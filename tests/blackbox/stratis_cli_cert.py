@@ -33,6 +33,8 @@ from testlib.utils import (
 )
 
 _STRATIS_CLI = os.getenv("STRATIS_CLI", "/usr/bin/stratis")
+_ROOT = 0
+_NON_ROOT = 1
 
 
 def _raise_error_exception(return_code, msg):
@@ -113,6 +115,26 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         time.sleep(1)
         exec_command(["udevadm", "settle"])
 
+    def test_permissions(self, command_line, permissions, exp_stdout_empty):
+        """
+        Test running cli commands with and without root permissions.
+        :param list args: The arguments needed to execute the Stratis command being tested
+        :type args: List of str
+        :param bool permissions: True if the stratis command needs roots permissions to succeed,
+                                    otherwise False.
+        :param bool exp_stdout_empty: True is stdout is expected to be empty
+                                        when Stratis command succeeds.
+        """
+        os.seteuid(_NON_ROOT)
+
+        if permissions:
+            self.unittest_command(command_line, 1, False, True)
+        else:
+            self.unittest_command(command_line, 0, True, exp_stdout_empty)
+
+        os.seteuid(_ROOT)
+        self.unittest_command(command_line, 0, True, exp_stdout_empty)
+
     def unittest_command(  # pylint: disable=bad-continuation
         self, args, exp_exit_code, exp_stderr_is_empty, exp_stdout_is_empty
     ):
@@ -148,6 +170,12 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         Test getting the daemon version.
         """
         self.unittest_command([_STRATIS_CLI, "daemon", "version"], 0, True, False)
+
+    def test_permissions_stratisd_version(self):
+        """
+        Test that gettign the daemon version succeeds with dropped permissions.
+        """
+        self.test_permissions([_STRATIS_CLI, "daemon", "version"], False, False)
 
     def test_stratisd_redundancy(self):
         """
