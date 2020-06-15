@@ -177,6 +177,9 @@ class StratisCliTestRunError(AssertionError):
     Exception that occurs after a TEST_RUNNER failure.
     """
 
+    def __str__(self):
+        return "Unexpected failure of command-line call in test"
+
 
 def test_runner(command_line):
     """
