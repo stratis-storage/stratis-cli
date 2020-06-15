@@ -122,7 +122,7 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         :type args: List of str
         :param bool permissions: True if the stratis command needs roots permissions to succeed,
                                     otherwise False.
-        :param bool exp_stdout_empty: True is stdout is expected to be empty
+        :param bool exp_stdout_empty: True if stdout is expected to be empty
                                         when Stratis command succeeds.
         """
         os.seteuid(_NON_ROOT)
