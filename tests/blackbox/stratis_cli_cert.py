@@ -117,10 +117,10 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
 
     def test_permissions(self, command_line, permissions, exp_stdout_empty):
         """
-        Test running cli commands with and without root permissions.
-        :param list args: The arguments needed to execute the Stratis command being tested
-        :type args: List of str
-        :param bool permissions: True if the stratis command needs roots permissions to succeed,
+        Test running CLI commands with and without root permissions.
+        :param list command_line: The arguments needed to execute the Stratis command being tested
+        :type command_line: List of str
+        :param bool permissions: True if the Stratis command needs root permissions to succeed,
                                     otherwise False.
         :param bool exp_stdout_empty: True if stdout is expected to be empty
                                         when Stratis command succeeds.
