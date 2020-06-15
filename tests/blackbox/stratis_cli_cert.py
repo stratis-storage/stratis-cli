@@ -125,14 +125,17 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         :param bool exp_stdout_empty: True if stdout is expected to be empty
                                         when Stratis command succeeds.
         """
+
         os.seteuid(_NON_ROOT)
+        try:
+            if permissions:
+                self.unittest_command(command_line, 1, False, True)
+            else:
+                self.unittest_command(command_line, 0, True, exp_stdout_empty)
+        except Exception as err:
+            os.seteuid(_ROOT)
+            raise err
 
-        if permissions:
-            self.unittest_command(command_line, 1, False, True)
-        else:
-            self.unittest_command(command_line, 0, True, exp_stdout_empty)
-
-        os.seteuid(_ROOT)
         self.unittest_command(command_line, 0, True, exp_stdout_empty)
 
     def unittest_command(  # pylint: disable=bad-continuation
