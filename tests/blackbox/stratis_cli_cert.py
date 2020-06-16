@@ -21,6 +21,7 @@ import os
 import sys
 import time
 import unittest
+from multiprocessing import Process
 
 # isort: THIRDPARTY
 from testlib.dbus import fs_n, p_n
@@ -115,6 +116,22 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         time.sleep(1)
         exec_command(["udevadm", "settle"])
 
+    def test_drop_permissions(self, command_line, permissions, exp_stdout_empty):
+        """
+        Test running CLI commands without root permissions.
+        :param list command_line: The arguments needed to execute the Stratis command being tested
+        :type command_line: List of str
+        :param bool permissions: True if the Stratis command needs root permissions to succeed,
+                                    otherwise False.
+        :param bool exp_stdout_empty: True if stdout is expected to be empty
+                                        when Stratis command succeeds.
+        """
+        os.seteuid(_NON_ROOT)
+        if permissions:
+            self.unittest_command(command_line, 1, False, True)
+        else:
+            self.unittest_command(command_line, 0, True, exp_stdout_empty)
+
     def test_permissions(self, command_line, permissions, exp_stdout_empty):
         """
         Test running CLI commands with and without root permissions.
@@ -126,17 +143,12 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
                                         when Stratis command succeeds.
         """
 
-        os.seteuid(_NON_ROOT)
-        try:
-            if permissions:
-                self.unittest_command(command_line, 1, False, True)
-            else:
-                self.unittest_command(command_line, 0, True, exp_stdout_empty)
-        except Exception as err:
-            os.seteuid(_ROOT)
-            raise err
-
-        os.seteuid(_ROOT)
+        process = Process(
+            target=self.test_drop_permissions,
+            args=(command_line, permissions, exp_stdout_empty),
+        )
+        process.start()
+        process.join()
 
         if permissions:
             self.unittest_command(command_line, 0, True, exp_stdout_empty)
