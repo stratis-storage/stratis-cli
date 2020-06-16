@@ -223,23 +223,11 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         """
         self.unittest_command([_STRATIS_CLI, "pool", "list"], 0, True, False)
 
-    def test_pool_list_empty_permissions(self):
-        """
-        Test listing a non-existent pool succeeds with dropped permissions.
-        """
-        self.test_permissions([_STRATIS_CLI, "pool", "list"], False, False)
-
     def test_filesystem_list_empty(self):
         """
         Test listing an non-existent filesystem.
         """
         self.unittest_command([_STRATIS_CLI, "filesystem", "list"], 0, True, False)
-
-    def test_filesystem_list_empty_permissions(self):
-        """
-        Test listing an non-existent filesystem succeeds with dropped permissions.
-        """
-        self.test_permissions([_STRATIS_CLI, "filesystem", "list"], False, False)
 
     def test_key_set_unset(self):
         """
@@ -378,6 +366,13 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         """
         make_test_pool(StratisCertify.DISKS[0:1])
         self.unittest_command([_STRATIS_CLI, "pool", "list"], 0, True, False)
+
+    def test_pool_list_not_empty_permissions(self):
+        """
+        Test listing an existent pool succeeds with dropped permissions.
+        """
+        make_test_pool(StratisCertify.DISKS[0:1])
+        self.test_permissions([_STRATIS_CLI, "pool", "list"], False, False)
 
     def test_blockdev_list(self):
         """
@@ -537,6 +532,14 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         pool_name = make_test_pool(StratisCertify.DISKS[0:1])
         make_test_filesystem(pool_name)
         self.unittest_command([_STRATIS_CLI, "filesystem", "list"], 0, True, False)
+
+    def test_filesystem_list_not_empty_permissions(self):
+        """
+        Test listing an existent filesystem succeeds with dropped permissions.
+        """
+        pool_name = make_test_pool(StratisCertify.DISKS[0:1])
+        make_test_filesystem(pool_name)
+        self.test_permissions([_STRATIS_CLI, "filesystem", "list"], False, False)
 
     def test_filesystem_create_same_name(self):
         """
