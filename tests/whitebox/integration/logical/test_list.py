@@ -21,7 +21,7 @@ from dbus_client_gen import DbusClientUniqueResultError
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
 
-from .._misc import RUNNER, SimTestCase, device_name_list
+from .._misc import RUNNER, TEST_RUNNER, SimTestCase, device_name_list
 
 _DEVICE_STRATEGY = device_name_list(1)
 
@@ -65,7 +65,7 @@ class List2TestCase(SimTestCase):
         Listing the volumes in an empty pool should succeed.
         """
         command_line = self._MENU + [self._POOLNAME]
-        RUNNER(command_line)
+        TEST_RUNNER(command_line)
 
 
 class List4TestCase(SimTestCase):
@@ -96,7 +96,7 @@ class List4TestCase(SimTestCase):
         Listing multiple volumes in a non-empty pool should succeed.
         """
         command_line = ["--propagate", "filesystem", "list", self._POOLNAME]
-        RUNNER(command_line)
+        TEST_RUNNER(command_line)
 
 
 class List5TestCase(SimTestCase):
@@ -132,7 +132,7 @@ class List5TestCase(SimTestCase):
         Specifying a pool name should yield only filesystems for that pool.
         """
         command_line = self._MENU + [self._POOLNAMES[1]]
-        RUNNER(command_line)
+        TEST_RUNNER(command_line)
 
     def test_list_no_pool(self):
         """
@@ -140,14 +140,14 @@ class List5TestCase(SimTestCase):
         be listed.
         """
         command_line = self._MENU
-        RUNNER(command_line)
+        TEST_RUNNER(command_line)
 
     def test_list_default(self):
         """
         filesystem or fs subcommand should default to listing all pools.
         """
         command_line = self._MENU[:-1]
-        RUNNER(command_line)
+        TEST_RUNNER(command_line)
 
         command_line = ["--propagate", "fs"]
-        RUNNER(command_line)
+        TEST_RUNNER(command_line)

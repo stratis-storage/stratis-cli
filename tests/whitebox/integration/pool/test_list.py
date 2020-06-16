@@ -15,7 +15,7 @@
 Test 'list'.
 """
 
-from .._misc import RUNNER, SimTestCase, device_name_list
+from .._misc import RUNNER, TEST_RUNNER, SimTestCase, device_name_list
 
 _DEVICE_STRATEGY = device_name_list(1)
 
@@ -32,7 +32,7 @@ class ListTestCase(SimTestCase):
         List should just succeed, even though there is nothing to list.
         """
         command_line = self._MENU
-        RUNNER(command_line)
+        TEST_RUNNER(command_line)
 
     def test_list_default(self):
         """
@@ -41,7 +41,7 @@ class ListTestCase(SimTestCase):
         List should just succeed, even though there is nothing to list.
         """
         command_line = self._MENU[:-1]
-        RUNNER(command_line)
+        TEST_RUNNER(command_line)
 
 
 class List2TestCase(SimTestCase):
@@ -65,14 +65,14 @@ class List2TestCase(SimTestCase):
         List should just succeed.
         """
         command_line = self._MENU
-        RUNNER(command_line)
+        TEST_RUNNER(command_line)
 
     def test_list_default(self):
         """
         Test default listing action when "list" is not specified.
         """
         command_line = self._MENU[:-1]
-        RUNNER(command_line)
+        TEST_RUNNER(command_line)
 
     def test_list_with_cache(self):
         """
@@ -80,6 +80,6 @@ class List2TestCase(SimTestCase):
         strings representing boolean values with a True value are handled.
         """
         command_line = ["pool", "init-cache", self._POOLNAME] + _DEVICE_STRATEGY()
-        RUNNER(command_line)
+        TEST_RUNNER(command_line)
         command_line = self._MENU
-        RUNNER(command_line)
+        TEST_RUNNER(command_line)

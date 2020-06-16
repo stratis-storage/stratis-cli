@@ -27,7 +27,7 @@ from stratis_cli._errors import (
     StratisCliPartialChangeError,
 )
 
-from .._misc import RUNNER, SimTestCase, device_name_list
+from .._misc import RUNNER, TEST_RUNNER, SimTestCase, device_name_list
 
 _DEVICE_STRATEGY = device_name_list(1, 1)
 _DEVICE_STRATEGY_2 = device_name_list(2, 2)
@@ -90,7 +90,7 @@ class AddDataTestCase1(SimTestCase):
         Test that adding new devices to data tier succeeds.
         """
         command_line = self._MENU + [self._POOLNAME] + _DEVICE_STRATEGY()
-        RUNNER(command_line)
+        TEST_RUNNER(command_line)
 
     def test_add_data_again(self):
         """
@@ -188,7 +188,7 @@ class AddCacheTestCase1(SimTestCase):
         Test that adding new devices to cache tier succeeds.
         """
         command_line = self._MENU + [self._POOLNAME] + _DEVICE_STRATEGY()
-        RUNNER(command_line)
+        TEST_RUNNER(command_line)
 
     def test_add_cache_again(self):
         """
