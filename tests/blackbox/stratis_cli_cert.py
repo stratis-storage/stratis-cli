@@ -136,7 +136,10 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
             os.seteuid(_ROOT)
             raise err
 
-        self.unittest_command(command_line, 0, True, exp_stdout_empty)
+        os.seteuid(_ROOT)
+
+        if permissions:
+            self.unittest_command(command_line, 0, True, exp_stdout_empty)
 
     def unittest_command(  # pylint: disable=bad-continuation
         self, args, exp_exit_code, exp_stderr_is_empty, exp_stdout_is_empty
