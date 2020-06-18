@@ -1,3 +1,35 @@
+stratis-cli 2.1.1
+=================
+Recommended Python interpreter: 3.7.7
+Lowest supported Python interpreter: 3.6.8
+Python linter: pylint (2.4.4)
+Python auto-formatter: black (19.10b0)
+Python import sorter: isort (4.3.21)
+YAML linter: yamllint (1.23.0)
+
+- Do not terminate pool unlocking on failure to unlock one pool in a list:
+  https://github.com/stratis-storage/stratis-cli/issues/618
+  https://github.com/stratis-storage/stratis-cli/pull/624
+
+- Expand man page entry on --keyfile-path and --capture-key options:
+  https://github.com/stratis-storage/stratis-cli/pull/625
+
+- Improve error message if no stratisd process running:
+  https://github.com/stratis-storage/stratis-cli/issues/613
+  https://github.com/stratis-storage/stratis-cli/pull/614
+
+- Extend blackbox tests:
+  https://github.com/stratis-storage/stratis-cli/pull/610
+
+- Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/623
+  https://github.com/stratis-storage/stratis-cli/pull/620
+  https://github.com/stratis-storage/stratis-cli/pull/616
+  https://github.com/stratis-storage/stratis-cli/pull/615
+  https://github.com/stratis-storage/stratis-cli/pull/608
+  https://github.com/stratis-storage/stratis-cli/pull/603
+
+
 stratis-cli 2.1.0
 =================
 Recommended Python interpreter: 3.7.6
