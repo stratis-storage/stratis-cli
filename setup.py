@@ -49,6 +49,7 @@ setuptools.setup(
         "dbus-client-gen>=0.4",
         "dbus-python-client-gen>=0.7",
         "justbytes>=0.14",
+        "psutil",
         "python-dateutil",
         "semantic_version",
         "wcwidth",
