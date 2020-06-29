@@ -78,9 +78,10 @@ def make_test_filesystem(pool_path, fs_name):
     :return: Object path of the created filesystem
     """
     (
-        filesystems_created,
-        (array_of_tuples_with_obj_paths_and_names),
-    ), return_code, msg = StratisDbus.fs_create(pool_path, fs_name)
+        (filesystems_created, (array_of_tuples_with_obj_paths_and_names),),
+        return_code,
+        msg,
+    ) = StratisDbus.fs_create(pool_path, fs_name)
 
     _raise_error_exception(return_code, msg, filesystems_created)
     return array_of_tuples_with_obj_paths_and_names[0][0]
