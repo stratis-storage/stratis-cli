@@ -29,6 +29,7 @@ def check_stratisd_version():
 
     :raises StratisCliStratisdVersionError
     """
+    # pylint: disable=import-outside-toplevel
     from ._data import Manager
 
     version_spec = Spec(

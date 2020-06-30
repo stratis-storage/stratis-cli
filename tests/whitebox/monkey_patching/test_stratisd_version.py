@@ -41,6 +41,7 @@ class StratisdVersionTestCase(SimTestCase):
             """
             return "1.0.0"
 
+        # pylint: disable=import-outside-toplevel
         from stratis_cli._actions import _data
 
         # pylint: disable=protected-access

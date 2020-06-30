@@ -56,6 +56,7 @@ def _generate_pools_to_blockdevs(managed_objects, to_be_added, tier):
     :returns: a map of pool names to sets of strings containing blockdevs they own
     :rtype: dict of str * frozenset of str
     """
+    # pylint: disable=import-outside-toplevel
     from ._data import MODev
     from ._data import MOPool
     from ._data import devs
@@ -176,6 +177,7 @@ def _fetch_property(proxy, property_name):
     :raises StratisCliPropertyNotFoundError:
     :raises StratisCliEnginePropertyError:
     """
+    # pylint: disable=import-outside-toplevel
     from ._data import FetchProperties
 
     properties = FetchProperties.Methods.GetProperties(
@@ -199,6 +201,7 @@ def _add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
     """
     assert capture_key == (keyfile_path is None)
 
+    # pylint: disable=import-outside-toplevel
     from ._data import Manager
 
     if capture_key:  # pragma: no cover
@@ -238,6 +241,7 @@ class TopActions:
         :raises StratisCliIncoherenceError:
         :raises StratisCliNameConflictError:
         """
+        # pylint: disable=import-outside-toplevel
         from ._data import Manager
         from ._data import ObjectManager
         from ._data import pools
@@ -288,6 +292,7 @@ class TopActions:
         :raises StratisCliEngineError:
         :raises StratisCliIncoherenceError:
         """
+        # pylint: disable=import-outside-toplevel
         from ._data import MODev
         from ._data import ObjectManager
         from ._data import Pool
@@ -338,6 +343,7 @@ class TopActions:
         """
         List all stratis pools.
         """
+        # pylint: disable=import-outside-toplevel
         from ._data import FetchProperties
         from ._data import MOPool
         from ._data import ObjectManager
@@ -451,6 +457,7 @@ class TopActions:
         :raises StratisCliEngineError:
         :raises StratisCliIncoherenceError:
         """
+        # pylint: disable=import-outside-toplevel
         from ._data import Manager
         from ._data import ObjectManager
         from ._data import pools
@@ -490,6 +497,7 @@ class TopActions:
         :raises StratisCliEngineError:
         :raises StratisCliNoChangeError:
         """
+        # pylint: disable=import-outside-toplevel
         from ._data import ObjectManager
         from ._data import Pool
         from ._data import pools
@@ -523,6 +531,7 @@ class TopActions:
         :raises StratisCliInUseSameTierError:
         :raises StratisCliPartialChangeError:
         """
+        # pylint: disable=import-outside-toplevel
         from ._data import MODev
         from ._data import ObjectManager
         from ._data import Pool
@@ -581,6 +590,7 @@ class TopActions:
         :raises StratisCliInUseSameTierError:
         :raises StratisCliPartialChangeError:
         """
+        # pylint: disable=import-outside-toplevel
         from ._data import MODev
         from ._data import ObjectManager
         from ._data import Pool
@@ -635,6 +645,7 @@ class TopActions:
 
         :raises StratisCliEngineError:
         """
+        # pylint: disable=import-outside-toplevel
         from ._data import Report
 
         (report, return_code, message) = Report.Methods.GetReport(
@@ -745,6 +756,7 @@ class TopActions:
         :raises StratisCliNoChangeError:
         :raises StratisCliIncoherenceError:
         """
+        # pylint: disable=import-outside-toplevel
         from ._data import Manager
 
         proxy = get_object(TOP_OBJECT)
@@ -794,6 +806,7 @@ class TopActions:
         :raises StratisCliNoChangeError:
         :raises StratisCliAggregateError:
         """
+        # pylint: disable=import-outside-toplevel
         from ._data import Manager
 
         proxy = get_object(TOP_OBJECT)
