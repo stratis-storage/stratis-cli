@@ -70,6 +70,6 @@ jobs:
     - name: "run yamllint on .travis.yml"
       python: "3.7.7"
       install: pip install yamllint
-      script: yamllint .travis.yml
+      script: make -f Makefile yamllint
 
 script: make -f Makefile $TASK
