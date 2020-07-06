@@ -25,6 +25,7 @@ from stratis_cli._errors import (
     StratisCliEnginePropertyError,
     StratisCliGenerationError,
     StratisCliIncoherenceError,
+    StratisCliPartialFailureError,
     StratisCliPropertyNotFoundError,
     StratisCliUnknownInterfaceError,
 )
@@ -79,5 +80,18 @@ class ErrorFmtTestCase(unittest.TestCase):
         self._string_not_empty(
             StratisCliAggregateError(
                 "do lots of things", "toy", [StratisCliEngineError(1, "bad")]
+            )
+        )
+
+    def test_stratis_cli_partial_failure_error(self):
+        """
+        Test 'StratisCliPartialFailureError'
+        """
+        self._string_not_empty(
+            StratisCliPartialFailureError("action", "unique resource")
+        )
+        self._string_not_empty(
+            StratisCliPartialFailureError(
+                "action", "unique resource", "something failed"
             )
         )
