@@ -821,7 +821,7 @@ class TopActions:
         errors = []  # pragma: no cover
         for uuid in pool_uuid_list:  # pragma: no cover
             (
-                (is_some, unlocked_pools),
+                (is_some, unlocked_devices),
                 return_code,
                 message,
             ) = Manager.Methods.UnlockPool(proxy, {"pool_uuid": uuid})
@@ -833,7 +833,7 @@ class TopActions:
                     )
                 )
 
-            if is_some and unlocked_pools == []:
+            if is_some and unlocked_devices == []:
                 raise StratisCliIncoherenceError(
                     (
                         "stratisd reported that some existing devices are locked but "
@@ -842,4 +842,4 @@ class TopActions:
                 )
 
         if errors != []:  # pragma: no cover
-            raise StratisCliAggregateError("unlock", "device", errors)
+            raise StratisCliAggregateError("unlock", "pool", errors)
