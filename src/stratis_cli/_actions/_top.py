@@ -35,6 +35,7 @@ from .._errors import (
     StratisCliNameConflictError,
     StratisCliNoChangeError,
     StratisCliPartialChangeError,
+    StratisCliPartialFailureError,
     StratisCliResourceNotFoundError,
 )
 from .._stratisd_constants import BlockDevTiers, StratisdErrors
@@ -819,14 +820,20 @@ class TopActions:
         # management of unlocked devices, so pool_uuid_list is always empty.
         errors = []  # pragma: no cover
         for uuid in pool_uuid_list:  # pragma: no cover
-            ((is_some, _), return_code, message) = Manager.Methods.UnlockPool(
-                proxy, {"pool_uuid": uuid}
-            )
+            (
+                (is_some, unlocked_devices),
+                return_code,
+                message,
+            ) = Manager.Methods.UnlockPool(proxy, {"pool_uuid": uuid})
 
             if return_code != StratisdErrors.OK:
-                errors.append(StratisCliEngineError(return_code, message))
+                errors.append(
+                    StratisCliPartialFailureError(
+                        "unlock", "pool with UUID %s" % uuid, error_message=message
+                    )
+                )
 
-            if not is_some:
+            if is_some and unlocked_devices == []:
                 raise StratisCliIncoherenceError(
                     (
                         "stratisd reported that some existing devices are locked but "
@@ -835,4 +842,4 @@ class TopActions:
                 )
 
         if errors != []:  # pragma: no cover
-            raise StratisCliAggregateError("unlock", "device", errors)
+            raise StratisCliAggregateError("unlock", "pool", errors)
