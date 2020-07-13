@@ -35,6 +35,7 @@ from .._errors import (
     StratisCliNameConflictError,
     StratisCliNoChangeError,
     StratisCliPartialChangeError,
+    StratisCliPartialFailureError,
     StratisCliResourceNotFoundError,
 )
 from .._stratisd_constants import BlockDevTiers, StratisdErrors
@@ -56,6 +57,7 @@ def _generate_pools_to_blockdevs(managed_objects, to_be_added, tier):
     :returns: a map of pool names to sets of strings containing blockdevs they own
     :rtype: dict of str * frozenset of str
     """
+    # pylint: disable=import-outside-toplevel
     from ._data import MODev
     from ._data import MOPool
     from ._data import devs
@@ -176,6 +178,7 @@ def _fetch_property(proxy, property_name):
     :raises StratisCliPropertyNotFoundError:
     :raises StratisCliEnginePropertyError:
     """
+    # pylint: disable=import-outside-toplevel
     from ._data import FetchProperties
 
     properties = FetchProperties.Methods.GetProperties(
@@ -199,6 +202,7 @@ def _add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
     """
     assert capture_key == (keyfile_path is None)
 
+    # pylint: disable=import-outside-toplevel
     from ._data import Manager
 
     if capture_key:  # pragma: no cover
@@ -238,6 +242,7 @@ class TopActions:
         :raises StratisCliIncoherenceError:
         :raises StratisCliNameConflictError:
         """
+        # pylint: disable=import-outside-toplevel
         from ._data import Manager
         from ._data import ObjectManager
         from ._data import pools
@@ -288,6 +293,7 @@ class TopActions:
         :raises StratisCliEngineError:
         :raises StratisCliIncoherenceError:
         """
+        # pylint: disable=import-outside-toplevel
         from ._data import MODev
         from ._data import ObjectManager
         from ._data import Pool
@@ -338,6 +344,7 @@ class TopActions:
         """
         List all stratis pools.
         """
+        # pylint: disable=import-outside-toplevel
         from ._data import FetchProperties
         from ._data import MOPool
         from ._data import ObjectManager
@@ -451,6 +458,7 @@ class TopActions:
         :raises StratisCliEngineError:
         :raises StratisCliIncoherenceError:
         """
+        # pylint: disable=import-outside-toplevel
         from ._data import Manager
         from ._data import ObjectManager
         from ._data import pools
@@ -490,6 +498,7 @@ class TopActions:
         :raises StratisCliEngineError:
         :raises StratisCliNoChangeError:
         """
+        # pylint: disable=import-outside-toplevel
         from ._data import ObjectManager
         from ._data import Pool
         from ._data import pools
@@ -523,6 +532,7 @@ class TopActions:
         :raises StratisCliInUseSameTierError:
         :raises StratisCliPartialChangeError:
         """
+        # pylint: disable=import-outside-toplevel
         from ._data import MODev
         from ._data import ObjectManager
         from ._data import Pool
@@ -581,6 +591,7 @@ class TopActions:
         :raises StratisCliInUseSameTierError:
         :raises StratisCliPartialChangeError:
         """
+        # pylint: disable=import-outside-toplevel
         from ._data import MODev
         from ._data import ObjectManager
         from ._data import Pool
@@ -635,6 +646,7 @@ class TopActions:
 
         :raises StratisCliEngineError:
         """
+        # pylint: disable=import-outside-toplevel
         from ._data import Report
 
         (report, return_code, message) = Report.Methods.GetReport(
@@ -745,6 +757,7 @@ class TopActions:
         :raises StratisCliNoChangeError:
         :raises StratisCliIncoherenceError:
         """
+        # pylint: disable=import-outside-toplevel
         from ._data import Manager
 
         proxy = get_object(TOP_OBJECT)
@@ -794,6 +807,7 @@ class TopActions:
         :raises StratisCliNoChangeError:
         :raises StratisCliAggregateError:
         """
+        # pylint: disable=import-outside-toplevel
         from ._data import Manager
 
         proxy = get_object(TOP_OBJECT)
@@ -806,14 +820,20 @@ class TopActions:
         # management of unlocked devices, so pool_uuid_list is always empty.
         errors = []  # pragma: no cover
         for uuid in pool_uuid_list:  # pragma: no cover
-            ((is_some, _), return_code, message) = Manager.Methods.UnlockPool(
-                proxy, {"pool_uuid": uuid}
-            )
+            (
+                (is_some, unlocked_devices),
+                return_code,
+                message,
+            ) = Manager.Methods.UnlockPool(proxy, {"pool_uuid": uuid})
 
             if return_code != StratisdErrors.OK:
-                errors.append(StratisCliEngineError(return_code, message))
+                errors.append(
+                    StratisCliPartialFailureError(
+                        "unlock", "pool with UUID %s" % uuid, error_message=message
+                    )
+                )
 
-            if not is_some:
+            if is_some and unlocked_devices == []:
                 raise StratisCliIncoherenceError(
                     (
                         "stratisd reported that some existing devices are locked but "
@@ -822,4 +842,4 @@ class TopActions:
                 )
 
         if errors != []:  # pragma: no cover
-            raise StratisCliAggregateError("unlock", "device", errors)
+            raise StratisCliAggregateError("unlock", "pool", errors)

@@ -73,11 +73,9 @@ blockdev list [pool_name]::
 	 List all blockdevs that make up the specified pool, or all pools, if
 	 no pool name is given.
 key set <(--keyfile-path <path> | --capture-key)> <key_desc>::
-     Set a key in the kernel keyring for use with encryption either from a keyfile
-     or captured interactively from user input.
+     Set a key in the kernel keyring for use with encryption.
 key reset <(--keyfile-path <path> | --capture-key)> <key_desc>::
-     Reset the key data of an existing key in the kernel keyring either from a keyfile
-     or captured interactively from user input.
+     Reset the key data of an existing key in the kernel keyring.
 key unset <key_desc>::
      Unset a key in the kernel keyring so it is no longer available for encryption
      operations.
@@ -99,6 +97,16 @@ OPTIONS
         The key description of the key that should be used to encrypt the
         created pool. The key description must correspond to a key
         set in the kernel keyring with the *key* command.
+--keyfile-path <path> | --capture-key::
+	These mutually exclusive options allow a user to specify a key used
+        for encryption in one of two ways. The *--keyfile-path* option requires
+        an argument, the path to a file containing the key. If the
+        *--capture-key* option is selected instead, the user must enter the key
+        at the ensuing prompt. The key value is terminated at the first newline
+        character that the user enters, and does not include the newline
+        character. On the other hand, if the file specified as an argument for
+        the *--keyfile-path* option contains a newline character anywhere, the
+        newline character will be included in the key value.
 
 ENVIRONMENT VARIABLES
 ---------------------

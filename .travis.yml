@@ -10,33 +10,33 @@ addons:
 branches:
   only:
     - master
-    - develop-2.0.1
+    - develop-2.1.0
 
 jobs:
   include:
 
     # MANDATORY CHECKS USING CURRENT DEVELOPMENT INTERPRETER
-    - name: "run pylint using Python 3.7.6"
-      python: "3.7.6"
+    - name: "run pylint using Python 3.7.7"
+      python: "3.7.7"
       install:
         - >
           pip
           install
-          pylint==2.3.1
+          pylint==2.4.4
           dbus-client-gen==0.4
           dbus-python-client-gen==0.7
           justbytes==0.11
           python-dateutil==2.8.0
-          wcwidth==0.1.7
-          psutil==5.4.3
+          wcwidth==0.1.9
+          psutil==5.6.7
           semantic_version==2.6.0
       script: PYTHONPATH=./src make -f Makefile lint
-    - name: "check formatting using Python 3.7.6"
-      python: "3.7.6"
-      install: pip install black==19.3b0 isort==4.3.4
+    - name: "check formatting using Python 3.7.7"
+      python: "3.7.7"
+      install: pip install black==19.10b0 isort==4.3.21
       env: TASK=fmt-travis
-    - name: "run tests that do not require stratisd using Python 3.7.6"
-      python: "3.7.6"
+    - name: "run tests that do not require stratisd using Python 3.7.7"
+      python: "3.7.7"
       install:
         - >
           pip
@@ -45,32 +45,31 @@ jobs:
           dbus-python-client-gen==0.7
           justbytes==0.11
           python-dateutil==2.8.0
-          wcwidth==0.1.7
-          psutil==5.4.3
+          wcwidth==0.1.9
+          psutil==5.6.7
           semantic_version==2.6.0
       script: PYTHONPATH=./src make -f Makefile test-travis
 
     # MANDATORY CHECKS USING LOWEST SUPPORTED INTERPRETER
-    - name: "run pylint using Python 3.6.8"
+    - name: "run pylint using Python 3.6.8, omit optional wcwidth dependency"
       python: "3.6.8"
       install:
         - >
           pip
           install
-          pylint==2.3.1
+          pylint==2.4.4
           dbus-client-gen==0.4
           dbus-python-client-gen==0.7
           justbytes==0.11
-          python-dateutil
-          wcwidth
-          psutil
+          python-dateutil==2.6.1
+          psutil==5.4.3
           semantic_version==2.6.0
       script: PYTHONPATH=./src make -f Makefile lint
 
     # VERIFICATION OF TEST INFRASTRUCTURE
-    - name: "run yamllint on .travis.yml"
-      python: "3.7.6"
-      install: pip install yamllint
-      script: yamllint .travis.yml
+    - name: "run yamllint 1.23.0 on .travis.yml"
+      python: "3.7.7"
+      install: pip install yamllint==1.23.0
+      env: TASK=yamllint
 
 script: make -f Makefile $TASK

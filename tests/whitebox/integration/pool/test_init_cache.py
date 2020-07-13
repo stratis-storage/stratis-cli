@@ -23,7 +23,7 @@ from stratis_cli import StratisCliErrorCodes
 from stratis_cli._errors import StratisCliEngineError, StratisCliPartialChangeError
 
 from .._keyutils import RandomKeyTmpFile
-from .._misc import RUNNER, SimTestCase, device_name_list
+from .._misc import RUNNER, TEST_RUNNER, SimTestCase, device_name_list
 
 _DEVICE_STRATEGY = device_name_list(2)
 _ERROR = StratisCliErrorCodes.ERROR
@@ -166,4 +166,4 @@ class InitCacheSuccessTestCase(SimTestCase):
         Should succeed.
         """
         command_line = self._MENU + [self._POOLNAME] + _DEVICE_STRATEGY()
-        RUNNER(command_line)
+        TEST_RUNNER(command_line)

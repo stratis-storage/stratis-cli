@@ -16,7 +16,7 @@ Test 'list'.
 """
 
 from .._keyutils import RandomKeyTmpFile
-from .._misc import RUNNER, SimTestCase
+from .._misc import RUNNER, TEST_RUNNER, SimTestCase
 
 
 class TestKeyList(SimTestCase):
@@ -30,7 +30,7 @@ class TestKeyList(SimTestCase):
         """
         Listing should succeed.
         """
-        RUNNER(self._MENU)
+        TEST_RUNNER(self._MENU)
 
     def test_list_one(self):
         """
@@ -38,4 +38,4 @@ class TestKeyList(SimTestCase):
         """
         with RandomKeyTmpFile() as fname:
             RUNNER(["key", "set", "testkey", "--keyfile", fname])
-        RUNNER(self._MENU)
+        TEST_RUNNER(self._MENU)
