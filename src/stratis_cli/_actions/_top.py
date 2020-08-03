@@ -216,7 +216,9 @@ def _add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
         {"key_desc": key_desc, "key_fd": file_desc, "interactive": fd_is_terminal},
     )
 
-    if not fd_is_terminal:
+    if fd_is_terminal:  # pragma: no cover
+        pass
+    else:
         os.close(file_desc)
 
     return add_ret
