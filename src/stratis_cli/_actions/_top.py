@@ -169,6 +169,18 @@ def _fetch_locked_pools_property(proxy):
     return _fetch_property(proxy, "LockedPoolUuids")
 
 
+def _fetch_expiration_property(proxy):
+    """
+    Fetch the KeyringExpiration property from stratisd.
+    :param proxy: proxy to the top object in stratisd
+    :return: keyring expiration as string
+    :rtype: str
+    :raises StratisCliPropertyNotFoundError:
+    :raises StratisCliEnginePropertyError:
+    """
+    return _fetch_property(proxy, "KeyringExpiration")
+
+
 def _fetch_property(proxy, property_name):
     """
     Fetch a property from stratisd.
@@ -803,10 +815,15 @@ class TopActions:
         """
         proxy = get_object(TOP_OBJECT)
 
-        key_list = [[key_desc] for key_desc in _fetch_keylist_property(proxy)]
+        key_expiration = _fetch_expiration_property(proxy)
+        rows = [
+            [key_desc, key_expiration] for key_desc in _fetch_keylist_property(proxy)
+        ]
 
         print_table(
-            ["Key Description"], sorted(key_list, key=lambda entry: entry[0]), ["<"]
+            ["Key Description", "Key Expiration"],
+            sorted(rows, key=lambda entry: entry[0]),
+            ["<", "<"],
         )
 
     @staticmethod
