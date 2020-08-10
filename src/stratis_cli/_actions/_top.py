@@ -215,15 +215,26 @@ def _add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
         file_desc = os.open(keyfile_path[0], os.O_RDONLY)
         fd_is_terminal = False
 
-    add_ret = Manager.Methods.SetKey(
-        proxy,
-        {"key_desc": key_desc, "key_fd": file_desc, "interactive": fd_is_terminal},
-    )
+    add_ret = None
+    set_key_err = None
+    try:
+        add_ret = Manager.Methods.SetKey(
+            proxy,
+            {"key_desc": key_desc, "key_fd": file_desc, "interactive": fd_is_terminal},
+        )
+    # This has no coverage because this would require testing by generating
+    # a D-Bus error which is not in scope for the coverage tests.
+    # pylint: disable=broad-except
+    except Exception as error:  # pragma: no cover
+        set_key_err = error
+    finally:
+        if fd_is_terminal:  # pragma: no cover
+            tcsetattr(file_desc, TCSANOW, terminal_attributes)
+        else:
+            os.close(file_desc)
 
-    if fd_is_terminal:  # pragma: no cover
-        tcsetattr(file_desc, TCSANOW, terminal_attributes)
-    else:
-        os.close(file_desc)
+        if set_key_err is not None:  # pragma: no cover
+            raise set_key_err
 
     return add_ret
 
