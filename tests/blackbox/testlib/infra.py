@@ -54,17 +54,32 @@ def clean_up():
     for key in StratisDbus.get_keys():
         StratisDbus.unset_key(key)
 
+    # Report an error if any filesystems, pools or keys are found to be
+    # still in residence
+    error_strings = []
+
+    remnant_filesystems = StratisDbus.fs_list()
+    if remnant_filesystems != {}:
+        error_strings.append(
+            "remnant filesystems: %s"
+            % ", ".join(
+                map(
+                    lambda x: "%s in pool %s" % (x[0], x[1]),
+                    remnant_filesystems.items(),
+                )
+            )
+        )
+
     remnant_pools = StratisDbus.pool_list()
     if remnant_pools != []:
-        raise RuntimeError(
-            "clean_up failed; remnant pools: %s" % ", ".join(remnant_pools)
-        )
+        error_strings.append("remnant pools: %s" % ", ".join(remnant_pools))
 
     remnant_keys = StratisDbus.get_keys()
     if remnant_keys != []:
-        raise RuntimeError(
-            "clean_up failed: remnant keys: %s" % ", ".join(remnant_keys)
-        )
+        error_strings.append("remnant keys: %s" % ", ".join(remnant_keys))
+
+    if error_strings != []:
+        raise RuntimeError("clean_up failed: %s" % "; ".join(error_strings))
 
 
 class KernelKey:  # pylint: disable=attribute-defined-outside-init
