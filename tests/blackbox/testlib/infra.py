@@ -41,6 +41,8 @@ def clean_up():
     :return: None
     """
 
+    exec_command(["udevadm", "settle"])
+
     umount_mdv()
 
     error_strings = []
