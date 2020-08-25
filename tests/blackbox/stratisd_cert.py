@@ -544,6 +544,8 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
             StratisDbus.fs_create(pool_path, fs_name), dbus.UInt16(0)
         )
 
+        exec_command(["udevadm", "settle"])
+
     def test_filesystem_destroy(self):
         """
         Test destroying a filesystem.
