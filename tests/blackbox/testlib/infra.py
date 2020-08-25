@@ -40,24 +40,37 @@ def clean_up():
 
     :return: None
     """
+
     umount_mdv()
+
+    error_strings = []
+
+    def check_result(result, format_str, format_str_args):
+        if result is None:
+            return
+        (_, code, msg) = result
+        if code == 0:
+            return
+        error_strings.append("%s: %s" % ((format_str % format_str_args), msg))
 
     # Remove FS
     for name, pool_name in StratisDbus.fs_list().items():
-        StratisDbus.fs_destroy(pool_name, name)
+        check_result(
+            StratisDbus.fs_destroy(pool_name, name),
+            "failed to destroy filesystem %s in pool %s",
+            (name, pool_name),
+        )
 
     # Remove Pools
     for name in StratisDbus.pool_list():
-        StratisDbus.pool_destroy(name)
+        check_result(StratisDbus.pool_destroy(name), "failed to destroy pool %s", name)
 
     # Unset all Stratis keys
     for key in StratisDbus.get_keys():
-        StratisDbus.unset_key(key)
+        check_result(StratisDbus.unset_key(key), "failed to unset key %s", key)
 
     # Report an error if any filesystems, pools or keys are found to be
     # still in residence
-    error_strings = []
-
     remnant_filesystems = StratisDbus.fs_list()
     if remnant_filesystems != {}:
         error_strings.append(
