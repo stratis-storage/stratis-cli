@@ -815,14 +815,18 @@ class TopActions:
         """
         proxy = get_object(TOP_OBJECT)
 
-        expiration = [[key_desc] for key_desc in _fetch_expiration_property(proxy)]
-        key_list = [[key_desc] for key_desc in _fetch_keylist_property(proxy)]
+        key_expiration = _fetch_expiration_property(proxy)
+        rows = [
+            [key_desc, key_expiration] for key_desc in _fetch_keylist_property(proxy)
+        ]
 
         print_table(
-            ["Key Description"], sorted(key_list, key=lambda entry: entry[0]), ["<"]
+            ["Key Description", "Key Expiration"],
+            sorted(rows, key=lambda entry: entry[0]),
+            ["<", "<"],
         )
 
-        print_table(["Key Expiration"], expiration, ["<"])
+    #        print_table(["Key Expiration"], key_expiration, ["<"])
 
     @staticmethod
     def unlock_pools(_):
