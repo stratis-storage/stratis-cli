@@ -826,8 +826,6 @@ class TopActions:
             ["<", "<"],
         )
 
-    #        print_table(["Key Expiration"], key_expiration, ["<"])
-
     @staticmethod
     def unlock_pools(_):
         """
