@@ -84,6 +84,7 @@ def make_test_filesystem(pool_path, fs_name):
     ) = StratisDbus.fs_create(pool_path, fs_name)
 
     _raise_error_exception(return_code, msg, filesystems_created)
+    exec_command(["udevadm", "settle"])
     return array_of_tuples_with_obj_paths_and_names[0][0]
 
 
@@ -543,8 +544,6 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         self._unittest_command(
             StratisDbus.fs_create(pool_path, fs_name), dbus.UInt16(0)
         )
-
-        exec_command(["udevadm", "settle"])
 
     def test_filesystem_destroy(self):
         """
