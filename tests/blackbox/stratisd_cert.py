@@ -84,6 +84,7 @@ def make_test_filesystem(pool_path, fs_name):
     ) = StratisDbus.fs_create(pool_path, fs_name)
 
     _raise_error_exception(return_code, msg, filesystems_created)
+    exec_command(["udevadm", "settle"])
     return array_of_tuples_with_obj_paths_and_names[0][0]
 
 
