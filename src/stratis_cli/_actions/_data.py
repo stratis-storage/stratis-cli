@@ -72,8 +72,8 @@ SPECS = {
 </method>
 </interface>
 """,
-    "org.storage.stratis2.Manager.r1": """
-<interface name="org.storage.stratis2.Manager.r1">
+    "org.storage.stratis2.Manager.r2": """
+<interface name="org.storage.stratis2.Manager.r2">
 <method name="ConfigureSimulator">
 <arg name="denominator" type="u" direction="in"/>
 <arg name="return_code" type="q" direction="out"/>
@@ -233,7 +233,7 @@ SPECS = {
 """,
 }
 
-_MANAGER_INTERFACE = "org.storage.stratis2.Manager.r1"
+_MANAGER_INTERFACE = "org.storage.stratis2.Manager.r2"
 
 DBUS_TIMEOUT_SECONDS = 120
 
