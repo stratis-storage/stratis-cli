@@ -6,8 +6,8 @@ SPECS = {
     </method>
   </interface>
 """,
-    "org.storage.stratis2.FetchProperties.r1": """
-<interface name="org.storage.stratis2.FetchProperties.r1">
+    "org.storage.stratis2.FetchProperties.r2": """
+<interface name="org.storage.stratis2.FetchProperties.r2">
     <method name="GetAllProperties">
       <arg direction="out" name="results" type="a{s(bv)}" />
     </method>
