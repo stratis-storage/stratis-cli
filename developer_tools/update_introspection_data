@@ -81,7 +81,7 @@ TOP_OBJECT_INTERFACES = [
     "org.storage.stratis2.Report.r1",
 ]
 POOL_OBJECT_INTERFACES = ["org.storage.stratis2.pool.r1"]
-BLOCKDEV_OBJECT_INTERFACES = ["org.storage.stratis2.blockdev"]
+BLOCKDEV_OBJECT_INTERFACES = ["org.storage.stratis2.blockdev.r2"]
 FILESYSTEM_OBJECT_INTERFACES = ["org.storage.stratis2.filesystem"]
 
 

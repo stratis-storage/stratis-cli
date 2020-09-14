@@ -74,8 +74,8 @@ SPECS = {
     </method>
   </interface>
 """,
-    "org.storage.stratis2.blockdev": """
-<interface name="org.storage.stratis2.blockdev">
+    "org.storage.stratis2.blockdev.r2": """
+<interface name="org.storage.stratis2.blockdev.r2">
     <method name="SetUserInfo">
       <arg direction="in" name="id" type="(bs)" />
       <arg direction="out" name="changed" type="(bs)" />
@@ -89,6 +89,9 @@ SPECS = {
       <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const" />
     </property>
     <property access="read" name="InitializationTime" type="t">
+      <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const" />
+    </property>
+    <property access="read" name="PhysicalPath" type="s">
       <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const" />
     </property>
     <property access="read" name="Pool" type="o">
