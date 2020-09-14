@@ -96,12 +96,12 @@ class StratisDbus:
     _BUS_NAME = "org.storage.stratis2"
     _TOP_OBJECT = "/org/storage/stratis2"
 
-    _MNGR_IFACE = "org.storage.stratis2.Manager.r1"
+    _MNGR_IFACE = "org.storage.stratis2.Manager.r2"
     _REPORT_IFACE = "org.storage.stratis2.Report.r1"
     _POOL_IFACE = "org.storage.stratis2.pool.r1"
     _FS_IFACE = "org.storage.stratis2.filesystem"
-    _BLKDEV_IFACE = "org.storage.stratis2.blockdev"
-    _FETCH_PROPERTIES_IFACE = "org.storage.stratis2.FetchProperties.r1"
+    _BLKDEV_IFACE = "org.storage.stratis2.blockdev.r2"
+    _FETCH_PROPERTIES_IFACE = "org.storage.stratis2.FetchProperties.r2"
 
     _DBUS_TIMEOUT_SECONDS = 120
     _TIMEOUT = _get_timeout(
