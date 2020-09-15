@@ -1,0 +1,172 @@
+#!/usr/bin/env python3
+
+# Copyright 2016 Red Hat, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+"""
+Update Stratis introspection data.
+"""
+
+# isort: STDLIB
+import xml.etree.ElementTree as ET
+
+# isort: THIRDPARTY
+import dbus
+
+# isort: FIRSTPARTY
+from dbus_python_client_gen import make_class
+
+# a minimal chunk of introspection data, enough for the methods needed.
+SPECS = {
+    "org.freedesktop.DBus.Introspectable": """
+<interface name="org.freedesktop.DBus.Introspectable">
+<method name="Introspect">
+<arg name="xml_data" type="s" direction="out"/>
+</method>
+</interface>
+""",
+    "org.storage.stratis2.Manager.r1": """
+<interface name="org.storage.stratis2.Manager.r1">
+<method name="CreatePool">
+<arg name="name" type="s" direction="in"/>
+<arg name="redundancy" type="(bq)" direction="in"/>
+<arg name="devices" type="as" direction="in"/>
+<arg name="key_desc" type="(bs)" direction="in"/>
+<arg name="result" type="(b(oao))" direction="out"/>
+<arg name="return_code" type="q" direction="out"/>
+<arg name="return_string" type="s" direction="out"/>
+</method>
+</interface>
+""",
+    "org.storage.stratis2.pool.r1": """
+<interface name="org.storage.stratis2.pool.r1">
+<method name="CreateFilesystems">
+<arg name="specs" type="as" direction="in"/>
+<arg name="results" type="(ba(os))" direction="out"/>
+<arg name="return_code" type="q" direction="out"/>
+<arg name="return_string" type="s" direction="out"/>
+</method>
+</interface>
+""",
+}
+
+_SERVICE = "org.storage.stratis2"
+
+_INTROSPECTABLE_IFACE = "org.freedesktop.DBus.Introspectable"
+_MANAGER_IFACE = "org.storage.stratis2.Manager.r1"
+_POOL_IFACE = "org.storage.stratis2.pool.r1"
+_TIMEOUT = 120000
+
+Introspectable = make_class(
+    "Introspectable", ET.fromstring(SPECS[_INTROSPECTABLE_IFACE]), _TIMEOUT
+)
+Manager = make_class("Manager", ET.fromstring(SPECS[_MANAGER_IFACE]), _TIMEOUT)
+Pool = make_class("Pool", ET.fromstring(SPECS[_POOL_IFACE]), _TIMEOUT)
+
+# EDIT these fields to get the interfaces and revisions desired
+TOP_OBJECT_INTERFACES = [
+    "org.freedesktop.DBus.ObjectManager",
+    "org.storage.stratis2.FetchProperties.r2",
+    "org.storage.stratis2.Manager.r2",
+    "org.storage.stratis2.Report.r1",
+]
+POOL_OBJECT_INTERFACES = ["org.storage.stratis2.pool.r1"]
+BLOCKDEV_OBJECT_INTERFACES = ["org.storage.stratis2.blockdev.r2"]
+FILESYSTEM_OBJECT_INTERFACES = ["org.storage.stratis2.filesystem"]
+
+
+def _add_data(proxy, interfaces, table):
+    """
+    Introspect on the proxy, get the information for the specified interfaces,
+    and add it to the table.
+
+    :param proxy: dbus Proxy object
+    :param list interfaces: list of interesting interface names
+    :param dict table: table from interface names to introspection data as text
+    """
+    string_data = Introspectable.Methods.Introspect(proxy, {})
+    xml_data = ET.fromstring(string_data)
+    for interface in xml_data:
+        interface_name = interface.attrib["name"]
+        if interface_name in interfaces:
+            table[interface_name] = ET.tostring(interface).decode("utf-8").rstrip(" \n")
+
+    if not (frozenset(interfaces) <= frozenset(table.keys())):
+        exit(
+            "not %s <= %s"
+            % (sorted(frozenset(interfaces)), sorted(frozenset(table.keys())),)
+        )
+
+
+def main():
+    """
+    The main method.
+    """
+    specs = {}
+    bus = dbus.SystemBus()
+
+    proxy = bus.get_object(_SERVICE, "/org/storage/stratis2", introspect=False)
+
+    (
+        (_, (pool_object_path, dev_object_paths)),
+        return_code,
+        return_msg,
+    ) = Manager.Methods.CreatePool(
+        proxy,
+        {
+            "name": "pool_name",
+            "redundancy": (True, 0),
+            "devices": ["/fake/fake"],
+            "key_desc": (False, ""),
+        },
+    )
+
+    if return_code != 0:
+        exit(return_msg)
+
+    pool_proxy = bus.get_object(_SERVICE, pool_object_path, introspect=False)
+
+    blockdev_proxy = bus.get_object(_SERVICE, dev_object_paths[0], introspect=False)
+
+    ((_, (filesystems)), return_code, return_msg,) = Pool.Methods.CreateFilesystems(
+        pool_proxy, {"specs": ["fs_name"],},
+    )
+
+    if return_code != 0:
+        exit(return_msg)
+
+    filesystem_object_path = filesystems[0][0]
+    filesystem_proxy = bus.get_object(
+        _SERVICE, filesystem_object_path, introspect=False
+    )
+
+    _add_data(proxy, TOP_OBJECT_INTERFACES, specs)
+    _add_data(pool_proxy, POOL_OBJECT_INTERFACES, specs)
+    _add_data(blockdev_proxy, BLOCKDEV_OBJECT_INTERFACES, specs)
+    _add_data(filesystem_proxy, FILESYSTEM_OBJECT_INTERFACES, specs)
+
+    print("SPECS = {")
+
+    # format the lines in a way that will satisfy black
+    print(
+        ",\n".join(
+            '    "%s": """\n%s\n"""' % (key, value)
+            for (key, value) in sorted(specs.items())
+        )
+        + ","
+    )
+    print("}")
+
+
+if __name__ == "__main__":
+    main()
