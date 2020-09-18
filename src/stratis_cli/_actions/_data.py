@@ -83,6 +83,19 @@ try:
         timeout,
     )
 
+    # Specification for the lowest manager interface supported by the major
+    # version of stratisd on which this version of the CLI depends.
+    # This minimal specification includes only the specification for the
+    # Version property.
+    manager_spec = """
+    <interface name="org.storage.stratis2.Manager">
+        <property access="read" name="Version" type="s">
+            <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const" />
+        </property>
+    </interface>
+    """
+    Manager0 = make_class("Manager0", ET.fromstring(manager_spec), timeout)
+
 # Do not expect to get coverage on Generation errors.
 # These can only occurs if the XML data in _SPECS is ill-formed; we have
 # complete control over that data and can expect it to be valid.
