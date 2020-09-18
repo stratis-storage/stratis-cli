@@ -30,12 +30,12 @@ def check_stratisd_version():
     :raises StratisCliStratisdVersionError
     """
     # pylint: disable=import-outside-toplevel
-    from ._data import Manager
+    from ._data import Manager0
 
     version_spec = Spec(
         ">=%s,<%s" % (MINIMUM_STRATISD_VERSION, MAXIMUM_STRATISD_VERSION)
     )
-    version = Manager.Properties.Version.Get(get_object(TOP_OBJECT))
+    version = Manager0.Properties.Version.Get(get_object(TOP_OBJECT))
 
     if Version(version) not in version_spec:
         raise StratisCliStratisdVersionError(
