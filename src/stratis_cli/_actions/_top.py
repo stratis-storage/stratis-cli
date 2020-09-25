@@ -157,14 +157,14 @@ def _fetch_keylist_property(proxy):
 
 def _fetch_locked_pools_property(proxy):
     """
-    Fetch the LockedPoolUuids property from stratisd.
+    Fetch the LockedPools property from stratisd.
     :param proxy: proxy to the top object in stratisd
     :return: list of pool UUIDs as strings
     :rtype: list of str
     :raises StratisCliPropertyNotFoundError:
     :raises StratisCliEnginePropertyError:
     """
-    return _fetch_property(proxy, "LockedPoolUuids")
+    return _fetch_property(proxy, "LockedPools")
 
 
 def _fetch_property(proxy, property_name):
@@ -808,14 +808,14 @@ class TopActions:
 
         proxy = get_object(TOP_OBJECT)
 
-        pool_uuid_list = _fetch_locked_pools_property(proxy)
-        if pool_uuid_list == []:  # pragma: no cover
+        locked_pools = _fetch_locked_pools_property(proxy)
+        if locked_pools == {}:  # pragma: no cover
             raise StratisCliNoChangeError("unlock", "pools")
 
         # This block is not covered as the sim engine does not simulate the
-        # management of unlocked devices, so pool_uuid_list is always empty.
+        # management of unlocked devices, so locked_pools is always empty.
         errors = []  # pragma: no cover
-        for uuid in pool_uuid_list:  # pragma: no cover
+        for uuid in locked_pools:  # pragma: no cover
             (
                 (is_some, unlocked_devices),
                 return_code,
