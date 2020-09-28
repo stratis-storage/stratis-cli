@@ -1,5 +1,5 @@
-stratis-cli 2.2.0 (UNRELEASED)
-==============================
+stratis-cli 2.2.0
+=================
 
 Required stratisd version: 2.2.0
 
@@ -38,6 +38,7 @@ YAML linter: yamllint (1.23.0)
   https://github.com/stratis-storage/stratis-cli/pull/634
   https://github.com/stratis-storage/stratis-cli/pull/633
   https://github.com/stratis-storage/stratis-cli/pull/631
+  https://github.com/stratis-storage/stratis-cli/pull/629
   https://github.com/stratis-storage/stratis-cli/pull/628
 
 stratis-cli 2.1.1
