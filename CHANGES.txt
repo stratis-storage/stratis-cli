@@ -1,3 +1,45 @@
+stratis-cli 2.2.0 (UNRELEASED)
+==============================
+
+Required stratisd version: 2.2.0
+
+Recommended Python interpreter: 3.7.7
+Lowest supported Python interpreter: 3.6.8
+Python linter: pylint (2.4.4)
+Python auto-formatter: black (19.10b0)
+Python import sorter: isort (4.3.21)
+YAML linter: yamllint (1.23.0)
+
+- Remove terminal settings handling in interactive key entry:
+  https://github.com/stratis-storage/stratis-cli/pull/643
+  https://github.com/stratis-storage/stratis-cli/pull/642
+
+- Update bash completion:
+  https://github.com/stratis-storage/stratis-cli/pull/640
+
+- Use older version of Manager interface for dynamic version check:
+  https://github.com/stratis-storage/stratis-cli/issues/647
+  https://github.com/stratis-storage/stratis-cli/pull/648
+
+- Use LockedPools key with FetchProperties interface:
+  https://github.com/stratis-storage/stratis-cli/issues/646
+  https://github.com/stratis-storage/stratis-cli/pull/649
+
+- Add some additional tests for pool creation:
+  https://github.com/stratis-storage/stratis-cli/issues/632
+  https://github.com/stratis-storage/stratis-cli/pull/650
+
+- Autogenerate introspection data:
+  https://github.com/stratis-storage/stratis-cli/pull/644
+
+- Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/641
+  https://github.com/stratis-storage/stratis-cli/pull/636
+  https://github.com/stratis-storage/stratis-cli/pull/634
+  https://github.com/stratis-storage/stratis-cli/pull/633
+  https://github.com/stratis-storage/stratis-cli/pull/631
+  https://github.com/stratis-storage/stratis-cli/pull/628
+
 stratis-cli 2.1.1
 =================
 Recommended Python interpreter: 3.7.7
@@ -26,6 +68,7 @@ YAML linter: yamllint (1.23.0)
   https://github.com/stratis-storage/stratis-cli/pull/620
   https://github.com/stratis-storage/stratis-cli/pull/616
   https://github.com/stratis-storage/stratis-cli/pull/615
+  https://github.com/stratis-storage/stratis-cli/pull/612
   https://github.com/stratis-storage/stratis-cli/pull/608
   https://github.com/stratis-storage/stratis-cli/pull/603
 
