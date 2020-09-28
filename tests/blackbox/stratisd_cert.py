@@ -345,6 +345,38 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
             StratisDbus.pool_add_cache, [pool_path, StratisCertify.DISKS[2:3]], True
         )
 
+    def test_pool_create_after_cache(self):
+        """
+        Test creating existing pool after cache was added
+        """
+        pool_name = p_n()
+        pool_path = make_test_pool(pool_name, StratisCertify.DISKS[0:1])
+
+        self._unittest_command(
+            StratisDbus.pool_init_cache(pool_path, StratisCertify.DISKS[1:2]),
+            dbus.UInt16(0),
+        )
+        self._unittest_command(
+            StratisDbus.pool_create(pool_name, StratisCertify.DISKS[0:1], None),
+            dbus.UInt16(0),
+        )
+
+    def test_pool_create_with_cache(self):
+        """
+        Test creating existing pool with device already used by cache fails
+        """
+        pool_name = p_n()
+        pool_path = make_test_pool(pool_name, StratisCertify.DISKS[0:1])
+
+        self._unittest_command(
+            StratisDbus.pool_init_cache(pool_path, StratisCertify.DISKS[1:2]),
+            dbus.UInt16(0),
+        )
+        self._unittest_command(
+            StratisDbus.pool_create(pool_name, StratisCertify.DISKS[0:2], None),
+            dbus.UInt16(1),
+        )
+
     def test_pool_add_data(self):
         """
         Test adding data to a pool.
