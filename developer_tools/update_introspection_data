@@ -63,7 +63,7 @@ SPECS = {
 _SERVICE = "org.storage.stratis2"
 
 _INTROSPECTABLE_IFACE = "org.freedesktop.DBus.Introspectable"
-_MANAGER_IFACE = "org.storage.stratis2.Manager.r1"
+_MANAGER_IFACE = "org.storage.stratis2.Manager.r2"
 _POOL_IFACE = "org.storage.stratis2.pool.r1"
 _TIMEOUT = 120000
 
@@ -75,9 +75,9 @@ Pool = make_class("Pool", ET.fromstring(SPECS[_POOL_IFACE]), _TIMEOUT)
 
 # EDIT these fields to get the interfaces and revisions desired
 TOP_OBJECT_INTERFACES = [
+    _MANAGER_IFACE,
     "org.freedesktop.DBus.ObjectManager",
     "org.storage.stratis2.FetchProperties.r2",
-    "org.storage.stratis2.Manager.r2",
     "org.storage.stratis2.Report.r1",
 ]
 POOL_OBJECT_INTERFACES = ["org.storage.stratis2.pool.r1"]
