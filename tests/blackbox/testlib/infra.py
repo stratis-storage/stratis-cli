@@ -40,31 +40,61 @@ def clean_up():
 
     :return: None
     """
+
+    exec_command(["udevadm", "settle"])
+
     umount_mdv()
+
+    error_strings = []
+
+    def check_result(result, format_str, format_str_args):
+        if result is None:
+            return
+        (_, code, msg) = result
+        if code == 0:
+            return
+        error_strings.append("%s: %s" % ((format_str % format_str_args), msg))
 
     # Remove FS
     for name, pool_name in StratisDbus.fs_list().items():
-        StratisDbus.fs_destroy(pool_name, name)
+        check_result(
+            StratisDbus.fs_destroy(pool_name, name),
+            "failed to destroy filesystem %s in pool %s",
+            (name, pool_name),
+        )
 
     # Remove Pools
     for name in StratisDbus.pool_list():
-        StratisDbus.pool_destroy(name)
+        check_result(StratisDbus.pool_destroy(name), "failed to destroy pool %s", name)
 
     # Unset all Stratis keys
     for key in StratisDbus.get_keys():
-        StratisDbus.unset_key(key)
+        check_result(StratisDbus.unset_key(key), "failed to unset key %s", key)
+
+    # Report an error if any filesystems, pools or keys are found to be
+    # still in residence
+    remnant_filesystems = StratisDbus.fs_list()
+    if remnant_filesystems != {}:
+        error_strings.append(
+            "remnant filesystems: %s"
+            % ", ".join(
+                map(
+                    lambda x: "%s in pool %s" % (x[0], x[1]),
+                    remnant_filesystems.items(),
+                )
+            )
+        )
 
     remnant_pools = StratisDbus.pool_list()
     if remnant_pools != []:
-        raise RuntimeError(
-            "clean_up failed; remnant pools: %s" % ", ".join(remnant_pools)
-        )
+        error_strings.append("remnant pools: %s" % ", ".join(remnant_pools))
 
     remnant_keys = StratisDbus.get_keys()
     if remnant_keys != []:
-        raise RuntimeError(
-            "clean_up failed: remnant keys: %s" % ", ".join(remnant_keys)
-        )
+        error_strings.append("remnant keys: %s" % ", ".join(remnant_keys))
+
+    if error_strings != []:
+        raise RuntimeError("clean_up failed: %s" % "; ".join(error_strings))
 
 
 class KernelKey:  # pylint: disable=attribute-defined-outside-init

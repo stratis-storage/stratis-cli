@@ -20,10 +20,17 @@ ARG_MAP = {
         "--disable=I",
         "--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}'",
     ],
+    "developer_tools": [
+        "--reports=no",
+        "--disable=I",
+        "--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}'",
+    ],
     "src/stratis_cli": [
         "--reports=no",
         "--disable=I",
         "--disable=duplicate-code",
+        # ignore _introspect.py because it will be auto-generated
+        "--ignore=_introspect.py",
         "--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}'",
     ],
     "tests/blackbox/stratisd_cert.py": [

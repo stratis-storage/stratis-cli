@@ -45,7 +45,7 @@ class StratisdVersionTestCase(SimTestCase):
         from stratis_cli._actions import _data
 
         # pylint: disable=protected-access
-        stratis_cli._actions._data.Manager.Properties.Version.Get = (
+        stratis_cli._actions._data.Manager0.Properties.Version.Get = (
             outdated_stratisd_version
         )
 

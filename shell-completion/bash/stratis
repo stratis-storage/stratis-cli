@@ -12,23 +12,45 @@ _stratis()
 	third="${COMP_WORDS[3]}"
 	opts="-h --help"
 	global_opts="--version --propagate ${opts}"
-	root_subcommands="daemon pool blockdev filesystem"
-	pool_subcommands="create list add-data add-cache rename destroy"
+	root_subcommands="daemon pool blockdev filesystem key report"
+	pool_subcommands="create list add-data add-cache rename destroy init-cache unlock"
+	pool_opts="--redundancy --key-desc"
 	fs_subcommands="create snapshot list rename destroy"
 	blockdev_subcommands="list"
 	daemon_subcommands="redundancy version"
+	key_subcommands="set unset reset list"
+	key_set_reset_opts="--keyfile-path --capture-key"
 	blockdevs="$(echo /dev/disk/*/*) $(lsblk -n -o name -p -l)"
 
-	if [[ ${cur} == -* ]] ; then
+	if [[ ${prev} == "--redundancy" ]]; then
+		COMPREPLY=( $(compgen -W "none" -- ${cur}) )
+		return 0
+	elif [[ ${prev} == "--key-desc" ]]; then
+		return 0
+	elif [[ ${cur} == -* ]] ; then
         if [[ ${COMP_CWORD} -eq 1 ]]; then
             COMPREPLY=( $(compgen -W "${global_opts}" -- ${cur}) )
+        elif [[ ${first} == "pool" ]]; then
+        	COMPREPLY=( $(compgen -W "${pool_opts} ${opts}" -- ${cur}) )
+        elif [[ ${first} == "key" ]]; then
+        	case ${second} in
+        		set|reset)
+					COMPREPLY=( $(compgen -W "${key_set_reset_opts} ${opts}" -- ${cur}) )
+					return 0
+					;;
+				unset)
+					COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+					return 0
+					;;
+        	esac
+        	
         else
             COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
         fi
 		return 0
 	elif [[ ${COMP_CWORD} -eq 2 ]]; then
 		case ${prev} in
-			-h|--help|--version)
+			-h|--help|--version|report)
 				return 0
 				;;
 			filesystem|fs)
@@ -45,6 +67,10 @@ _stratis()
 				;;
 			pool)
 				COMPREPLY=( $(compgen -W "${pool_subcommands}" -- ${cur}) )
+				return 0
+				;;
+			key)
+				COMPREPLY=( $(compgen -W "${key_subcommands}" -- ${cur}) )
 				return 0
 				;;
 		esac
@@ -76,11 +102,22 @@ _stratis()
 				;;
 			pool)
 				case ${prev} in
-					-h|--help|create|list)
+					-h|--help|create|list|unlock)
 						return 0
 						;;
-					rename|destroy|add-data|add-cache)
+					rename|destroy|add-data|add-cache|init-cache)
 						COMPREPLY=( $(compgen -W  "$(stratis pool list | awk '{if (NR!=1) {print $1}}')" -- ${cur}) )
+						return 0
+						;;
+				esac
+				;;
+			key)
+				case ${prev} in
+					unset|list)
+						return 0
+						;;
+					set|reset)
+						COMPREPLY=( $(compgen -W "${key_set_reset_opts}" -- ${cur}) )
 						return 0
 						;;
 				esac
@@ -110,15 +147,37 @@ _stratis()
 					-h|--help|list|rename|destroy)
 						return 0
 						;;
-					create|add-data|add-cache)
+					create|add-data|add-cache|init-cache)
 						COMPREPLY=( $(compgen -W  "${blockdevs}" -- ${cur}) )
 						return 0
 						;;
 				esac
+				;;
+			key)
+				case ${second} in
+					unset|list)
+						return 0
+						;;
+					set|reset)
+						case ${third} in
+							--capture-key)
+								return 0
+								;;
+							--keyfile-path)
+								COMPREPLY=( $(compgen -f -- ${cur}) )
+								return 0
+								;;
+						esac
+						;;
+				esac
+				;;
 		esac
 #	Code to handle multiple block device names or multiple filesystem names for filesystem destroy and pool create/add-data/add-cache
 	elif [[ ${COMP_CWORD} > 4 ]]; then
 		case ${first} in
+			key|daemon|report|blockdev)
+				return 0
+				;;
 			filesystem|fs)
 				case ${second} in
 					snapshot|list|create|rename|-h|--help)
@@ -135,7 +194,10 @@ _stratis()
 					-h|--help|list|rename|destroy)
 						return 0
 						;;
-					create|add-cache|add-data)
+					create|add-cache|add-data|init-cache)
+						if [[ ${third} == "--redundancy" && ${COMP_CWORD} -eq 5 ]]; then
+							return 0
+						fi
 						COMPREPLY=( $(compgen -W  "${blockdevs}" -- ${cur}) )
 						return 0
 						;;
