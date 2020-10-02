@@ -140,9 +140,49 @@ POOL_SUBCMDS = [
         ),
     ),
     (
+        "bind-clevis",
+        dict(
+            help="Unlock all of the currently locked encrypted pools",
+            args=[
+                ("pool_name", dict(action="store", help="Pool name")),
+                (
+                    "key_desc",
+                    dict(action="store", help="Key description of existing pool key"),
+                ),
+                ("tang_url", dict(action="store", help="URL of Tang server")),
+                (
+                    "tang_thp",
+                    dict(
+                        action="store",
+                        help="Thumbprint of Tang server verification key",
+                    ),
+                ),
+            ],
+            func=TopActions.bind_clevis,
+        ),
+    ),
+    (
+        "unbind-clevis",
+        dict(
+            help="Unlock all of the currently locked encrypted pools",
+            args=[("pool_name", dict(action="store", help="Pool name"))],
+            func=TopActions.unbind_clevis,
+        ),
+    ),
+    (
         "unlock",
         dict(
             help="Unlock all of the currently locked encrypted pools",
+            args=[
+                (
+                    "unlock_method",
+                    dict(
+                        default="keyring",
+                        action="store",
+                        help="Method to use to unlock encrypted pools",
+                    ),
+                )
+            ],
             func=TopActions.unlock_pools,
         ),
     ),
