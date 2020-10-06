@@ -247,7 +247,7 @@ class TopActions:
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
         pool_name = namespace.pool_name
         names = pools(props={"Name": pool_name}).search(managed_objects)
-        blockdevs = frozenset(namespace.blockdevs)
+        blockdevs = frozenset([os.path.abspath(p) for p in namespace.blockdevs])
         if list(names) != []:
             raise StratisCliNameConflictError("pool", pool_name)
 
@@ -304,7 +304,7 @@ class TopActions:
             .require_unique_match(True)
             .search(managed_objects)
         )
-        blockdevs = frozenset(namespace.blockdevs)
+        blockdevs = frozenset([os.path.abspath(p) for p in namespace.blockdevs])
 
         _check_opposite_tier(managed_objects, blockdevs, BlockDevTiers.Data)
 
@@ -538,7 +538,7 @@ class TopActions:
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
-        blockdevs = frozenset(namespace.blockdevs)
+        blockdevs = frozenset([os.path.abspath(p) for p in namespace.blockdevs])
 
         _check_opposite_tier(managed_objects, blockdevs, BlockDevTiers.Cache)
 
@@ -597,7 +597,7 @@ class TopActions:
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
-        blockdevs = frozenset(namespace.blockdevs)
+        blockdevs = frozenset([os.path.abspath(p) for p in namespace.blockdevs])
 
         _check_opposite_tier(managed_objects, blockdevs, BlockDevTiers.Data)
 
