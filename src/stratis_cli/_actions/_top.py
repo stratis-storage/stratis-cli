@@ -821,7 +821,7 @@ class TopActions:
             },
         )
 
-        if return_code != 0:
+        if return_code != StratisdErrors.OK:
             raise StratisCliEngineError(return_code, return_msg)
 
         if not changed:
@@ -849,7 +849,7 @@ class TopActions:
             get_object(pool_object_path), {}
         )
 
-        if return_code != 0:
+        if return_code != StratisdErrors.OK:
             raise StratisCliEngineError(return_code, return_msg)
 
         if not changed:
