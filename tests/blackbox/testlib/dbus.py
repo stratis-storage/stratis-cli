@@ -102,6 +102,8 @@ class StratisDbus:
     _FS_IFACE = "org.storage.stratis2.filesystem"
     _BLKDEV_IFACE = "org.storage.stratis2.blockdev.r2"
     _FETCH_PROPERTIES_IFACE = "org.storage.stratis2.FetchProperties.r2"
+    POOL_IFACE = _POOL_IFACE
+    FS_IFACE = _FS_IFACE
 
     _DBUS_TIMEOUT_SECONDS = 120
     _TIMEOUT = _get_timeout(

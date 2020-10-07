@@ -477,6 +477,43 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
 
         self._test_permissions(StratisDbus.fs_create, [pool_path, fs_name], True)
 
+    def test_filesystem_udev_symlink(self):
+        """
+        Test the udev symlink creation for filesystem devices.
+        """
+        pool_name = p_n()
+        pool_path = make_test_pool(pool_name, StratisCertify.DISKS[0:1])
+
+        fs_name = fs_n()
+        filesystem_path = make_test_filesystem(pool_path, fs_name)
+
+        objects = StratisDbus.get_managed_objects()
+
+        pool_gmodata = objects[pool_path]
+        pool_uuid = pool_gmodata[StratisDbus.POOL_IFACE]["Uuid"]
+        filesystem_gmodata = objects[filesystem_path]
+        filesystem_uuid = filesystem_gmodata[StratisDbus.FS_IFACE]["Uuid"]
+
+        filesystem_devnode = filesystem_gmodata[StratisDbus.FS_IFACE]["Devnode"]
+
+        fs_devmapperlinkstr = (
+            "/dev/mapper/stratis-1-" + pool_uuid + "-thin-fs-" + filesystem_uuid
+        )
+
+        fsdevdest = os.path.abspath(
+            os.path.join(
+                os.path.dirname(filesystem_devnode), os.readlink(filesystem_devnode),
+            )
+        )
+
+        fsdevmapperlinkdest = os.path.abspath(
+            os.path.join(
+                os.path.dirname(fs_devmapperlinkstr), os.readlink(fs_devmapperlinkstr)
+            )
+        )
+
+        self.assertEqual(fsdevdest, fsdevmapperlinkdest)
+
     def test_filesystem_rename(self):
         """
         Test renaming a filesystem.
