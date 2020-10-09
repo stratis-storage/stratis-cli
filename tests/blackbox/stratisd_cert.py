@@ -495,7 +495,7 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         filesystem_uuid = filesystem_gmodata["org.storage.stratis2.filesystem"]["Uuid"]
 
         filesystem_devnode = (
-            str(filesystem_gmodata["org.storage.stratis2.filesystem"]["Devnode"])
+            filesystem_gmodata["org.storage.stratis2.filesystem"]["Devnode"]
             .replace("$", "_")
             .replace("!", "_")
         )
