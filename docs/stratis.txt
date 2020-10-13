@@ -72,6 +72,8 @@ filesystem rename <pool_name> <fs_name> <new_name>::
 blockdev list [pool_name]::
 	 List all blockdevs that make up the specified pool, or all pools, if
 	 no pool name is given.
+key list::
+     List all key-descriptions in the kernel keyring that can be used for encryption.
 key set <(--keyfile-path <path> | --capture-key)> <key_desc>::
      Set a key in the kernel keyring for use with encryption.
 key reset <(--keyfile-path <path> | --capture-key)> <key_desc>::
