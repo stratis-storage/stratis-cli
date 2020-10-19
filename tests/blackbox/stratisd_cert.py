@@ -502,8 +502,7 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
 
         fsdevdest = os.path.abspath(
             os.path.join(
-                os.path.dirname(filesystem_devnode),
-                os.readlink(str(filesystem_devnode)),
+                os.path.dirname(filesystem_devnode), os.readlink(filesystem_devnode),
             )
         )
 
