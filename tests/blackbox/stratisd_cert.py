@@ -490,13 +490,11 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         objects = StratisDbus.get_managed_objects()
 
         pool_gmodata = objects[pool_path]
-        pool_uuid = pool_gmodata["org.storage.stratis2.pool"]["Uuid"]
+        pool_uuid = pool_gmodata[StratisDbus.POOL_IFACE]["Uuid"]
         filesystem_gmodata = objects[filesystem_path]
-        filesystem_uuid = filesystem_gmodata["org.storage.stratis2.filesystem"]["Uuid"]
+        filesystem_uuid = filesystem_gmodata[StratisDbus.FS_IFACE]["Uuid"]
 
-        filesystem_devnode = filesystem_gmodata["org.storage.stratis2.filesystem"][
-            "Devnode"
-        ]
+        filesystem_devnode = filesystem_gmodata[StratisDbus.FS_IFACE]["Devnode"]
 
         fs_devmapperlinkstr = (
             "/dev/mapper/stratis-1-" + pool_uuid + "-thin-fs-" + filesystem_uuid

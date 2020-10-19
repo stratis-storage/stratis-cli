@@ -98,8 +98,8 @@ class StratisDbus:
 
     _MNGR_IFACE = "org.storage.stratis2.Manager.r2"
     _REPORT_IFACE = "org.storage.stratis2.Report.r1"
-    _POOL_IFACE = "org.storage.stratis2.pool.r1"
-    _FS_IFACE = "org.storage.stratis2.filesystem"
+    POOL_IFACE = "org.storage.stratis2.pool.r1"
+    FS_IFACE = "org.storage.stratis2.filesystem"
     _BLKDEV_IFACE = "org.storage.stratis2.blockdev.r2"
     _FETCH_PROPERTIES_IFACE = "org.storage.stratis2.FetchProperties.r2"
 
@@ -145,10 +145,10 @@ class StratisDbus:
         :rtype: List of str
         """
         pool_objects = [
-            obj_data[StratisDbus._POOL_IFACE]
+            obj_data[StratisDbus.POOL_IFACE]
             for _, obj_data in StratisDbus.get_managed_objects().items()
-            if StratisDbus._POOL_IFACE in obj_data
-            and obj_data[StratisDbus._POOL_IFACE]["Name"].startswith(_TEST_PREF)
+            if StratisDbus.POOL_IFACE in obj_data
+            and obj_data[StratisDbus.POOL_IFACE]["Name"].startswith(_TEST_PREF)
         ]
 
         return [pool_obj["Name"] for pool_obj in pool_objects]
@@ -252,10 +252,10 @@ class StratisDbus:
         :rtype: The D-Bus types (bs), q, and s, or None
         """
         pool_objects = {
-            path: obj_data[StratisDbus._POOL_IFACE]
+            path: obj_data[StratisDbus.POOL_IFACE]
             for path, obj_data in StratisDbus.get_managed_objects().items()
-            if StratisDbus._POOL_IFACE in obj_data
-            and obj_data[StratisDbus._POOL_IFACE]["Name"].startswith(_TEST_PREF)
+            if StratisDbus.POOL_IFACE in obj_data
+            and obj_data[StratisDbus.POOL_IFACE]["Name"].startswith(_TEST_PREF)
         }
 
         pool_paths = [
@@ -282,17 +282,17 @@ class StratisDbus:
         objects = StratisDbus.get_managed_objects().items()
 
         fs_objects = [
-            obj_data[StratisDbus._FS_IFACE]
+            obj_data[StratisDbus.FS_IFACE]
             for _, obj_data in objects
-            if StratisDbus._FS_IFACE in obj_data
-            and obj_data[StratisDbus._FS_IFACE]["Name"].startswith(_TEST_PREF)
+            if StratisDbus.FS_IFACE in obj_data
+            and obj_data[StratisDbus.FS_IFACE]["Name"].startswith(_TEST_PREF)
         ]
 
         pool_path_to_name = {
-            obj: obj_data[StratisDbus._POOL_IFACE]["Name"]
+            obj: obj_data[StratisDbus.POOL_IFACE]["Name"]
             for obj, obj_data in objects
-            if StratisDbus._POOL_IFACE in obj_data
-            and obj_data[StratisDbus._POOL_IFACE]["Name"].startswith(_TEST_PREF)
+            if StratisDbus.POOL_IFACE in obj_data
+            and obj_data[StratisDbus.POOL_IFACE]["Name"].startswith(_TEST_PREF)
         }
 
         return {
@@ -311,7 +311,7 @@ class StratisDbus:
         """
         iface = dbus.Interface(
             StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, pool_path),
-            StratisDbus._POOL_IFACE,
+            StratisDbus.POOL_IFACE,
         )
         return iface.InitCache(devices, timeout=StratisDbus._TIMEOUT)
 
@@ -326,7 +326,7 @@ class StratisDbus:
         """
         iface = dbus.Interface(
             StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, pool_path),
-            StratisDbus._POOL_IFACE,
+            StratisDbus.POOL_IFACE,
         )
         return iface.AddCacheDevs(devices, timeout=StratisDbus._TIMEOUT)
 
@@ -341,7 +341,7 @@ class StratisDbus:
         """
         iface = dbus.Interface(
             StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, pool_path),
-            StratisDbus._POOL_IFACE,
+            StratisDbus.POOL_IFACE,
         )
         return iface.AddDataDevs(devices, timeout=StratisDbus._TIMEOUT)
 
@@ -356,7 +356,7 @@ class StratisDbus:
         """
         iface = dbus.Interface(
             StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, pool_path),
-            StratisDbus._POOL_IFACE,
+            StratisDbus.POOL_IFACE,
         )
 
         return iface.CreateFilesystems([fs_name], timeout=StratisDbus._TIMEOUT)
@@ -373,16 +373,16 @@ class StratisDbus:
         objects = StratisDbus.get_managed_objects().items()
 
         pool_objects = {
-            path: obj_data[StratisDbus._POOL_IFACE]
+            path: obj_data[StratisDbus.POOL_IFACE]
             for path, obj_data in objects
-            if StratisDbus._POOL_IFACE in obj_data
-            and obj_data[StratisDbus._POOL_IFACE]["Name"].startswith(_TEST_PREF)
+            if StratisDbus.POOL_IFACE in obj_data
+            and obj_data[StratisDbus.POOL_IFACE]["Name"].startswith(_TEST_PREF)
         }
         fs_objects = {
-            path: obj_data[StratisDbus._FS_IFACE]
+            path: obj_data[StratisDbus.FS_IFACE]
             for path, obj_data in objects
-            if StratisDbus._FS_IFACE in obj_data
-            and obj_data[StratisDbus._FS_IFACE]["Name"].startswith(_TEST_PREF)
+            if StratisDbus.FS_IFACE in obj_data
+            and obj_data[StratisDbus.FS_IFACE]["Name"].startswith(_TEST_PREF)
         }
 
         pool_paths = [
@@ -401,7 +401,7 @@ class StratisDbus:
 
         iface = dbus.Interface(
             StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, pool_paths[0]),
-            StratisDbus._POOL_IFACE,
+            StratisDbus.POOL_IFACE,
         )
         return iface.DestroyFilesystems(fs_paths, timeout=StratisDbus._TIMEOUT)
 
@@ -417,10 +417,10 @@ class StratisDbus:
         objects = StratisDbus.get_managed_objects().items()
 
         fs_objects = {
-            path: obj_data[StratisDbus._FS_IFACE]
+            path: obj_data[StratisDbus.FS_IFACE]
             for path, obj_data in objects
-            if StratisDbus._FS_IFACE in obj_data
-            and obj_data[StratisDbus._FS_IFACE]["Name"].startswith(_TEST_PREF)
+            if StratisDbus.FS_IFACE in obj_data
+            and obj_data[StratisDbus.FS_IFACE]["Name"].startswith(_TEST_PREF)
         }
 
         fs_paths = [
@@ -431,7 +431,7 @@ class StratisDbus:
 
         iface = dbus.Interface(
             StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, fs_paths[0]),
-            StratisDbus._FS_IFACE,
+            StratisDbus.FS_IFACE,
         )
         return iface.SetName(fs_name_rename, timeout=StratisDbus._TIMEOUT)
 
@@ -447,7 +447,7 @@ class StratisDbus:
         """
         iface = dbus.Interface(
             StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, pool_path),
-            StratisDbus._POOL_IFACE,
+            StratisDbus.POOL_IFACE,
         )
         return iface.SnapshotFilesystem(
             fs_path, snapshot_name, timeout=StratisDbus._TIMEOUT
