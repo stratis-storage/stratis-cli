@@ -22,7 +22,7 @@ import dbus
 
 from .utils import random_string
 
-_TEST_PREF = os.getenv("STRATIS_UT_PREFIX", "STRATI$_DE$TROY_ME!_")
+_TEST_PREF = os.getenv("STRATIS_UT_PREFIX", "STRATI5_DE5TROY_ME1_")
 
 
 def p_n():
