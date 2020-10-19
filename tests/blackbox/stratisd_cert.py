@@ -494,11 +494,9 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         filesystem_gmodata = objects[filesystem_path]
         filesystem_uuid = filesystem_gmodata["org.storage.stratis2.filesystem"]["Uuid"]
 
-        filesystem_devnode = (
-            filesystem_gmodata["org.storage.stratis2.filesystem"]["Devnode"]
-            .replace("$", "_")
-            .replace("!", "_")
-        )
+        filesystem_devnode = filesystem_gmodata["org.storage.stratis2.filesystem"][
+            "Devnode"
+        ]
 
         fs_devmapperlinkstr = (
             "/dev/mapper/stratis-1-" + pool_uuid + "-thin-fs-" + filesystem_uuid
