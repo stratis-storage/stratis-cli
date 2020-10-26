@@ -36,6 +36,15 @@ def random_string(length=4):
     )
 
 
+def resolve_symlink(link):
+    """
+    Resolves the destination of a symlink
+    :param link: filename of the link
+    :return: String
+    """
+    return os.path.abspath(os.path.join(os.path.dirname(link), os.readlink(link)))
+
+
 def process_exists(name):
     """
     Look through processes, using their pids, to find one matching 'name'.

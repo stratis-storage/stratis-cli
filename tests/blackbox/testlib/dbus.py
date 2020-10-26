@@ -348,6 +348,38 @@ class StratisDbus:
         return iface.AddDataDevs(devices, timeout=StratisDbus._TIMEOUT)
 
     @staticmethod
+    def pool_rename(pool_name, pool_name_rename):
+        """
+        Rename a pool
+        :param str pool_name: The name of the pool to be renamed
+        :param str pool_name_rename: The new name that the pool will have
+        :return: The return values of the SetName call, or None
+        :rtype: The D-Bus types (bs), q, and s, or None
+        """
+        objects = StratisDbus.get_managed_objects().items()
+
+        pool_objects = {
+            path: obj_data[StratisDbus._POOL_IFACE]
+            for path, obj_data in objects
+            if StratisDbus._POOL_IFACE in obj_data
+            and obj_data[StratisDbus._POOL_IFACE]["Name"].startswith(_TEST_PREF)
+        }
+
+        pool_paths = [
+            path
+            for path, pool_obj in pool_objects.items()
+            if pool_obj["Name"] == pool_name
+        ]
+        if pool_paths == []:
+            return None
+
+        iface = dbus.Interface(
+            StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, pool_paths[0]),
+            StratisDbus._POOL_IFACE,
+        )
+        return iface.SetName(pool_name_rename, timeout=StratisDbus._TIMEOUT)
+
+    @staticmethod
     def fs_create(pool_path, fs_name):
         """
         Create a filesystem
