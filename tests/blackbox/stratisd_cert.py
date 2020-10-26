@@ -28,7 +28,7 @@ from tempfile import NamedTemporaryFile
 import dbus
 from testlib.dbus import StratisDbus, fs_n, p_n
 from testlib.infra import KernelKey, clean_up
-from testlib.utils import exec_command, process_exists
+from testlib.utils import exec_command, process_exists, resolve_symlink
 
 _ROOT = 0
 _NON_ROOT = 1
@@ -500,17 +500,34 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
             "/dev/mapper/stratis-1-" + pool_uuid + "-thin-fs-" + filesystem_uuid
         )
 
-        fsdevdest = os.path.abspath(
-            os.path.join(
-                os.path.dirname(filesystem_devnode), os.readlink(filesystem_devnode),
-            )
+        fsdevdest = resolve_symlink(filesystem_devnode)
+        fsdevmapperlinkdest = resolve_symlink(fs_devmapperlinkstr)
+
+        self.assertEqual(fsdevdest, fsdevmapperlinkdest)
+
+        fs_name_rename = fs_n()
+
+        self._unittest_command(
+            StratisDbus.fs_rename(fs_name, fs_name_rename), dbus.UInt16(0)
+        )
+        # Settle after rename, to allow udev to recognize the fs rename
+        exec_command(["udevadm", "settle"])
+
+        objects = StratisDbus.get_managed_objects()
+
+        pool_gmodata = objects[pool_path]
+        pool_uuid = pool_gmodata[StratisDbus.POOL_IFACE]["Uuid"]
+        filesystem_gmodata = objects[filesystem_path]
+        filesystem_uuid = filesystem_gmodata[StratisDbus.FS_IFACE]["Uuid"]
+
+        filesystem_devnode = filesystem_gmodata[StratisDbus.FS_IFACE]["Devnode"]
+
+        fs_devmapperlinkstr = (
+            "/dev/mapper/stratis-1-" + pool_uuid + "-thin-fs-" + filesystem_uuid
         )
 
-        fsdevmapperlinkdest = os.path.abspath(
-            os.path.join(
-                os.path.dirname(fs_devmapperlinkstr), os.readlink(fs_devmapperlinkstr)
-            )
-        )
+        fsdevdest = resolve_symlink(filesystem_devnode)
+        fsdevmapperlinkdest = resolve_symlink(fs_devmapperlinkstr)
 
         self.assertEqual(fsdevdest, fsdevmapperlinkdest)
 
