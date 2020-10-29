@@ -28,6 +28,7 @@ from dbus_client_gen import (
     DbusClientMissingSearchPropertiesError,
     DbusClientUniqueResultError,
 )
+from dbus_python_client_gen import DPClientInvocationError, DPClientMethodCallContext
 
 from ._actions import BLOCKDEV_INTERFACE, FILESYSTEM_INTERFACE, POOL_INTERFACE
 from ._errors import (
@@ -225,6 +226,16 @@ def _interpret_errors_1(errors):  # pylint: disable=too-many-return-statements
         )
         return fmt_str % error
 
+    # This check is necessitated by a D-Bus bug, see:
+    # https://github.com/stratis-storage/project/issues/233. If the
+    # underlying D-Bus bug is fixed, then this block can be removed.
+    # This failure requires a specific terminal-like device to reproduce. We
+    # choose not to cover it in automated testing.
+    if isinstance(error, DPClientInvocationError):  # pragma: no cover
+        explanation = _interpret_errors_2(errors)
+        if explanation is not None:
+            return explanation
+
     # Inspect lowest error
     error = errors[-1]
 
@@ -237,6 +248,46 @@ def _interpret_errors_1(errors):  # pylint: disable=too-many-return-statements
     # none, then this will rapidly be fixed, so it will be difficult to
     # maintain coverage for this branch.
     return None  # pragma: no cover
+
+
+def _interpret_errors_2(errors):  # pragma: no cover
+    """
+    Interpret the error when it is known that the first error is a
+    DPClientInvocationError
+
+    :param errors: the chain of errors
+    :type errors: list of Exception
+    :returns: None if no interpretation found, otherwise str
+    """
+    error = errors[0]
+
+    assert isinstance(error, DPClientInvocationError)
+
+    if (
+        # pylint: disable=bad-continuation
+        error.interface_name.startswith("org.storage.stratis2.Manager")
+        and isinstance(error.context, DPClientMethodCallContext)
+        and error.context.method_name == "SetKey"
+    ):
+        if len(errors) > 1:
+            next_error = errors[1]
+            if isinstance(next_error, dbus.exceptions.DBusException):
+                if (
+                    # pylint: disable=bad-continuation
+                    next_error.get_dbus_name()
+                    == "org.freedesktop.DBus.Error.Disconnected"
+                ):
+                    return (
+                        "The D-Bus connection was disconnected. Most likely "
+                        "this is due to a known bug in the D-Bus "
+                        "implementation. This bug makes it impossible to "
+                        "interactively specify a passphrase on certain "
+                        "terminal-like devices. It should still be possible "
+                        "to specify the passphrase using another method, like "
+                        "a keyfile, or to specify the passphrase interactively "
+                        "using a different terminal."
+                    )
+    return None
 
 
 def _interpret_errors(errors):
