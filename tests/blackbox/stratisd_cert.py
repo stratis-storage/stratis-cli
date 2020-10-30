@@ -88,6 +88,36 @@ def make_test_filesystem(pool_path, fs_name):
     return array_of_tuples_with_obj_paths_and_names[0][0]
 
 
+def acquire_filesystem_symlink_targets(pool_path, filesystem_path):
+    """
+    Acquire the symlink targets of the "/dev/stratis" symlink,
+    and the equivalent device-mapper "/dev/mapper" link, generated
+    via the info from get_managed_objects().
+    NOTE: This may require a preceding "udevadm settle" call, to
+    ensure that up-to-date pool and filesystem information is being
+    collected.
+    :param str pool_path: pool path
+    :param str filesystem_path: filesystem path
+    :return: str fsdevdest, str fsdevmapperlinkdest
+    """
+    objects = StratisDbus.get_managed_objects()
+
+    pool_gmodata = objects[pool_path]
+    pool_uuid = pool_gmodata[StratisDbus.POOL_IFACE]["Uuid"]
+    filesystem_gmodata = objects[filesystem_path]
+    filesystem_uuid = filesystem_gmodata[StratisDbus.FS_IFACE]["Uuid"]
+
+    filesystem_devnode = filesystem_gmodata[StratisDbus.FS_IFACE]["Devnode"]
+
+    fs_devmapperlinkstr = (
+        "/dev/mapper/stratis-1-" + pool_uuid + "-thin-fs-" + filesystem_uuid
+    )
+
+    fsdevdest = resolve_symlink(filesystem_devnode)
+    fsdevmapperlinkdest = resolve_symlink(fs_devmapperlinkstr)
+    return fsdevdest, fsdevmapperlinkdest
+
+
 class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-methods
     """
     Unit tests for Stratis
@@ -487,22 +517,9 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         fs_name = fs_n()
         filesystem_path = make_test_filesystem(pool_path, fs_name)
 
-        objects = StratisDbus.get_managed_objects()
-
-        pool_gmodata = objects[pool_path]
-        pool_uuid = pool_gmodata[StratisDbus.POOL_IFACE]["Uuid"]
-        filesystem_gmodata = objects[filesystem_path]
-        filesystem_uuid = filesystem_gmodata[StratisDbus.FS_IFACE]["Uuid"]
-
-        filesystem_devnode = filesystem_gmodata[StratisDbus.FS_IFACE]["Devnode"]
-
-        fs_devmapperlinkstr = (
-            "/dev/mapper/stratis-1-" + pool_uuid + "-thin-fs-" + filesystem_uuid
+        fsdevdest, fsdevmapperlinkdest = acquire_filesystem_symlink_targets(
+            pool_path, filesystem_path
         )
-
-        fsdevdest = resolve_symlink(filesystem_devnode)
-        fsdevmapperlinkdest = resolve_symlink(fs_devmapperlinkstr)
-
         self.assertEqual(fsdevdest, fsdevmapperlinkdest)
 
         fs_name_rename = fs_n()
@@ -513,22 +530,9 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         # Settle after rename, to allow udev to recognize the fs rename
         exec_command(["udevadm", "settle"])
 
-        objects = StratisDbus.get_managed_objects()
-
-        pool_gmodata = objects[pool_path]
-        pool_uuid = pool_gmodata[StratisDbus.POOL_IFACE]["Uuid"]
-        filesystem_gmodata = objects[filesystem_path]
-        filesystem_uuid = filesystem_gmodata[StratisDbus.FS_IFACE]["Uuid"]
-
-        filesystem_devnode = filesystem_gmodata[StratisDbus.FS_IFACE]["Devnode"]
-
-        fs_devmapperlinkstr = (
-            "/dev/mapper/stratis-1-" + pool_uuid + "-thin-fs-" + filesystem_uuid
+        fsdevdest, fsdevmapperlinkdest = acquire_filesystem_symlink_targets(
+            pool_path, filesystem_path
         )
-
-        fsdevdest = resolve_symlink(filesystem_devnode)
-        fsdevmapperlinkdest = resolve_symlink(fs_devmapperlinkstr)
-
         self.assertEqual(fsdevdest, fsdevmapperlinkdest)
 
     def test_filesystem_rename(self):
