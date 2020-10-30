@@ -18,8 +18,8 @@ Miscellaneous top-level actions.
 # isort: STDLIB
 import json
 import os
-import sys
 from collections import defaultdict
+from getpass import getpass
 
 # isort: THIRDPARTY
 from justbytes import Range
@@ -204,20 +204,23 @@ def _add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
     from ._data import Manager
 
     if capture_key:  # pragma: no cover
-        file_desc = sys.stdout.fileno()
-        fd_is_terminal = True
-        print("Enter desired key data followed by the return key:")
+        password = getpass(prompt="Enter key data followed by the return key: ")
+
+        (read, write) = os.pipe()
+        os.write(write, password.encode("utf-8"))
+
+        file_desc = read
+        fd_is_pipe = True
     else:
         file_desc = os.open(keyfile_path[0], os.O_RDONLY)
-        fd_is_terminal = False
+        fd_is_pipe = False
 
     add_ret = Manager.Methods.SetKey(
-        proxy,
-        {"key_desc": key_desc, "key_fd": file_desc, "interactive": fd_is_terminal},
+        proxy, {"key_desc": key_desc, "key_fd": file_desc, "interactive": False},
     )
 
-    if fd_is_terminal:  # pragma: no cover
-        pass
+    if fd_is_pipe:  # pragma: no cover
+        os.close(write)
     else:
         os.close(file_desc)
 
