@@ -18,7 +18,9 @@ Miscellaneous top-level actions.
 # isort: STDLIB
 import json
 import os
+import pty
 import sys
+import termios
 from collections import defaultdict
 
 # isort: THIRDPARTY
@@ -204,9 +206,19 @@ def _add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
     from ._data import Manager
 
     if capture_key:  # pragma: no cover
-        file_desc = sys.stdout.fileno()
-        fd_is_terminal = True
+        stdin_fd = sys.stdin.fileno()
+        (controller, controllee) = pty.openpty()
+        old_attrs = termios.tcgetattr(stdin_fd)
+        new_attrs = termios.tcgetattr(stdin_fd)
         print("Enter desired key data followed by the return key:")
+        new_attrs[3] = new_attrs[3] & ~termios.ECHO
+        termios.tcsetattr(stdin_fd, termios.TCSANOW, new_attrs)
+
+        os.write(controller, os.read(stdin_fd, 4096))
+
+        termios.tcsetattr(stdin_fd, termios.TCSANOW, old_attrs)
+        file_desc = controllee
+        fd_is_terminal = True
     else:
         file_desc = os.open(keyfile_path[0], os.O_RDONLY)
         fd_is_terminal = False
@@ -216,8 +228,8 @@ def _add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
         {"key_desc": key_desc, "key_fd": file_desc, "interactive": fd_is_terminal},
     )
 
-    if fd_is_terminal:  # pragma: no cover
-        pass
+    if fd_is_terminal:
+        os.close(controller)
     else:
         os.close(file_desc)
 
