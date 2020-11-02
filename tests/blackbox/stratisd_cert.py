@@ -535,6 +535,19 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         )
         self.assertEqual(fsdevdest, fsdevmapperlinkdest)
 
+        pool_name_rename = p_n()
+
+        self._unittest_command(
+            StratisDbus.pool_rename(pool_name, pool_name_rename), dbus.UInt16(0)
+        )
+        # Settle after rename, to allow udev to recognize the pool rename
+        exec_command(["udevadm", "settle"])
+
+        fsdevdest, fsdevmapperlinkdest = acquire_filesystem_symlink_targets(
+            pool_path, filesystem_path
+        )
+        self.assertEqual(fsdevdest, fsdevmapperlinkdest)
+
     def test_filesystem_rename(self):
         """
         Test renaming a filesystem.
