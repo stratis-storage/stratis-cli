@@ -507,9 +507,24 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
 
         self._test_permissions(StratisDbus.fs_create, [pool_path, fs_name], True)
 
-    def test_filesystem_udev_symlink(self):
+    def test_filesystem_udev_symlink_create(self):
         """
         Test the udev symlink creation for filesystem devices.
+        """
+        pool_name = p_n()
+        pool_path = make_test_pool(pool_name, StratisCertify.DISKS[0:1])
+
+        fs_name = fs_n()
+        filesystem_path = make_test_filesystem(pool_path, fs_name)
+
+        fsdevdest, fsdevmapperlinkdest = acquire_filesystem_symlink_targets(
+            pool_path, filesystem_path
+        )
+        self.assertEqual(fsdevdest, fsdevmapperlinkdest)
+
+    def test_filesystem_udev_symlink_fsrename(self):
+        """
+        Test the udev symlink creation for filesystem devices after fs rename.
         """
         pool_name = p_n()
         pool_path = make_test_pool(pool_name, StratisCertify.DISKS[0:1])
@@ -534,6 +549,54 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
             pool_path, filesystem_path
         )
         self.assertEqual(fsdevdest, fsdevmapperlinkdest)
+
+    def test_filesystem_udev_symlink_poolrename(self):
+        """
+        Test the udev symlink creation for filesystem devices after pool rename.
+        """
+        pool_name = p_n()
+        pool_path = make_test_pool(pool_name, StratisCertify.DISKS[0:1])
+
+        fs_name = fs_n()
+        filesystem_path = make_test_filesystem(pool_path, fs_name)
+
+        fsdevdest, fsdevmapperlinkdest = acquire_filesystem_symlink_targets(
+            pool_path, filesystem_path
+        )
+        self.assertEqual(fsdevdest, fsdevmapperlinkdest)
+
+        pool_name_rename = p_n()
+
+        self._unittest_command(
+            StratisDbus.pool_rename(pool_name, pool_name_rename), dbus.UInt16(0)
+        )
+        # Settle after rename, to allow udev to recognize the fs rename
+        exec_command(["udevadm", "settle"])
+
+        fsdevdest, fsdevmapperlinkdest = acquire_filesystem_symlink_targets(
+            pool_path, filesystem_path
+        )
+        self.assertEqual(fsdevdest, fsdevmapperlinkdest)
+
+    def test_filesystem_udev_symlink_fsrename_poolrename(self):
+        """
+        Test the udev symlink creation for filesystem devices after fs and pool rename.
+        """
+        pool_name = p_n()
+        pool_path = make_test_pool(pool_name, StratisCertify.DISKS[0:1])
+
+        fs_name = fs_n()
+        filesystem_path = make_test_filesystem(pool_path, fs_name)
+
+        fsdevdest, fsdevmapperlinkdest = acquire_filesystem_symlink_targets(
+            pool_path, filesystem_path
+        )
+
+        fs_name_rename = fs_n()
+
+        self._unittest_command(
+            StratisDbus.fs_rename(fs_name, fs_name_rename), dbus.UInt16(0)
+        )
 
         pool_name_rename = p_n()
 
