@@ -214,7 +214,12 @@ def _add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
         new_attrs[3] = new_attrs[3] & ~termios.ECHO
         termios.tcsetattr(stdin_fd, termios.TCSANOW, new_attrs)
 
-        os.write(controller, os.read(stdin_fd, 4096))
+        # We can arbitrarily replace the newline with an ASCII control character
+        # that will cause the terminal to send EOF because readline() will only
+        # return a newline at the end of a buffered passphrase.
+        ascii_ctrl_d = chr(0x04)
+        pass_with_eof = sys.stdin.readline().replace("\n", ascii_ctrl_d)
+        os.write(controller, pass_with_eof.encode("utf-8"))
 
         termios.tcsetattr(stdin_fd, termios.TCSANOW, old_attrs)
         file_desc = controllee
