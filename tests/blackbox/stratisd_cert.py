@@ -532,11 +532,6 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         fs_name = fs_n()
         filesystem_path = make_test_filesystem(pool_path, fs_name)
 
-        fsdevdest, fsdevmapperlinkdest = acquire_filesystem_symlink_targets(
-            pool_path, filesystem_path
-        )
-        self.assertEqual(fsdevdest, fsdevmapperlinkdest)
-
         fs_name_rename = fs_n()
 
         self._unittest_command(
@@ -560,11 +555,6 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         fs_name = fs_n()
         filesystem_path = make_test_filesystem(pool_path, fs_name)
 
-        fsdevdest, fsdevmapperlinkdest = acquire_filesystem_symlink_targets(
-            pool_path, filesystem_path
-        )
-        self.assertEqual(fsdevdest, fsdevmapperlinkdest)
-
         pool_name_rename = p_n()
 
         self._unittest_command(
@@ -587,10 +577,6 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
 
         fs_name = fs_n()
         filesystem_path = make_test_filesystem(pool_path, fs_name)
-
-        fsdevdest, fsdevmapperlinkdest = acquire_filesystem_symlink_targets(
-            pool_path, filesystem_path
-        )
 
         fs_name_rename = fs_n()
 
