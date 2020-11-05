@@ -18,7 +18,6 @@ Miscellaneous top-level actions.
 # isort: STDLIB
 import json
 import os
-import pty
 import sys
 import termios
 from collections import defaultdict
@@ -207,34 +206,32 @@ def _add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
 
     if capture_key:  # pragma: no cover
         stdin_fd = sys.stdin.fileno()
-        (controller, controllee) = pty.openpty()
+        (read, write) = os.pipe()
         old_attrs = termios.tcgetattr(stdin_fd)
         new_attrs = termios.tcgetattr(stdin_fd)
         print("Enter desired key data followed by the return key:")
         new_attrs[3] = new_attrs[3] & ~termios.ECHO
         termios.tcsetattr(stdin_fd, termios.TCSANOW, new_attrs)
 
-        # We can arbitrarily replace the newline with an ASCII control character
-        # that will cause the terminal to send EOF because readline() will only
-        # return a newline at the end of a buffered passphrase.
-        ascii_ctrl_d = chr(0x04)
-        pass_with_eof = sys.stdin.readline().replace("\n", ascii_ctrl_d)
-        os.write(controller, pass_with_eof.encode("utf-8"))
+        # We can arbitrarily replace the newline with the empty string
+        # because readline() will only return a newline at the end of a
+        # buffered passphrase.
+        password = sys.stdin.readline().replace("\n", "")
+        os.write(write, password.encode("utf-8"))
 
         termios.tcsetattr(stdin_fd, termios.TCSANOW, old_attrs)
-        file_desc = controllee
-        fd_is_terminal = True
+        file_desc = read
+        fd_is_pipe = True
     else:
         file_desc = os.open(keyfile_path[0], os.O_RDONLY)
-        fd_is_terminal = False
+        fd_is_pipe = False
 
     add_ret = Manager.Methods.SetKey(
-        proxy,
-        {"key_desc": key_desc, "key_fd": file_desc, "interactive": fd_is_terminal},
+        proxy, {"key_desc": key_desc, "key_fd": file_desc, "interactive": False},
     )
 
-    if fd_is_terminal:  # pragma: no cover
-        os.close(controller)
+    if fd_is_pipe:  # pragma: no cover
+        os.close(write)
     else:
         os.close(file_desc)
 
