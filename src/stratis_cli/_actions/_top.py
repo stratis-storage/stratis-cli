@@ -19,6 +19,7 @@ Miscellaneous top-level actions.
 import json
 import os
 import sys
+import termios
 from collections import defaultdict
 
 # isort: THIRDPARTY
@@ -204,20 +205,33 @@ def _add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
     from ._data import Manager
 
     if capture_key:  # pragma: no cover
-        file_desc = sys.stdout.fileno()
-        fd_is_terminal = True
+        stdin_fd = sys.stdin.fileno()
+        (read, write) = os.pipe()
+        old_attrs = termios.tcgetattr(stdin_fd)
+        new_attrs = termios.tcgetattr(stdin_fd)
         print("Enter desired key data followed by the return key:")
+        new_attrs[3] = new_attrs[3] & ~termios.ECHO
+        termios.tcsetattr(stdin_fd, termios.TCSANOW, new_attrs)
+
+        # We can arbitrarily replace the newline with the empty string
+        # because readline() will only return a newline at the end of a
+        # buffered passphrase.
+        password = sys.stdin.readline().replace("\n", "")
+        os.write(write, password.encode("utf-8"))
+
+        termios.tcsetattr(stdin_fd, termios.TCSANOW, old_attrs)
+        file_desc = read
+        fd_is_pipe = True
     else:
         file_desc = os.open(keyfile_path[0], os.O_RDONLY)
-        fd_is_terminal = False
+        fd_is_pipe = False
 
     add_ret = Manager.Methods.SetKey(
-        proxy,
-        {"key_desc": key_desc, "key_fd": file_desc, "interactive": fd_is_terminal},
+        proxy, {"key_desc": key_desc, "key_fd": file_desc, "interactive": False},
     )
 
-    if fd_is_terminal:  # pragma: no cover
-        pass
+    if fd_is_pipe:  # pragma: no cover
+        os.close(write)
     else:
         os.close(file_desc)
 
