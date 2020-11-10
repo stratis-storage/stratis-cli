@@ -16,6 +16,7 @@ Definition of pool actions to display in the CLI.
 """
 
 from .._actions import TopActions
+from .._stratisd_constants import EncryptionMethod
 
 POOL_SUBCMDS = [
     (
@@ -177,9 +178,9 @@ POOL_SUBCMDS = [
                 (
                     "unlock_method",
                     dict(
-                        default="keyring",
+                        default=str(EncryptionMethod.KEYRING),
                         action="store",
-                        choices=["keyring", "clevis"],
+                        choices=[str(x) for x in list(EncryptionMethod)],
                         help="Method to use to unlock encrypted pools",
                     ),
                 )

@@ -16,7 +16,7 @@ Stratisd error classes.
 """
 
 # isort: STDLIB
-from enum import IntEnum
+from enum import Enum, IntEnum
 
 
 def value_to_name(klass):
@@ -95,3 +95,15 @@ class BlockDevTiers(IntEnum):
 
 
 BLOCK_DEV_TIER_TO_NAME = value_to_name(BlockDevTiers)
+
+
+class EncryptionMethod(Enum):
+    """
+    Encryption method, used as argument to unlock.
+    """
+
+    KEYRING = "keyring"
+    CLEVIS = "clevis"
+
+    def __str__(self):
+        return self.value
