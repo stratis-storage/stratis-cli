@@ -146,10 +146,9 @@ SPECS = {
       <arg direction="out" name="return_code" type="q" />
       <arg direction="out" name="return_string" type="s" />
     </method>
-    <method name="BindClevis">
-      <arg direction="in" name="key_desc" type="s" />
-      <arg direction="in" name="tang_url" type="s" />
-      <arg direction="in" name="tang_thp" type="s" />
+    <method name="Bind">
+      <arg direction="in" name="pin" type="s" />
+      <arg direction="in" name="json" type="s" />
       <arg direction="out" name="results" type="b" />
       <arg direction="out" name="return_code" type="q" />
       <arg direction="out" name="return_string" type="s" />
@@ -185,7 +184,7 @@ SPECS = {
       <arg direction="out" name="return_code" type="q" />
       <arg direction="out" name="return_string" type="s" />
     </method>
-    <method name="UnbindClevis">
+    <method name="Unbind">
       <arg direction="out" name="results" type="b" />
       <arg direction="out" name="return_code" type="q" />
       <arg direction="out" name="return_string" type="s" />

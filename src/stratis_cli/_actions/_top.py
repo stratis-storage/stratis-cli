@@ -820,13 +820,8 @@ class TopActions:
             .require_unique_match(True)
             .search(managed_objects)
         )
-        (changed, return_code, return_msg) = Pool.Methods.BindClevis(
-            get_object(pool_object_path),
-            {
-                "key_desc": namespace.key_desc,
-                "tang_url": namespace.tang_url,
-                "tang_thp": namespace.tang_thp,
-            },
+        (changed, return_code, return_msg) = Pool.Methods.Bind(
+            get_object(pool_object_path), {"pin": "tang", "json": "{}",},
         )
 
         if return_code != StratisdErrors.OK:
@@ -853,7 +848,7 @@ class TopActions:
             .require_unique_match(True)
             .search(managed_objects)
         )
-        (changed, return_code, return_msg) = Pool.Methods.UnbindClevis(
+        (changed, return_code, return_msg) = Pool.Methods.Unbind(
             get_object(pool_object_path), {}
         )
 

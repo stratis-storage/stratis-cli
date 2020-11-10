@@ -29,7 +29,7 @@ class UnlockTestCase(SimTestCase):
     Test 'unlock' when no pools are locked (the only state in the sim_engine).
     """
 
-    _MENU = ["--propagate", "pool", "unlock"]
+    _MENU = ["--propagate", "pool", "unlock", "keyring"]
 
     def test_unlock(self):
         """
