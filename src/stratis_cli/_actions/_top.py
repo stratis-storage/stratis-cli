@@ -803,9 +803,10 @@ class TopActions:
         )
 
     @staticmethod
-    def bind_clevis(namespace):
+    def bind(namespace):
         """
-        Bind all devices in an encrypted pool to a Tang server using Clevis.
+        Bind all devices in an encrypted pool with a supplementary encryption
+        facility.
         :raises StratisCliNoChangeError:
         :raises StratisCliEngineError:
         """
@@ -828,12 +829,13 @@ class TopActions:
             raise StratisCliEngineError(return_code, return_msg)
 
         if not changed:
-            raise StratisCliNoChangeError("bind-clevis", pool_name)
+            raise StratisCliNoChangeError("bind", pool_name)
 
     @staticmethod
-    def unbind_clevis(namespace):
+    def unbind(namespace):
         """
-        Unbind all devices in an encrypted pool from a Tang server using Clevis.
+        Unbind all devices in an encrypted pool.
+
         :raises StratisCliNoChangeError:
         :raises StratisCliEngineError:
         """
@@ -856,7 +858,7 @@ class TopActions:
             raise StratisCliEngineError(return_code, return_msg)
 
         if not changed:
-            raise StratisCliNoChangeError("bind-clevis", pool_name)
+            raise StratisCliNoChangeError("unbind", pool_name)
 
     @staticmethod
     def unlock_pools(namespace):
