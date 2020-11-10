@@ -10,7 +10,7 @@ addons:
 branches:
   only:
     - master
-    - develop-2.2.0
+    - develop-2.2.1
 
 jobs:
   include:
