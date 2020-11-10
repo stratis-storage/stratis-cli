@@ -1,3 +1,38 @@
+stratis-cli 2.2.1 (UNRELEASED)
+==============================
+Required stratisd version: 2.2.1
+
+Recommended Python interpreter: 3.7.9
+Lowest supported Python interpreter: 3.6.8
+Python linter: pylint (2.4.4)
+Python auto-formatter: black (19.10b0)
+Python import sorter: isort (4.3.21)
+YAML linter: yamllint (1.23.0)
+
+- Convert relative paths of specified block devices to absolute paths:
+  https://github.com/stratis-storage/stratis-cli/pull/658
+
+- Secure user input before passing pipe over D-Bus:
+  https://github.com/stratis-storage/stratis-cli/pull/675
+
+- Add a missing entry in man page for key list command:
+  https://github.com/stratis-storage/stratis-cli/issues/662
+  https://github.com/stratis-storage/stratis-cli/pull/663
+
+- Blame selinux for all Disconnected D-Bus errors:
+  https://github.com/stratis-storage/stratis-cli/pull/671
+
+- Add some blackbox tests to verify correct management of filesystem symlinks:
+  https://github.com/stratis-storage/stratis-cli/pull/666
+  https://github.com/stratis-storage/stratis-cli/pull/672
+
+- Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/673
+  https://github.com/stratis-storage/stratis-cli/pull/665
+  https://github.com/stratis-storage/stratis-cli/pull/656
+  https://github.com/stratis-storage/stratis-cli/pull/654
+
+
 stratis-cli 2.2.0
 =================
 
