@@ -28,6 +28,7 @@ from dbus_client_gen import (
     DbusClientMissingSearchPropertiesError,
     DbusClientUniqueResultError,
 )
+from dbus_python_client_gen import DPClientInvocationError
 
 from ._actions import BLOCKDEV_INTERFACE, FILESYSTEM_INTERFACE, POOL_INTERFACE
 from ._errors import (
@@ -225,6 +226,14 @@ def _interpret_errors_1(errors):  # pylint: disable=too-many-return-statements
         )
         return fmt_str % error
 
+    # Some method calls may have an assignable underlying cause.
+    # At present, automated testing of any of these assignable causes is
+    # too laborious to justify.
+    if isinstance(error, DPClientInvocationError):  # pragma: no cover
+        explanation = _interpret_errors_2(errors)
+        if explanation is not None:
+            return explanation
+
     # Inspect lowest error
     error = errors[-1]
 
@@ -237,6 +246,35 @@ def _interpret_errors_1(errors):  # pylint: disable=too-many-return-statements
     # none, then this will rapidly be fixed, so it will be difficult to
     # maintain coverage for this branch.
     return None  # pragma: no cover
+
+
+def _interpret_errors_2(errors):  # pragma: no cover
+    """
+    Interpret the error when it is known that the first error is a
+    DPClientInvocationError
+
+    :param errors: the chain of errors
+    :type errors: list of Exception
+    :returns: None if no interpretation found, otherwise str
+    """
+    error = errors[0]
+
+    assert isinstance(error, DPClientInvocationError)
+
+    if len(errors) > 1:
+        next_error = errors[1]
+        # We do not test this error, as the only known way to cause it is
+        # manipulation of selinux configuration, which is too laborious to
+        # bother with at this time.
+        if isinstance(next_error, dbus.exceptions.DBusException):
+            if next_error.get_dbus_name() == "org.freedesktop.DBus.Error.Disconnected":
+                return (
+                    "The D-Bus connection was disconnected during a "
+                    "D-Bus interaction. Most likely, your selinux settings "
+                    "prohibit that particular D-Bus interaction."
+                )
+
+    return None
 
 
 def _interpret_errors(errors):

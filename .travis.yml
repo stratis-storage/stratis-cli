@@ -10,13 +10,14 @@ addons:
 branches:
   only:
     - master
+    - develop-2.2.0
 
 jobs:
   include:
 
     # MANDATORY CHECKS USING CURRENT DEVELOPMENT INTERPRETER
-    - name: "run pylint using Python 3.7.7"
-      python: "3.7.7"
+    - name: "run pylint using Python 3.7.9"
+      python: "3.7.9"
       install:
         - >
           pip
@@ -30,12 +31,12 @@ jobs:
           psutil==5.6.7
           semantic_version==2.6.0
       script: PYTHONPATH=./src make -f Makefile lint
-    - name: "check formatting using Python 3.7.7"
-      python: "3.7.7"
+    - name: "check formatting using Python 3.7.9"
+      python: "3.7.9"
       install: pip install black==19.10b0 isort==4.3.21
       env: TASK=fmt-travis
-    - name: "run tests that do not require stratisd using Python 3.7.7"
-      python: "3.7.7"
+    - name: "run tests that do not require stratisd using Python 3.7.9"
+      python: "3.7.9"
       install:
         - >
           pip
@@ -67,7 +68,7 @@ jobs:
 
     # VERIFICATION OF TEST INFRASTRUCTURE
     - name: "run yamllint 1.23.0 on .travis.yml"
-      python: "3.7.7"
+      python: "3.7.9"
       install: pip install yamllint==1.23.0
       env: TASK=yamllint
 
