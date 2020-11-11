@@ -17,6 +17,7 @@ Definition of pool actions to display in the CLI.
 
 from .._actions import TopActions
 from .._stratisd_constants import EncryptionMethod
+from ._bind import BIND_SUBCMDS
 
 POOL_SUBCMDS = [
     (
@@ -144,14 +145,7 @@ POOL_SUBCMDS = [
         "bind",
         dict(
             help="Bind the given pool with an additional encryption facility",
-            args=[
-                ("pool_name", dict(action="store", help="Pool name")),
-                (
-                    "key_desc",
-                    dict(action="store", help="Key description of existing pool key"),
-                ),
-            ],
-            func=TopActions.bind,
+            subcmds=BIND_SUBCMDS,
         ),
     ),
     (

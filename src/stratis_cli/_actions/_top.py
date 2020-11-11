@@ -803,13 +803,21 @@ class TopActions:
         )
 
     @staticmethod
-    def bind(namespace):
+    def bind_tang(namespace):
         """
-        Bind all devices in an encrypted pool with a supplementary encryption
-        facility.
+        Bind all devices in an encrypted pool using the specified tang server.
+
         :raises StratisCliNoChangeError:
         :raises StratisCliEngineError:
         """
+
+        thumbprint = namespace.thumbprint
+        if thumbprint is None:
+            thumbprint = "fake thumbprint"
+            response = input("Accept tang server thumbprint %s (yes/no): " % thumbprint)
+            if response != "yes":
+                return
+
         # pylint: disable=import-outside-toplevel
         from ._data import ObjectManager, Pool, pools
 
@@ -822,7 +830,41 @@ class TopActions:
             .search(managed_objects)
         )
         (changed, return_code, return_msg) = Pool.Methods.Bind(
-            get_object(pool_object_path), {"pin": "tang", "json": "{}",},
+            get_object(pool_object_path),
+            {
+                "pin": "tang",
+                "json": json.dumps({"url": namespace.url, "thp": thumbprint}),
+            },
+        )
+
+        if return_code != StratisdErrors.OK:
+            raise StratisCliEngineError(return_code, return_msg)
+
+        if not changed:
+            raise StratisCliNoChangeError("bind", pool_name)
+
+    @staticmethod
+    def bind_tpm(namespace):
+        """
+        Bind all devices in an encrypted pool using TPM.
+
+        :raises StratisCliNoChangeError:
+        :raises StratisCliEngineError:
+        """
+
+        # pylint: disable=import-outside-toplevel
+        from ._data import ObjectManager, Pool, pools
+
+        proxy = get_object(TOP_OBJECT)
+        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
+        pool_name = namespace.pool_name
+        (pool_object_path, _) = next(
+            pools(props={"Name": pool_name})
+            .require_unique_match(True)
+            .search(managed_objects)
+        )
+        (changed, return_code, return_msg) = Pool.Methods.Bind(
+            get_object(pool_object_path), {"pin": "tpm", "json": "{}",},
         )
 
         if return_code != StratisdErrors.OK:
