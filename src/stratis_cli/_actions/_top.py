@@ -803,21 +803,17 @@ class TopActions:
         )
 
     @staticmethod
-    def bind_tang(namespace):
+    def _bind(namespace, clevis_pin, clevis_config):
         """
-        Bind all devices in an encrypted pool using the specified tang server.
+        Generic bind method. For further information about Clevis, and
+        discussion of the pin and the configuration, consult Clevis
+        documentation.
 
-        :raises StratisCliNoChangeError:
-        :raises StratisCliEngineError:
+        :param str clevis_pin: Clevis pin
+        :param dict clevis_config: configuration, may contain Stratis keys
         """
         # pylint: disable=import-outside-toplevel
         from ._data import ObjectManager, Pool, pools
-
-        clevis_config = {"url": namespace.url}
-        if namespace.thumbprint is None:
-            clevis_config[CLEVIS_TANG_TRUST_URL] = True
-        else:
-            clevis_config["thp"] = namespace.thumbprint
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -829,7 +825,7 @@ class TopActions:
         )
         (changed, return_code, return_msg) = Pool.Methods.Bind(
             get_object(pool_object_path),
-            {"pin": "tang", "json": json.dumps(clevis_config),},
+            {"pin": clevis_pin, "json": json.dumps(clevis_config),},
         )
 
         if return_code != StratisdErrors.OK:
@@ -837,6 +833,22 @@ class TopActions:
 
         if not changed:
             raise StratisCliNoChangeError("bind", pool_name)
+
+    @staticmethod
+    def bind_tang(namespace):
+        """
+        Bind all devices in an encrypted pool using the specified tang server.
+
+        :raises StratisCliNoChangeError:
+        :raises StratisCliEngineError:
+        """
+        clevis_config = {"url": namespace.url}
+        if namespace.thumbprint is None:
+            clevis_config[CLEVIS_TANG_TRUST_URL] = True
+        else:
+            clevis_config["thp"] = namespace.thumbprint
+
+        TopActions._bind(namespace, "tang", clevis_config)
 
     @staticmethod
     def bind_tpm(namespace):
@@ -847,26 +859,7 @@ class TopActions:
         :raises StratisCliEngineError:
         """
 
-        # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, Pool, pools
-
-        proxy = get_object(TOP_OBJECT)
-        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        pool_name = namespace.pool_name
-        (pool_object_path, _) = next(
-            pools(props={"Name": pool_name})
-            .require_unique_match(True)
-            .search(managed_objects)
-        )
-        (changed, return_code, return_msg) = Pool.Methods.Bind(
-            get_object(pool_object_path), {"pin": "tpm", "json": "{}",},
-        )
-
-        if return_code != StratisdErrors.OK:
-            raise StratisCliEngineError(return_code, return_msg)
-
-        if not changed:
-            raise StratisCliNoChangeError("bind", pool_name)
+        TopActions._bind(namespace, "tpm", {})
 
     @staticmethod
     def unbind(namespace):
