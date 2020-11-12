@@ -37,7 +37,7 @@ from .._errors import (
     StratisCliPartialFailureError,
     StratisCliResourceNotFoundError,
 )
-from .._stratisd_constants import BlockDevTiers, StratisdErrors
+from .._stratisd_constants import CLEVIS_TANG_TRUST_URL, BlockDevTiers, StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import TABLE_FAILURE_STRING, get_property, print_table
@@ -810,16 +810,14 @@ class TopActions:
         :raises StratisCliNoChangeError:
         :raises StratisCliEngineError:
         """
-
-        thumbprint = namespace.thumbprint
-        if thumbprint is None:
-            thumbprint = "fake thumbprint"
-            response = input("Accept tang server thumbprint %s (yes/no): " % thumbprint)
-            if response != "yes":
-                return
-
         # pylint: disable=import-outside-toplevel
         from ._data import ObjectManager, Pool, pools
+
+        clevis_config = {"url": namespace.url}
+        if namespace.thumbprint is None:
+            clevis_config[CLEVIS_TANG_TRUST_URL] = True
+        else:
+            clevis_config["thp"] = namespace.thumbprint
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -831,10 +829,7 @@ class TopActions:
         )
         (changed, return_code, return_msg) = Pool.Methods.Bind(
             get_object(pool_object_path),
-            {
-                "pin": "tang",
-                "json": json.dumps({"url": namespace.url, "thp": thumbprint}),
-            },
+            {"pin": "tang", "json": json.dumps(clevis_config),},
         )
 
         if return_code != StratisdErrors.OK:
