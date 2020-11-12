@@ -107,3 +107,6 @@ class EncryptionMethod(Enum):
 
     def __str__(self):
         return self.value
+
+
+CLEVIS_TANG_TRUST_URL = "stratis:tang:trust_url"
