@@ -17,8 +17,9 @@ Test 'bind'.
 
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
-from stratis_cli._errors import StratisCliEngineError
+from stratis_cli._errors import StratisCliEngineError, StratisCliNoChangeError
 
+from .._keyutils import RandomKeyTmpFile
 from .._misc import RUNNER, SimTestCase, device_name_list
 
 _ERROR = StratisCliErrorCodes.ERROR
@@ -52,6 +53,19 @@ class BindTestCase(SimTestCase):
         ]
         self.check_error(StratisCliEngineError, command_line, _ERROR)
 
+    def test_bind_when_unencrypted_tang_trust(self):
+        """
+        Binding when unencrypted and trusting URL should return an error.
+        """
+        command_line = self._MENU + [
+            "nbde",
+            self._POOLNAME,
+            "fake_key",
+            "URL",
+            "--trust-url",
+        ]
+        self.check_error(StratisCliEngineError, command_line, _ERROR)
+
     def test_bind_when_unencrypted_tpm(self):
         """
         Binding when unencrypted with tpm should return an error.
@@ -62,3 +76,54 @@ class BindTestCase(SimTestCase):
             "fake_key",
         ]
         self.check_error(StratisCliEngineError, command_line, _ERROR)
+
+
+class BindTestCase2(SimTestCase):
+    """
+    Test binding when pool is encrypted.
+    """
+
+    _MENU = ["--propagate", "pool", "bind"]
+    _POOLNAME = "poolname"
+    _KEY_DESC = "keydesc"
+
+    def setUp(self):
+        super().setUp()
+        with RandomKeyTmpFile() as fname:
+            command_line = [
+                "--propagate",
+                "key",
+                "set",
+                "--keyfile-path",
+                fname,
+                self._KEY_DESC,
+            ]
+            RUNNER(command_line)
+
+        command_line = [
+            "--propagate",
+            "pool",
+            "create",
+            "--key-desc",
+            self._KEY_DESC,
+            self._POOLNAME,
+        ] + _DEVICE_STRATEGY()
+        RUNNER(command_line)
+
+    def test_bind_when_bound(self):
+        """
+        Binding when encrypted and bound should raise a no change error,
+        as the action is assumed to be unintentional.
+        """
+        command_line = self._MENU + [
+            "tpm",
+            self._POOLNAME,
+            "fake_key",
+        ]
+        RUNNER(command_line)
+        command_line = self._MENU + [
+            "tpm",
+            self._POOLNAME,
+            "fake_key",
+        ]
+        self.check_error(StratisCliNoChangeError, command_line, _ERROR)

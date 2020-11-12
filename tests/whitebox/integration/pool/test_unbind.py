@@ -20,7 +20,7 @@ from stratis_cli import StratisCliErrorCodes
 from stratis_cli._errors import StratisCliEngineError, StratisCliNoChangeError
 
 from .._keyutils import RandomKeyTmpFile
-from .._misc import RUNNER, SimTestCase, device_name_list
+from .._misc import RUNNER, TEST_RUNNER, SimTestCase, device_name_list
 
 _ERROR = StratisCliErrorCodes.ERROR
 _DEVICE_STRATEGY = device_name_list(1, 1)
@@ -70,6 +70,7 @@ class UnbindTestCase2(SimTestCase):
             RUNNER(command_line)
 
         command_line = [
+            "--propagate",
             "pool",
             "create",
             "--key-desc",
@@ -85,3 +86,21 @@ class UnbindTestCase2(SimTestCase):
         """
         command_line = self._MENU + [self._POOLNAME]
         self.check_error(StratisCliNoChangeError, command_line, _ERROR)
+
+    def test_unbind_when_bound(self):
+        """
+        Bind and then unbind the pool. Unbinding should succeed.
+        """
+        command_line = [
+            "--propagate",
+            "pool",
+            "bind",
+            "nbde",
+            self._POOLNAME,
+            "fake_key",
+            "URL",
+            "--trust-url",
+        ]
+        RUNNER(command_line)
+        command_line = self._MENU + [self._POOLNAME]
+        TEST_RUNNER(command_line)
