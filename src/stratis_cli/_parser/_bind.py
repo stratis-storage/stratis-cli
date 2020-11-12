@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """
-Key command parser for Stratis CLI.
+Bind command parser for Stratis CLI.
 """
 
 from .._actions import TopActions
@@ -32,13 +32,29 @@ BIND_SUBCMDS = [
                     ),
                 ),
                 ("url", dict(action="store", help="URL of tang server")),
+            ],
+            mut_ex_args=[
                 (
-                    "--thumbprint",
-                    dict(
-                        action="store",
-                        help="Thumbprint of tang server verification key",
-                    ),
-                ),
+                    True,
+                    [
+                        (
+                            "--trust-url",
+                            dict(
+                                action="store_true",
+                                help="Omit verification of tang server credentials",
+                                dest="trust_url",
+                            ),
+                        ),
+                        (
+                            "--thumbprint",
+                            dict(
+                                action="store",
+                                help="Thumbprint of tang server at specified URL",
+                                dest="thumbprint",
+                            ),
+                        ),
+                    ],
+                )
             ],
             aliases=["tang"],
             func=TopActions.bind_tang,
