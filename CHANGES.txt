@@ -1,3 +1,25 @@
+stratis-cli 2.3.0 (UNRELEASED)
+==============================
+Required stratisd version: 2.3.0
+
+Recommended Python interpreter: 3.7.9
+Lowest supported Python interpreter: 3.6.8
+Python linter: pylint (2.4.4)
+Python auto-formatter: black (19.10b0)
+Python import sorter: isort (4.3.21)
+YAML linter: yamllint (1.23.0)
+
+- Introduce support for Clevis encryption policies:
+  https://github.com/stratis-storage/stratis-cli/pull/684
+
+- Catch exception on missing keyfile:
+  https://github.com/stratis-storage/stratis-cli/issues/680
+  https://github.com/stratis-storage/stratis-cli/pull/681
+
+- Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/678
+
+
 stratis-cli 2.2.1
 =================
 Required stratisd version: 2.2.1
@@ -27,6 +49,8 @@ YAML linter: yamllint (1.23.0)
   https://github.com/stratis-storage/stratis-cli/pull/672
 
 - Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/677
+  https://github.com/stratis-storage/stratis-cli/pull/676
   https://github.com/stratis-storage/stratis-cli/pull/673
   https://github.com/stratis-storage/stratis-cli/pull/665
   https://github.com/stratis-storage/stratis-cli/pull/656
