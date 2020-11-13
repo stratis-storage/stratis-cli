@@ -221,6 +221,10 @@ stratis pool create --key-desc someKeyDescription mypool /dev/sdb /dev/sdc
 ====
 stratis filesystem create mypool data1
 ====
+.Binding a pool's devices to use an NBDE policy for decryption
+====
+stratis pool bind nbde --trust-url mypool someKeyDescription someTangServerUrl
+====
 
 SEE ALSO
 --------
