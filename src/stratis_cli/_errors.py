@@ -301,6 +301,25 @@ class StratisCliInUseSameTierError(StratisCliInUseError):
         return msg
 
 
+class StratisCliKeyfileNotFoundError(StratisCliUserError):
+    """
+    Raised if the user specified a keyfile which could not be found when
+    setting or unsetting a key.
+    """
+
+    def __init__(self, keyfile_path):
+        """
+        Initializer.
+
+        :param str keyfile_path: the unfound path
+        """
+        # pylint: disable=super-init-not-called
+        self.keyfile_path = keyfile_path
+
+    def __str__(self):
+        return 'There is no keyfile at the path "%s"' % self.keyfile_path
+
+
 class StratisCliUnknownInterfaceError(StratisCliRuntimeError):
     """
     Error raised when code encounters an unexpected D-Bus interface name.

@@ -17,7 +17,11 @@ Test 'set'.
 
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
-from stratis_cli._errors import StratisCliEngineError, StratisCliNameConflictError
+from stratis_cli._errors import (
+    StratisCliEngineError,
+    StratisCliKeyfileNotFoundError,
+    StratisCliNameConflictError,
+)
 
 from .._keyutils import RandomKeyTmpFile
 from .._misc import RUNNER, TEST_RUNNER, SimTestCase
@@ -57,3 +61,11 @@ class TestKeySet(SimTestCase):
         with RandomKeyTmpFile(128) as fname:
             command_line = self._MENU + [self._KEYNAME, "--keyfile-path", fname]
             self.check_error(StratisCliEngineError, command_line, _ERROR)
+
+    def test_set_key_filename_missing(self):
+        """
+        Test that specifying a filename that does not exist raises a
+        StratisCliKeyfileNotFoundError.
+        """
+        command_line = self._MENU + [self._KEYNAME, "--keyfile-path", "/bogus"]
+        self.check_error(StratisCliKeyfileNotFoundError, command_line, _ERROR)

@@ -30,6 +30,7 @@ from .._errors import (
     StratisCliIncoherenceError,
     StratisCliInUseOtherTierError,
     StratisCliInUseSameTierError,
+    StratisCliKeyfileNotFoundError,
     StratisCliNameConflictError,
     StratisCliNoChangeError,
     StratisCliPartialChangeError,
@@ -212,7 +213,12 @@ def _add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
         file_desc = read
         fd_is_pipe = True
     else:
-        file_desc = os.open(keyfile_path[0], os.O_RDONLY)
+        the_path = keyfile_path[0]
+        try:
+            file_desc = os.open(the_path, os.O_RDONLY)
+        except FileNotFoundError as err:
+            raise StratisCliKeyfileNotFoundError(the_path) from err
+
         fd_is_pipe = False
 
     add_ret = Manager.Methods.SetKey(
