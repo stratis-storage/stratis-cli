@@ -78,6 +78,7 @@ _SERVICE = "org.storage.stratis2"
 
 _INTROSPECTABLE_IFACE = "org.freedesktop.DBus.Introspectable"
 _MANAGER_IFACE = "org.storage.stratis2.Manager.r1"
+_OBJECT_MGR_IFACE = "org.freedesktop.DBus.ObjectManager"
 _POOL_IFACE = "org.storage.stratis2.pool.r1"
 _TIMEOUT = 120000
 
@@ -89,6 +90,9 @@ pool_spec = ET.fromstring(SPECS[_POOL_IFACE])
 Pool = make_class("Pool", pool_spec, _TIMEOUT)
 MOPool = managed_object_class("MOPool", pool_spec)
 pools = mo_query_builder(pool_spec)
+ObjectManager = make_class(
+    "ObjectManager", ET.fromstring(SPECS[_OBJECT_MGR_IFACE]), _TIMEOUT
+)
 
 # EDIT these fields to get the interfaces and revisions desired
 TOP_OBJECT_INTERFACES = [
