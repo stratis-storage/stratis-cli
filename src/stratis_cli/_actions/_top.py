@@ -30,6 +30,7 @@ from .._errors import (
     StratisCliIncoherenceError,
     StratisCliInUseOtherTierError,
     StratisCliInUseSameTierError,
+    StratisCliKeyfileNotFoundError,
     StratisCliNameConflictError,
     StratisCliNoChangeError,
     StratisCliPartialChangeError,
@@ -194,7 +195,7 @@ def _add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
     :param str key_desc: key description for the key to be set or reset
     :param bool capture_key: whether the key setting should be interactive
     :param keyfile_path: optional path to the keyfile containing the key
-    :type keyfile_path: list of str or NoneType (if list, exactly one element)
+    :type keyfile_path: str or NoneType
     :return: the result of the SetKey D-Bus call
     :rtype: D-Bus types (bb), q, and s
     """
@@ -212,7 +213,11 @@ def _add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
         file_desc = read
         fd_is_pipe = True
     else:
-        file_desc = os.open(keyfile_path[0], os.O_RDONLY)
+        try:
+            file_desc = os.open(keyfile_path, os.O_RDONLY)
+        except FileNotFoundError as err:
+            raise StratisCliKeyfileNotFoundError(keyfile_path) from err
+
         fd_is_pipe = False
 
     add_ret = Manager.Methods.SetKey(
