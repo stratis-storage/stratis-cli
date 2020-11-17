@@ -85,8 +85,8 @@ Introspectable = make_class(
     "Introspectable", ET.fromstring(SPECS[_INTROSPECTABLE_IFACE]), _TIMEOUT
 )
 Manager = make_class("Manager", ET.fromstring(SPECS[_MANAGER_IFACE]), _TIMEOUT)
-Pool = make_class("Pool", ET.fromstring(SPECS[_POOL_IFACE]), _TIMEOUT)
 pool_spec = ET.fromstring(SPECS[_POOL_IFACE])
+Pool = make_class("Pool", pool_spec, _TIMEOUT)
 MOPool = managed_object_class("MOPool", pool_spec)
 pools = mo_query_builder(pool_spec)
 
