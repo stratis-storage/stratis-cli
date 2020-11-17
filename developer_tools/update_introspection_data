@@ -131,7 +131,6 @@ def main():
 
     timeout = _TIMEOUT
     pool_spec = ET.fromstring(SPECS[_POOL_IFACE])
-    Pool = make_class("Pool", pool_spec, timeout)
     MOPool = managed_object_class("MOPool", pool_spec)
     pools = mo_query_builder(pool_spec)
 
