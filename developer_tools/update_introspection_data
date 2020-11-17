@@ -18,16 +18,30 @@ Update Stratis introspection data.
 """
 
 # isort: STDLIB
+import os
 import xml.etree.ElementTree as ET
 
 # isort: THIRDPARTY
 import dbus
+import pdb
 
 # isort: FIRSTPARTY
+from dbus_client_gen import (
+    DbusClientGenerationError,
+    managed_object_class,
+    mo_query_builder,
+)
 from dbus_python_client_gen import make_class
 
 # a minimal chunk of introspection data, enough for the methods needed.
 SPECS = {
+    "org.freedesktop.DBus.ObjectManager": """
+<interface name="org.freedesktop.DBus.ObjectManager">
+    <method name="GetManagedObjects">
+      <arg direction="out" name="objpath_interfaces_and_properties" type="a{oa{sa{sv}}}" />
+    </method>
+  </interface>
+""",
     "org.freedesktop.DBus.Introspectable": """
 <interface name="org.freedesktop.DBus.Introspectable">
 <method name="Introspect">
@@ -85,6 +99,91 @@ BLOCKDEV_OBJECT_INTERFACES = ["org.storage.stratis2.blockdev.r2"]
 FILESYSTEM_OBJECT_INTERFACES = ["org.storage.stratis2.filesystem"]
 
 
+# This function is an exact copy of the get_timeout function in
+# the stratis_cli source code, except that it raises RuntimeError where
+# that function raises StratisCliEnvironmentError.
+# The function should not be imported, as these tests are intended to be
+# run in an environment where the Stratis CLI source code is not certainly
+# available.
+def _get_timeout(value):
+    """
+    Turn an input str or int into a float timeout value.
+
+    :param value: the input str or int
+    :type value: str or int
+    :raises RuntimeError:
+    :returns: float
+    """
+
+    maximum_dbus_timeout_ms = 1073741823
+
+    # Ensure the input str is not a float
+    if isinstance(value, float):
+        raise RuntimeError(
+            "The timeout value provided is a float; it should be an integer."
+        )
+
+    try:
+        timeout_int = int(value)
+
+    except ValueError:
+        raise RuntimeError("The timeout value provided is not an integer.")
+
+    # Ensure the integer is not too small
+    if timeout_int < -1:
+        raise RuntimeError(
+            "The timeout value provided is smaller than the smallest acceptable value, -1."
+        )
+
+    # Ensure the integer is not too large
+    if timeout_int > maximum_dbus_timeout_ms:
+        raise RuntimeError(
+            "The timeout value provided exceeds the largest acceptable value, %s."
+            % maximum_dbus_timeout_ms
+        )
+
+    # Convert from milliseconds to seconds
+    return timeout_int / 1000
+
+
+class StratisDbus:
+    "Wrappers around stratisd DBus calls"
+
+    _OBJECT_MANAGER = "org.freedesktop.DBus.ObjectManager"
+    _BUS = dbus.SystemBus()
+    _BUS_NAME = "org.storage.stratis2"
+    _TOP_OBJECT = "/org/storage/stratis2"
+
+    _MNGR_IFACE = "org.storage.stratis2.Manager.r2"
+    _REPORT_IFACE = "org.storage.stratis2.Report.r1"
+    _POOL_IFACE = "org.storage.stratis2.pool.r1"
+    _FS_IFACE = "org.storage.stratis2.filesystem"
+    _BLKDEV_IFACE = "org.storage.stratis2.blockdev.r2"
+    _FETCH_PROPERTIES_IFACE = "org.storage.stratis2.FetchProperties.r2"
+    POOL_IFACE = _POOL_IFACE
+    FS_IFACE = _FS_IFACE
+
+    _DBUS_TIMEOUT_SECONDS = 120
+    _TIMEOUT = _get_timeout(
+        os.environ.get("STRATIS_DBUS_TIMEOUT", _DBUS_TIMEOUT_SECONDS * 1000)
+    )
+    TIMEOUT = _TIMEOUT
+
+    @staticmethod
+    def get_managed_objects():
+        """
+        Get managed objects for stratis
+        :return: A dict,  Keys are object paths with dicts containing interface
+                          names mapped to property dicts.
+                          Property dicts map names to values.
+        """
+        object_manager = dbus.Interface(
+            StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, StratisDbus._TOP_OBJECT),
+            StratisDbus._OBJECT_MANAGER,
+        )
+        return object_manager.GetManagedObjects(timeout=StratisDbus._TIMEOUT)
+
+
 def _add_data(proxy, interfaces, table):
     """
     Introspect on the proxy, get the information for the specified interfaces,
@@ -115,6 +214,13 @@ def main():
     specs = {}
     bus = dbus.SystemBus()
 
+    timeout = _TIMEOUT
+    pool_spec = ET.fromstring(SPECS[_POOL_IFACE])
+    Pool = make_class("Pool", pool_spec, timeout)
+    MOPool = managed_object_class("MOPool", pool_spec)
+    pools = mo_query_builder(pool_spec)
+
+    objects = StratisDbus.get_managed_objects()
     proxy = bus.get_object(_SERVICE, "/org/storage/stratis2", introspect=False)
 
     (
@@ -134,8 +240,12 @@ def main():
     if return_code != 0:
         exit(return_msg)
 
+    # call GetManagedObjects() here, and find the pool_object_path and dev_object_paths
+    # for pool 'pool_name'.
+
     pool_proxy = bus.get_object(_SERVICE, pool_object_path, introspect=False)
 
+    pdb.set_trace()
     blockdev_proxy = bus.get_object(_SERVICE, dev_object_paths[0], introspect=False)
 
     ((_, (filesystems)), return_code, return_msg,) = Pool.Methods.CreateFilesystems(
@@ -144,6 +254,8 @@ def main():
 
     if return_code != 0:
         exit(return_msg)
+
+    # call GetManagedObjects() here, and find the filesystem_object_path
 
     filesystem_object_path = filesystems[0][0]
     filesystem_proxy = bus.get_object(
