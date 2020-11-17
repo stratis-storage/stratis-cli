@@ -86,6 +86,9 @@ Introspectable = make_class(
 )
 Manager = make_class("Manager", ET.fromstring(SPECS[_MANAGER_IFACE]), _TIMEOUT)
 Pool = make_class("Pool", ET.fromstring(SPECS[_POOL_IFACE]), _TIMEOUT)
+pool_spec = ET.fromstring(SPECS[_POOL_IFACE])
+MOPool = managed_object_class("MOPool", pool_spec)
+pools = mo_query_builder(pool_spec)
 
 # EDIT these fields to get the interfaces and revisions desired
 TOP_OBJECT_INTERFACES = [
@@ -130,9 +133,6 @@ def main():
     bus = dbus.SystemBus()
 
     timeout = _TIMEOUT
-    pool_spec = ET.fromstring(SPECS[_POOL_IFACE])
-    MOPool = managed_object_class("MOPool", pool_spec)
-    pools = mo_query_builder(pool_spec)
 
     proxy = bus.get_object(_SERVICE, "/org/storage/stratis2", introspect=False)
 
