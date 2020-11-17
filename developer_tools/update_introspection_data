@@ -132,8 +132,6 @@ def main():
     specs = {}
     bus = dbus.SystemBus()
 
-    timeout = _TIMEOUT
-
     proxy = bus.get_object(_SERVICE, "/org/storage/stratis2", introspect=False)
 
     (
