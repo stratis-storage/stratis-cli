@@ -859,7 +859,7 @@ class TopActions:
         :raises StratisCliEngineError:
         """
 
-        TopActions._bind(namespace, "tpm", {})
+        TopActions._bind(namespace, "tpm2", {})
 
     @staticmethod
     def unbind(namespace):
