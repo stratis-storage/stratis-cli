@@ -74,6 +74,16 @@ SPECS = {
 </property>
 </interface>
 """,
+    "org.storage.stratis2.blockdev.r2": """
+<interface name="org.storage.stratis2.blockdev.r2">
+<property access="read" name="Devnode" type="s">
+      <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const" />
+</property>
+<property access="read" name="Pool" type="o">
+      <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const" />
+</property>
+</interface>
+""",
 }
 
 _SERVICE = "org.storage.stratis2"
@@ -82,6 +92,7 @@ _INTROSPECTABLE_IFACE = "org.freedesktop.DBus.Introspectable"
 _MANAGER_IFACE = "org.storage.stratis2.Manager.r1"
 _OBJECT_MGR_IFACE = "org.freedesktop.DBus.ObjectManager"
 _POOL_IFACE = "org.storage.stratis2.pool.r1"
+_BLOCKDEV_IFACE = "org.storage.stratis2.blockdev.r2"
 _TIMEOUT = 120000
 
 Introspectable = make_class(
@@ -89,9 +100,11 @@ Introspectable = make_class(
 )
 Manager = make_class("Manager", ET.fromstring(SPECS[_MANAGER_IFACE]), _TIMEOUT)
 pool_spec = ET.fromstring(SPECS[_POOL_IFACE])
+blockdev_spec = ET.fromstring(SPECS[_BLOCKDEV_IFACE])
 Pool = make_class("Pool", pool_spec, _TIMEOUT)
 MOPool = managed_object_class("MOPool", pool_spec)
 pools = mo_query_builder(pool_spec)
+devs = mo_query_builder(blockdev_spec)
 ObjectManager = make_class(
     "ObjectManager", ET.fromstring(SPECS[_OBJECT_MGR_IFACE]), _TIMEOUT
 )
