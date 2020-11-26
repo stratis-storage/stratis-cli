@@ -10,6 +10,8 @@ Python import sorter: isort (4.3.21)
 YAML linter: yamllint (1.23.0)
 
 - Introduce support for Clevis encryption policies:
+  https://github.com/stratis-storage/stratis-cli/pull/686
+  https://github.com/stratis-storage/stratis-cli/pull/685
   https://github.com/stratis-storage/stratis-cli/pull/684
 
 - Catch exception on missing keyfile:
