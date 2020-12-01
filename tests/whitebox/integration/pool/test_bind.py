@@ -71,7 +71,7 @@ class BindTestCase(SimTestCase):
         Binding when unencrypted with tpm should return an error.
         """
         command_line = self._MENU + [
-            "tpm",
+            "tpm2",
             self._POOLNAME,
             "fake_key",
         ]
@@ -116,13 +116,13 @@ class BindTestCase2(SimTestCase):
         as the action is assumed to be unintentional.
         """
         command_line = self._MENU + [
-            "tpm",
+            "tpm2",
             self._POOLNAME,
             "fake_key",
         ]
         RUNNER(command_line)
         command_line = self._MENU + [
-            "tpm",
+            "tpm2",
             self._POOLNAME,
             "fake_key",
         ]
