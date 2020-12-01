@@ -61,9 +61,9 @@ BIND_SUBCMDS = [
         ),
     ),
     (
-        "tpm",
+        "tpm2",
         dict(
-            help="Bind using TPM",
+            help="Bind using TPM2",
             args=[
                 ("pool_name", dict(action="store", help="Pool name")),
                 (

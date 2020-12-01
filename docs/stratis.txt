@@ -61,10 +61,10 @@ pool bind <(nbde|tang)> <pool name> <key description> <url> <(--thumbprint <thp>
      mechanism that uses NBDE (Network-Bound Disc Encryption). *tang* is
      an alias for *nbde*. The description of the key in the kernel keyring
      used to encrypt the devices must be supplied.
-pool bind tpm <pool name> <key description>::
+pool bind tpm2 <pool name> <key description>::
      Bind the devices in the specified pool to a supplementary encryption
-     mechanism that uses TPM (Trusted Platform Module). The description of the
-     key in the kernel keyring used to encrypt the devices must be supplied.
+     mechanism that uses TPM 2.0 (Trusted Platform Module). The description of
+     the key in the kernel keyring used to encrypt the devices must be supplied.
 pool unbind <pool name>::
      Unbind the devices in the specified pool from an existing supplementary
      encryption mechanism. Unbinding leaves the primary encryption mechanism,
