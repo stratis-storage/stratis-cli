@@ -77,4 +77,4 @@ test-travis: unittest-tests
 
 .PHONY: yamllint
 yamllint:
-	yamllint --strict .travis.yml
+	yamllint --strict .github/workflows/main.yml
