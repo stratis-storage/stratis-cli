@@ -20,6 +20,7 @@ YAML linter: yamllint (1.23.0)
   https://github.com/stratis-storage/stratis-cli/pull/681
 
 - Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/692
   https://github.com/stratis-storage/stratis-cli/pull/691
   https://github.com/stratis-storage/stratis-cli/pull/688
   https://github.com/stratis-storage/stratis-cli/pull/678
