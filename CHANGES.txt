@@ -1,5 +1,5 @@
-stratis-cli 2.3.0 (UNRELEASED)
-==============================
+stratis-cli 2.3.0
+=================
 Required stratisd version: 2.3.0
 
 Recommended Python interpreter: 3.7.9
@@ -20,6 +20,7 @@ YAML linter: yamllint (1.23.0)
   https://github.com/stratis-storage/stratis-cli/pull/681
 
 - Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/691
   https://github.com/stratis-storage/stratis-cli/pull/688
   https://github.com/stratis-storage/stratis-cli/pull/678
 
