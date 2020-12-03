@@ -18,6 +18,7 @@ Test 'unlock'.
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
 from stratis_cli._errors import StratisCliNoChangeError
+from stratis_cli._stratisd_constants import EncryptionMethod
 
 from .._misc import SimTestCase
 
@@ -29,7 +30,7 @@ class UnlockTestCase(SimTestCase):
     Test 'unlock' when no pools are locked (the only state in the sim_engine).
     """
 
-    _MENU = ["--propagate", "pool", "unlock"]
+    _MENU = ["--propagate", "pool", "unlock", str(EncryptionMethod.KEYRING)]
 
     def test_unlock(self):
         """

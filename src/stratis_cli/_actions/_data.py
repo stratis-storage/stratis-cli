@@ -43,7 +43,7 @@ assert hasattr(sys.modules.get("stratis_cli"), "run"), (
     "deferred until after the stratis_cli module has been fully loaded."
 )
 
-_MANAGER_INTERFACE = "org.storage.stratis2.Manager.r2"
+_MANAGER_INTERFACE = "org.storage.stratis2.Manager.r3"
 
 DBUS_TIMEOUT_SECONDS = 120
 

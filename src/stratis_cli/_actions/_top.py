@@ -30,13 +30,14 @@ from .._errors import (
     StratisCliIncoherenceError,
     StratisCliInUseOtherTierError,
     StratisCliInUseSameTierError,
+    StratisCliKeyfileNotFoundError,
     StratisCliNameConflictError,
     StratisCliNoChangeError,
     StratisCliPartialChangeError,
     StratisCliPartialFailureError,
     StratisCliResourceNotFoundError,
 )
-from .._stratisd_constants import BlockDevTiers, StratisdErrors
+from .._stratisd_constants import CLEVIS_TANG_TRUST_URL, BlockDevTiers, StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import TABLE_FAILURE_STRING, get_property, print_table
@@ -194,7 +195,7 @@ def _add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
     :param str key_desc: key description for the key to be set or reset
     :param bool capture_key: whether the key setting should be interactive
     :param keyfile_path: optional path to the keyfile containing the key
-    :type keyfile_path: list of str or NoneType (if list, exactly one element)
+    :type keyfile_path: str or NoneType
     :return: the result of the SetKey D-Bus call
     :rtype: D-Bus types (bb), q, and s
     """
@@ -212,7 +213,11 @@ def _add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
         file_desc = read
         fd_is_pipe = True
     else:
-        file_desc = os.open(keyfile_path[0], os.O_RDONLY)
+        try:
+            file_desc = os.open(keyfile_path, os.O_RDONLY)
+        except FileNotFoundError as err:
+            raise StratisCliKeyfileNotFoundError(keyfile_path) from err
+
         fd_is_pipe = False
 
     add_ret = Manager.Methods.SetKey(
@@ -798,7 +803,95 @@ class TopActions:
         )
 
     @staticmethod
-    def unlock_pools(_):
+    def _bind(namespace, clevis_pin, clevis_config):
+        """
+        Generic bind method. For further information about Clevis, and
+        discussion of the pin and the configuration, consult Clevis
+        documentation.
+
+        :param str clevis_pin: Clevis pin
+        :param dict clevis_config: configuration, may contain Stratis keys
+        """
+        # pylint: disable=import-outside-toplevel
+        from ._data import ObjectManager, Pool, pools
+
+        proxy = get_object(TOP_OBJECT)
+        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
+        pool_name = namespace.pool_name
+        (pool_object_path, _) = next(
+            pools(props={"Name": pool_name})
+            .require_unique_match(True)
+            .search(managed_objects)
+        )
+        (changed, return_code, return_msg) = Pool.Methods.Bind(
+            get_object(pool_object_path),
+            {"pin": clevis_pin, "json": json.dumps(clevis_config),},
+        )
+
+        if return_code != StratisdErrors.OK:
+            raise StratisCliEngineError(return_code, return_msg)
+
+        if not changed:
+            raise StratisCliNoChangeError("bind", pool_name)
+
+    @staticmethod
+    def bind_tang(namespace):
+        """
+        Bind all devices in an encrypted pool using the specified tang server.
+
+        :raises StratisCliNoChangeError:
+        :raises StratisCliEngineError:
+        """
+        clevis_config = {"url": namespace.url}
+        if namespace.thumbprint is None:
+            clevis_config[CLEVIS_TANG_TRUST_URL] = True
+        else:
+            clevis_config["thp"] = namespace.thumbprint
+
+        TopActions._bind(namespace, "tang", clevis_config)
+
+    @staticmethod
+    def bind_tpm(namespace):
+        """
+        Bind all devices in an encrypted pool using TPM.
+
+        :raises StratisCliNoChangeError:
+        :raises StratisCliEngineError:
+        """
+
+        TopActions._bind(namespace, "tpm2", {})
+
+    @staticmethod
+    def unbind(namespace):
+        """
+        Unbind all devices in an encrypted pool.
+
+        :raises StratisCliNoChangeError:
+        :raises StratisCliEngineError:
+        """
+        # pylint: disable=import-outside-toplevel
+        from ._data import ObjectManager, Pool, pools
+
+        proxy = get_object(TOP_OBJECT)
+        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
+        pool_name = namespace.pool_name
+        (pool_object_path, _) = next(
+            pools(props={"Name": pool_name})
+            .require_unique_match(True)
+            .search(managed_objects)
+        )
+        (changed, return_code, return_msg) = Pool.Methods.Unbind(
+            get_object(pool_object_path), {}
+        )
+
+        if return_code != StratisdErrors.OK:
+            raise StratisCliEngineError(return_code, return_msg)
+
+        if not changed:
+            raise StratisCliNoChangeError("unbind", pool_name)
+
+    @staticmethod
+    def unlock_pools(namespace):
         """
         Unlock all of the encrypted pools that have been detected by the daemon
         but are still locked.
@@ -823,7 +916,9 @@ class TopActions:
                 (is_some, unlocked_devices),
                 return_code,
                 message,
-            ) = Manager.Methods.UnlockPool(proxy, {"pool_uuid": uuid})
+            ) = Manager.Methods.UnlockPool(
+                proxy, {"pool_uuid": uuid, "unlock_method": namespace.unlock_method}
+            )
 
             if return_code != StratisdErrors.OK:
                 errors.append(
