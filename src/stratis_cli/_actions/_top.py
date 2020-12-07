@@ -442,14 +442,15 @@ class TopActions:
                 mopool.Name(),
                 physical_size_triple(props),
                 properties_string(mopool, props),
+                mopool.Uuid(),
             )
             for props, mopool in pools_with_props
         ]
 
         print_table(
-            ["Name", "Total Physical", "Properties"],
+            ["Name", "Total Physical", "Properties", "UUID"],
             sorted(tables, key=lambda entry: entry[0]),
-            ["<", ">", ">"],
+            ["<", ">", ">", ">"],
         )
 
     @staticmethod
