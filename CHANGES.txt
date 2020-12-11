@@ -1,3 +1,29 @@
+stratis-cli 2.4.0 (UNRELEASED)
+==============================
+Required stratisd version: 2.4.0
+
+Recommended Python interpreter: 3.8.6
+Lowest supported Python interpreter: 3.6.8
+Python linter: pylint (2.4.4)
+Python auto-formatter: black (19.10b0)
+Python import sorter: isort (4.3.21)
+YAML linter: yamllint (1.25.0)
+
+- Print pool UUID in pool list command:
+  https://github.com/stratis-storage/stratis-cli/pull/695
+
+- Modify report subcommand so that it defaults to 'engine_state_report';
+  guarantee stability of 'engine_state_report' name:
+  https://github.com/stratis-storage/stratis-cli/issues/700
+  https://github.com/stratis-storage/stratis-cli/pull/703
+  https://github.com/stratis-storage/stratis-cli/pull/702
+
+- Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/699
+  https://github.com/stratis-storage/stratis-cli/pull/697
+  https://github.com/stratis-storage/stratis-cli/pull/694
+
+
 stratis-cli 2.3.0
 =================
 Required stratisd version: 2.3.0
