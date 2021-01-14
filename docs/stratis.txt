@@ -96,9 +96,10 @@ key unset <key_desc>::
      Unset a key in the kernel keyring so it is no longer available for encryption
      operations.
 report <report_name>::
-        Get a report from the daemon regarding its internal state. This command is
-        not supported as the report names and returned JSON schemas are unstable
-        and may be changed at any time.
+        Get a report from the daemon regarding its internal state.
+        Get engine_state_report if no report name is provided. This command only
+        supports the engine_state_report. All other report names
+        and returned JSON schemas are unstable and may be changed at any time.
 daemon redundancy::
        List the redundancy levels that the Stratis service supports.
 daemon version::
