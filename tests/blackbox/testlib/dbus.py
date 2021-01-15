@@ -88,6 +88,7 @@ def _get_timeout(value):
     return timeout_int / 1000
 
 
+# pylint: disable=too-many-public-methods
 class StratisDbus:
     "Wrappers around stratisd DBus calls"
 
@@ -96,7 +97,7 @@ class StratisDbus:
     _BUS_NAME = "org.storage.stratis2"
     _TOP_OBJECT = "/org/storage/stratis2"
 
-    _MNGR_IFACE = "org.storage.stratis2.Manager.r3"
+    _MNGR_IFACE = "org.storage.stratis2.Manager.r4"
     _REPORT_IFACE = "org.storage.stratis2.Report.r1"
     _POOL_IFACE = "org.storage.stratis2.pool.r3"
     _FS_IFACE = "org.storage.stratis2.filesystem"
@@ -500,6 +501,19 @@ class StratisDbus:
             StratisDbus._REPORT_IFACE,
         )
         return iface.GetReport(report_name, timeout=StratisDbus._TIMEOUT)
+
+    @staticmethod
+    def get_engine_state_report():
+        """
+        Get the engine state report.
+        :return: The JSON report as a string with a status code and string
+        :rtype: The D-Bus types s, q, and s
+        """
+        manager_iface = dbus.Interface(
+            StratisDbus._BUS.get_object(StratisDbus._BUS_NAME, StratisDbus._TOP_OBJECT),
+            StratisDbus._MNGR_IFACE,
+        )
+        return manager_iface.EngineStateReport(timeout=StratisDbus._TIMEOUT)
 
     @staticmethod
     def reconnect():
