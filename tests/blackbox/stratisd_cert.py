@@ -733,6 +733,23 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         """
         self._test_permissions(StratisDbus.get_report, ["errored_pool_report"], False)
 
+    def test_engine_state_report(self):
+        """
+        Test getting a valid engine state report
+        """
+
+        (result, return_code, _) = StratisDbus.get_engine_state_report()
+        self._inequality_test(result, dbus.String(""))
+        self.assertEqual(return_code, dbus.UInt16(0))
+        # Test that we have received valid JSON.
+        json.loads(result)
+
+    def test_engine_state_report_permissions(self):
+        """
+        Test that getting a valid engine state report succeeds when root permissions are dropped.
+        """
+        self._test_permissions(StratisDbus.get_engine_state_report, [], False)
+
 
 def main():
     """

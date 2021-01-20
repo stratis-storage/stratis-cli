@@ -195,6 +195,22 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         """
         self._test_permissions([_STRATIS_CLI, "daemon", "redundancy"], False, False)
 
+    def test_errored_pool_report(self):
+        """
+        Test getting errored_pool_report.
+        """
+        self.unittest_command(
+            [_STRATIS_CLI, "report", "errored_pool_report"], 0, True, False
+        )
+
+    def test_errored_pool_report_permissions(self):
+        """
+        Test gettign the errored_pool_report succeeds with dropped permissions.
+        """
+        self._test_permissions(
+            [_STRATIS_CLI, "report", "errored_pool_report"], False, False
+        )
+
     def test_engine_state_report(self):
         """
         Test getting the engine_state_report.
@@ -210,6 +226,12 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         self._test_permissions(
             [_STRATIS_CLI, "report", "engine_state_report"], False, False
         )
+
+    def test_engine_state_report_default(self):
+        """
+        Test getting the engine_state_report when a report name is not provided.
+        """
+        self.unittest_command([_STRATIS_CLI, "report"], 0, True, False)
 
     def test_invalid_report(self):
         """

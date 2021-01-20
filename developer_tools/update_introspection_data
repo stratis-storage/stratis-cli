@@ -77,7 +77,7 @@ Pool = make_class("Pool", ET.fromstring(SPECS[_POOL_IFACE]), _TIMEOUT)
 TOP_OBJECT_INTERFACES = [
     "org.freedesktop.DBus.ObjectManager",
     "org.storage.stratis2.FetchProperties.r3",
-    "org.storage.stratis2.Manager.r3",
+    "org.storage.stratis2.Manager.r4",
     "org.storage.stratis2.Report.r1",
 ]
 POOL_OBJECT_INTERFACES = ["org.storage.stratis2.pool.r3"]
