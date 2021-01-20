@@ -146,6 +146,7 @@ ROOT_SUBCOMMANDS = [
                         type=str,
                         help=("Name of the report to display"),
                         nargs="?",
+                        choices=["engine_state_report", "errored_pool_report"],
                     ),
                 )
             ],

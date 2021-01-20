@@ -97,9 +97,9 @@ key unset <key_desc>::
      operations.
 report <report_name>::
         Get a report from the daemon regarding its internal state.
-        Get engine_state_report if no report name is provided. This command only
-        supports the engine_state_report. All other report names
-        and returned JSON schemas are unstable and may be changed at any time.
+        The engine_state_report name will be supported in future releases.
+        Any other report name should be considered unstable and may be removed
+        in a future release. The JSON schema of any report must always be considered unstable.
 daemon redundancy::
        List the redundancy levels that the Stratis service supports.
 daemon version::
