@@ -84,6 +84,14 @@ class ParserTestCase(RunTestCase):
         for prefix in [[], ["--propagate"]]:
             self.check_system_exit(prefix + command_line, _PARSE_ERROR)
 
+    def test_nonexistent_report(self):
+        """
+        Test getting nonexistent report.
+        """
+        command_line = ["report", "notreport"]
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
 
 class ParserSimTestCase(SimTestCase):
     """

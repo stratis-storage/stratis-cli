@@ -237,7 +237,7 @@ class StratisCertify(unittest.TestCase):  # pylint: disable=too-many-public-meth
         """
         Test getting an invalid report.
         """
-        self.unittest_command([_STRATIS_CLI, "report", "invalid_name"], 1, False, True)
+        self.unittest_command([_STRATIS_CLI, "report", "invalid_name"], 2, False, True)
 
     def test_pool_list_empty(self):
         """

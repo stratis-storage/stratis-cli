@@ -668,7 +668,11 @@ class TopActions:
                 get_object(TOP_OBJECT), {"name": namespace.report_name}
             )
 
-        if return_code != StratisdErrors.OK:
+        # The only reason that stratisd has for returning an error code is
+        # if the report name is unrecognizes. However, the parser restricts
+        # the list # of names to only the ones that stratisd recognizes, so
+        # this branch can only be taken due to an unexpected bug in stratisd.
+        if return_code != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(return_code, message)
 
         json_report = json.loads(report)
