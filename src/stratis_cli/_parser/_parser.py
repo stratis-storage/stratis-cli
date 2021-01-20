@@ -142,7 +142,11 @@ ROOT_SUBCOMMANDS = [
                 (
                     "report_name",
                     dict(
-                        default=None, type=str, help=("Name of the report to display")
+                        default="engine_state_report",
+                        type=str,
+                        help=("Name of the report to display"),
+                        nargs="?",
+                        choices=["engine_state_report", "errored_pool_report"],
                     ),
                 )
             ],

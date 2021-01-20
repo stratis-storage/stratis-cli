@@ -26,7 +26,7 @@ _ERROR = StratisCliErrorCodes.ERROR
 
 class ReportTestCase(SimTestCase):
     """
-    Test getting the errored pool and a nonexistent report"
+    Test getting the errored pool, engine state, and a nonexistent report
     """
 
     _MENU = ["--propagate", "report"]
@@ -42,3 +42,15 @@ class ReportTestCase(SimTestCase):
         Test getting nonexistent report.
         """
         self.check_error(StratisCliEngineError, self._MENU + ["notreport"], _ERROR)
+
+    def test_report_no_name(self):
+        """
+        Test getting engine state report when no name specified.
+        """
+        TEST_RUNNER(self._MENU)
+
+    def test_engine_state_report(self):
+        """
+        Test getting engine state report.
+        """
+        TEST_RUNNER(self._MENU + ["engine_state_report"])

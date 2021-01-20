@@ -652,11 +652,21 @@ class TopActions:
         :raises StratisCliEngineError:
         """
         # pylint: disable=import-outside-toplevel
-        from ._data import Report
+        if namespace.report_name == "engine_state_report":
 
-        (report, return_code, message) = Report.Methods.GetReport(
-            get_object(TOP_OBJECT), {"name": namespace.report_name}
-        )
+            from ._data import Manager
+
+            (report, return_code, message) = Manager.Methods.EngineStateReport(
+                get_object(TOP_OBJECT), {}
+            )
+
+        else:
+
+            from ._data import Report
+
+            (report, return_code, message) = Report.Methods.GetReport(
+                get_object(TOP_OBJECT), {"name": namespace.report_name}
+            )
 
         if return_code != StratisdErrors.OK:
             raise StratisCliEngineError(return_code, message)
