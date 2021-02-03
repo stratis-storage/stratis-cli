@@ -18,8 +18,10 @@ Miscellaneous methods to support testing.
 # isort: STDLIB
 import os
 import random
+import signal
 import string
 import subprocess
+import sys
 import time
 import unittest
 
@@ -66,23 +68,38 @@ class _Service:
                 "STRATISD environment variable must be set to absolute path of stratisd executable"
             )
         self._stratisd = subprocess.Popen(  # pylint: disable=attribute-defined-outside-init
-            [os.path.join(stratisd_var), "--sim"]
+            [os.path.join(stratisd_var), "--sim"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            universal_newlines=True,
         )
         time.sleep(1)
 
     def teardown(self):
         """
         Stop the stratisd simulator and daemon.
+
+        :return: a tuple of stdout and stderr.
         """
-        self._stratisd.terminate()
-        self._stratisd.wait()
+        self._stratisd.send_signal(signal.SIGINT)
+        return self._stratisd.communicate()
 
     def cleanup(self):
         """
         Stop the daemon if it has been started.
+
+        If the daemon has been started print the daemon log entries.
         """
         if hasattr(self, "_stratisd"):
-            self.teardown()
+            (_, stderrdata) = self.teardown()
+
+            print("", file=sys.stdout, flush=True)
+            print(
+                "Log output from this invocation of stratisd:",
+                file=sys.stdout,
+                flush=True,
+            )
+            print(stderrdata, file=sys.stdout, flush=True)
 
 
 class RunTestCase(unittest.TestCase):

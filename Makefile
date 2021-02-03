@@ -49,7 +49,7 @@ api-docs:
 	sphinx-build-3 -b html api api/_build/html
 
 dbus-tests:
-	python3 -m unittest discover ${UNITTEST_OPTS} --top-level-directory ./tests/whitebox --start-directory ./tests/whitebox/integration > /dev/null
+	python3 -m unittest discover ${UNITTEST_OPTS} --top-level-directory ./tests/whitebox --start-directory ./tests/whitebox/integration
 
 unittest-tests:
 	python3 -m unittest discover ${UNITTEST_OPTS} --start-directory ./tests/whitebox/unittest
@@ -57,7 +57,7 @@ unittest-tests:
 .PHONY: coverage-no-html
 coverage-no-html:
 	python3 -m coverage --version
-	python3 -m coverage run --timid --branch -m unittest discover --quiet --top-level-directory ./tests/whitebox --start-directory ./tests/whitebox/integration > /dev/null
+	python3 -m coverage run --timid --branch -m unittest discover --quiet --top-level-directory ./tests/whitebox --start-directory ./tests/whitebox/integration >& /dev/null
 	python3 -m coverage run --timid --branch -a -m unittest discover --quiet --start-directory ./tests/whitebox/unittest
 	python3 -m coverage run --timid --branch -a -m unittest --quiet tests.whitebox.monkey_patching.test_keyboard_interrupt.KeyboardInterruptTestCase
 	python3 -m coverage run --timid --branch -a -m unittest --quiet tests.whitebox.monkey_patching.test_stratisd_version.StratisdVersionTestCase
