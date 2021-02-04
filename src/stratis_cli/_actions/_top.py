@@ -40,7 +40,7 @@ from .._errors import (
 from .._stratisd_constants import CLEVIS_TANG_TRUST_URL, BlockDevTiers, StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
-from ._formatting import TABLE_FAILURE_STRING, get_property, print_table
+from ._formatting import TABLE_FAILURE_STRING, get_property, print_table, to_hyphenated
 from ._utils import fetch_property
 
 
@@ -344,7 +344,7 @@ class TopActions:
             )
 
     @staticmethod
-    def list_pools(_):
+    def list_pools(namespace):
         """
         List all stratis pools.
         """
@@ -437,12 +437,16 @@ class TopActions:
             prop_list.append(gen_string(mopool.Encrypted(), "Cr"))
             return ",".join(prop_list)
 
+        format_uuid = (
+            (lambda mo_uuid: mo_uuid) if namespace.unhyphenated_uuids else to_hyphenated
+        )
+
         tables = [
             (
                 mopool.Name(),
                 physical_size_triple(props),
                 properties_string(mopool, props),
-                mopool.Uuid(),
+                format_uuid(mopool.Uuid()),
             )
             for props, mopool in pools_with_props
         ]

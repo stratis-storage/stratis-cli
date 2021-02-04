@@ -17,6 +17,7 @@ Formatting for tables.
 
 # isort: STDLIB
 import sys
+import uuid
 
 from .._errors import StratisCliEnginePropertyError, StratisCliPropertyNotFoundError
 from ._utils import fetch_property
@@ -162,3 +163,10 @@ def print_table(column_headings, row_entries, alignment, file=sys.stdout):
     for row, row_widths in zip(row_entries, cell_widths):
         _print_row(file, row, row_widths, column_widths, alignment)
         print(file=file)
+
+
+def to_hyphenated(mo_uuid):
+    """
+    Convert uuid string to hyphenated format
+    """
+    return str(uuid.UUID(mo_uuid))
