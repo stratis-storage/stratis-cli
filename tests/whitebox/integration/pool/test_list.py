@@ -67,6 +67,13 @@ class List2TestCase(SimTestCase):
         command_line = self._MENU
         TEST_RUNNER(command_line)
 
+    def test_list_unhyphenated(self):
+        """
+        Test listing with unhyphenated-uuids flag
+        """
+        command_line = ["--unhyphenated-uuids"] + self._MENU
+        TEST_RUNNER(command_line)
+
     def test_list_default(self):
         """
         Test default listing action when "list" is not specified.

@@ -31,6 +31,8 @@ GLOBAL OPTIONS
 	Show help on command.
 --propagate::
 	(For debugging.) Allow exceptions raised during execution to propagate.
+--unhyphenated-uuids::
+	(For listing.) Print pool and filesystem UUIDs without hyphens for list commands.
 
 COMMANDS
 --------
