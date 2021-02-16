@@ -7,9 +7,6 @@ lint:
 	./check.py developer_tools
 	./check.py bin/stratis
 	./check.py src/stratis_cli
-	./check.py tests/blackbox/stratis_cli_cert.py
-	./check.py tests/blackbox/stratisd_cert.py
-	./check.py tests/blackbox/testlib
 	./check.py tests/whitebox
 
 .PHONY: fmt

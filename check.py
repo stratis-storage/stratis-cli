@@ -33,21 +33,6 @@ ARG_MAP = {
         "--ignore=_introspect.py",
         "--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}'",
     ],
-    "tests/blackbox/stratisd_cert.py": [
-        "--reports=no",
-        "--disable=I",
-        "--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}'",
-    ],
-    "tests/blackbox/stratis_cli_cert.py": [
-        "--reports=no",
-        "--disable=I",
-        "--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}'",
-    ],
-    "tests/blackbox/testlib": [
-        "--reports=no",
-        "--disable=I",
-        "--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}'",
-    ],
     "tests/whitebox": [
         "--reports=no",
         "--disable=I",
