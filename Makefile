@@ -17,7 +17,7 @@ fmt:
 .PHONY: fmt-travis
 fmt-travis:
 	isort --recursive --diff --check-only check.py setup.py bin/stratis src tests
-	black ./bin/stratis . --check
+	black ./bin/stratis ./developer_tools/update_introspection_data . --check
 
 PYREVERSE_OPTS = --output=pdf
 .PHONY: view
