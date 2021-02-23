@@ -104,7 +104,10 @@ def _add_data(proxy, interfaces, table):
     if not (frozenset(interfaces) <= frozenset(table.keys())):
         exit(
             "not %s <= %s"
-            % (sorted(frozenset(interfaces)), sorted(frozenset(table.keys())),)
+            % (
+                sorted(frozenset(interfaces)),
+                sorted(frozenset(table.keys())),
+            )
         )
 
 
@@ -139,7 +142,10 @@ def main():
     blockdev_proxy = bus.get_object(_SERVICE, dev_object_paths[0], introspect=False)
 
     ((_, (filesystems)), return_code, return_msg,) = Pool.Methods.CreateFilesystems(
-        pool_proxy, {"specs": ["fs_name"],},
+        pool_proxy,
+        {
+            "specs": ["fs_name"],
+        },
     )
 
     if return_code != 0:

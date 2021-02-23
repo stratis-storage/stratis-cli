@@ -221,7 +221,8 @@ def _add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
         fd_is_pipe = False
 
     add_ret = Manager.Methods.SetKey(
-        proxy, {"key_desc": key_desc, "key_fd": file_desc, "interactive": False},
+        proxy,
+        {"key_desc": key_desc, "key_fd": file_desc, "interactive": False},
     )
 
     if fd_is_pipe:  # pragma: no cover
@@ -844,7 +845,10 @@ class TopActions:
         )
         (changed, return_code, return_msg) = Pool.Methods.Bind(
             get_object(pool_object_path),
-            {"pin": clevis_pin, "json": json.dumps(clevis_config),},
+            {
+                "pin": clevis_pin,
+                "json": json.dumps(clevis_config),
+            },
         )
 
         if return_code != StratisdErrors.OK:
