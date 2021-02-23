@@ -67,8 +67,8 @@ class _Service:
             raise RuntimeError(
                 "STRATISD environment variable must be set to absolute path of stratisd executable"
             )
-        self._stratisd = (
-            subprocess.Popen(  # pylint: disable=attribute-defined-outside-init
+        self._stratisd = (  # pylint: disable=attribute-defined-outside-init
+            subprocess.Popen(
                 [os.path.join(stratisd_var), "--sim"],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
