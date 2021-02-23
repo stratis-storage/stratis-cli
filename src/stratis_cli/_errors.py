@@ -76,7 +76,8 @@ class StratisCliPropertyNotFoundError(StratisCliRuntimeError):
     """
 
     def __init__(self, prop_name):
-        """Initializer.
+        """
+        Initializer.
 
         :param str prop_name: the property that did not exist
         """
@@ -99,7 +100,8 @@ class StratisCliPartialChangeError(StratisCliUserError):
     """
 
     def __init__(self, command, changed_resources, unchanged_resources):
-        """Initializer.
+        """
+        Initializer.
 
         :param str command: the command run that caused the error
         :param changed_resources: the target resources that would change
@@ -144,7 +146,8 @@ class StratisCliNoChangeError(StratisCliPartialChangeError):
     """
 
     def __init__(self, command, resource):
-        """Initializer.
+        """
+        Initializer.
 
         :param str command: the executed command
         :param str resource: the target resource
@@ -199,7 +202,8 @@ class StratisCliInUseOtherTierError(StratisCliInUseError):
     """
 
     def __init__(self, pools_to_blockdevs, added_as):
-        """Initializer.
+        """
+        Initializer.
 
         :param pools_to_blockdevs: pools mapped to the blockdevs they own
         :type pools_to_blockdevs: dict of str * frozenset of str
@@ -262,7 +266,8 @@ class StratisCliInUseSameTierError(StratisCliInUseError):
     """
 
     def __init__(self, pools_to_blockdevs, added_as):
-        """Initializer.
+        """
+        Initializer.
 
         :param pools_to_blockdevs: pools mapped to the blockdevs they own
         :type pools_to_blockdevs: dict of str * frozenset of str
@@ -326,7 +331,8 @@ class StratisCliUnknownInterfaceError(StratisCliRuntimeError):
     """
 
     def __init__(self, interface_name):
-        """Initializer.
+        """
+        Initializer.
 
         :param str interface_name: the unexpected interface name
         """
@@ -347,7 +353,8 @@ class StratisCliEnginePropertyError(StratisCliRuntimeError):
     """
 
     def __init__(self, prop_name, message):
-        """Initializer.
+        """
+        Initializer.
 
         :param str prop_name: the property that could not be obtained
         :param str message: the error message returned by the engine in
@@ -371,7 +378,8 @@ class StratisCliEngineError(StratisCliRuntimeError):
     """
 
     def __init__(self, rc, message):
-        """Initializer.
+        """
+        Initializer.
 
         :param rc int: the error code returned by the engine
         :param str message: whatever message accompanied the error code
