@@ -12,9 +12,13 @@ _stratis()
 	third="${COMP_WORDS[3]}"
 	opts="-h --help"
 	global_opts="--version --propagate ${opts}"
+	listing_opts="--unhyphenated-uuids"
 	root_subcommands="daemon pool blockdev filesystem key report"
-	pool_subcommands="create list add-data add-cache rename destroy init-cache unlock"
-	pool_opts="--redundancy --key-desc"
+	pool_subcommands="add-cache add-data bind create destroy init-cache list rename unbind unlock"
+	pool_create_opts="--redundancy --key-desc"
+	pool_bind_opts="--thumbprint --trust-url"
+	pool_bind_subcommands="nbde tang tpm2"
+	pool_unlock_subcommands="clevis keyring"
 	fs_subcommands="create snapshot list rename destroy"
 	blockdev_subcommands="list"
 	daemon_subcommands="redundancy version"
@@ -29,9 +33,20 @@ _stratis()
 		return 0
 	elif [[ ${cur} == -* ]] ; then
         if [[ ${COMP_CWORD} -eq 1 ]]; then
-            COMPREPLY=( $(compgen -W "${global_opts}" -- ${cur}) )
+            COMPREPLY=( $(compgen -W "${global_opts} ${opts}" -- ${cur}) )
+	elif [[ ${second} == "list" ]]; then
+	    COMPREPLY=( $(compgen -W "${opts} ${listing_opts}" -- ${cur}) )
         elif [[ ${first} == "pool" ]]; then
-        	COMPREPLY=( $(compgen -W "${pool_opts} ${opts}" -- ${cur}) )
+			if [[ ${second} == "create" ]]; then
+				COMPREPLY=( $(compgen -W "${pool_create_opts} ${opts}" -- ${cur}) )
+			elif [[ ${second} == "bind" ]] && [[ ${third} != "tpm2" ]]; then
+				COMPREPLY=( $(compgen -W "${pool_bind_opts} ${opts}" -- ${cur}) )
+			else
+				COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+			fi
+			
+			return 0
+        	
         elif [[ ${first} == "key" ]]; then
         	case ${second} in
         		set|reset)
@@ -102,10 +117,17 @@ _stratis()
 				;;
 			pool)
 				case ${prev} in
+					unlock)
+						COMPREPLY=( $(compgen -W "${pool_unlock_subcommands}" -- ${cur}) )
+						return 0
+						;;
+					bind)
+						COMPREPLY=( $(compgen -W "${pool_bind_subcommands}" -- ${cur}) )
+						;;
 					-h|--help|create|list|unlock)
 						return 0
 						;;
-					rename|destroy|add-data|add-cache|init-cache)
+					rename|destroy|add-data|add-cache|init-cache|unbind)
 						COMPREPLY=( $(compgen -W  "$(stratis pool list | awk '{if (NR!=1) {print $1}}')" -- ${cur}) )
 						return 0
 						;;
@@ -144,11 +166,15 @@ _stratis()
 				;;
 			pool)
 				case ${second} in
-					-h|--help|list|rename|destroy)
+					-h|--help|list|rename|destroy|unbind|unlock)
 						return 0
 						;;
 					create|add-data|add-cache|init-cache)
 						COMPREPLY=( $(compgen -W  "${blockdevs}" -- ${cur}) )
+						return 0
+						;;
+					bind)
+						COMPREPLY=( $(compgen -W  "$(stratis pool list | awk '{if (NR!=1) {print $1}}')" -- ${cur}) )1
 						return 0
 						;;
 				esac
@@ -191,7 +217,7 @@ _stratis()
 				;;
 			pool)
 				case ${second} in
-					-h|--help|list|rename|destroy)
+					-h|--help|list|rename|destroy|bind|unbind|unlock)
 						return 0
 						;;
 					create|add-cache|add-data|init-cache)
