@@ -174,7 +174,7 @@ _stratis()
 						return 0
 						;;
 					bind)
-						COMPREPLY=( $(compgen -W  "$(stratis pool list | awk '{if (NR!=1) {print $1}}')" -- ${cur}) )1
+						COMPREPLY=( $(compgen -W  "$(stratis pool list | awk '{if (NR!=1) {print $1}}')" -- ${cur}) )
 						return 0
 						;;
 				esac
