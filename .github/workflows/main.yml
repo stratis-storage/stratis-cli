@@ -60,7 +60,7 @@ jobs:
           - python-version: 3.8.6
             dependencies: yamllint==1.25.0
             task: make -f Makefile yamllint
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
