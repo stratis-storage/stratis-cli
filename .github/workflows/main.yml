@@ -21,28 +21,28 @@ jobs:
       matrix:
         include:
           # MANDATORY CHECKS USING CURRENT DEVELOPMENT INTERPRETER
-          - python-version: 3.8.6
+          - python-version: 3.9.2
             dependencies: >
-              pylint==2.4.4
+              pylint==2.6.0
               dbus-client-gen==0.4
               dbus-python-client-gen==0.7
               justbytes==0.11
-              python-dateutil==2.8.0
-              wcwidth==0.2.4
-              psutil==5.6.7
+              python-dateutil==2.8.1
+              wcwidth==0.2.5
+              psutil==5.7.2
               semantic_version==2.8.4
             task: PYTHONPATH=./src make -f Makefile lint
-          - python-version: 3.8.6
-            dependencies: black==20.8b1 isort==4.3.21
+          - python-version: 3.9.2
+            dependencies: black==20.8b1 isort==5.6.4
             task: make -f Makefile fmt-travis
-          - python-version: 3.8.6
+          - python-version: 3.9.2
             dependencies: >
               dbus-client-gen==0.4
               dbus-python-client-gen==0.7
               justbytes==0.11
-              python-dateutil==2.8.0
-              wcwidth==0.2.4
-              psutil==5.6.7
+              python-dateutil==2.8.1
+              wcwidth==0.2.5
+              psutil==5.7.2
               semantic_version==2.8.4
             task: PYTHONPATH=./src make -f Makefile test-travis
           # MANDATORY CHECKS USING LOWEST SUPPORTED INTERPRETER
@@ -57,8 +57,8 @@ jobs:
               semantic_version==2.6.0
             task: PYTHONPATH=./src make -f Makefile lint
           # VERIFICATION OF TEST INFRASTRUCTURE
-          - python-version: 3.8.6
-            dependencies: yamllint==1.25.0
+          - python-version: 3.9.2
+            dependencies: yamllint==1.26.0
             task: make -f Makefile yamllint
     runs-on: ubuntu-18.04
     steps:
