@@ -17,6 +17,7 @@ on:
 
 jobs:
   python-checks:
+    continue-on-error: true
     strategy:
       matrix:
         include:
