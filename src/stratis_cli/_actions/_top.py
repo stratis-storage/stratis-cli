@@ -66,7 +66,6 @@ def _generate_pools_to_blockdevs(managed_objects, to_be_added, tier):
 
     pools_to_blockdevs = defaultdict(list)
     for modev in (
-        # pylint: disable=bad-continuation
         modev
         for modev in (
             MODev(info)

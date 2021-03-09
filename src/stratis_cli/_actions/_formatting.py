@@ -69,7 +69,6 @@ def get_property(props, name, to_repr, default):
     # the property or the engine encountering an error getting the property,
     # or a bug in our code.
     except (
-        # pylint: disable=bad-continuation
         StratisCliEnginePropertyError,
         StratisCliPropertyNotFoundError,
     ):  # pragma: no cover

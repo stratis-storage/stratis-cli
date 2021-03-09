@@ -234,7 +234,6 @@ class LogicalActions:
             raise StratisCliEngineError(return_code, message)
 
         if not destroyed or len(list_destroyed) < len(
-            # pylint: disable=bad-continuation
             fs_object_paths
         ):  # pragma: no cover
             raise StratisCliIncoherenceError(

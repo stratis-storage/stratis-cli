@@ -107,9 +107,7 @@ def _interpret_errors_0(error):
     # control the contents or installation of "stratisd.conf"
     # and therefore, we cannot test this case reliably.
     if (
-        # pylint: disable=bad-continuation
-        error.get_dbus_name()
-        == "org.freedesktop.DBus.Error.AccessDenied"
+        error.get_dbus_name() == "org.freedesktop.DBus.Error.AccessDenied"
     ):  # pragma: no cover
         return (
             "Most likely stratis has insufficient permissions for the action requested."
@@ -136,9 +134,7 @@ def _interpret_errors_0(error):
     # Additional information may be found in the issue filed against libdbus
     # here: https://gitlab.freedesktop.org/dbus/dbus/issues/293
     if (
-        # pylint: disable=bad-continuation
-        error.get_dbus_name()
-        == "org.freedesktop.DBus.Error.NoReply"
+        error.get_dbus_name() == "org.freedesktop.DBus.Error.NoReply"
     ):  # pragma: no cover
         return (
             "stratis attempted communication with the daemon, stratisd, "
@@ -161,11 +157,7 @@ def _interpret_errors_1(errors):  # pylint: disable=too-many-return-statements
     """
     error = errors[0]
 
-    if (
-        # pylint: disable=bad-continuation
-        isinstance(error, DbusClientUniqueResultError)
-        and error.result == []
-    ):
+    if isinstance(error, DbusClientUniqueResultError) and error.result == []:
         fmt_str = "Most likely you specified a %s which does not exist."
         return fmt_str % _interface_name_to_common_name(error.interface_name)
 
@@ -175,7 +167,6 @@ def _interpret_errors_1(errors):  # pylint: disable=too-many-return-statements
     # daemon interface. This situation is unlikely and difficult to
     # elicit in a test.
     if isinstance(
-        # pylint: disable=bad-continuation
         error,
         (DbusClientMissingSearchPropertiesError, DbusClientMissingPropertyError),
     ):  # pragma: no cover
@@ -287,7 +278,6 @@ def _interpret_errors_2(errors):  # pragma: no cover
             if next_error.get_dbus_name() == "org.freedesktop.DBus.Error.Failed":
                 context = error.context
                 if (
-                    # pylint: disable=bad-continuation
                     error.interface_name == "org.freedesktop.DBus.ObjectManager"
                     and isinstance(context, DPClientMethodCallContext)
                     and context.method_name == "GetManagedObjects"
