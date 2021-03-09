@@ -36,6 +36,7 @@ from ._utils import fetch_property
 # coverage result dependent on whether wcwidth is available or not, as our
 # tests might be run, and succeed either with or without.
 try:
+    # isort: THIRDPARTY
     from wcwidth import wcswidth
 
     MAYBE_WCSWIDTH = wcswidth  # pragma: no cover
