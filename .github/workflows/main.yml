@@ -58,7 +58,7 @@ jobs:
             task: PYTHONPATH=./src make -f Makefile lint
           # VERIFICATION OF TEST INFRASTRUCTURE
           - python-version: 3.8.6
-            dependencies: yamllint==1.25.0
+            dependencies: yamllint==1.26.0
             task: make -f Makefile yamllint
     runs-on: ubuntu-18.04
     steps:
