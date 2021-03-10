@@ -19,16 +19,9 @@ processing and displaying the results.
 
 Installing
 ----------
-
 To install, check out the source, and use the included setup script, as::
 
    > python setup.py install
-
-You will also need to obtain the following related Stratis repos:
-dbus-client-gen, dbus-python-client-gen, into-dbus-python,
-dbus-signature-pyparsing.
-
-Finally, ensure you have the pyparsing package installed.
 
 Running
 -------
