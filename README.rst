@@ -19,16 +19,21 @@ processing and displaying the results.
 
 Installing
 ----------
+You can install ``stratis-cli`` directly from the ``stratis-cli`` project
+repo.
 
-To install, check out the source, and use the included setup script, as::
+``stratis-cli`` has a number of dependencies that may not already be
+installed. You may choose to allow the setup script to install any missing
+dependencies from PyPi, or you may prefer to install the dependencies using
+your distribution's package manager. All ``stratis-cli``'s direct
+dependencies are listed in ``stratis-cli``'s setup.py file, in the
+``install_requires`` field. If you choose to install the dependencies
+using your installation's package manager, you should do so before you
+run the setup.py script.
+
+Finally, run the setup.py script as::
 
    > python setup.py install
-
-You will also need to obtain the following related Stratis repos:
-dbus-client-gen, dbus-python-client-gen, into-dbus-python,
-dbus-signature-pyparsing.
-
-Finally, ensure you have the pyparsing package installed.
 
 Running
 -------
