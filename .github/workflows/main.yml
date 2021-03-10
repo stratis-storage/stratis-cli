@@ -27,7 +27,7 @@ jobs:
               pylint==2.6.0
               dbus-client-gen==0.4
               dbus-python-client-gen==0.7
-              justbytes==0.11
+              justbytes==0.14
               python-dateutil==2.8.1
               wcwidth==0.2.5
               psutil==5.7.2
@@ -49,10 +49,10 @@ jobs:
           # MANDATORY CHECKS USING LOWEST SUPPORTED INTERPRETER
           - python-version: 3.6.8
             dependencies: >
-              pylint==2.4.4
+              pylint==2.6.0
               dbus-client-gen==0.4
               dbus-python-client-gen==0.7
-              justbytes==0.11
+              justbytes==0.14
               python-dateutil==2.6.1
               psutil==5.4.3
               semantic_version==2.6.0
