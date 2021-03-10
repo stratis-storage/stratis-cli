@@ -56,7 +56,6 @@ class ParserTestCase(RunTestCase):
         If an unknown subcommand return exit code of 2.
         """
         for command_line in [
-            # pylint: disable=bad-continuation
             ["notasub"],
             ["daemon", "notasub"],
             ["pool", "notasub"],
