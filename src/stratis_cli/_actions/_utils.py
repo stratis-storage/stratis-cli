@@ -44,10 +44,10 @@ def get_timeout(value):
     try:
         timeout_int = int(value)
 
-    except ValueError:
+    except ValueError as err:
         raise StratisCliEnvironmentError(
             "The timeout value provided is not an integer."
-        )
+        ) from err
 
     # Ensure the integer is not too small
     if timeout_int < -1:
@@ -90,5 +90,5 @@ def fetch_property(props, name):
         if not success:
             raise StratisCliEnginePropertyError(name, variant)  # pragma: no cover
         return variant
-    except KeyError:  # pragma: no cover
-        raise StratisCliPropertyNotFoundError(name)
+    except KeyError as err:  # pragma: no cover
+        raise StratisCliPropertyNotFoundError(name) from err
