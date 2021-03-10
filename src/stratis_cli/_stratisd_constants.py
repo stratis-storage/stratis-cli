@@ -105,6 +105,8 @@ class EncryptionMethod(Enum):
     KEYRING = "keyring"
     CLEVIS = "clevis"
 
+    # False positive on a string enum
+    # pylint: disable=invalid-str-returned
     def __str__(self):
         return self.value
 
