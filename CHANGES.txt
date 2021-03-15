@@ -5,9 +5,9 @@ Required stratisd version: 2.4.0
 Recommended Python interpreter: 3.8.6
 Lowest supported Python interpreter: 3.6.8
 Python linter: pylint (2.4.4)
-Python auto-formatter: black (19.10b0)
+Python auto-formatter: black (20.8b1)
 Python import sorter: isort (4.3.21)
-YAML linter: yamllint (1.25.0)
+YAML linter: yamllint (1.26.0)
 
 - Print pool UUID in pool list command:
   https://github.com/stratis-storage/stratis-cli/pull/695
@@ -15,12 +15,37 @@ YAML linter: yamllint (1.25.0)
 - Modify report subcommand so that it defaults to 'engine_state_report';
   guarantee stability of 'engine_state_report' name:
   https://github.com/stratis-storage/stratis-cli/issues/700
+  https://github.com/stratis-storage/stratis-cli/pull/717
   https://github.com/stratis-storage/stratis-cli/pull/703
   https://github.com/stratis-storage/stratis-cli/pull/702
 
+- Make the hyphenated format for UUIDs the default, add a flag to allow
+  reverting to unhyphenated format:
+  https://github.com/stratis-storage/stratis-cli/issues/698
+  https://github.com/stratis-storage/stratis-cli/pull/705
+
+- Add an explanation for an exception chain containing a GetManagedObjects()
+  failure, which may occur with a multi-threaded daemon implementation:
+  https://github.com/stratis-storage/stratis-cli/pull/713
+
+- Remove the blackbox tests:
+  https://github.com/stratis-storage/stratis-cli/pull/707
+
+- Update the bash completion script for new commands:
+  https://github.com/stratis-storage/stratis-cli/pull/714
+
 - Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/723
+  https://github.com/stratis-storage/stratis-cli/pull/719
+  https://github.com/stratis-storage/stratis-cli/pull/718
+  https://github.com/stratis-storage/stratis-cli/pull/716
+  https://github.com/stratis-storage/stratis-cli/pull/712
+  https://github.com/stratis-storage/stratis-cli/pull/709
+  https://github.com/stratis-storage/stratis-cli/pull/708
+  https://github.com/stratis-storage/stratis-cli/pull/706
   https://github.com/stratis-storage/stratis-cli/pull/699
   https://github.com/stratis-storage/stratis-cli/pull/697
+  https://github.com/stratis-storage/stratis-cli/pull/696
   https://github.com/stratis-storage/stratis-cli/pull/694
 
 
