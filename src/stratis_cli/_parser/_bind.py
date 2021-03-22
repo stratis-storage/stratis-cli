@@ -24,13 +24,6 @@ BIND_SUBCMDS = [
             help="Bind using NBDE via a tang server",
             args=[
                 ("pool_name", dict(action="store", help="Pool name")),
-                (
-                    "key_description",
-                    dict(
-                        action="store",
-                        help="Description of key in kernel keyring used by this pool",
-                    ),
-                ),
                 ("url", dict(action="store", help="URL of tang server")),
             ],
             mut_ex_args=[
@@ -66,13 +59,6 @@ BIND_SUBCMDS = [
             help="Bind using TPM2",
             args=[
                 ("pool_name", dict(action="store", help="Pool name")),
-                (
-                    "key_description",
-                    dict(
-                        action="store",
-                        help="Description of key in kernel keyring used by this pool",
-                    ),
-                ),
             ],
             func=TopActions.bind_tpm,
         ),
