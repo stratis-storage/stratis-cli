@@ -283,6 +283,7 @@ class TopActions:
                     if namespace.key_desc is not None
                     else (False, "")
                 ),
+                "clevis_info": (False, ("", "")),
             },
         )
 
