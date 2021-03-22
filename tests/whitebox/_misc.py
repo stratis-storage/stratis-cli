@@ -188,7 +188,22 @@ class SimTestCase(RunTestCase):
         self._service.setup()
 
 
-RUNNER = run()
+_RUNNER = run()
+
+
+def run_with_delay(command_line_args):
+    """
+    Wait 1/4 of a second before running stratis with the specified
+    command-line arguments.
+
+    :param command_line_args: the command line args to pass
+    :type command_line_args: list of str
+    """
+    time.sleep(0.25)
+    return _RUNNER(command_line_args)
+
+
+RUNNER = run_with_delay
 
 
 class StratisCliTestRunError(AssertionError):
