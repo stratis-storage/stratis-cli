@@ -58,15 +58,13 @@ pool unlock <(keyring | clevis)>::
      Unlock all devices that are part of an encrypted pool registered with stratisd
      but that have not yet been opened. The available unlock methods are
      *keyring* or *clevis*.
-pool bind <(nbde|tang)> <pool name> <key description> <url> <(--thumbprint <thp> | --trust-url)>::
+pool bind <(nbde|tang)> <pool name> <url> <(--thumbprint <thp> | --trust-url)>::
      Bind the devices in the specified pool to a supplementary encryption
      mechanism that uses NBDE (Network-Bound Disc Encryption). *tang* is
-     an alias for *nbde*. The description of the key in the kernel keyring
-     used to encrypt the devices must be supplied.
-pool bind tpm2 <pool name> <key description>::
+     an alias for *nbde*.
+pool bind tpm2 <pool name>::
      Bind the devices in the specified pool to a supplementary encryption
-     mechanism that uses TPM 2.0 (Trusted Platform Module). The description of
-     the key in the kernel keyring used to encrypt the devices must be supplied.
+     mechanism that uses TPM 2.0 (Trusted Platform Module).
 pool unbind <pool name>::
      Unbind the devices in the specified pool from an existing supplementary
      encryption mechanism. Unbinding leaves the primary encryption mechanism,
@@ -226,7 +224,7 @@ stratis filesystem create mypool data1
 ====
 .Binding a pool's devices to use an NBDE policy for decryption
 ====
-stratis pool bind nbde --trust-url mypool someKeyDescription someTangServerUrl
+stratis pool bind nbde --trust-url mypool someTangServerUrl
 ====
 
 SEE ALSO

@@ -46,7 +46,6 @@ class BindTestCase(SimTestCase):
         command_line = self._MENU + [
             "nbde",
             self._POOLNAME,
-            "fake_key",
             "URL",
             "--thumbprint",
             "fake thumbprint",
@@ -60,7 +59,6 @@ class BindTestCase(SimTestCase):
         command_line = self._MENU + [
             "nbde",
             self._POOLNAME,
-            "fake_key",
             "URL",
             "--trust-url",
         ]
@@ -73,7 +71,6 @@ class BindTestCase(SimTestCase):
         command_line = self._MENU + [
             "tpm2",
             self._POOLNAME,
-            "fake_key",
         ]
         self.check_error(StratisCliEngineError, command_line, _ERROR)
 
@@ -118,12 +115,10 @@ class BindTestCase2(SimTestCase):
         command_line = self._MENU + [
             "tpm2",
             self._POOLNAME,
-            "fake_key",
         ]
         RUNNER(command_line)
         command_line = self._MENU + [
             "tpm2",
             self._POOLNAME,
-            "fake_key",
         ]
         self.check_error(StratisCliNoChangeError, command_line, _ERROR)

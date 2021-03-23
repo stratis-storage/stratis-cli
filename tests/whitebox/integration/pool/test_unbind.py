@@ -97,7 +97,6 @@ class UnbindTestCase2(SimTestCase):
             "bind",
             "nbde",
             self._POOLNAME,
-            "fake_key",
             "URL",
             "--trust-url",
         ]
