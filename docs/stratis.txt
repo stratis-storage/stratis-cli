@@ -61,12 +61,10 @@ pool unlock <(keyring | clevis)>::
 pool bind <(nbde|tang)> <pool name> <url> <(--thumbprint <thp> | --trust-url)>::
      Bind the devices in the specified pool to a supplementary encryption
      mechanism that uses NBDE (Network-Bound Disc Encryption). *tang* is
-     an alias for *nbde*. The description of the key in the kernel keyring
-     used to encrypt the devices must be supplied.
+     an alias for *nbde*.
 pool bind tpm2 <pool name>::
      Bind the devices in the specified pool to a supplementary encryption
-     mechanism that uses TPM 2.0 (Trusted Platform Module). The description of
-     the key in the kernel keyring used to encrypt the devices must be supplied.
+     mechanism that uses TPM 2.0 (Trusted Platform Module).
 pool unbind <pool name>::
      Unbind the devices in the specified pool from an existing supplementary
      encryption mechanism. Unbinding leaves the primary encryption mechanism,
