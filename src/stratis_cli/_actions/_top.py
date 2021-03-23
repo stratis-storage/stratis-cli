@@ -37,7 +37,15 @@ from .._errors import (
     StratisCliPartialFailureError,
     StratisCliResourceNotFoundError,
 )
-from .._stratisd_constants import CLEVIS_TANG_TRUST_URL, BlockDevTiers, StratisdErrors
+from .._stratisd_constants import (
+    CLEVIS_KEY_TANG_TRUST_URL,
+    CLEVIS_KEY_THP,
+    CLEVIS_KEY_URL,
+    CLEVIS_PIN_TANG,
+    CLEVIS_PIN_TPM2,
+    BlockDevTiers,
+    StratisdErrors,
+)
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import TABLE_FAILURE_STRING, get_property, print_table, to_hyphenated
@@ -865,13 +873,15 @@ class TopActions:
         :raises StratisCliNoChangeError:
         :raises StratisCliEngineError:
         """
-        clevis_config = {"url": namespace.url}
-        if namespace.thumbprint is None:
-            clevis_config[CLEVIS_TANG_TRUST_URL] = True
-        else:
-            clevis_config["thp"] = namespace.thumbprint
+        assert namespace.trust_url or namespace.thumbprint is not None
 
-        TopActions._bind(namespace, "tang", clevis_config)
+        clevis_config = {CLEVIS_KEY_URL: namespace.url}
+        if namespace.trust_url:
+            clevis_config[CLEVIS_KEY_TANG_TRUST_URL] = True
+        else:
+            clevis_config[CLEVIS_KEY_THP] = namespace.thumbprint
+
+        TopActions._bind(namespace, CLEVIS_PIN_TANG, clevis_config)
 
     @staticmethod
     def bind_tpm(namespace):
@@ -882,7 +892,7 @@ class TopActions:
         :raises StratisCliEngineError:
         """
 
-        TopActions._bind(namespace, "tpm2", {})
+        TopActions._bind(namespace, CLEVIS_PIN_TPM2, {})
 
     @staticmethod
     def unbind(namespace):
