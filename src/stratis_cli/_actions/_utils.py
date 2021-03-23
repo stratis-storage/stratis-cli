@@ -16,10 +16,22 @@
 Miscellaneous functions.
 """
 
+# isort: STDLIB
+import json
+
 from .._errors import (
     StratisCliEnginePropertyError,
     StratisCliEnvironmentError,
+    StratisCliMissingClevisTangURLError,
+    StratisCliMissingClevisThumbprintError,
     StratisCliPropertyNotFoundError,
+)
+from .._stratisd_constants import (
+    CLEVIS_KEY_TANG_TRUST_URL,
+    CLEVIS_KEY_THP,
+    CLEVIS_KEY_URL,
+    CLEVIS_PIN_TANG,
+    CLEVIS_PIN_TPM2,
 )
 
 
@@ -92,3 +104,47 @@ def fetch_property(props, name):
         return variant
     except KeyError as err:  # pragma: no cover
         raise StratisCliPropertyNotFoundError(name) from err
+
+
+def get_clevis_info(namespace):
+    """
+    Get clevis info, if any, from the namespace.
+
+    :param namespace: namespace set up by the parser
+
+    :returns: clevis info or None
+    :rtype: pair of str or NoneType
+    """
+    clevis_info = None
+    if namespace.clevis is not None:
+        if namespace.clevis in ("nbde", "tang"):
+            if namespace.tang_url is None:
+                raise StratisCliMissingClevisTangURLError()
+
+            clevis_config = {CLEVIS_KEY_URL: namespace.tang_url}
+            if not namespace.trust_url and namespace.thumbprint is None:
+                raise StratisCliMissingClevisThumbprintError()
+
+            if (
+                # pylint: disable=bad-continuation
+                namespace.trust_url
+                and not namespace.thumbprint is None
+            ):  # pragma: no cover
+                raise AssertionError("--trust-url and --thumbprint both set")
+
+            if namespace.trust_url:
+                clevis_config[CLEVIS_KEY_TANG_TRUST_URL] = True
+            else:
+                clevis_config[CLEVIS_KEY_THP] = namespace.thumbprint
+
+            clevis_info = (CLEVIS_PIN_TANG, json.dumps(clevis_config))
+
+        elif namespace.clevis == "tpm2":
+            clevis_info = (CLEVIS_PIN_TPM2, json.dumps({}))
+
+        else:
+            raise AssertionError(
+                "unexpected value %s for clevis option" % namespace.clevis
+            )  # pragma: no cover
+
+    return clevis_info

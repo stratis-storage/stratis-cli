@@ -51,6 +51,59 @@ POOL_SUBCMDS = [
                         dest="key_desc",
                     ),
                 ),
+                (
+                    "--clevis",
+                    dict(
+                        default=None,
+                        type=str,
+                        help=("Specification for binding with Clevis."),
+                        dest="clevis",
+                        choices=["nbde", "tang", "tpm2"],
+                    ),
+                ),
+                (
+                    "--tang-url",
+                    dict(
+                        default=None,
+                        type=str,
+                        help=(
+                            "URL of Clevis tang server (ignored if "
+                            "--clevis=[tang|nbde] not set)"
+                        ),
+                        dest="tang_url",
+                    ),
+                ),
+            ],
+            mut_ex_args=[
+                (
+                    False,
+                    [
+                        (
+                            "--trust-url",
+                            dict(
+                                action="store_true",
+                                help=(
+                                    "Omit verification of tang server "
+                                    "credentials (ignored if "
+                                    "--clevis=[tang|nbde] not set)"
+                                ),
+                                dest="trust_url",
+                            ),
+                        ),
+                        (
+                            "--thumbprint",
+                            dict(
+                                action="store",
+                                help=(
+                                    "Thumbprint of tang server at specified "
+                                    "URL (ignored if --clevis=[tang|nbde] not "
+                                    "set)"
+                                ),
+                                dest="thumbprint",
+                            ),
+                        ),
+                    ],
+                )
             ],
             func=TopActions.create_pool,
         ),

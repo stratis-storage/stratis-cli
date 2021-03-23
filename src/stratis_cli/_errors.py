@@ -177,6 +177,39 @@ class StratisCliNameConflictError(StratisCliUserError):
         return "A %s named %s already exists" % (self.object_type, self.name)
 
 
+class StratisCliParserError(StratisCliRuntimeError):
+    """
+    Raised when user has passed arguments that the parser should reject
+    but can not due to its configuration limitations.
+    """
+
+
+class StratisCliMissingClevisTangURLError(StratisCliParserError):
+    """
+    Raised during pool creation if --clevis=[tang|nbde] specified but no
+    URL supplied.
+    """
+
+    def __str__(self):
+        return (
+            "Specified binding with Clevis Tang server, but URL was not "
+            "specified. Use --tang-url option to specify tang URL."
+        )
+
+
+class StratisCliMissingClevisThumbprintError(StratisCliParserError):
+    """
+    Raised during pool creation if --clevis=[tang|nbde] specified but neither
+    a thumbprint nor instructions to trust the URL were supplied.
+    """
+
+    def __str__(self):
+        return (
+            "Specified binding with Clevis Tang server, but neither "
+            "--thumbprint nor --trust-url option was specified."
+        )
+
+
 class StratisCliIncoherenceError(StratisCliRuntimeError):
     """
     Raised if there was a disagreement about state between the CLI
