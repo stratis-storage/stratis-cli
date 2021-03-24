@@ -125,16 +125,10 @@ def get_clevis_info(namespace):
             if not namespace.trust_url and namespace.thumbprint is None:
                 raise StratisCliMissingClevisThumbprintError()
 
-            if (
-                # pylint: disable=bad-continuation
-                namespace.trust_url
-                and not namespace.thumbprint is None
-            ):  # pragma: no cover
-                raise AssertionError("--trust-url and --thumbprint both set")
-
             if namespace.trust_url:
                 clevis_config[CLEVIS_KEY_TANG_TRUST_URL] = True
             else:
+                assert namespace.thumbprint is not None
                 clevis_config[CLEVIS_KEY_THP] = namespace.thumbprint
 
             clevis_info = (CLEVIS_PIN_TANG, json.dumps(clevis_config))
