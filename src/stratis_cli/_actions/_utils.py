@@ -121,10 +121,10 @@ def get_clevis_info(namespace):
             if namespace.tang_url is None:
                 raise StratisCliMissingClevisTangURLError()
 
-            clevis_config = {CLEVIS_KEY_URL: namespace.tang_url}
             if not namespace.trust_url and namespace.thumbprint is None:
                 raise StratisCliMissingClevisThumbprintError()
 
+            clevis_config = {CLEVIS_KEY_URL: namespace.tang_url}
             if namespace.trust_url:
                 clevis_config[CLEVIS_KEY_TANG_TRUST_URL] = True
             else:

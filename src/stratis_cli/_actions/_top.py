@@ -879,12 +879,11 @@ class TopActions:
         :raises StratisCliNoChangeError:
         :raises StratisCliEngineError:
         """
-        assert namespace.trust_url or namespace.thumbprint is not None
-
         clevis_config = {CLEVIS_KEY_URL: namespace.url}
         if namespace.trust_url:
             clevis_config[CLEVIS_KEY_TANG_TRUST_URL] = True
         else:
+            assert namespace.thumbprint is not None
             clevis_config[CLEVIS_KEY_THP] = namespace.thumbprint
 
         TopActions._bind(namespace, CLEVIS_PIN_TANG, clevis_config)
