@@ -46,6 +46,9 @@ SPECS = {
 <arg name="return_code" type="q" direction="out"/>
 <arg name="return_string" type="s" direction="out"/>
 </method>
+<property name="Version" type="s" access="read">
+<annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const" />
+</property>
 </interface>
 """,
     "org.storage.stratis2.pool.r1": """
