@@ -23,10 +23,10 @@ TOP_OBJECT = "/org/storage/stratis2"
 SECTOR_SIZE = 512
 
 FETCH_PROPERTIES_INTERFACE = "org.storage.stratis2.FetchProperties.r4"
-FILESYSTEM_INTERFACE = "org.storage.stratis2.filesystem"
-POOL_INTERFACE = "org.storage.stratis2.pool.r3"
-BLOCKDEV_INTERFACE = "org.storage.stratis2.blockdev.r2"
-REPORT_INTERFACE = "org.storage.stratis2.Report.r1"
+FILESYSTEM_INTERFACE = "org.storage.stratis2.filesystem.r4"
+POOL_INTERFACE = "org.storage.stratis2.pool.r4"
+BLOCKDEV_INTERFACE = "org.storage.stratis2.blockdev.r4"
+REPORT_INTERFACE = "org.storage.stratis2.Report.r4"
 
 MAXIMUM_STRATISD_VERSION = "3.0.0"
 MINIMUM_STRATISD_VERSION = "2.4.0"
