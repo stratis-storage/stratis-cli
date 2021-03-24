@@ -32,6 +32,7 @@ from ._constants import (
     BLOCKDEV_INTERFACE,
     FETCH_PROPERTIES_INTERFACE,
     FILESYSTEM_INTERFACE,
+    MANAGER_INTERFACE,
     POOL_INTERFACE,
     REPORT_INTERFACE,
 )
@@ -42,8 +43,6 @@ assert hasattr(sys.modules.get("stratis_cli"), "run"), (
     "This module is being loaded too eagerly. Make sure that loading it is "
     "deferred until after the stratis_cli module has been fully loaded."
 )
-
-_MANAGER_INTERFACE = "org.storage.stratis2.Manager.r4"
 
 DBUS_TIMEOUT_SECONDS = 120
 
@@ -75,7 +74,7 @@ try:
     MODev = managed_object_class("MODev", blockdev_spec)
     devs = mo_query_builder(blockdev_spec)
 
-    Manager = make_class("Manager", ET.fromstring(SPECS[_MANAGER_INTERFACE]), timeout)
+    Manager = make_class("Manager", ET.fromstring(SPECS[MANAGER_INTERFACE]), timeout)
 
     ObjectManager = make_class(
         "ObjectManager",

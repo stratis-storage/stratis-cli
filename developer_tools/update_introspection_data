@@ -22,6 +22,7 @@ import xml.etree.ElementTree as ET
 
 # isort: THIRDPARTY
 import dbus
+from semantic_version import Version
 
 # isort: FIRSTPARTY
 from dbus_python_client_gen import make_class
@@ -46,6 +47,9 @@ SPECS = {
 <arg name="return_code" type="q" direction="out"/>
 <arg name="return_string" type="s" direction="out"/>
 </method>
+<property name="Version" type="s" access="read">
+<annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const" />
+</property>
 </interface>
 """,
     "org.storage.stratis2.pool.r1": """
@@ -73,16 +77,16 @@ Introspectable = make_class(
 Manager = make_class("Manager", ET.fromstring(SPECS[_MANAGER_IFACE]), _TIMEOUT)
 Pool = make_class("Pool", ET.fromstring(SPECS[_POOL_IFACE]), _TIMEOUT)
 
-# EDIT these fields to get the interfaces and revisions desired
-TOP_OBJECT_INTERFACES = [
-    "org.freedesktop.DBus.ObjectManager",
-    "org.storage.stratis2.FetchProperties.r4",
-    "org.storage.stratis2.Manager.r4",
-    "org.storage.stratis2.Report.r1",
+OBJECT_MANAGER_INTERFACE = "org.freedesktop.DBus.ObjectManager"
+
+TOP_OBJECT_INTERFACE_PREFIXES = [
+    "org.storage.stratis2.FetchProperties",
+    "org.storage.stratis2.Manager",
+    "org.storage.stratis2.Report",
 ]
-POOL_OBJECT_INTERFACES = ["org.storage.stratis2.pool.r3"]
-BLOCKDEV_OBJECT_INTERFACES = ["org.storage.stratis2.blockdev.r2"]
-FILESYSTEM_OBJECT_INTERFACES = ["org.storage.stratis2.filesystem"]
+POOL_OBJECT_INTERFACE_PREFIXES = ["org.storage.stratis2.pool"]
+BLOCKDEV_OBJECT_INTERFACE_PREFIXES = ["org.storage.stratis2.blockdev"]
+FILESYSTEM_OBJECT_INTERFACE_PREFIXES = ["org.storage.stratis2.filesystem"]
 
 
 def _add_data(proxy, interfaces, table):
@@ -96,10 +100,14 @@ def _add_data(proxy, interfaces, table):
     """
     string_data = Introspectable.Methods.Introspect(proxy, {})
     xml_data = ET.fromstring(string_data)
-    for interface in xml_data:
-        interface_name = interface.attrib["name"]
-        if interface_name in interfaces:
-            table[interface_name] = ET.tostring(interface).decode("utf-8").rstrip(" \n")
+
+    for interface_name in interfaces:
+        interface = next(
+            interface
+            for interface in xml_data
+            if interface.attrib["name"] == interface_name
+        )
+        table[interface_name] = ET.tostring(interface).decode("utf-8").rstrip(" \n")
 
     if not (frozenset(interfaces) <= frozenset(table.keys())):
         exit(
@@ -119,6 +127,11 @@ def main():
     bus = dbus.SystemBus()
 
     proxy = bus.get_object(_SERVICE, "/org/storage/stratis2", introspect=False)
+
+    revision = "r%d" % Version(Manager.Properties.Version.Get(proxy)).minor
+
+    def get_current_interfaces(interface_prefixes):
+        return ["%s.%s" % (prefix, revision) for prefix in interface_prefixes]
 
     (
         (_, (pool_object_path, dev_object_paths)),
@@ -156,10 +169,23 @@ def main():
         _SERVICE, filesystem_object_path, introspect=False
     )
 
-    _add_data(proxy, TOP_OBJECT_INTERFACES, specs)
-    _add_data(pool_proxy, POOL_OBJECT_INTERFACES, specs)
-    _add_data(blockdev_proxy, BLOCKDEV_OBJECT_INTERFACES, specs)
-    _add_data(filesystem_proxy, FILESYSTEM_OBJECT_INTERFACES, specs)
+    _add_data(
+        proxy,
+        [OBJECT_MANAGER_INTERFACE]
+        + get_current_interfaces(TOP_OBJECT_INTERFACE_PREFIXES),
+        specs,
+    )
+    _add_data(pool_proxy, get_current_interfaces(POOL_OBJECT_INTERFACE_PREFIXES), specs)
+    _add_data(
+        blockdev_proxy,
+        get_current_interfaces(BLOCKDEV_OBJECT_INTERFACE_PREFIXES),
+        specs,
+    )
+    _add_data(
+        filesystem_proxy,
+        get_current_interfaces(FILESYSTEM_OBJECT_INTERFACE_PREFIXES),
+        specs,
+    )
 
     print("SPECS = {")
 
