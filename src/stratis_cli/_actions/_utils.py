@@ -131,14 +131,18 @@ def get_clevis_info(namespace):
                 assert namespace.thumbprint is not None
                 clevis_config[CLEVIS_KEY_THP] = namespace.thumbprint
 
-            clevis_info = (CLEVIS_PIN_TANG, json.dumps(clevis_config))
+            clevis_info = (CLEVIS_PIN_TANG, clevis_config)
 
         elif namespace.clevis == "tpm2":
-            clevis_info = (CLEVIS_PIN_TPM2, json.dumps({}))
+            clevis_info = (CLEVIS_PIN_TPM2, {})
 
         else:
             raise AssertionError(
                 "unexpected value %s for clevis option" % namespace.clevis
             )  # pragma: no cover
 
-    return clevis_info
+    return (
+        clevis_info
+        if clevis_info is None
+        else (clevis_info[0], json.dumps(clevis_info[1]))
+    )
