@@ -100,10 +100,14 @@ def _add_data(proxy, interfaces, table):
     """
     string_data = Introspectable.Methods.Introspect(proxy, {})
     xml_data = ET.fromstring(string_data)
-    for interface in xml_data:
-        interface_name = interface.attrib["name"]
-        if interface_name in interfaces:
-            table[interface_name] = ET.tostring(interface).decode("utf-8").rstrip(" \n")
+
+    for interface_name in interfaces:
+        interface = next(
+            interface
+            for interface in xml_data
+            if interface.attrib["name"] == interface_name
+        )
+        table[interface_name] = ET.tostring(interface).decode("utf-8").rstrip(" \n")
 
     if not (frozenset(interfaces) <= frozenset(table.keys())):
         exit(
