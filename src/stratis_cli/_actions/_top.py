@@ -44,6 +44,7 @@ from .._stratisd_constants import (
     CLEVIS_PIN_TANG,
     CLEVIS_PIN_TPM2,
     BlockDevTiers,
+    EncryptionMethod,
     StratisdErrors,
 )
 from ._connection import get_object
@@ -918,7 +919,14 @@ class TopActions:
             .require_unique_match(True)
             .search(managed_objects)
         )
-        (changed, return_code, return_msg) = Pool.Methods.Unbind(
+
+        unbind_method = (
+            Pool.Methods.Unbind
+            if namespace.unbind_method == str(EncryptionMethod.CLEVIS)
+            else Pool.Methods.UnbindKeyring
+        )
+
+        (changed, return_code, return_msg) = unbind_method(
             get_object(pool_object_path), {}
         )
 

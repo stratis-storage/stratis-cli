@@ -205,7 +205,18 @@ POOL_SUBCMDS = [
         "unbind",
         dict(
             help="Unbind the given pool, removing support for encryption with Clevis",
-            args=[("pool_name", dict(action="store", help="Pool name"))],
+            args=[
+                ("pool_name", dict(action="store", help="Pool name")),
+                (
+                    "unbind_method",
+                    dict(
+                        default=str(EncryptionMethod.CLEVIS),
+                        action="store",
+                        choices=[str(x) for x in list(EncryptionMethod)],
+                        help="Encryption method to unbind",
+                    ),
+                ),
+            ],
             func=TopActions.unbind,
         ),
     ),
