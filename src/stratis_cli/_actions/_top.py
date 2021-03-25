@@ -922,7 +922,7 @@ class TopActions:
 
         unbind_method = (
             Pool.Methods.Unbind
-            if namespace.unbind_method == str(EncryptionMethod.CLEVIS)
+            if namespace.method == str(EncryptionMethod.CLEVIS)
             else Pool.Methods.UnbindKeyring
         )
 
