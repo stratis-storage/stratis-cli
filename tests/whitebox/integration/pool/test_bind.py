@@ -74,6 +74,13 @@ class BindTestCase(SimTestCase):
         ]
         self.check_error(StratisCliEngineError, command_line, _ERROR)
 
+    def test_bind_when_unencrypted_keyring(self):
+        """
+        Binding when unencrypted with keyring should return an error.
+        """
+        command_line = self._MENU + ["keyring", self._POOLNAME, "keydesc"]
+        self.check_error(StratisCliEngineError, command_line, _ERROR)
+
 
 class BindTestCase2(SimTestCase):
     """
@@ -107,7 +114,7 @@ class BindTestCase2(SimTestCase):
         ] + _DEVICE_STRATEGY()
         RUNNER(command_line)
 
-    def test_bind_when_bound(self):
+    def test_bind_when_bound_1(self):
         """
         Binding when encrypted and bound should raise a no change error,
         as the action is assumed to be unintentional.
@@ -120,5 +127,16 @@ class BindTestCase2(SimTestCase):
         command_line = self._MENU + [
             "tpm2",
             self._POOLNAME,
+        ]
+        self.check_error(StratisCliNoChangeError, command_line, _ERROR)
+
+    def test_bind_when_bound_2(self):
+        """
+        Binding when encrypted already should raise a no change error.
+        """
+        command_line = self._MENU + [
+            "keyring",
+            self._POOLNAME,
+            self._KEY_DESC,
         ]
         self.check_error(StratisCliNoChangeError, command_line, _ERROR)
