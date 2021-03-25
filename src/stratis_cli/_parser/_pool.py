@@ -208,9 +208,8 @@ POOL_SUBCMDS = [
             args=[
                 ("pool_name", dict(action="store", help="Pool name")),
                 (
-                    "--method",
+                    "method",
                     dict(
-                        default=str(EncryptionMethod.CLEVIS),
                         action="store",
                         choices=[str(x) for x in list(EncryptionMethod)],
                         help="Encryption method to unbind",
