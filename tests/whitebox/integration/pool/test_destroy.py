@@ -102,6 +102,6 @@ class Destroy3TestCase(SimTestCase):
         This should succeed since the filesystem is removed first.
         """
         command_line = ["filesystem", "destroy", self._POOLNAME, self._VOLNAME]
-        TEST_RUNNER(command_line)
+        RUNNER(command_line)
         command_line = self._MENU + [self._POOLNAME]
         TEST_RUNNER(command_line)
