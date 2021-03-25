@@ -838,7 +838,7 @@ class TopActions:
         )
 
     @staticmethod
-    def _bind(namespace, clevis_pin, clevis_config):
+    def _bind_clevis(namespace, clevis_pin, clevis_config):
         """
         Generic bind method. For further information about Clevis, and
         discussion of the pin and the configuration, consult Clevis
@@ -887,7 +887,7 @@ class TopActions:
             assert namespace.thumbprint is not None
             clevis_config[CLEVIS_KEY_THP] = namespace.thumbprint
 
-        TopActions._bind(namespace, CLEVIS_PIN_TANG, clevis_config)
+        TopActions._bind_clevis(namespace, CLEVIS_PIN_TANG, clevis_config)
 
     @staticmethod
     def bind_tpm(namespace):
@@ -898,7 +898,7 @@ class TopActions:
         :raises StratisCliEngineError:
         """
 
-        TopActions._bind(namespace, CLEVIS_PIN_TPM2, {})
+        TopActions._bind_clevis(namespace, CLEVIS_PIN_TPM2, {})
 
     @staticmethod
     def unbind(namespace):
