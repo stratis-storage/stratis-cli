@@ -22,7 +22,7 @@ from stratis_cli._errors import (
     StratisCliNameConflictError,
 )
 
-from .._misc import RUNNER, SimTestCase, device_name_list
+from .._misc import RUNNER, TEST_RUNNER, SimTestCase, device_name_list
 
 _DEVICE_STRATEGY = device_name_list(1)
 _DEVICE_STRATEGY_2 = device_name_list(2)
@@ -101,7 +101,7 @@ class Create5TestCase(SimTestCase):
         Test that creating with tpm2 does something reasonable.
         """
         command_line = self._MENU + [self._POOLNAME] + self._DEVICES + ["--clevis=tpm2"]
-        RUNNER(command_line)
+        TEST_RUNNER(command_line)
 
     def test_create_tang_1(self):
         """
@@ -113,7 +113,7 @@ class Create5TestCase(SimTestCase):
             + self._DEVICES
             + ["--clevis=tang", "--trust-url", "--tang-url=http"]
         )
-        RUNNER(command_line)
+        TEST_RUNNER(command_line)
 
     def test_create_tang_2(self):
         """
@@ -125,4 +125,4 @@ class Create5TestCase(SimTestCase):
             + self._DEVICES
             + ["--clevis=tang", "--thumbprint=print", "--tang-url=http"]
         )
-        RUNNER(command_line)
+        TEST_RUNNER(command_line)
