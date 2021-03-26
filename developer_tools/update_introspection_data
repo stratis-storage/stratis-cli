@@ -97,41 +97,34 @@ def _add_data(proxy, interfaces, table):
     :param proxy: dbus Proxy object
     :param list interfaces: list of interesting interface names
     :param dict table: table from interface names to introspection data as text
+    :raises: RuntimeError if some interface not found
     """
     string_data = Introspectable.Methods.Introspect(proxy, {})
     xml_data = ET.fromstring(string_data)
 
     for interface_name in interfaces:
-        interface = next(
-            interface
-            for interface in xml_data
-            if interface.attrib["name"] == interface_name
-        )
-        table[interface_name] = ET.tostring(interface).decode("utf-8").rstrip(" \n")
-
-    if not (frozenset(interfaces) <= frozenset(table.keys())):
-        exit(
-            "not %s <= %s"
-            % (
-                sorted(frozenset(interfaces)),
-                sorted(frozenset(table.keys())),
+        try:
+            interface = next(
+                interface
+                for interface in xml_data
+                if interface.attrib["name"] == interface_name
             )
-        )
+            table[interface_name] = ET.tostring(interface).decode("utf-8").rstrip(" \n")
+        except StopIteration as err:
+            raise RuntimeError(
+                "interface %s not found in introspection data" % interface_name
+            ) from err
 
 
-def main():
+def setup_minimal_object_set(bus):
     """
-    The main method.
-    """
-    specs = {}
-    bus = dbus.SystemBus()
+    Set up the minimal set of objects to be introspected on.
 
+    :param bus: the bus
+    :returns: a dict of proxy objects
+    :rtype: dict of str * dbus proxy object
+    """
     proxy = bus.get_object(_SERVICE, "/org/storage/stratis2", introspect=False)
-
-    revision = "r%d" % Version(Manager.Properties.Version.Get(proxy)).minor
-
-    def get_current_interfaces(interface_prefixes):
-        return ["%s.%s" % (prefix, revision) for prefix in interface_prefixes]
 
     (
         (_, (pool_object_path, dev_object_paths)),
@@ -169,27 +162,67 @@ def main():
         _SERVICE, filesystem_object_path, introspect=False
     )
 
+    return {
+        "top_proxy": proxy,
+        "pool_proxy": pool_proxy,
+        "filesystem_proxy": filesystem_proxy,
+        "blockdev_proxy": blockdev_proxy,
+    }
+
+
+def make_introspection_spec(proxies):
+    """
+    Make the introspection specification using proxy objects.
+
+    :param proxies:a dictionary of distinguishing names to proxy objects
+    :type proxies: dict of str * proxy object
+    :returns: a table with interface name keys and introspection data values
+    :rtype: dict of str * str
+    """
+    specs = {}
+
+    revision = (
+        "r%d" % Version(Manager.Properties.Version.Get(proxies["top_proxy"])).minor
+    )
+
+    def get_current_interfaces(interface_prefixes):
+        return ["%s.%s" % (prefix, revision) for prefix in interface_prefixes]
+
     _add_data(
-        proxy,
+        proxies["top_proxy"],
         [OBJECT_MANAGER_INTERFACE]
         + get_current_interfaces(TOP_OBJECT_INTERFACE_PREFIXES),
         specs,
     )
-    _add_data(pool_proxy, get_current_interfaces(POOL_OBJECT_INTERFACE_PREFIXES), specs)
     _add_data(
-        blockdev_proxy,
+        proxies["pool_proxy"],
+        get_current_interfaces(POOL_OBJECT_INTERFACE_PREFIXES),
+        specs,
+    )
+
+    _add_data(
+        proxies["blockdev_proxy"],
         get_current_interfaces(BLOCKDEV_OBJECT_INTERFACE_PREFIXES),
         specs,
     )
     _add_data(
-        filesystem_proxy,
+        proxies["filesystem_proxy"],
         get_current_interfaces(FILESYSTEM_OBJECT_INTERFACE_PREFIXES),
         specs,
     )
 
+    return specs
+
+
+def print_spec(specs):
+    """
+    Print spec formatted according to stratis-cli and black's requirments.
+
+    :param specs: the specification to print
+    :type specs: dict of str * str
+    """
     print("SPECS = {")
 
-    # format the lines in a way that will satisfy black
     print(
         ",\n".join(
             '    "%s": """\n%s\n"""' % (key, value)
@@ -198,6 +231,19 @@ def main():
         + ","
     )
     print("}")
+
+
+def main():
+    """
+    The main method.
+    """
+    bus = dbus.SystemBus()
+
+    proxies = setup_minimal_object_set(bus)
+
+    specs = make_introspection_spec(proxies)
+
+    print_spec(specs)
 
 
 if __name__ == "__main__":
