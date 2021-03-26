@@ -65,10 +65,9 @@ pool bind <(nbde|tang)> <pool name> <url> <(--thumbprint <thp> | --trust-url)>::
 pool bind tpm2 <pool name>::
      Bind the devices in the specified pool to a supplementary encryption
      mechanism that uses TPM 2.0 (Trusted Platform Module).
-pool unbind <pool name>::
-     Unbind the devices in the specified pool from an existing supplementary
-     encryption mechanism. Unbinding leaves the primary encryption mechanism,
-     which uses a key in the kernel keyring, unaffected.
+pool unbind <(clevis|keyring)> <pool name> ::
+     Unbind the devices in the specified pool from the specified encryption
+     mechanism.
 filesystem create <pool_name> <fs_name> [<fs_name>..]::
 	   Create one or more filesystems from the specified pool.
            NOTE: There is a temporary restriction on the number of filesystems
