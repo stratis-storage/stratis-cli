@@ -65,6 +65,9 @@ pool bind <(nbde|tang)> <pool name> <url> <(--thumbprint <thp> | --trust-url)>::
 pool bind tpm2 <pool name>::
      Bind the devices in the specified pool to a supplementary encryption
      mechanism that uses TPM 2.0 (Trusted Platform Module).
+pool bind keyring <pool name> <keydesc>::
+     Bind the devices in the specified pool to a supplementary encryption
+     mechanism using a key in the kernel keyring.
 pool unbind <(clevis|keyring)> <pool name> ::
      Unbind the devices in the specified pool from the specified encryption
      mechanism.
