@@ -36,7 +36,7 @@ GLOBAL OPTIONS
 
 COMMANDS
 --------
-pool create [--redundancy <redundancy>] [--key-desc <key_desc>] <pool_name> <blockdev> [<blockdev>..]::
+pool create [--redundancy <redundancy>] [--key-desc <key_desc>] [--clevis <(nbde|tang|tpm2)> [--tang-url <tang_url>] [<(--thumbprint <thp> | --trust-url)>] <pool_name> <blockdev> [<blockdev>..]::
      Create a pool from one or more block devices, with the given pool name.
 pool list::
      List all pools on the system.
@@ -131,6 +131,11 @@ OPTIONS
         server's URL should be trusted and the server's credentials accepted
         without verification, or to supply a previously provided thumbprint for
         verification.
+--tang-url <url>::
+        If creating a pool encrypted via NBDE using a tang server, specifies
+        the URL of the server.
+--clevis <(nbde | tang | tpm2)> ::
+        The clevis method that should be used to encrypt the created pool.
 
 ENVIRONMENT VARIABLES
 ---------------------
