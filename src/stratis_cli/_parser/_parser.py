@@ -21,6 +21,7 @@ import argparse
 from .._actions import (
     LogicalActions,
     PhysicalActions,
+    PoolActions,
     StratisActions,
     TopActions,
     check_stratisd_version,
@@ -113,7 +114,7 @@ ROOT_SUBCOMMANDS = [
         dict(
             help="Perform General Pool Actions",
             subcmds=POOL_SUBCMDS,
-            func=TopActions.list_pools,
+            func=PoolActions.list_pools,
         ),
     ),
     (

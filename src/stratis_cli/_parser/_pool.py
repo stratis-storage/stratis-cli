@@ -15,7 +15,7 @@
 Definition of pool actions to display in the CLI.
 """
 
-from .._actions import TopActions
+from .._actions import PoolActions
 from .._stratisd_constants import EncryptionMethod
 from ._bind import BIND_SUBCMDS
 
@@ -52,7 +52,7 @@ POOL_SUBCMDS = [
                     ),
                 ),
             ],
-            func=TopActions.create_pool,
+            func=PoolActions.create_pool,
         ),
     ),
     (
@@ -75,7 +75,7 @@ POOL_SUBCMDS = [
                     ),
                 ),
             ],
-            func=TopActions.init_cache,
+            func=PoolActions.init_cache,
         ),
     ),
     (
@@ -83,7 +83,7 @@ POOL_SUBCMDS = [
         dict(
             help="List pools",
             description="Lists Stratis pools that exist on the system",
-            func=TopActions.list_pools,
+            func=PoolActions.list_pools,
         ),
     ),
     (
@@ -91,7 +91,7 @@ POOL_SUBCMDS = [
         dict(
             help="Destroy a pool",
             args=[("pool_name", dict(action="store", help="pool name"))],
-            func=TopActions.destroy_pool,
+            func=PoolActions.destroy_pool,
         ),
     ),
     (
@@ -102,7 +102,7 @@ POOL_SUBCMDS = [
                 ("current", dict(action="store", help="Current pool name")),
                 ("new", dict(action="store", help="New pool name")),
             ],
-            func=TopActions.rename_pool,
+            func=PoolActions.rename_pool,
         ),
     ),
     (
@@ -120,7 +120,7 @@ POOL_SUBCMDS = [
                     ),
                 ),
             ],
-            func=TopActions.add_data_devices,
+            func=PoolActions.add_data_devices,
         ),
     ),
     (
@@ -138,7 +138,7 @@ POOL_SUBCMDS = [
                     ),
                 ),
             ],
-            func=TopActions.add_cache_devices,
+            func=PoolActions.add_cache_devices,
         ),
     ),
     (
@@ -153,7 +153,7 @@ POOL_SUBCMDS = [
         dict(
             help="Unbind the given pool, removing support for encryption with Clevis",
             args=[("pool_name", dict(action="store", help="Pool name"))],
-            func=TopActions.unbind,
+            func=PoolActions.unbind,
         ),
     ),
     (
@@ -171,7 +171,7 @@ POOL_SUBCMDS = [
                     ),
                 )
             ],
-            func=TopActions.unlock_pools,
+            func=PoolActions.unlock_pools,
         ),
     ),
 ]
