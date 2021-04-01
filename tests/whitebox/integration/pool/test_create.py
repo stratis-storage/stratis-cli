@@ -22,7 +22,7 @@ from stratis_cli._errors import (
     StratisCliNameConflictError,
 )
 
-from .._misc import RUNNER, SimTestCase, device_name_list
+from .._misc import RUNNER, TEST_RUNNER, SimTestCase, device_name_list
 
 _DEVICE_STRATEGY = device_name_list(1)
 _DEVICE_STRATEGY_2 = device_name_list(2)
@@ -85,3 +85,44 @@ class Create4TestCase(SimTestCase):
         """
         command_line = self._MENU + [self._POOLNAME_2] + self._DEVICES
         self.check_error(StratisCliInUseSameTierError, command_line, _ERROR)
+
+
+class Create5TestCase(SimTestCase):
+    """
+    Test creating with Clevis options.
+    """
+
+    _POOLNAME = "deadpool1"
+    _MENU = ["--propagate", "pool", "create"]
+    _DEVICES = _DEVICE_STRATEGY_2()
+
+    def test_create_tpm(self):
+        """
+        Test that creating with tpm2 does something reasonable.
+        """
+        command_line = self._MENU + [self._POOLNAME] + self._DEVICES + ["--clevis=tpm2"]
+        TEST_RUNNER(command_line)
+
+    def test_create_tang_1(self):
+        """
+        Test that creating with tang does something reasonable.
+        """
+        command_line = (
+            self._MENU
+            + [self._POOLNAME]
+            + self._DEVICES
+            + ["--clevis=tang", "--trust-url", "--tang-url=http"]
+        )
+        TEST_RUNNER(command_line)
+
+    def test_create_tang_2(self):
+        """
+        Test that creating with tang does something reasonable.
+        """
+        command_line = (
+            self._MENU
+            + [self._POOLNAME]
+            + self._DEVICES
+            + ["--clevis=tang", "--thumbprint=print", "--tang-url=http"]
+        )
+        TEST_RUNNER(command_line)

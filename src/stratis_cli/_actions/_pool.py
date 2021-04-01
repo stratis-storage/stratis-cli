@@ -33,11 +33,11 @@ from .._errors import (
     StratisCliPartialChangeError,
     StratisCliPartialFailureError,
 )
-from .._stratisd_constants import BlockDevTiers, StratisdErrors
+from .._stratisd_constants import BlockDevTiers, EncryptionMethod, StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import TABLE_FAILURE_STRING, get_property, print_table, to_hyphenated
-from ._utils import fetch_property
+from ._utils import fetch_property, get_clevis_info
 
 
 def _generate_pools_to_blockdevs(managed_objects, to_be_added, tier):
@@ -183,6 +183,8 @@ class PoolActions:
 
         _check_same_tier(pool_name, managed_objects, blockdevs, BlockDevTiers.Data)
 
+        clevis_info = get_clevis_info(namespace)
+
         ((changed, (_, _)), return_code, message) = Manager.Methods.CreatePool(
             proxy,
             {
@@ -194,6 +196,10 @@ class PoolActions:
                     if namespace.key_desc is not None
                     else (False, "")
                 ),
+                # pylint: disable=bad-continuation
+                "clevis_info": (False, ("", ""))
+                if clevis_info is None
+                else (True, clevis_info),
             },
         )
 
@@ -587,6 +593,13 @@ class PoolActions:
             .require_unique_match(True)
             .search(managed_objects)
         )
+
+        unbind_method = (
+            Pool.Methods.Unbind
+            if namespace.method == str(EncryptionMethod.CLEVIS)
+            else Pool.Methods.UnbindKeyring
+        )
+
         (changed, return_code, return_msg) = Pool.Methods.Unbind(
             get_object(pool_object_path), {}
         )

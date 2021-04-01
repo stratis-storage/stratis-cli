@@ -63,4 +63,15 @@ BIND_SUBCMDS = [
             func=TopActions.bind_tpm,
         ),
     ),
+    (
+        "keyring",
+        dict(
+            help="Bind using the kernel keyring",
+            args=[
+                ("pool_name", dict(action="store", help="Pool name")),
+                ("keydesc", dict(action="store", help="key description")),
+            ],
+            func=TopActions.bind_keyring,
+        ),
+    ),
 ]
