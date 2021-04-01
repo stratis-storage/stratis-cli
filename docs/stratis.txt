@@ -36,7 +36,7 @@ GLOBAL OPTIONS
 
 COMMANDS
 --------
-pool create [--redundancy <redundancy>] [--key-desc <key_desc>] <pool_name> <blockdev> [<blockdev>..]::
+pool create [--redundancy <redundancy>] [--key-desc <key_desc>] [--clevis <(nbde|tang|tpm2)> [--tang-url <tang_url>] [<(--thumbprint <thp> | --trust-url)>] <pool_name> <blockdev> [<blockdev>..]::
      Create a pool from one or more block devices, with the given pool name.
 pool list::
      List all pools on the system.
@@ -65,10 +65,12 @@ pool bind <(nbde|tang)> <pool name> <url> <(--thumbprint <thp> | --trust-url)>::
 pool bind tpm2 <pool name>::
      Bind the devices in the specified pool to a supplementary encryption
      mechanism that uses TPM 2.0 (Trusted Platform Module).
-pool unbind <pool name>::
-     Unbind the devices in the specified pool from an existing supplementary
-     encryption mechanism. Unbinding leaves the primary encryption mechanism,
-     which uses a key in the kernel keyring, unaffected.
+pool bind keyring <pool name> <keydesc>::
+     Bind the devices in the specified pool to a supplementary encryption
+     mechanism using a key in the kernel keyring.
+pool unbind <(clevis|keyring)> <pool name> ::
+     Unbind the devices in the specified pool from the specified encryption
+     mechanism.
 filesystem create <pool_name> <fs_name> [<fs_name>..]::
 	   Create one or more filesystems from the specified pool.
            NOTE: There is a temporary restriction on the number of filesystems
@@ -129,6 +131,11 @@ OPTIONS
         server's URL should be trusted and the server's credentials accepted
         without verification, or to supply a previously provided thumbprint for
         verification.
+--tang-url <url>::
+        If creating a pool encrypted via NBDE using a tang server, specifies
+        the URL of the server.
+--clevis <(nbde | tang | tpm2)> ::
+        The clevis method that should be used to encrypt the created pool.
 
 ENVIRONMENT VARIABLES
 ---------------------

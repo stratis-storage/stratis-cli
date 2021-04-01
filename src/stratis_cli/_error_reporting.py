@@ -37,6 +37,7 @@ from ._errors import (
     StratisCliEngineError,
     StratisCliEnginePropertyError,
     StratisCliIncoherenceError,
+    StratisCliParserError,
     StratisCliStratisdVersionError,
     StratisCliUnknownInterfaceError,
     StratisCliUserError,
@@ -151,7 +152,10 @@ def _interpret_errors_0(error):
     return None  # pragma: no cover
 
 
-def _interpret_errors_1(errors):  # pylint: disable=too-many-return-statements
+def _interpret_errors_1(
+    # pylint: disable=bad-continuation
+    errors,
+):  # pylint: disable=too-many-return-statements, too-many-branches
     """
     Interpret the subchain of errors after the first error.
 
@@ -193,6 +197,10 @@ def _interpret_errors_1(errors):  # pylint: disable=too-many-return-statements
     # obtaining a property. Therefore, it is not tested.
     if isinstance(error, StratisCliEnginePropertyError):  # pragma: no cover
         return str(error)
+
+    if isinstance(error, StratisCliParserError):
+        fmt_str = "You entered an invalid command: %s"
+        return fmt_str % error
 
     if isinstance(error, StratisCliUserError):
         fmt_str = "It appears that you issued an unintended command: %s"
