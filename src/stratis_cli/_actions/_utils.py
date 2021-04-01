@@ -16,57 +16,10 @@
 Miscellaneous functions.
 """
 
-from .._errors import (
-    StratisCliEnginePropertyError,
-    StratisCliEnvironmentError,
-    StratisCliPropertyNotFoundError,
-)
+from .._errors import StratisCliEnginePropertyError, StratisCliPropertyNotFoundError
 
 
-def get_timeout(value):
-    """
-    Turn an input str or int into a float timeout value.
-
-    :param value: the input str or int
-    :type value: str or int
-    :raises StratisCliEnvironmentError:
-    :returns: float
-    """
-
-    maximum_dbus_timeout_ms = 1073741823
-
-    # Ensure the input str is not a float
-    if isinstance(value, float):
-        raise StratisCliEnvironmentError(
-            "The timeout value provided is a float; it should be an integer."
-        )
-
-    try:
-        timeout_int = int(value)
-
-    except ValueError as err:
-        raise StratisCliEnvironmentError(
-            "The timeout value provided is not an integer."
-        ) from err
-
-    # Ensure the integer is not too small
-    if timeout_int < -1:
-        raise StratisCliEnvironmentError(
-            "The timeout value provided is smaller than the smallest acceptable value, -1."
-        )
-
-    # Ensure the integer is not too large
-    if timeout_int > maximum_dbus_timeout_ms:
-        raise StratisCliEnvironmentError(
-            "The timeout value provided exceeds the largest acceptable value, %s."
-            % maximum_dbus_timeout_ms
-        )
-
-    # Convert from milliseconds to seconds
-    return timeout_int / 1000
-
-
-def fetch_property(props, name):
+def unpack_property(props, name):
     """
     Get a property fetched through FetchProperties interface
 
@@ -92,3 +45,21 @@ def fetch_property(props, name):
         return variant
     except KeyError as err:  # pragma: no cover
         raise StratisCliPropertyNotFoundError(name) from err
+
+
+def fetch_property(proxy, property_name):
+    """
+    Fetch a property from stratisd.
+    :param proxy: proxy to the top object in stratisd
+    :param str property_name: name of the property to fetch
+    :return: value associated with the requested property name
+    :raises StratisCliPropertyNotFoundError:
+    :raises StratisCliEnginePropertyError:
+    """
+    # pylint: disable=import-outside-toplevel
+    from ._data import FetchProperties
+
+    properties = FetchProperties.Methods.GetProperties(
+        proxy, {"properties": [property_name]}
+    )
+    return unpack_property(properties, property_name)

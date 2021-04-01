@@ -149,25 +149,7 @@ def _fetch_locked_pools_property(proxy):
     :raises StratisCliPropertyNotFoundError:
     :raises StratisCliEnginePropertyError:
     """
-    return _fetch_property(proxy, "LockedPools")
-
-
-def _fetch_property(proxy, property_name):
-    """
-    Fetch a property from stratisd.
-    :param proxy: proxy to the top object in stratisd
-    :param str property_name: name of the property to fetch
-    :return: value associated with the requested property name
-    :raises StratisCliPropertyNotFoundError:
-    :raises StratisCliEnginePropertyError:
-    """
-    # pylint: disable=import-outside-toplevel
-    from ._data import FetchProperties
-
-    properties = FetchProperties.Methods.GetProperties(
-        proxy, {"properties": [property_name]}
-    )
-    return fetch_property(properties, property_name)
+    return fetch_property(proxy, "LockedPools")
 
 
 class PoolActions:

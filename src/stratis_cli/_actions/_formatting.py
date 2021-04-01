@@ -20,7 +20,7 @@ import sys
 import uuid
 
 from .._errors import StratisCliEnginePropertyError, StratisCliPropertyNotFoundError
-from ._utils import fetch_property
+from ._utils import unpack_property
 
 # If the wcwidth package is not available the wcswidth function will not
 # be available. In that case, use the standard function len where wcswidth
@@ -62,7 +62,7 @@ def get_property(props, name, to_repr, default):
     :rtype: object
     """
     try:
-        return to_repr(fetch_property(props, name))
+        return to_repr(unpack_property(props, name))
     # An exception should only be raised if the property can not be obtained.
     # This requires either running against an interface that does not support
     # the property or the engine encountering an error getting the property,
