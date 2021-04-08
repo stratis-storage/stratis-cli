@@ -58,6 +58,8 @@ coverage-no-html:
 	python3 -m coverage run --timid --branch -a -m unittest discover --quiet --start-directory ./tests/whitebox/unittest
 	python3 -m coverage run --timid --branch -a -m unittest --quiet tests.whitebox.monkey_patching.test_keyboard_interrupt.KeyboardInterruptTestCase
 	python3 -m coverage run --timid --branch -a -m unittest --quiet tests.whitebox.monkey_patching.test_stratisd_version.StratisdVersionTestCase
+	python3 -m coverage run --timid --branch -a -m unittest --quiet tests.whitebox.monkey_patching.test_absolute_path.RelativePathTestCase
+	
 	python3 -m coverage report -m --fail-under=100 --show-missing --include="./src/*"
 
 .PHONY: coverage
@@ -69,6 +71,9 @@ keyboard-interrupt-test:
 
 stratisd-version-test:
 	python3 -m unittest ${UNITTEST_OPTS} tests.whitebox.monkey_patching.test_stratisd_version.StratisdVersionTestCase
+
+absolute-path-test:
+	python3 -m unittest ${UNITTEST_OPTS} tests.whitebox.monkey_patching.test_absolute_path
 
 test-travis: unittest-tests
 
