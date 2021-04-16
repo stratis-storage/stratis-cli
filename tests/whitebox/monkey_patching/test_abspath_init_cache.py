@@ -23,9 +23,10 @@ import stratis_cli
 from stratis_cli._stratisd_constants import StratisdErrors
 
 from .._misc import RUNNER, TEST_RUNNER, SimTestCase
+from ._misc import PathTestCase
 
 
-class RelativePathInitCache(SimTestCase):
+class RelativePathInitCache(PathTestCase):
     """
     Test that relative path is converted to absolute
     """
@@ -45,15 +46,11 @@ class RelativePathInitCache(SimTestCase):
         Verify that init-cache receives abolute path
         """
 
-        def absolute_path_check(self, _, args):
-            self.assertTrue(all(os.path.isabs(path) for path in args["devices"]))
-            return ((True, args["devices"]), StratisdErrors.OK, "")
-
         # pylint: disable=import-outside-toplevel
         from stratis_cli._actions import _data
 
         # pylint: disable=protected-access
-        stratis_cli._actions._data.Pool.Methods.InitCacheDevs = absolute_path_check
+        stratis_cli._actions._data.Pool.Methods.InitCacheDevs = self.absolute_path_check
         command_line = [
             "--propagate",
             "pool",
