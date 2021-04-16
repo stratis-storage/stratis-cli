@@ -58,7 +58,9 @@ coverage-no-html:
 	python3 -m coverage run --timid --branch -a -m unittest discover --quiet --start-directory ./tests/whitebox/unittest
 	python3 -m coverage run --timid --branch -a -m unittest --quiet tests.whitebox.monkey_patching.test_keyboard_interrupt.KeyboardInterruptTestCase
 	python3 -m coverage run --timid --branch -a -m unittest --quiet tests.whitebox.monkey_patching.test_stratisd_version.StratisdVersionTestCase
-	python3 -m coverage run --timid --branch -a -m unittest --quiet tests.whitebox.monkey_patching.test_absolute_path.RelativePathTestCase
+	python3 -m coverage run --timid --branch -a -m unittest --quiet tests.whitebox.monkey_patching.test_abspath_create.RelativePathCreatePool
+	python3 -m coverage run --timid --branch -a -m unittest --quiet tests.whitebox.monkey_patching.test_abspath_init_cache.RelativePathInitCache
+	python3 -m coverage run --timid --branch -a -m unittest --quiet tests.whitebox.monkey_patching.test_abspath_add
 	
 	python3 -m coverage report -m --fail-under=100 --show-missing --include="./src/*"
 
@@ -73,7 +75,10 @@ stratisd-version-test:
 	python3 -m unittest ${UNITTEST_OPTS} tests.whitebox.monkey_patching.test_stratisd_version.StratisdVersionTestCase
 
 absolute-path-test:
-	python3 -m unittest ${UNITTEST_OPTS} tests.whitebox.monkey_patching.test_absolute_path
+	python3 -m unittest ${UNITTEST_OPTS} tests.whitebox.monkey_patching.test_abspath_create
+	python3 -m unittest ${UNITTEST_OPTS} tests.whitebox.monkey_patching.test_abspath_init_cache
+	python3 -m unittest ${UNITTEST_OPTS} tests.whitebox.monkey_patching.test_abspath_add
+
 
 test-travis: unittest-tests
 

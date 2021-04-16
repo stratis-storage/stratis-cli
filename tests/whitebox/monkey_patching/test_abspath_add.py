@@ -20,62 +20,34 @@ import os
 
 # isort: LOCAL
 import stratis_cli
-
-from .._misc import SimTestCase, RUNNER, TEST_RUNNER
 from stratis_cli._stratisd_constants import StratisdErrors
 
+from .._misc import RUNNER, TEST_RUNNER, SimTestCase
 
-class RelativePathCreatePool(SimTestCase):
+
+class RelativePathAdd(SimTestCase):
     """
     Test that relative path is converted to absolute
     """
 
-    def test_create_pool_relative_path(self):
-        """
-        Verify that create pool receives absolute path
-        """
-        
-        def absolute_path_check(_, args):
-            self.assertTrue(all(os.path.isabs(path) for path in list(args["devices"])))
-            return ((True, (_, _)), StratisdErrors.OK, "")
-   
-        # pylint: disable=import-outside-toplevel
-        from stratis_cli._actions import _data
-
-        # pylint: disable=protected-access
-        stratis_cli._actions._data.Manager.Methods.CreatePool = absolute_path_check
-
-        command_line = ["--propagate", "pool", "create", "test_pool", "./fake/relative/path", "~/very/fake/path", "/fake/path"]
-        RUNNER(command_line)
-
-class RelativePathTestCases(SimTestCase):
-
     _POOLNAME = "mypool"
 
-    def absolute_path_check(_, args):
+    def absolute_path_check(self, _, args):
+        """
+        Assert that all device paths passed received by method are absolute
+        """
         self.assertTrue(all(os.path.isabs(path) for path in list(args["devices"])))
-        return ((True, list(args["devices"])), StratisdErrors.OK, "") 
+        return ((True, list(args["devices"])), StratisdErrors.OK, "")
 
     def setUp(self):
         """
         Start stratisd and set up a pool.
         """
         super().setUp()
-        command_line = ["pool", "create", self._POOLNAME, "./device"]
+        command_line = ["pool", "create", self._POOLNAME, "./device1"]
         RUNNER(command_line)
-
-    def test_init_cache_relative_path(self):
-        """
-        Verify that init cache receives abolute path
-        """
-       
-        # pylint: disable=import-outside-toplevel
-        from stratis_cli._actions import _data
-
-        # pylint: disable=protected-access
-        stratis_cli._actions._data.Pool.Methods.InitCache = self.absolute_path_check
-        command_line = ["--propagate", "pool", "init-cache", self._POOLNAME, "./relative/path"]
-        TEST_RUNNER(command_line)
+        command_line = ["pool", "init-cache", self._POOLNAME, "./device2"]
+        RUNNER(command_line)
 
     def test_add_cache_relative_path(self):
         """
@@ -87,7 +59,15 @@ class RelativePathTestCases(SimTestCase):
 
         # pylint: disable=protected-access
         stratis_cli._actions._data.Pool.Methods.AddCacheDevs = self.absolute_path_check
-        command_line = ["--propagate", "pool", "add-cache", self._POOLNAME, "./fake/relative/path", "~/very/fake/path", "/fake/path"]
+        command_line = [
+            "--propagate",
+            "pool",
+            "add-cache",
+            self._POOLNAME,
+            "./fake/relative/path",
+            "~/very/fake/path",
+            "/fake/path",
+        ]
         TEST_RUNNER(command_line)
 
     def test_add_data_relative_path(self):
@@ -100,6 +80,11 @@ class RelativePathTestCases(SimTestCase):
 
         # pylint: disable=protected-access
         stratis_cli._actions._data.Pool.Methods.AddDataDevs = self.absolute_path_check
-        command_line = ["--propagate", "pool", "add-data", self._POOLNAME, "./another/fake/path"]
+        command_line = [
+            "--propagate",
+            "pool",
+            "add-data",
+            self._POOLNAME,
+            "./another/fake/path",
+        ]
         TEST_RUNNER(command_line)
-
