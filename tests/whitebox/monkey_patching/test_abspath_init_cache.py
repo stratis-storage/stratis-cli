@@ -46,8 +46,8 @@ class RelativePathInitCache(SimTestCase):
         """
 
         def absolute_path_check(self, _, args):
-            self.assertTrue(all(os.path.isabs(path) for path in list(args["devices"])))
-            return ((True, list(args["devices"])), StratisdErrors.OK, "")
+            self.assertTrue(all(os.path.isabs(path) for path in args["devices"]))
+            return ((True, args["devices"]), StratisdErrors.OK, "")
 
         # pylint: disable=import-outside-toplevel
         from stratis_cli._actions import _data

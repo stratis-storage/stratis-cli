@@ -36,7 +36,7 @@ class RelativePathCreatePool(SimTestCase):
         """
 
         def absolute_path_check(_, args):
-            self.assertTrue(all(os.path.isabs(path) for path in list(args["devices"])))
+            self.assertTrue(all(os.path.isabs(path) for path in args["devices"]))
             return ((True, (_, _)), StratisdErrors.OK, "")
 
         # pylint: disable=import-outside-toplevel

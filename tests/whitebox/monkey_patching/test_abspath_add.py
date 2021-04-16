@@ -36,8 +36,8 @@ class RelativePathAdd(SimTestCase):
         """
         Assert that all device paths passed received by method are absolute
         """
-        self.assertTrue(all(os.path.isabs(path) for path in list(args["devices"])))
-        return ((True, list(args["devices"])), StratisdErrors.OK, "")
+        self.assertTrue(all(os.path.isabs(path) for path in args["devices"]))
+        return ((True, args["devices"]), StratisdErrors.OK, "")
 
     def setUp(self):
         """
