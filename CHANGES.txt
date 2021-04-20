@@ -9,6 +9,13 @@ Python auto-formatter: black (20.8b1)
 Python import sorter: isort (4.3.21)
 YAML linter: yamllint (1.26.0)
 
+- Add support for creating an encrypted pool bound with Clevis or a keyring,
+  and binding and unbinding with either encryption facility:
+  https://github.com/stratis-storage/stratis-cli/issues/733
+  https://github.com/stratis-storage/stratis-cli/pull/743
+  https://github.com/stratis-storage/stratis-cli/pull/736
+  https://github.com/stratis-storage/stratis-cli/pull/735
+
 - Print pool UUID in pool list command:
   https://github.com/stratis-storage/stratis-cli/pull/695
 
@@ -35,6 +42,13 @@ YAML linter: yamllint (1.26.0)
   https://github.com/stratis-storage/stratis-cli/pull/714
 
 - Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/742
+  https://github.com/stratis-storage/stratis-cli/pull/740
+  https://github.com/stratis-storage/stratis-cli/pull/739
+  https://github.com/stratis-storage/stratis-cli/pull/737
+  https://github.com/stratis-storage/stratis-cli/pull/732
+  https://github.com/stratis-storage/stratis-cli/pull/729
+  https://github.com/stratis-storage/stratis-cli/pull/726
   https://github.com/stratis-storage/stratis-cli/pull/723
   https://github.com/stratis-storage/stratis-cli/pull/719
   https://github.com/stratis-storage/stratis-cli/pull/718
@@ -43,6 +57,7 @@ YAML linter: yamllint (1.26.0)
   https://github.com/stratis-storage/stratis-cli/pull/709
   https://github.com/stratis-storage/stratis-cli/pull/708
   https://github.com/stratis-storage/stratis-cli/pull/706
+  https://github.com/stratis-storage/stratis-cli/pull/704
   https://github.com/stratis-storage/stratis-cli/pull/699
   https://github.com/stratis-storage/stratis-cli/pull/697
   https://github.com/stratis-storage/stratis-cli/pull/696
