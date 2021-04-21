@@ -17,14 +17,21 @@ Miscellaneous methods to support testing.
 
 # isort: STDLIB
 import os
-import unittest
 
 # isort: LOCAL
 from stratis_cli._stratisd_constants import StratisdErrors
+
 from .._misc import SimTestCase
 
+
 class PathTestCase(SimTestCase):
-    
+    """
+    A PathTestCase includes method to check if paths are formatted as absolute.
+    """
+
     def absolute_path_check(self, _, args):
+        """
+        Verify that all paths passed to method are absolute
+        """
         self.assertTrue(all(os.path.isabs(path) for path in args["devices"]))
         return ((True, args["devices"]), StratisdErrors.OK, "")

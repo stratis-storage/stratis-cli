@@ -15,29 +15,19 @@
 Test handing of relative paths
 """
 
-# isort: STDLIB
-import os
-
 # isort: LOCAL
 import stratis_cli
-from stratis_cli._stratisd_constants import StratisdErrors
 
-from .._misc import RUNNER, TEST_RUNNER, SimTestCase
+from .._misc import RUNNER, TEST_RUNNER
+from ._misc import PathTestCase
 
 
-class RelativePathAdd(SimTestCase):
+class RelativePathAdd(PathTestCase):
     """
     Test that relative path is converted to absolute
     """
 
     _POOLNAME = "mypool"
-
-    def absolute_path_check(self, _, args):
-        """
-        Assert that all device paths passed received by method are absolute
-        """
-        self.assertTrue(all(os.path.isabs(path) for path in args["devices"]))
-        return ((True, args["devices"]), StratisdErrors.OK, "")
 
     def setUp(self):
         """
