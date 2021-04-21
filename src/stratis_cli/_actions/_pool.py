@@ -245,7 +245,7 @@ class PoolActions:
         _check_same_tier(pool_name, managed_objects, blockdevs, BlockDevTiers.Cache)
 
         ((changed, devs_added), return_code, message) = Pool.Methods.InitCache(
-            get_object(pool_object_path), {"devices": namespace.blockdevs}
+            get_object(pool_object_path), {"devices": blockdevs}
         )
 
         if return_code != StratisdErrors.OK:
