@@ -20,7 +20,6 @@ import os
 
 # isort: LOCAL
 import stratis_cli
-from stratis_cli._stratisd_constants import StratisdErrors
 
 from .._misc import TEST_RUNNER, SimTestCase
 
@@ -35,12 +34,15 @@ class RelativePathCreatePool(SimTestCase):
         Verify that create pool receives absolute path
         """
 
-        def absolute_path_check(_, args):
-            self.assertTrue(all(os.path.isabs(path) for path in args["devices"]))
-            return ((True, (_, _)), StratisdErrors.OK, "")
-
         # pylint: disable=import-outside-toplevel
         from stratis_cli._actions import _data
+
+        # pylint: disable=protected-access
+        orig_method = stratis_cli._actions._data.Manager.Methods.CreatePool
+
+        def absolute_path_check(proxy, args):
+            self.assertTrue(all(os.path.isabs(path) for path in args["devices"]))
+            return orig_method(proxy, args)
 
         # pylint: disable=protected-access
         stratis_cli._actions._data.Manager.Methods.CreatePool = absolute_path_check
