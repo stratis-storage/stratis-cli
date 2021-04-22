@@ -108,23 +108,38 @@ except DbusClientGenerationError as err:  # pragma: no cover
     ) from err
 
 
-try:
-    orig_method = Manager.Methods.CreatePool  # pylint: disable=invalid-name
+def _add_abs_path_assertion(klass, method_name, key):
+    """
+    Set method_name of method_klass to a new method which checks that the
+    device paths values at key are absolute paths.
+
+    :param klass: the klass to which this metthod belongs
+    :param str method_name: the name of the method
+    :param str key: the key at which the paths can be found in the arguments
+    """
+    method_class = getattr(klass, "Methods")
+    orig_method = getattr(method_class, method_name)
 
     def new_method(proxy, args):
         """
         New CreatePool method
         """
-        rel_paths = [path for path in args["devices"] if not os.path.isabs(path)]
+        rel_paths = [path for path in args[key] if not os.path.isabs(path)]
         assert (
             rel_paths == []
         ), "Precondition violated: paths %s should be absolute" % ", ".join(rel_paths)
         return orig_method(proxy, args)
 
-    Manager.Methods.CreatePool = new_method
+    setattr(method_class, method_name, new_method)
+
+
+try:
+    _add_abs_path_assertion(Manager, "CreatePool", "devices")
+
 except AttributeError as err:  # pragma: no cover
-    # This can only happen if CreatePool is missing from the XML spec or
-    # code generation has a bug, we will never test for these conditions.
+    # This can only happen if the expected method is missing from the XML spec
+    # or code generation has a bug, we will never test for these conditions.
     raise StratisCliGenerationError(
-        "Malformed class definition; could not access Manager.Methods.CreatePool"
+        "Malformed class definition; could not access a class or method in "
+        "the generated class definition"
     ) from err
