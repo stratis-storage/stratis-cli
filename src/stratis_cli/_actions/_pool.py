@@ -600,7 +600,7 @@ class PoolActions:
             else Pool.Methods.UnbindKeyring
         )
 
-        (changed, return_code, return_msg) = Pool.Methods.Unbind(
+        (changed, return_code, return_msg) = unbind_method(
             get_object(pool_object_path), {}
         )
 
