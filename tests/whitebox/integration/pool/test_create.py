@@ -29,6 +29,26 @@ _DEVICE_STRATEGY_2 = device_name_list(2)
 _ERROR = StratisCliErrorCodes.ERROR
 
 
+class CreateTestCase(SimTestCase):
+    """
+    Test create with relative paths
+    """
+
+    _MENU = ["--propagate", "pool", "create"]
+
+    def test_relative_paths(self):
+        """
+        Verify that no assertion is thrown if path arguments are relative.
+        """
+        command_line = self._MENU + [
+            "some_pool",
+            "../dev",
+            "./fake",
+            "/abc",
+        ]
+        TEST_RUNNER(command_line)
+
+
 class Create3TestCase(SimTestCase):
     """
     Test 'create' on name collision.
