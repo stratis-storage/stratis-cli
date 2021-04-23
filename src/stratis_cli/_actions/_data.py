@@ -135,6 +135,9 @@ def _add_abs_path_assertion(klass, method_name, key):
 
 try:
     _add_abs_path_assertion(Manager, "CreatePool", "devices")
+    _add_abs_path_assertion(Pool, "InitCache", "devices")
+    _add_abs_path_assertion(Pool, "AddCacheDevs", "devices")
+    _add_abs_path_assertion(Pool, "AddDataDevs", "devices")
 
 except AttributeError as err:  # pragma: no cover
     # This can only happen if the expected method is missing from the XML spec
