@@ -1,5 +1,5 @@
-stratis-cli 2.4.0 (UNRELEASED)
-==============================
+stratis-cli 2.4.0
+=================
 Required stratisd version: 2.4.0
 
 Recommended Python interpreter: 3.8.6
@@ -12,6 +12,8 @@ YAML linter: yamllint (1.26.0)
 - Add support for creating an encrypted pool bound with Clevis or a keyring,
   and binding and unbinding with either encryption facility:
   https://github.com/stratis-storage/stratis-cli/issues/733
+  https://github.com/stratis-storage/stratis-cli/pull/749
+  https://github.com/stratis-storage/stratis-cli/pull/748
   https://github.com/stratis-storage/stratis-cli/pull/743
   https://github.com/stratis-storage/stratis-cli/pull/736
   https://github.com/stratis-storage/stratis-cli/pull/735
@@ -31,6 +33,12 @@ YAML linter: yamllint (1.26.0)
   https://github.com/stratis-storage/stratis-cli/issues/698
   https://github.com/stratis-storage/stratis-cli/pull/705
 
+- Expand relative paths to absolute paths in init-cache command,
+  add assertions to all D-Bus commands that take device paths to verify
+  that the device paths are absolute:
+  https://github.com/stratis-storage/stratis-cli/pull/750
+  https://github.com/stratis-storage/stratis-cli/pull/746
+
 - Add an explanation for an exception chain containing a GetManagedObjects()
   failure, which may occur with a multi-threaded daemon implementation:
   https://github.com/stratis-storage/stratis-cli/pull/713
@@ -48,6 +56,7 @@ YAML linter: yamllint (1.26.0)
   https://github.com/stratis-storage/stratis-cli/pull/737
   https://github.com/stratis-storage/stratis-cli/pull/732
   https://github.com/stratis-storage/stratis-cli/pull/729
+  https://github.com/stratis-storage/stratis-cli/pull/728
   https://github.com/stratis-storage/stratis-cli/pull/726
   https://github.com/stratis-storage/stratis-cli/pull/723
   https://github.com/stratis-storage/stratis-cli/pull/719
