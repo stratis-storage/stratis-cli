@@ -15,9 +15,9 @@
 XML interface specifications.
 """
 # isort: STDLIB
+import os
 import sys
 import xml.etree.ElementTree as ET
-from os import environ
 
 # isort: FIRSTPARTY
 from dbus_client_gen import (
@@ -51,7 +51,7 @@ try:
     # pylint: disable=invalid-name
 
     timeout = get_timeout(
-        environ.get("STRATIS_DBUS_TIMEOUT", DBUS_TIMEOUT_SECONDS * 1000)
+        os.environ.get("STRATIS_DBUS_TIMEOUT", DBUS_TIMEOUT_SECONDS * 1000)
     )
 
     fetch_properties_spec = ET.fromstring(SPECS[FETCH_PROPERTIES_INTERFACE])
@@ -105,4 +105,44 @@ except DPClientGenerationError as err:  # pragma: no cover
 except DbusClientGenerationError as err:  # pragma: no cover
     raise StratisCliGenerationError(
         "Failed to generate some class needed for examining D-Bus data"
+    ) from err
+
+
+def _add_abs_path_assertion(klass, method_name, key):
+    """
+    Set method_name of method_klass to a new method which checks that the
+    device paths values at key are absolute paths.
+
+    :param klass: the klass to which this metthod belongs
+    :param str method_name: the name of the method
+    :param str key: the key at which the paths can be found in the arguments
+    """
+    method_class = getattr(klass, "Methods")
+    orig_method = getattr(method_class, method_name)
+
+    def new_method(proxy, args):
+        """
+        New CreatePool method
+        """
+        rel_paths = [path for path in args[key] if not os.path.isabs(path)]
+        assert (
+            rel_paths == []
+        ), "Precondition violated: paths %s should be absolute" % ", ".join(rel_paths)
+        return orig_method(proxy, args)
+
+    setattr(method_class, method_name, new_method)
+
+
+try:
+    _add_abs_path_assertion(Manager, "CreatePool", "devices")
+    _add_abs_path_assertion(Pool, "InitCache", "devices")
+    _add_abs_path_assertion(Pool, "AddCacheDevs", "devices")
+    _add_abs_path_assertion(Pool, "AddDataDevs", "devices")
+
+except AttributeError as err:  # pragma: no cover
+    # This can only happen if the expected method is missing from the XML spec
+    # or code generation has a bug, we will never test for these conditions.
+    raise StratisCliGenerationError(
+        "Malformed class definition; could not access a class or method in "
+        "the generated class definition"
     ) from err
