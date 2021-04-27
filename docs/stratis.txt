@@ -31,10 +31,12 @@ GLOBAL OPTIONS
 	Show help on command.
 --propagate::
 	(For debugging.) Allow exceptions raised during execution to propagate.
+--unhyphenated-uuids::
+	(For listing.) Print pool and filesystem UUIDs without hyphens for list commands.
 
 COMMANDS
 --------
-pool create [--redundancy <redundancy>] [--key-desc <key_desc>] <pool_name> <blockdev> [<blockdev>..]::
+pool create [--redundancy <redundancy>] [--key-desc <key_desc>] [--clevis <(nbde|tang|tpm2)> [--tang-url <tang_url>] [<(--thumbprint <thp> | --trust-url)>] <pool_name> <blockdev> [<blockdev>..]::
      Create a pool from one or more block devices, with the given pool name.
 pool list::
      List all pools on the system.
@@ -56,19 +58,19 @@ pool unlock <(keyring | clevis)>::
      Unlock all devices that are part of an encrypted pool registered with stratisd
      but that have not yet been opened. The available unlock methods are
      *keyring* or *clevis*.
-pool bind <(nbde|tang)> <pool name> <key description> <url> <(--thumbprint <thp> | --trust-url)>::
+pool bind <(nbde|tang)> <pool name> <url> <(--thumbprint <thp> | --trust-url)>::
      Bind the devices in the specified pool to a supplementary encryption
      mechanism that uses NBDE (Network-Bound Disc Encryption). *tang* is
-     an alias for *nbde*. The description of the key in the kernel keyring
-     used to encrypt the devices must be supplied.
-pool bind tpm2 <pool name> <key description>::
+     an alias for *nbde*.
+pool bind tpm2 <pool name>::
      Bind the devices in the specified pool to a supplementary encryption
-     mechanism that uses TPM 2.0 (Trusted Platform Module). The description of
-     the key in the kernel keyring used to encrypt the devices must be supplied.
-pool unbind <pool name>::
-     Unbind the devices in the specified pool from an existing supplementary
-     encryption mechanism. Unbinding leaves the primary encryption mechanism,
-     which uses a key in the kernel keyring, unaffected.
+     mechanism that uses TPM 2.0 (Trusted Platform Module).
+pool bind keyring <pool name> <keydesc>::
+     Bind the devices in the specified pool to a supplementary encryption
+     mechanism using a key in the kernel keyring.
+pool unbind <(clevis|keyring)> <pool name> ::
+     Unbind the devices in the specified pool from the specified encryption
+     mechanism.
 filesystem create <pool_name> <fs_name> [<fs_name>..]::
 	   Create one or more filesystems from the specified pool.
            NOTE: There is a temporary restriction on the number of filesystems
@@ -96,9 +98,10 @@ key unset <key_desc>::
      Unset a key in the kernel keyring so it is no longer available for encryption
      operations.
 report <report_name>::
-        Get a report from the daemon regarding its internal state. This command is
-        not supported as the report names and returned JSON schemas are unstable
-        and may be changed at any time.
+        Get a report from the daemon regarding its internal state.
+        The engine_state_report name will be supported in future releases.
+        Any other report name should be considered unstable and may be removed
+        in a future release. The JSON schema of any report must always be considered unstable.
 daemon redundancy::
        List the redundancy levels that the Stratis service supports.
 daemon version::
@@ -128,6 +131,11 @@ OPTIONS
         server's URL should be trusted and the server's credentials accepted
         without verification, or to supply a previously provided thumbprint for
         verification.
+--tang-url <url>::
+        If creating a pool encrypted via NBDE using a tang server, specifies
+        the URL of the server.
+--clevis <(nbde | tang | tpm2)> ::
+        The clevis method that should be used to encrypt the created pool.
 
 ENVIRONMENT VARIABLES
 ---------------------
@@ -223,7 +231,7 @@ stratis filesystem create mypool data1
 ====
 .Binding a pool's devices to use an NBDE policy for decryption
 ====
-stratis pool bind nbde --trust-url mypool someKeyDescription someTangServerUrl
+stratis pool bind nbde --trust-url mypool someTangServerUrl
 ====
 
 SEE ALSO

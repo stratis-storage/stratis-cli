@@ -28,7 +28,7 @@ from dbus_client_gen import (
     DbusClientMissingSearchPropertiesError,
     DbusClientUniqueResultError,
 )
-from dbus_python_client_gen import DPClientInvocationError
+from dbus_python_client_gen import DPClientInvocationError, DPClientMethodCallContext
 
 from ._actions import BLOCKDEV_INTERFACE, FILESYSTEM_INTERFACE, POOL_INTERFACE
 from ._errors import (
@@ -37,6 +37,7 @@ from ._errors import (
     StratisCliEngineError,
     StratisCliEnginePropertyError,
     StratisCliIncoherenceError,
+    StratisCliParserError,
     StratisCliStratisdVersionError,
     StratisCliUnknownInterfaceError,
     StratisCliUserError,
@@ -151,7 +152,10 @@ def _interpret_errors_0(error):
     return None  # pragma: no cover
 
 
-def _interpret_errors_1(errors):  # pylint: disable=too-many-return-statements
+def _interpret_errors_1(
+    # pylint: disable=bad-continuation
+    errors,
+):  # pylint: disable=too-many-return-statements, too-many-branches
     """
     Interpret the subchain of errors after the first error.
 
@@ -193,6 +197,10 @@ def _interpret_errors_1(errors):  # pylint: disable=too-many-return-statements
     # obtaining a property. Therefore, it is not tested.
     if isinstance(error, StratisCliEnginePropertyError):  # pragma: no cover
         return str(error)
+
+    if isinstance(error, StratisCliParserError):
+        fmt_str = "You entered an invalid command: %s"
+        return fmt_str % error
 
     if isinstance(error, StratisCliUserError):
         fmt_str = "It appears that you issued an unintended command: %s"
@@ -263,16 +271,41 @@ def _interpret_errors_2(errors):  # pragma: no cover
 
     if len(errors) > 1:
         next_error = errors[1]
-        # We do not test this error, as the only known way to cause it is
-        # manipulation of selinux configuration, which is too laborious to
-        # bother with at this time.
         if isinstance(next_error, dbus.exceptions.DBusException):
+
+            # We do not test this error, as the only known way to cause it is
+            # manipulation of selinux configuration, which is too laborious to
+            # bother with at this time.
             if next_error.get_dbus_name() == "org.freedesktop.DBus.Error.Disconnected":
                 return (
                     "The D-Bus connection was disconnected during a "
                     "D-Bus interaction. Most likely, your selinux settings "
                     "prohibit that particular D-Bus interaction."
                 )
+
+            # We do not test this error, as the only known way to cause it is
+            # to spam the daemon with a succession of mutating commands from
+            # separate processes. The circumstances that cause this exception
+            # to be raised are a call to GetManagedObjects() that is initiated
+            # while a call that removes a filesystem or pool is in progress.
+            # In that case, the GetManagedObjects() call may process object
+            # paths that have not yet been removed and may encounter an error
+            # when calculating the object properties since the engine no longer
+            # has any record of the filesystem or pool.
+            if next_error.get_dbus_name() == "org.freedesktop.DBus.Error.Failed":
+                context = error.context
+                if (
+                    # pylint: disable=bad-continuation
+                    error.interface_name == "org.freedesktop.DBus.ObjectManager"
+                    and isinstance(context, DPClientMethodCallContext)
+                    and context.method_name == "GetManagedObjects"
+                ):
+                    return (
+                        "A D-Bus method failed during execution of the "
+                        "selected command. Most likely, the failure was due "
+                        "to a transient inconsistency in the D-Bus interface "
+                        "and the command will succeed if run again."
+                    )
 
     return None
 

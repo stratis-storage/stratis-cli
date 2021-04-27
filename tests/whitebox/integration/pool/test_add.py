@@ -85,6 +85,18 @@ class AddDataTestCase1(SimTestCase):
         command_line = ["pool", "create", self._POOLNAME] + self._DEVICES
         RUNNER(command_line)
 
+    def test_relative_path_add_data(self):
+        """
+        Test that no assertion is thrown if path arguments are relative.
+        """
+        command_line = self._MENU + [
+            self._POOLNAME,
+            "../dev",
+            "./fake",
+            "/abc",
+        ]
+        TEST_RUNNER(command_line)
+
     def test_add_data(self):
         """
         Test that adding new devices to data tier succeeds.
@@ -188,6 +200,18 @@ class AddCacheTestCase1(SimTestCase):
         Test that adding new devices to cache tier succeeds.
         """
         command_line = self._MENU + [self._POOLNAME] + _DEVICE_STRATEGY()
+        TEST_RUNNER(command_line)
+
+    def test_relative_path_add_cache(self):
+        """
+        Test that no assertion is thrown if path arguments are relative.
+        """
+        command_line = self._MENU + [
+            self._POOLNAME,
+            "../dev",
+            "./fake",
+            "/abc",
+        ]
         TEST_RUNNER(command_line)
 
     def test_add_cache_again(self):

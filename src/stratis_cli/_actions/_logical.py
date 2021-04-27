@@ -28,7 +28,7 @@ from .._errors import (
 from .._stratisd_constants import StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
-from ._formatting import TABLE_FAILURE_STRING, get_property, print_table
+from ._formatting import TABLE_FAILURE_STRING, get_property, print_table, to_hyphenated
 
 
 class LogicalActions:
@@ -158,6 +158,10 @@ class LogicalActions:
                 props, "Used", lambda x: str(Range(x)), TABLE_FAILURE_STRING
             )
 
+        format_uuid = (
+            (lambda mo_uuid: mo_uuid) if namespace.unhyphenated_uuids else to_hyphenated
+        )
+
         tables = [
             (
                 path_to_name[mofilesystem.Pool()],
@@ -167,7 +171,7 @@ class LogicalActions:
                 .astimezone()
                 .strftime("%b %d %Y %H:%M"),
                 mofilesystem.Devnode(),
-                mofilesystem.Uuid(),
+                format_uuid(mofilesystem.Uuid()),
             )
             for props, mofilesystem in filesystems_with_props
         ]

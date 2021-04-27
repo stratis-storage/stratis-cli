@@ -21,6 +21,7 @@ import argparse
 from .._actions import (
     LogicalActions,
     PhysicalActions,
+    PoolActions,
     StratisActions,
     TopActions,
     check_stratisd_version,
@@ -113,7 +114,7 @@ ROOT_SUBCOMMANDS = [
         dict(
             help="Perform General Pool Actions",
             subcmds=POOL_SUBCMDS,
-            func=TopActions.list_pools,
+            func=PoolActions.list_pools,
         ),
     ),
     (
@@ -142,7 +143,11 @@ ROOT_SUBCOMMANDS = [
                 (
                     "report_name",
                     dict(
-                        default=None, type=str, help=("Name of the report to display")
+                        default="engine_state_report",
+                        type=str,
+                        help=("Name of the report to display"),
+                        nargs="?",
+                        choices=["engine_state_report", "errored_pool_report"],
                     ),
                 )
             ],
@@ -160,7 +165,11 @@ ROOT_SUBCOMMANDS = [
 ]
 
 GEN_ARGS = [
-    ("--propagate", dict(action="store_true", help="Allow exceptions to propagate"))
+    ("--propagate", dict(action="store_true", help="Allow exceptions to propagate")),
+    (
+        "--unhyphenated-uuids",
+        dict(action="store_true", help=("Display UUIDs in unhyphenated format")),
+    ),
 ]
 
 

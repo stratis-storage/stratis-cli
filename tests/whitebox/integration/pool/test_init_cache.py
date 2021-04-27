@@ -167,3 +167,15 @@ class InitCacheSuccessTestCase(SimTestCase):
         """
         command_line = self._MENU + [self._POOLNAME] + _DEVICE_STRATEGY()
         TEST_RUNNER(command_line)
+
+    def test_relative_paths(self):
+        """
+        Verify that no assertion is thrown if path arguments are relative.
+        """
+        command_line = self._MENU + [
+            self._POOLNAME,
+            "../dev",
+            "./fake",
+            "/abc",
+        ]
+        TEST_RUNNER(command_line)

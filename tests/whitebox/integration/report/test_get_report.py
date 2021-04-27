@@ -17,7 +17,6 @@ Test 'stratis report'.
 
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
-from stratis_cli._errors import StratisCliEngineError
 
 from .._misc import TEST_RUNNER, SimTestCase
 
@@ -26,7 +25,7 @@ _ERROR = StratisCliErrorCodes.ERROR
 
 class ReportTestCase(SimTestCase):
     """
-    Test getting the errored pool and a nonexistent report"
+    Test getting the errored pool, engine state, and a nonexistent report
     """
 
     _MENU = ["--propagate", "report"]
@@ -37,8 +36,14 @@ class ReportTestCase(SimTestCase):
         """
         TEST_RUNNER(self._MENU + ["errored_pool_report"])
 
-    def test_nonexistent_report(self):
+    def test_report_no_name(self):
         """
-        Test getting nonexistent report.
+        Test getting engine state report when no name specified.
         """
-        self.check_error(StratisCliEngineError, self._MENU + ["notreport"], _ERROR)
+        TEST_RUNNER(self._MENU)
+
+    def test_engine_state_report(self):
+        """
+        Test getting engine state report.
+        """
+        TEST_RUNNER(self._MENU + ["engine_state_report"])

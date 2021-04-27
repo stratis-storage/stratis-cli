@@ -98,6 +98,19 @@ class List4TestCase(SimTestCase):
         command_line = ["--propagate", "filesystem", "list", self._POOLNAME]
         TEST_RUNNER(command_line)
 
+    def test_list_unhyphenated(self):
+        """
+        Listing multiple volumes with unhyphenated uuids in a non-empty pool should succeed.
+        """
+        command_line = [
+            "--unhyphenated-uuids",
+            "--propagate",
+            "filesystem",
+            "list",
+            self._POOLNAME,
+        ]
+        TEST_RUNNER(command_line)
+
 
 class List5TestCase(SimTestCase):
     """

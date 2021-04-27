@@ -76,9 +76,10 @@ class StratisCliPropertyNotFoundError(StratisCliRuntimeError):
     """
 
     def __init__(self, prop_name):
-        """ Initializer.
+        """
+        Initializer.
 
-            :param str prop_name: the property that did not exist
+        :param str prop_name: the property that did not exist
         """
         # pylint: disable=super-init-not-called
         self.prop_name = prop_name
@@ -99,15 +100,16 @@ class StratisCliPartialChangeError(StratisCliUserError):
     """
 
     def __init__(self, command, changed_resources, unchanged_resources):
-        """ Initializer.
+        """
+        Initializer.
 
-            :param str command: the command run that caused the error
-            :param changed_resources: the target resources that would change
-            :type changed_resources: frozenset of str
-            :param unchanged_resources: the target resources that would not change
-            :type unchanged_resources: frozenset of str
+        :param str command: the command run that caused the error
+        :param changed_resources: the target resources that would change
+        :type changed_resources: frozenset of str
+        :param unchanged_resources: the target resources that would not change
+        :type unchanged_resources: frozenset of str
 
-            Precondition: unchanged_resources != frozenset()
+        Precondition: unchanged_resources != frozenset()
         """
         # pylint: disable=super-init-not-called
         self.command = command
@@ -144,10 +146,11 @@ class StratisCliNoChangeError(StratisCliPartialChangeError):
     """
 
     def __init__(self, command, resource):
-        """ Initializer.
+        """
+        Initializer.
 
-            :param str command: the executed command
-            :param str resource: the target resource
+        :param str command: the executed command
+        :param str resource: the target resource
         """
         StratisCliPartialChangeError.__init__(
             self, command, frozenset(), frozenset([resource])
@@ -172,6 +175,39 @@ class StratisCliNameConflictError(StratisCliUserError):
 
     def __str__(self):
         return "A %s named %s already exists" % (self.object_type, self.name)
+
+
+class StratisCliParserError(StratisCliRuntimeError):
+    """
+    Raised when user has passed arguments that the parser should reject
+    but can not due to its configuration limitations.
+    """
+
+
+class StratisCliMissingClevisTangURLError(StratisCliParserError):
+    """
+    Raised during pool creation if --clevis=[tang|nbde] specified but no
+    URL supplied.
+    """
+
+    def __str__(self):
+        return (
+            "Specified binding with Clevis Tang server, but URL was not "
+            "specified. Use --tang-url option to specify tang URL."
+        )
+
+
+class StratisCliMissingClevisThumbprintError(StratisCliParserError):
+    """
+    Raised during pool creation if --clevis=[tang|nbde] specified but neither
+    a thumbprint nor instructions to trust the URL were supplied.
+    """
+
+    def __str__(self):
+        return (
+            "Specified binding with Clevis Tang server, but neither "
+            "--thumbprint nor --trust-url option was specified."
+        )
 
 
 class StratisCliIncoherenceError(StratisCliRuntimeError):
@@ -199,15 +235,16 @@ class StratisCliInUseOtherTierError(StratisCliInUseError):
     """
 
     def __init__(self, pools_to_blockdevs, added_as):
-        """ Initializer.
+        """
+        Initializer.
 
-            :param pools_to_blockdevs: pools mapped to the blockdevs they own
-            :type pools_to_blockdevs: dict of str * frozenset of str
-            :param added_as: what tier the devices were to be added to
-            :type added_as: _stratisd_constants.BlockDevTiers
+        :param pools_to_blockdevs: pools mapped to the blockdevs they own
+        :type pools_to_blockdevs: dict of str * frozenset of str
+        :param added_as: what tier the devices were to be added to
+        :type added_as: _stratisd_constants.BlockDevTiers
 
-            Precondition: pools_to_blockdevs != {}
-            Precondition: all frozenset of str in pools_to_blockdevs have at least one item
+        Precondition: pools_to_blockdevs != {}
+        Precondition: all frozenset of str in pools_to_blockdevs have at least one item
         """
         # pylint: disable=super-init-not-called
         self.pools_to_blockdevs = pools_to_blockdevs
@@ -262,15 +299,16 @@ class StratisCliInUseSameTierError(StratisCliInUseError):
     """
 
     def __init__(self, pools_to_blockdevs, added_as):
-        """ Initializer.
+        """
+        Initializer.
 
-            :param pools_to_blockdevs: pools mapped to the blockdevs they own
-            :type pools_to_blockdevs: dict of str * frozenset of str
-            :param added_as: what tier the devices were to be added to
-            :type added_as: _stratisd_constants.BlockDevTiers
+        :param pools_to_blockdevs: pools mapped to the blockdevs they own
+        :type pools_to_blockdevs: dict of str * frozenset of str
+        :param added_as: what tier the devices were to be added to
+        :type added_as: _stratisd_constants.BlockDevTiers
 
-            Precondition: pools_to_blockdevs != {}
-            Precondition: all frozenset of str in pools_to_blockdevs have at least one item
+        Precondition: pools_to_blockdevs != {}
+        Precondition: all frozenset of str in pools_to_blockdevs have at least one item
         """
         # pylint: disable=super-init-not-called
         self.pools_to_blockdevs = pools_to_blockdevs
@@ -326,9 +364,10 @@ class StratisCliUnknownInterfaceError(StratisCliRuntimeError):
     """
 
     def __init__(self, interface_name):
-        """ Initializer.
+        """
+        Initializer.
 
-            :param str interface_name: the unexpected interface name
+        :param str interface_name: the unexpected interface name
         """
         # pylint: disable=super-init-not-called
         self._interface_name = interface_name
@@ -347,11 +386,12 @@ class StratisCliEnginePropertyError(StratisCliRuntimeError):
     """
 
     def __init__(self, prop_name, message):
-        """ Initializer.
+        """
+        Initializer.
 
-            :param str prop_name: the property that could not be obtained
-            :param str message: the error message returned by the engine in
-                                place of the property
+        :param str prop_name: the property that could not be obtained
+        :param str message: the error message returned by the engine in
+                            place of the property
         """
         # pylint: disable=super-init-not-called
         self.prop_name = prop_name
@@ -371,10 +411,11 @@ class StratisCliEngineError(StratisCliRuntimeError):
     """
 
     def __init__(self, rc, message):
-        """ Initializer.
+        """
+        Initializer.
 
-            :param rc int: the error code returned by the engine
-            :param str message: whatever message accompanied the error code
+        :param rc int: the error code returned by the engine
+        :param str message: whatever message accompanied the error code
         """
         # pylint: disable=super-init-not-called
         self.error_code = rc

@@ -43,7 +43,7 @@ class UnbindTestCase(SimTestCase):
         """
         Unbinding when unencrypted should return an error.
         """
-        command_line = self._MENU + [self._POOLNAME]
+        command_line = self._MENU + ["clevis", self._POOLNAME]
         self.check_error(StratisCliEngineError, command_line, _ERROR)
 
 
@@ -84,7 +84,7 @@ class UnbindTestCase2(SimTestCase):
         Unbinding when encrypted but unbound should raise a no change error,
         as the action is assumed to be unintentional.
         """
-        command_line = self._MENU + [self._POOLNAME]
+        command_line = self._MENU + ["clevis", self._POOLNAME]
         self.check_error(StratisCliNoChangeError, command_line, _ERROR)
 
     def test_unbind_when_bound(self):
@@ -97,10 +97,9 @@ class UnbindTestCase2(SimTestCase):
             "bind",
             "nbde",
             self._POOLNAME,
-            "fake_key",
             "URL",
             "--trust-url",
         ]
         RUNNER(command_line)
-        command_line = self._MENU + [self._POOLNAME]
+        command_line = self._MENU + ["clevis", self._POOLNAME]
         TEST_RUNNER(command_line)
