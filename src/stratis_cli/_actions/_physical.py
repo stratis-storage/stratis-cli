@@ -96,10 +96,31 @@ class PhysicalActions:
                 TABLE_FAILURE_STRING,
             )
 
+        def paths(modev):
+            """
+            Return <physical_path> (<metadata_path>) if they are different,
+            otherwise, just <metadata_path>.
+
+            physical_path D-Bus Property key is PhysicalPath
+            metadata_path D-Bus Property key is Devnode
+
+            :param modev: object containing D-Bus properties
+            :returns: the string to print
+            :rtype: str
+            """
+            metadata_path = modev.Devnode()
+            physical_path = modev.PhysicalPath()
+
+            return (
+                metadata_path
+                if metadata_path == physical_path
+                else "%s (%s)" % (physical_path, metadata_path)
+            )
+
         tables = [
             [
                 path_to_name[modev.Pool()],
-                modev.Devnode(),
+                paths(modev),
                 total_physical_size(props),
                 BLOCK_DEV_TIER_TO_NAME(modev.Tier(), True),
             ]
