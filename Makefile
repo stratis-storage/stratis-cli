@@ -5,6 +5,7 @@ lint:
 	./check.py check.py
 	./check.py setup.py
 	./check.py developer_tools/get_managed_objects
+	./check.py developer_tools/update_introspection_data
 	./check.py bin/stratis
 	./check.py src/stratis_cli
 	./check.py tests/whitebox
