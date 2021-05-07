@@ -4,7 +4,7 @@ UNITTEST_OPTS = --verbose
 lint:
 	./check.py check.py
 	./check.py setup.py
-	./check.py developer_tools
+	./check.py developer_tools/get_managed_objects
 	./check.py bin/stratis
 	./check.py src/stratis_cli
 	./check.py tests/whitebox
@@ -12,12 +12,12 @@ lint:
 .PHONY: fmt
 fmt:
 	isort --recursive check.py setup.py bin/stratis developer_tools src tests
-	black ./bin/stratis ./developer_tools/update_introspection_data .
+	black ./bin/stratis ./developer_tools/* .
 
 .PHONY: fmt-travis
 fmt-travis:
-	isort --recursive --diff --check-only check.py setup.py bin/stratis src tests
-	black ./bin/stratis ./developer_tools/update_introspection_data . --check
+	isort --recursive --diff --check-only check.py setup.py bin/stratis developer_tools src tests
+	black ./bin/stratis ./developer_tools/* . --check
 
 PYREVERSE_OPTS = --output=pdf
 .PHONY: view
