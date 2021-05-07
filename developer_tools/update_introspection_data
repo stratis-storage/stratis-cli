@@ -18,6 +18,7 @@ Update Stratis introspection data.
 """
 
 # isort: STDLIB
+import sys
 import xml.etree.ElementTree as ET
 
 # isort: THIRDPARTY
@@ -71,6 +72,7 @@ _MANAGER_IFACE = "org.storage.stratis2.Manager.r1"
 _POOL_IFACE = "org.storage.stratis2.pool.r1"
 _TIMEOUT = 120000
 
+# pylint: disable=invalid-name
 Introspectable = make_class(
     "Introspectable", ET.fromstring(SPECS[_INTROSPECTABLE_IFACE]), _TIMEOUT
 )
@@ -141,7 +143,7 @@ def setup_minimal_object_set(bus):
     )
 
     if return_code != 0:
-        exit(return_msg)
+        sys.exit(return_msg)
 
     pool_proxy = bus.get_object(_SERVICE, pool_object_path, introspect=False)
 
@@ -155,7 +157,7 @@ def setup_minimal_object_set(bus):
     )
 
     if return_code != 0:
-        exit(return_msg)
+        sys.exit(return_msg)
 
     filesystem_object_path = filesystems[0][0]
     filesystem_proxy = bus.get_object(
