@@ -99,7 +99,7 @@ class LogicalActions:
             )
 
     @staticmethod
-    def list_volumes(namespace):
+    def list_volumes(namespace):  # pylint: disable=too-many-locals
         """
         List the volumes in a pool.
         """
@@ -118,21 +118,23 @@ class LogicalActions:
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
+        pool_object_path = (
+            None
+            if pool_name is None
+            else next(
+                pools(props={"Name": pool_name})
+                .require_unique_match(True)
+                .search(managed_objects)
+            )[0]
+        )
+
         filesystems_with_props = [
             (
                 FetchProperties.Methods.GetAllProperties(get_object(objpath), {}),
                 MOFilesystem(info),
             )
             for objpath, info in filesystems(
-                props=None
-                if pool_name is None
-                else {
-                    "Pool": next(
-                        pools(props={"Name": pool_name})
-                        .require_unique_match(True)
-                        .search(managed_objects)
-                    )[0]
-                }
+                props=None if pool_object_path is None else {"Pool": pool_object_path}
             ).search(managed_objects)
         ]
 
