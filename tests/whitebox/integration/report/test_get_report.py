@@ -17,6 +17,7 @@ Test 'stratis report'.
 
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
+from stratis_cli._stratisd_constants import ReportKey
 
 from .._misc import TEST_RUNNER, SimTestCase
 
@@ -34,7 +35,7 @@ class ReportTestCase(SimTestCase):
         """
         Test getting errored pool report.
         """
-        TEST_RUNNER(self._MENU + ["errored_pool_report"])
+        TEST_RUNNER(self._MENU + [str(ReportKey.ERRORED_POOL)])
 
     def test_report_no_name(self):
         """
@@ -46,4 +47,10 @@ class ReportTestCase(SimTestCase):
         """
         Test getting engine state report.
         """
-        TEST_RUNNER(self._MENU + ["engine_state_report"])
+        TEST_RUNNER(self._MENU + [str(ReportKey.ENGINE_STATE)])
+
+    def test_managed_objects_report(self):
+        """
+        Test getting managed_objects report.
+        """
+        TEST_RUNNER(self._MENU + [str(ReportKey.MANAGED_OBJECTS)])
