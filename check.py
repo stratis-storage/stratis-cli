@@ -20,11 +20,6 @@ ARG_MAP = {
         "--disable=I",
         "--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}'",
     ],
-    "developer_tools/get_managed_objects": [
-        "--reports=no",
-        "--disable=I",
-        "--msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}'",
-    ],
     "developer_tools/update_introspection_data": [
         "--reports=no",
         "--disable=I",
