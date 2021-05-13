@@ -1,0 +1,94 @@
+#!/usr/bin/env python3
+
+# Copyright 2021 Red Hat, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+"""
+Get pool UUID from the string which is the filesystem symlink
+"""
+
+# isort: STDLIB
+import argparse
+import os
+import xml.etree.ElementTree as ET
+
+# isort: THIRDPARTY
+import dbus
+
+# isort: FIRSTPARTY
+from dbus_client_gen import managed_object_class, mo_query_builder
+from dbus_python_client_gen import make_class
+
+# a minimal chunk of introspection data, enough for the methods needed.
+# Use lowest supported versions that supply the necessary D-Bus properties.
+SPECS = {
+    "org.freedesktop.DBus.ObjectManager": """
+<interface name="org.freedesktop.DBus.ObjectManager">
+    <method name="GetManagedObjects">
+      <arg name="objpath_interfaces_and_properties" type="a{oa{sa{sv}}}" direction="out" />
+    </method>
+  </interface>
+""",
+    "org.storage.stratis2.pool": """
+<interface name="org.storage.stratis2.pool">
+  <property name="Name" type="s" access="read" />
+    <property name="Uuid" type="s" access="read">
+      <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const" />
+    </property>
+</interface>
+""",
+}
+
+_SERVICE = "org.storage.stratis2"
+
+_OBJECT_MANAGER_IFACE = "org.freedesktop.DBus.ObjectManager"
+_TIMEOUT = 120000
+
+_POOL_INTERFACE = "org.storage.stratis2.pool"
+_POOL_SPEC = ET.fromstring(SPECS[_POOL_INTERFACE])
+
+# pylint: disable=invalid-name
+pools = mo_query_builder(_POOL_SPEC)
+ObjectManager = make_class(
+    "ObjectManager", ET.fromstring(SPECS[_OBJECT_MANAGER_IFACE]), _TIMEOUT
+)
+MOPool = managed_object_class("MOPool", _POOL_SPEC)
+
+
+def main():
+    """
+    The main method.
+    """
+    parser = argparse.ArgumentParser(description="ask D-Bus for pool UUID")
+    parser.add_argument("symlink", help="symlink to convert")
+    args = parser.parse_args()
+
+    pool_name = [s for s in os.path.normpath(args.symlink).split("/") if s != ""][2]
+
+    bus = dbus.SystemBus()
+
+    proxy = bus.get_object(_SERVICE, "/org/storage/stratis2", introspect=False)
+
+    managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
+
+    (_, props) = next(
+        pools(props={"Name": pool_name})
+        .require_unique_match(True)
+        .search(managed_objects)
+    )
+
+    print(MOPool(props).Uuid())
+
+
+if __name__ == "__main__":
+    main()
