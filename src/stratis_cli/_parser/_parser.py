@@ -26,6 +26,7 @@ from .._actions import (
     TopActions,
     check_stratisd_version,
 )
+from .._stratisd_constants import ReportKey
 from .._version import __version__
 from ._key import KEY_SUBCMDS
 from ._logical import LOGICAL_SUBCMDS
@@ -147,7 +148,7 @@ ROOT_SUBCOMMANDS = [
                         type=str,
                         help=("Name of the report to display"),
                         nargs="?",
-                        choices=["engine_state_report", "errored_pool_report"],
+                        choices=[str(x) for x in list(ReportKey)],
                     ),
                 )
             ],

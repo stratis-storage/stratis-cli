@@ -114,3 +114,20 @@ CLEVIS_PIN_TANG = "tang"
 CLEVIS_PIN_TPM2 = "tpm2"
 CLEVIS_KEY_THP = "thp"
 CLEVIS_KEY_URL = "url"
+
+
+class ReportKey(Enum):
+    """
+    Report identifiers.
+
+    Note: "managed_objects_report" is not a key recognized by stratisd.
+    However, since the other constants are, and they are all used together,
+    this type is defined with the other stratisd constants.
+    """
+
+    ENGINE_STATE = "engine_state_report"
+    ERRORED_POOL = "errored_pool_report"
+    MANAGED_OBJECTS = "managed_objects_report"
+
+    def __str__(self):
+        return self.value
