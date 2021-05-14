@@ -14,8 +14,8 @@ fmt:
 	isort --recursive check.py setup.py bin/stratis developer_tools src tests
 	black ./bin/stratis ./developer_tools/update_introspection_data .
 
-.PHONY: fmt-travis
-fmt-travis:
+.PHONY: fmt-ci
+fmt-ci:
 	isort --recursive --diff --check-only check.py setup.py bin/stratis developer_tools src tests
 	black ./bin/stratis ./developer_tools/update_introspection_data . --check
 
@@ -70,7 +70,11 @@ keyboard-interrupt-test:
 stratisd-version-test:
 	python3 -m unittest ${UNITTEST_OPTS} tests.whitebox.monkey_patching.test_stratisd_version.StratisdVersionTestCase
 
-test-travis: unittest-tests
+.PHONY: sim-tests
+sim-tests: dbus-tests keyboard-interrupt-test stratisd-version-test
+
+.PHONY: all-tests
+all-tests: unittest-tests sim-tests
 
 .PHONY: yamllint
 yamllint:
