@@ -70,7 +70,7 @@ keyboard-interrupt-test:
 stratisd-version-test:
 	python3 -m unittest ${UNITTEST_OPTS} tests.whitebox.monkey_patching.test_stratisd_version.StratisdVersionTestCase
 
-test-travis: unittest-tests
+sim-tests: dbus-tests keyboard-interrupt-test stratisd-version-test
 
 .PHONY: yamllint
 yamllint:

@@ -44,7 +44,7 @@ jobs:
               wcwidth==0.2.4
               psutil==5.6.7
               semantic_version==2.8.4
-            task: PYTHONPATH=./src make -f Makefile test-travis
+            task: PYTHONPATH=./src make -f Makefile unittest-tests
           # MANDATORY CHECKS USING LOWEST SUPPORTED INTERPRETER
           - python-version: 3.6.8
             dependencies: >
@@ -73,3 +73,61 @@ jobs:
           pip3 install ${{ matrix.dependencies }}
       - name: Run test
         run: ${{ matrix.task }}
+
+  test-runs:
+    strategy:
+      matrix:
+        include:
+          - task: make -f Makefile sim-tests
+            rust_log: RUST_LOG=libstratis=debug,stratisd=debug
+          - task: make -f Makefile coverage-no-html
+            rust_log:
+    runs-on: ubuntu-18.04
+    container: fedora:32
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: >
+          dnf install -y
+          clang
+          cryptsetup-devel
+          dbus
+          dbus-tools
+          dbus-devel
+          libblkid-devel
+          git
+          make
+          python3-coverage
+          python3-dbus-client-gen
+          python3-dbus-python-client-gen
+          python3-justbytes
+          python3-dateutil
+          python3-psutil
+          python3-semantic_version
+          systemd-devel
+      - uses: actions-rs/toolchain@v1
+        with:
+          components: cargo
+          toolchain: 1.51.0
+          override: true
+      - name: Check out stratisd
+        run: |
+          git clone https://github.com/stratis-storage/stratisd.git
+          (cd stratisd; pwd; make build)
+          mv stratisd/target/debug/stratisd ${HOME}/stratisd
+      - name: Set up for D-Bus
+        run: |
+          mkdir -p /var/lib/dbus
+          dbus-uuidgen > /var/lib/dbus/machine-id
+          mkdir -p /var/run/dbus
+      - name: Start D-Bus
+        run: >
+          dbus-daemon
+          --config-file=/usr/share/dbus-1/system.conf
+          --print-address
+      - name: Run test
+        run: >
+          ${{ matrix.rust_log }}
+          STRATISD=${HOME}/stratisd
+          PYTHONPATH=./src
+          ${{ matrix.task }}
