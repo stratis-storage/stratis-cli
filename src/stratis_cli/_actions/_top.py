@@ -18,6 +18,7 @@ Miscellaneous top-level actions.
 # isort: STDLIB
 import json
 import os
+import sys
 from getpass import getpass
 
 from .._errors import (
@@ -34,6 +35,7 @@ from .._stratisd_constants import (
     CLEVIS_KEY_URL,
     CLEVIS_PIN_TANG,
     CLEVIS_PIN_TPM2,
+    ReportKey,
     StratisdErrors,
 )
 from ._connection import get_object
@@ -113,32 +115,46 @@ class TopActions:
 
         :raises StratisCliEngineError:
         """
+
         # pylint: disable=import-outside-toplevel
-        if namespace.report_name == "engine_state_report":
+        if namespace.report_name == str(ReportKey.MANAGED_OBJECTS):
 
-            from ._data import Manager
+            from ._data import ObjectManager
 
-            (report, return_code, message) = Manager.Methods.EngineStateReport(
+            json_report = ObjectManager.Methods.GetManagedObjects(
                 get_object(TOP_OBJECT), {}
             )
 
         else:
 
-            from ._data import Report
+            if namespace.report_name == str(ReportKey.ENGINE_STATE):
 
-            (report, return_code, message) = Report.Methods.GetReport(
-                get_object(TOP_OBJECT), {"name": namespace.report_name}
-            )
+                from ._data import Manager
 
-        # The only reason that stratisd has for returning an error code is
-        # if the report name is unrecognizes. However, the parser restricts
-        # the list # of names to only the ones that stratisd recognizes, so
-        # this branch can only be taken due to an unexpected bug in stratisd.
-        if return_code != StratisdErrors.OK:  # pragma: no cover
-            raise StratisCliEngineError(return_code, message)
+                (report, return_code, message) = Manager.Methods.EngineStateReport(
+                    get_object(TOP_OBJECT), {}
+                )
 
-        json_report = json.loads(report)
-        print(json.dumps(json_report, indent=4, sort_keys=True))
+            else:
+
+                from ._data import Report
+
+                (report, return_code, message) = Report.Methods.GetReport(
+                    get_object(TOP_OBJECT), {"name": namespace.report_name}
+                )
+
+            # The only reason that stratisd has for returning an error code is
+            # if the report name is unrecognized. However, the parser restricts
+            # the list of names to only the ones that stratisd recognizes, so
+            # this branch can only be taken due to an unexpected bug in
+            # stratisd.
+            if return_code != StratisdErrors.OK:  # pragma: no cover
+                raise StratisCliEngineError(return_code, message)
+
+            json_report = json.loads(report)
+
+        json.dump(json_report, sys.stdout, indent=4, sort_keys=True)
+        print(file=sys.stdout)
 
     @staticmethod
     def set_key(namespace):

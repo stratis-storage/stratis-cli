@@ -1,3 +1,24 @@
+stratis-cli 2.4.1
+=================
+
+- In blockdev listing, expose physical path if different from metadata path:
+  https://github.com/stratis-storage/stratis-cli/issues/754
+  https://github.com/stratis-storage/stratis-cli/pull/755
+
+- Add new report key, managed_objects_report,
+  remove script introduced by PR#756:
+  https://github.com/stratis-storage/stratis-cli/issues/761
+  https://github.com/stratis-storage/stratis-cli/pull/762
+
+- Add a small script to output GetManagedObjects() result in JSON format:
+  https://github.com/stratis-storage/stratis-cli/pull/756
+
+- Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/760
+  https://github.com/stratis-storage/stratis-cli/pull/757
+  https://github.com/stratis-storage/stratis-cli/pull/753
+
+
 stratis-cli 2.4.0
 =================
 Required stratisd version: 2.4.0
@@ -50,6 +71,8 @@ YAML linter: yamllint (1.26.0)
   https://github.com/stratis-storage/stratis-cli/pull/714
 
 - Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/752
+  https://github.com/stratis-storage/stratis-cli/pull/751
   https://github.com/stratis-storage/stratis-cli/pull/742
   https://github.com/stratis-storage/stratis-cli/pull/740
   https://github.com/stratis-storage/stratis-cli/pull/739

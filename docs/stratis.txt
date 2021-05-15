@@ -184,9 +184,14 @@ FIELDS for stratis blockdev list
 Pool Name::
 	  The name of the pool using the block device.
 Device Node::
-	  The device node of the block device.
+	  The device node of the block device. A second device node will
+          be displayed in parentheses if the block device is encrypted. This
+          device node is the device node of the associated dm-crypt device.
 Physical Size::
-	  The size of the device.
+	  The total size of the device on which stratisd places Stratis
+          metadata. If the device is encrypted, this size will be slightly
+          smaller than the total size of the device specified by the user; it
+          will be the size of the associated dm-crypt device.
 Tier::
 	  The data tier type ("Data" or "Cache")
 
