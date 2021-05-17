@@ -68,12 +68,19 @@ jobs:
     strategy:
       matrix:
         include:
+          # MANDATORY CHECKS USING CURRENT DEVELOPMENT ENVIRONMENT
           - task: make -f Makefile all-tests
             rust_log: RUST_LOG=libstratis=debug,stratisd=debug
+            image: fedora:32
           - task: make -f Makefile coverage-no-html
             rust_log:
+            image: fedora:32
+          # MANDATORY CHECKS USING LOWEST SUPPORTED ENVIRONMENT PROXY
+          - task: make -f Makefile all-tests
+            rust_log: RUST_LOG=libstratis=debug,stratisd=debug
+            image: fedora:30
     runs-on: ubuntu-18.04
-    container: fedora:32
+    container: ${{ matrix.image }}
     steps:
       - uses: actions/checkout@v2
       - name: Install dependencies
