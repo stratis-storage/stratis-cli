@@ -91,7 +91,7 @@ jobs:
           dnf install -y
           clang
           cryptsetup-devel
-          dbus
+          dbus-daemon
           dbus-tools
           dbus-devel
           libblkid-devel
