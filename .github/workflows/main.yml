@@ -51,7 +51,7 @@ jobs:
             image: fedora:32
             task: make -f Makefile yamllint
     runs-on: ubuntu-18.04
-    container: {{ matrix.image }}
+    container: ${{ matrix.image }}
     steps:
       - uses: actions/checkout@v2
       - name: Install dependencies
