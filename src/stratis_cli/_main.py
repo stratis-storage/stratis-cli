@@ -49,7 +49,6 @@ def run():
             # to propagate to the interpreter, i.e., it should not be recaught
             # anywhere.
             except (
-                # pylint: disable=bad-continuation
                 BrokenPipeError,
                 KeyboardInterrupt,
                 SystemExit,

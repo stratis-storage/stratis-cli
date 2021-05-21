@@ -62,7 +62,6 @@ def _generate_pools_to_blockdevs(managed_objects, to_be_added, tier):
 
     pools_to_blockdevs = defaultdict(list)
     for modev in (
-        # pylint: disable=bad-continuation
         modev
         for modev in (
             MODev(info)
@@ -191,7 +190,6 @@ class PoolActions:
                     if namespace.key_desc is not None
                     else (False, "")
                 ),
-                # pylint: disable=bad-continuation
                 "clevis_info": (False, ("", ""))
                 if clevis_info is None
                 else (True, clevis_info),
