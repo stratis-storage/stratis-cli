@@ -30,14 +30,14 @@ jobs:
               python3-psutil
               python3-semantic_version
               python3-wcwidth
-            image: fedora:32
+            image: fedora:33
             task: PYTHONPATH=./src make -f Makefile lint
           - dependencies: black python3-isort
-            image: fedora:32
+            image: fedora:33
             task: make -f Makefile fmt-ci
           # VERIFICATION OF TEST INFRASTRUCTURE
           - dependencies: yamllint
-            image: fedora:32
+            image: fedora:33
             task: make -f Makefile yamllint
     runs-on: ubuntu-18.04
     container: ${{ matrix.image }}
@@ -61,10 +61,10 @@ jobs:
           # MANDATORY CHECKS USING CURRENT DEVELOPMENT ENVIRONMENT
           - task: make -f Makefile all-tests
             rust_log: RUST_LOG=libstratis=debug,stratisd=debug
-            image: fedora:32
+            image: fedora:33
           - task: make -f Makefile coverage-no-html
             rust_log:
-            image: fedora:32
+            image: fedora:33
           # MANDATORY CHECKS USING LOWEST SUPPORTED ENVIRONMENT PROXY
           - task: make -f Makefile all-tests
             rust_log: RUST_LOG=libstratis=debug,stratisd=debug
