@@ -19,11 +19,11 @@ Entry script for stratis CLI.
 
 try:
 
+    # isort: STDLIB
     import sys
 
-    from stratis_cli import run
-    from stratis_cli import StratisCliEnvironmentError
-    from stratis_cli import StratisCliErrorCodes, exit_
+    # isort: LOCAL
+    from stratis_cli import StratisCliEnvironmentError, StratisCliErrorCodes, exit_, run
 
     def main():
         """
