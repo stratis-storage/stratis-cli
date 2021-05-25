@@ -26,10 +26,10 @@ jobs:
               python3-psutil
               python3-semantic_version
               python3-wcwidth
-            image: fedora:33
+            image: fedora:34
             task: PYTHONPATH=./src make -f Makefile lint
           - dependencies: black python3-isort
-            image: fedora:33
+            image: fedora:34
             task: make -f Makefile fmt-ci
     runs-on: ubuntu-18.04
     container: ${{ matrix.image }}

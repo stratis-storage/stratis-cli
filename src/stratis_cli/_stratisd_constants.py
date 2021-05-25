@@ -105,7 +105,7 @@ class EncryptionMethod(Enum):
     KEYRING = "keyring"
     CLEVIS = "clevis"
 
-    def __str__(self):
+    def __str__(self):  # pylint: disable=invalid-str-returned
         return self.value
 
 
@@ -129,5 +129,5 @@ class ReportKey(Enum):
     ERRORED_POOL = "errored_pool_report"
     MANAGED_OBJECTS = "managed_objects_report"
 
-    def __str__(self):
+    def __str__(self):  # pylint: disable=invalid-str-returned
         return self.value

@@ -48,11 +48,7 @@ class LogicalActions:
         # pylint: disable=too-many-locals
 
         # pylint: disable=import-outside-toplevel
-        from ._data import MOFilesystem
-        from ._data import ObjectManager
-        from ._data import Pool
-        from ._data import filesystems
-        from ._data import pools
+        from ._data import MOFilesystem, ObjectManager, Pool, filesystems, pools
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -104,12 +100,14 @@ class LogicalActions:
         List the volumes in a pool.
         """
         # pylint: disable=import-outside-toplevel
-        from ._data import FetchProperties
-        from ._data import MOFilesystem
-        from ._data import MOPool
-        from ._data import ObjectManager
-        from ._data import filesystems
-        from ._data import pools
+        from ._data import (
+            FetchProperties,
+            MOFilesystem,
+            MOPool,
+            ObjectManager,
+            filesystems,
+            pools,
+        )
 
         # This method is invoked as the default for "stratis filesystem";
         # the namespace may not have a pool_name field.
@@ -194,11 +192,7 @@ class LogicalActions:
         # pylint: disable=too-many-locals
 
         # pylint: disable=import-outside-toplevel
-        from ._data import MOFilesystem
-        from ._data import ObjectManager
-        from ._data import Pool
-        from ._data import filesystems
-        from ._data import pools
+        from ._data import MOFilesystem, ObjectManager, Pool, filesystems, pools
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -240,7 +234,6 @@ class LogicalActions:
             raise StratisCliEngineError(return_code, message)
 
         if not destroyed or len(list_destroyed) < len(
-            # pylint: disable=bad-continuation
             fs_object_paths
         ):  # pragma: no cover
             raise StratisCliIncoherenceError(
@@ -261,10 +254,7 @@ class LogicalActions:
         :raises StratisCliNoChangeError:
         """
         # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager
-        from ._data import Pool
-        from ._data import filesystems
-        from ._data import pools
+        from ._data import ObjectManager, Pool, filesystems, pools
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -300,10 +290,7 @@ class LogicalActions:
         :raises StratisCliNoChangeError:
         """
         # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager
-        from ._data import Filesystem
-        from ._data import filesystems
-        from ._data import pools
+        from ._data import Filesystem, ObjectManager, filesystems, pools
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
