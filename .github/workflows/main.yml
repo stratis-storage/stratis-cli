@@ -99,9 +99,10 @@ jobs:
           toolchain: 1.52.1
           override: true
       - name: Check out stratisd
-        run: |
-          git clone https://github.com/stratis-storage/stratisd.git
-          (cd stratisd; pwd; PROFILEDIR=debug make install)
+        run: git clone https://github.com/stratis-storage/stratisd.git
+      - name: Build stratisd
+        run: PROFILEDIR=debug make install
+        working-directory: ./stratisd
       - name: Set up for D-Bus
         run: |
           mkdir -p /var/lib/dbus
