@@ -34,10 +34,14 @@ from stratis_cli._error_reporting import handle_error
 from stratis_cli._errors import StratisCliActionError
 
 
-def device_name_list(min_devices=0, max_devices=10):
+def device_name_list(min_devices=0, max_devices=10, unique=False):
     """
     Return a function that returns a random list of device names based on
     parameters.
+
+    :param int min_devices: the minimum number of device names to generate
+    :param int max_devices: the maximum number of device names to generate
+    :param bool unique: ensure that all device names are unique
     """
 
     def the_func():
@@ -49,7 +53,42 @@ def device_name_list(min_devices=0, max_devices=10):
             for _ in range(random.randrange(min_devices, max_devices + 1))
         ]
 
+    if unique:
+
+        def the_unique_func():
+            devices = set()
+            while len(devices) < min_devices:
+                for device in the_func():
+                    devices.add(device)
+
+            return list(devices)
+
+        return the_unique_func
+
     return the_func
+
+
+def split_device_list(devices, num_lists):
+    """
+    Split devices into num_lists distinct lists.
+
+    :param devices: list of device names
+    :type devices: list of str
+    :param int num_lists: num of lists to return
+
+    :rtype: list of list of str
+    """
+    num_devices = len(devices)
+    indices = random.sample(range(1, num_devices), num_lists - 1)
+    next_indices = indices[:]
+
+    indices.append(0)
+    indices.sort()
+
+    next_indices.append(num_devices)
+    next_indices.sort()
+
+    return [devices[indices[n] : next_indices[n]] for n in range(len(indices))]
 
 
 class _Service:
