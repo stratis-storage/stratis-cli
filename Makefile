@@ -2,21 +2,20 @@ UNITTEST_OPTS = --verbose
 
 .PHONY: lint
 lint:
-	./check.py check.py
-	./check.py setup.py
-	./check.py developer_tools/update_introspection_data
-	./check.py bin/stratis
-	./check.py src/stratis_cli
-	./check.py tests/whitebox
+	pylint setup.py
+	pylint developer_tools/update_introspection_data
+	pylint bin/stratis
+	pylint src/stratis_cli --disable=duplicate-code --ignore=_introspect.py
+	pylint tests/whitebox --disable=duplicate-code
 
 .PHONY: fmt
 fmt:
-	isort --recursive check.py setup.py bin/stratis developer_tools src tests
+	isort --recursive setup.py bin/stratis developer_tools src tests
 	black ./bin/stratis ./developer_tools/update_introspection_data .
 
 .PHONY: fmt-ci
 fmt-ci:
-	isort --recursive --diff --check-only check.py setup.py bin/stratis developer_tools src tests
+	isort --recursive --diff --check-only setup.py bin/stratis developer_tools src tests
 	black ./bin/stratis ./developer_tools/update_introspection_data . --check
 
 PYREVERSE_OPTS = --output=pdf
