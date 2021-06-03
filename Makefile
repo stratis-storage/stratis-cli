@@ -10,12 +10,12 @@ lint:
 
 .PHONY: fmt
 fmt:
-	isort --recursive setup.py bin/stratis developer_tools src tests
+	isort setup.py bin/stratis developer_tools src tests
 	black ./bin/stratis ./developer_tools/update_introspection_data .
 
 .PHONY: fmt-ci
 fmt-ci:
-	isort --recursive --diff --check-only setup.py bin/stratis developer_tools src tests
+	isort --diff --check-only setup.py bin/stratis developer_tools src tests
 	black ./bin/stratis ./developer_tools/update_introspection_data . --check
 
 PYREVERSE_OPTS = --output=pdf
