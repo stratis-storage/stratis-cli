@@ -72,23 +72,41 @@ class PhysicalActions:
             ).search(managed_objects)
         )
 
-        def total_physical_size(props):
+        def physical_size_triple(props):
             """
-            Calculate the string value to display for physical size of block
+            Calculate the triple to display for physical size of block
             device.
 
-            The format is just that chosen by justbytes default configuration.
+            The format is total/used/free where the display value for each
+            member of the tuple are chosen automatically according to justbytes'
+            configuration.
 
             :param props: a dictionary of property values obtained
             :type props: a dict of str * object
             :returns: a string to display in the resulting list output
             :rtype: str
             """
-            return get_property(
-                props,
-                "TotalPhysicalSize",
-                lambda x: str(Range(x)),
-                TABLE_FAILURE_STRING,
+            total_physical_size = get_property(props, "TotalPhysicalSize", Range, None)
+            total_physical_used = get_property(
+                props, "TotalPhysicalSizeAllocated", Range, None
+            )
+
+            total_physical_free = (
+                None
+                if total_physical_size is None or total_physical_used is None
+                else total_physical_size - total_physical_used
+            )
+
+            return "%s / %s / %s" % (
+                TABLE_FAILURE_STRING
+                if total_physical_size is None
+                else total_physical_size,
+                TABLE_FAILURE_STRING
+                if total_physical_used is None
+                else total_physical_used,
+                TABLE_FAILURE_STRING
+                if total_physical_free is None
+                else total_physical_free,
             )
 
         def paths(modev):
@@ -116,7 +134,7 @@ class PhysicalActions:
             [
                 path_to_name[modev.Pool()],
                 paths(modev),
-                total_physical_size(props),
+                physical_size_triple(props),
                 BLOCK_DEV_TIER_TO_NAME(modev.Tier(), True),
             ]
             for (props, modev) in modevs
