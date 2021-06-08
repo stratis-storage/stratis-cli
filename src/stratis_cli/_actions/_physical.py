@@ -86,7 +86,12 @@ class PhysicalActions:
             total_physical_used = get_property(
                 props, "TotalPhysicalSizeAllocated", Range, None
             )
-            return total_used_free(total_physical_size, total_physical_used)
+
+            return (
+                str(total_physical_size)
+                if total_physical_size == total_physical_used
+                else total_used_free(total_physical_size, total_physical_used)
+            )
 
         def paths(modev):
             """
