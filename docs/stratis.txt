@@ -192,6 +192,9 @@ Physical Size::
           metadata. If the device is encrypted, this size will be slightly
           smaller than the total size of the device specified by the user; it
           will be the size of the associated dm-crypt device.
+
+          The real size of the device is shown in parens it it is larger than
+          the size recorded in the Stratis metadata.
 Tier::
 	  The data tier type ("Data" or "Cache")
 
