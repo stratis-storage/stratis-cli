@@ -170,3 +170,22 @@ def to_hyphenated(mo_uuid):
     Convert uuid string to hyphenated format
     """
     return str(uuid.UUID(mo_uuid))
+
+
+def total_used_free(total, used):
+    """
+    Given total and used, calculate free and display in total / used /free
+    format.
+
+    :param Range total: total size
+    :param Range used: used size
+
+    :rtype: str
+    """
+    free = None if total is None or used is None else total - used
+
+    return "%s / %s / %s" % (
+        TABLE_FAILURE_STRING if total is None else total,
+        TABLE_FAILURE_STRING if used is None else used,
+        TABLE_FAILURE_STRING if free is None else free,
+    )

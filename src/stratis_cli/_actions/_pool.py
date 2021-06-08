@@ -36,7 +36,7 @@ from .._errors import (
 from .._stratisd_constants import BlockDevTiers, EncryptionMethod, StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
-from ._formatting import TABLE_FAILURE_STRING, get_property, print_table, to_hyphenated
+from ._formatting import get_property, print_table, to_hyphenated, total_used_free
 from ._utils import fetch_property, get_clevis_info
 
 
@@ -281,36 +281,14 @@ class PoolActions:
             """
             Calculate the triple to display for total physical size.
 
-            The format is total/used/free where the display value for each
-            member of the tuple are chosen automatically according to justbytes'
-            configuration.
-
             :param props: a dictionary of property values obtained
             :type props: dict of str * object
             :returns: a string to display in the resulting list output
             :rtype: str
             """
             total_physical_size = get_property(props, "TotalPhysicalSize", Range, None)
-
             total_physical_used = get_property(props, "TotalPhysicalUsed", Range, None)
-
-            total_physical_free = (
-                None
-                if total_physical_size is None or total_physical_used is None
-                else total_physical_size - total_physical_used
-            )
-
-            return "%s / %s / %s" % (
-                TABLE_FAILURE_STRING
-                if total_physical_size is None
-                else total_physical_size,
-                TABLE_FAILURE_STRING
-                if total_physical_used is None
-                else total_physical_used,
-                TABLE_FAILURE_STRING
-                if total_physical_free is None
-                else total_physical_free,
-            )
+            return total_used_free(total_physical_size, total_physical_used)
 
         def properties_string(mopool, props_map):
             """

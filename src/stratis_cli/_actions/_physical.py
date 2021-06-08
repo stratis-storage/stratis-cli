@@ -21,7 +21,7 @@ from justbytes import Range
 from .._stratisd_constants import BLOCK_DEV_TIER_TO_NAME
 from ._connection import get_object
 from ._constants import TOP_OBJECT
-from ._formatting import TABLE_FAILURE_STRING, get_property, print_table
+from ._formatting import get_property, print_table, total_used_free
 
 
 class PhysicalActions:
@@ -77,10 +77,6 @@ class PhysicalActions:
             Calculate the triple to display for physical size of block
             device.
 
-            The format is total/used/free where the display value for each
-            member of the tuple are chosen automatically according to justbytes'
-            configuration.
-
             :param props: a dictionary of property values obtained
             :type props: a dict of str * object
             :returns: a string to display in the resulting list output
@@ -90,24 +86,7 @@ class PhysicalActions:
             total_physical_used = get_property(
                 props, "TotalPhysicalSizeAllocated", Range, None
             )
-
-            total_physical_free = (
-                None
-                if total_physical_size is None or total_physical_used is None
-                else total_physical_size - total_physical_used
-            )
-
-            return "%s / %s / %s" % (
-                TABLE_FAILURE_STRING
-                if total_physical_size is None
-                else total_physical_size,
-                TABLE_FAILURE_STRING
-                if total_physical_used is None
-                else total_physical_used,
-                TABLE_FAILURE_STRING
-                if total_physical_free is None
-                else total_physical_free,
-            )
+            return total_used_free(total_physical_size, total_physical_used)
 
         def paths(modev):
             """
