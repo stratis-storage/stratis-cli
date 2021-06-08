@@ -84,11 +84,21 @@ class PhysicalActions:
             :returns: a string to display in the resulting list output
             :rtype: str
             """
-            return get_property(
+            total_size = get_property(
                 props,
                 "TotalPhysicalSize",
-                lambda x: str(Range(x)),
+                Range,
                 TABLE_FAILURE_STRING,
+            )
+
+            total_real_size = get_property(
+                props, "TotalPhysicalRealSize", Range, TABLE_FAILURE_STRING
+            )
+
+            return (
+                str(total_size)
+                if total_size == total_real_size
+                else "%s (%s)" % (total_size, total_real_size)
             )
 
         def paths(modev):
