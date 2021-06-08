@@ -192,6 +192,10 @@ Physical Size::
           metadata. If the device is encrypted, this size will be slightly
           smaller than the total size of the device specified by the user; it
           will be the size of the associated dm-crypt device.
+
+          The format is (Total / Allocated / Free) where allocated is the
+          space on the device that has been allocated from the device for use
+          by its pool.
 Tier::
 	  The data tier type ("Data" or "Cache")
 
