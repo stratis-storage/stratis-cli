@@ -23,7 +23,7 @@ try:
     # isort: THIRDPARTY
     from semantic_version import Spec, Version
 
-    def check_stratisd_version():  # pragma: no cover
+    def check_stratisd_version():
         """
         Checks that the version of stratisd that is running is compatible with
         this version of the CLI.
