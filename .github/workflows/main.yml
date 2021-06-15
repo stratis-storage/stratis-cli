@@ -107,6 +107,9 @@ jobs:
           override: true
       - name: Check out stratisd
         run: git clone https://github.com/stratis-storage/stratisd.git
+      - name: Switch to 2.4.2 stratisd branch
+        run: git checkout -b v2.4.2 v2.4.2
+        working-directory: ./stratisd
       - name: Build stratisd
         run: PROFILEDIR=debug make install
         working-directory: ./stratisd
