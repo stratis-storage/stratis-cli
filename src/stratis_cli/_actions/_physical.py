@@ -38,12 +38,7 @@ class PhysicalActions:
         for that pool. Otherwise, list all devices for all pools.
         """
         # pylint: disable=import-outside-toplevel
-        from ._data import devs
-        from ._data import pools
-        from ._data import FetchProperties
-        from ._data import MODev
-        from ._data import MOPool
-        from ._data import ObjectManager
+        from ._data import FetchProperties, MODev, MOPool, ObjectManager, devs, pools
 
         # This method is invoked as the default for "stratis blockdev";
         # the namespace may not have a pool_name field.

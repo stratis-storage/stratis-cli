@@ -33,7 +33,6 @@ class FormattingTestCase1(unittest.TestCase):
     def setUp(self):
         self.output = io.StringIO()
 
-        # pylint: disable=bad-continuation
         self.table = [
             [u"Pool Na\u030ame", u"Na\u030ame", "Used", "Created", "Device", "UUID"],
             [

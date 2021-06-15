@@ -36,6 +36,7 @@ from ._utils import unpack_property
 # coverage result dependent on whether wcwidth is available or not, as our
 # tests might be run, and succeed either with or without.
 try:
+    # isort: THIRDPARTY
     from wcwidth import wcswidth
 
     MAYBE_WCSWIDTH = wcswidth  # pragma: no cover
@@ -68,7 +69,6 @@ def get_property(props, name, to_repr, default):
     # the property or the engine encountering an error getting the property,
     # or a bug in our code.
     except (
-        # pylint: disable=bad-continuation
         StratisCliEnginePropertyError,
         StratisCliPropertyNotFoundError,
     ):  # pragma: no cover
