@@ -1,5 +1,16 @@
 stratis-cli 2.4.2 (UNRELEASED)
 ==============================
+Recommended development environment: Fedora 33
+Lowest supported Python interpreter: 3.6.8
+
+- Make semantic_version dependency optional in the source:
+  https://github.com/stratis-storage/stratis-cli/pull/791
+
+- Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/790
+  https://github.com/stratis-storage/stratis-cli/pull/789
+  https://github.com/stratis-storage/stratis-cli/pull/787
+
 
 stratis-cli 2.4.1
 =================
