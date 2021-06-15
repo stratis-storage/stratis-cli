@@ -75,6 +75,9 @@ sim-tests: dbus-tests keyboard-interrupt-test stratisd-version-test
 .PHONY: all-tests
 all-tests: unittest-tests sim-tests
 
+.PHONY: all-tests-version
+all-tests-version: unittest-tests dbus-tests keyboard-interrupt-test
+
 .PHONY: yamllint
 yamllint:
 	yamllint --strict .github/workflows/*.yml
