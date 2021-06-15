@@ -32,14 +32,11 @@ from ._utils import unpack_property
 # installation mechanism, which builds functions dynamically from tables
 # made available online at www.unicode.org.
 
-# Disable coverage for conditional import. We do not want to make our
-# coverage result dependent on whether wcwidth is available or not, as our
-# tests might be run, and succeed either with or without.
 try:
     # isort: THIRDPARTY
     from wcwidth import wcswidth
 
-    MAYBE_WCSWIDTH = wcswidth  # pragma: no cover
+    MAYBE_WCSWIDTH = wcswidth
 
 except ImportError:  # pragma: no cover
     MAYBE_WCSWIDTH = len

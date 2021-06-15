@@ -62,13 +62,20 @@ jobs:
           - task: make -f Makefile all-tests
             rust_log: RUST_LOG=libstratis=debug,stratisd=debug
             image: fedora:33
+            additional_dependencies: >
+              python3-wcwidth
+              python3-semantic_version
           - task: make -f Makefile coverage-no-html
             rust_log:
             image: fedora:33
+            additional_dependencies: >
+              python3-wcwidth
+              python3-semantic_version
           # MANDATORY CHECKS USING LOWEST SUPPORTED ENVIRONMENT PROXY
-          - task: make -f Makefile all-tests
+          - task: make -f Makefile all-tests-version
             rust_log: RUST_LOG=libstratis=debug,stratisd=debug
             image: fedora:30
+            additional_dependencies:
     runs-on: ubuntu-18.04
     container: ${{ matrix.image }}
     steps:
@@ -91,8 +98,8 @@ jobs:
           python3-justbytes
           python3-dateutil
           python3-psutil
-          python3-semantic_version
           systemd-devel
+          ${{ matrix.additional_dependencies }}
       - uses: actions-rs/toolchain@v1
         with:
           components: cargo

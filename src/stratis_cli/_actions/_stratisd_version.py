@@ -14,30 +14,39 @@
 """
 Check version of stratisd
 """
-# isort: THIRDPARTY
-from semantic_version import Spec, Version
 
 from .._errors import StratisCliStratisdVersionError
 from ._connection import get_object
 from ._constants import MAXIMUM_STRATISD_VERSION, MINIMUM_STRATISD_VERSION, TOP_OBJECT
 
+try:
+    # isort: THIRDPARTY
+    from semantic_version import Spec, Version
 
-def check_stratisd_version():
-    """
-    Checks that the version of stratisd that is running is compatible with
-    this version of the CLI.
+    def check_stratisd_version():
+        """
+        Checks that the version of stratisd that is running is compatible with
+        this version of the CLI.
 
-    :raises StratisCliStratisdVersionError
-    """
-    # pylint: disable=import-outside-toplevel
-    from ._data import Manager0
+        :raises StratisCliStratisdVersionError
+        """
+        # pylint: disable=import-outside-toplevel
+        from ._data import Manager0
 
-    version_spec = Spec(
-        ">=%s,<%s" % (MINIMUM_STRATISD_VERSION, MAXIMUM_STRATISD_VERSION)
-    )
-    version = Manager0.Properties.Version.Get(get_object(TOP_OBJECT))
-
-    if Version(version) not in version_spec:
-        raise StratisCliStratisdVersionError(
-            version, MINIMUM_STRATISD_VERSION, MAXIMUM_STRATISD_VERSION
+        version_spec = Spec(
+            ">=%s,<%s" % (MINIMUM_STRATISD_VERSION, MAXIMUM_STRATISD_VERSION)
         )
+        version = Manager0.Properties.Version.Get(get_object(TOP_OBJECT))
+
+        if Version(version) not in version_spec:
+            raise StratisCliStratisdVersionError(
+                version, MINIMUM_STRATISD_VERSION, MAXIMUM_STRATISD_VERSION
+            )
+
+
+except ImportError:  # pragma: no cover
+
+    def check_stratisd_version():
+        """
+        Do nothing
+        """
