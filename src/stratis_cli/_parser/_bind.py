@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """
-Bind command parser for Stratis CLI.
+Bind/Rebind command parser for Stratis CLI.
 """
 
-from .._actions import BindActions
+from .._actions import BindActions, RebindActions
 
 BIND_SUBCMDS = [
     (
@@ -72,6 +72,36 @@ BIND_SUBCMDS = [
                 ("keydesc", dict(action="store", help="key description")),
             ],
             func=BindActions.bind_keyring,
+        ),
+    ),
+]
+
+REBIND_SUBCMDS = [
+    (
+        "clevis",
+        dict(
+            help=(
+                "Rebind the devices in the specified pool using their current "
+                "Clevis configuration"
+            ),
+            args=[
+                ("pool_name", dict(action="store", help="Pool name")),
+            ],
+            func=RebindActions.rebind_clevis,
+        ),
+    ),
+    (
+        "keyring",
+        dict(
+            help=(
+                "Rebind the devices in the specified pool using the specified "
+                "key in the kernel keyring"
+            ),
+            args=[
+                ("pool_name", dict(action="store", help="Pool name")),
+                ("keydesc", dict(action="store", help="key description")),
+            ],
+            func=RebindActions.rebind_keyring,
         ),
     ),
 ]

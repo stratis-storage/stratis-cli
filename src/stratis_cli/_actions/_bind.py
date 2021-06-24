@@ -164,3 +164,66 @@ class BindActions:
 
         if not changed:
             raise StratisCliNoChangeError("unbind", pool_name)
+
+
+class RebindActions:
+    """
+    Pool rebinding actions
+    """
+
+    @staticmethod
+    def rebind_clevis(namespace):
+        """
+        Rebind with Clevis nbde/tang
+        """
+        # pylint: disable=import-outside-toplevel
+        from ._data import ObjectManager, Pool, pools
+
+        pool_name = namespace.pool_name
+
+        proxy = get_object(TOP_OBJECT)
+        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
+        (pool_object_path, _) = next(
+            pools(props={"Name": pool_name})
+            .require_unique_match(True)
+            .search(managed_objects)
+        )
+        (changed, return_code, return_msg) = Pool.Methods.RebindClevis(
+            get_object(pool_object_path), {}
+        )
+
+        if return_code != StratisdErrors.OK:
+            raise StratisCliEngineError(return_code, return_msg)
+
+        if not changed:
+            # The sim engine always returns true on a rebind with Clevis
+            raise StratisCliNoChangeError("rebind", pool_name)  # pragma: no cover
+
+    @staticmethod
+    def rebind_keyring(namespace):
+        """
+        Rebind with a kernel keyring
+        """
+        # pylint: disable=import-outside-toplevel
+        from ._data import ObjectManager, Pool, pools
+
+        pool_name = namespace.pool_name
+        keydesc = namespace.keydesc
+
+        proxy = get_object(TOP_OBJECT)
+        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
+        (pool_object_path, _) = next(
+            pools(props={"Name": pool_name})
+            .require_unique_match(True)
+            .search(managed_objects)
+        )
+
+        (changed, return_code, return_msg) = Pool.Methods.RebindKeyring(
+            get_object(pool_object_path), {"key_desc": keydesc}
+        )
+
+        if return_code != StratisdErrors.OK:
+            raise StratisCliEngineError(return_code, return_msg)
+
+        if not changed:
+            raise StratisCliNoChangeError("rebind", pool_name)

@@ -17,7 +17,7 @@ Definition of pool actions to display in the CLI.
 
 from .._actions import BindActions, PoolActions
 from .._stratisd_constants import EncryptionMethod
-from ._bind import BIND_SUBCMDS
+from ._bind import BIND_SUBCMDS, REBIND_SUBCMDS
 
 POOL_SUBCMDS = [
     (
@@ -199,6 +199,16 @@ POOL_SUBCMDS = [
         dict(
             help="Bind the given pool with an additional encryption facility",
             subcmds=BIND_SUBCMDS,
+        ),
+    ),
+    (
+        "rebind",
+        dict(
+            help=(
+                "Rebind the given pool with a currently in use encryption "
+                "facility but new credentials"
+            ),
+            subcmds=REBIND_SUBCMDS,
         ),
     ),
     (
