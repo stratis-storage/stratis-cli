@@ -15,7 +15,7 @@
 Definition of pool actions to display in the CLI.
 """
 
-from .._actions import PoolActions
+from .._actions import BindActions, PoolActions
 from .._stratisd_constants import EncryptionMethod
 from ._bind import BIND_SUBCMDS
 
@@ -216,7 +216,7 @@ POOL_SUBCMDS = [
                 ),
                 ("pool_name", dict(action="store", help="Pool name")),
             ],
-            func=PoolActions.unbind,
+            func=BindActions.unbind,
         ),
     ),
     (

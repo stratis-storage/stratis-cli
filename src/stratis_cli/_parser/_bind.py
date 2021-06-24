@@ -15,7 +15,7 @@
 Bind command parser for Stratis CLI.
 """
 
-from .._actions import TopActions
+from .._actions import BindActions
 
 BIND_SUBCMDS = [
     (
@@ -50,7 +50,7 @@ BIND_SUBCMDS = [
                 )
             ],
             aliases=["tang"],
-            func=TopActions.bind_tang,
+            func=BindActions.bind_tang,
         ),
     ),
     (
@@ -60,7 +60,7 @@ BIND_SUBCMDS = [
             args=[
                 ("pool_name", dict(action="store", help="Pool name")),
             ],
-            func=TopActions.bind_tpm,
+            func=BindActions.bind_tpm,
         ),
     ),
     (
@@ -71,7 +71,7 @@ BIND_SUBCMDS = [
                 ("pool_name", dict(action="store", help="Pool name")),
                 ("keydesc", dict(action="store", help="key description")),
             ],
-            func=TopActions.bind_keyring,
+            func=BindActions.bind_keyring,
         ),
     ),
 ]
