@@ -65,11 +65,6 @@ class StratisdErrors(IntEnum):
     OK = 0
     ERROR = 1
 
-    ALREADY_EXISTS = 2
-    BUSY = 3
-    INTERNAL_ERROR = 4
-    NOT_FOUND = 5
-
 
 STRATISD_ERROR_TO_NAME = value_to_name(StratisdErrors)
 
