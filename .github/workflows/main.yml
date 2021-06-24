@@ -107,6 +107,13 @@ jobs:
           override: true
       - name: Check out stratisd
         run: git clone https://github.com/stratis-storage/stratisd.git
+      - name: SWitch to target stratisd branch
+        run: |
+          git config user.email "you@example.com"
+          git config user.name "Your Name"
+          git checkout -b jbaublitz-issue-stratisd-2358 develop-2.4.2
+          git pull https://github.com/jbaublitz/stratisd.git issue-stratisd-2358
+        working-directory: ./stratisd
       - name: Build stratisd
         run: PROFILEDIR=debug make install
         working-directory: ./stratisd
