@@ -29,15 +29,7 @@ from .._errors import (
     StratisCliNoChangeError,
     StratisCliResourceNotFoundError,
 )
-from .._stratisd_constants import (
-    CLEVIS_KEY_TANG_TRUST_URL,
-    CLEVIS_KEY_THP,
-    CLEVIS_KEY_URL,
-    CLEVIS_PIN_TANG,
-    CLEVIS_PIN_TPM2,
-    ReportKey,
-    StratisdErrors,
-)
+from .._stratisd_constants import ReportKey, StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import print_table
@@ -294,95 +286,3 @@ class TopActions:
         print_table(
             ["Key Description"], sorted(key_list, key=lambda entry: entry[0]), ["<"]
         )
-
-    @staticmethod
-    def _bind_clevis(namespace, clevis_pin, clevis_config):
-        """
-        Generic bind method. For further information about Clevis, and
-        discussion of the pin and the configuration, consult Clevis
-        documentation.
-
-        :param str clevis_pin: Clevis pin
-        :param dict clevis_config: configuration, may contain Stratis keys
-        """
-        # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, Pool, pools
-
-        proxy = get_object(TOP_OBJECT)
-        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        pool_name = namespace.pool_name
-        (pool_object_path, _) = next(
-            pools(props={"Name": pool_name})
-            .require_unique_match(True)
-            .search(managed_objects)
-        )
-        (changed, return_code, return_msg) = Pool.Methods.Bind(
-            get_object(pool_object_path),
-            {
-                "pin": clevis_pin,
-                "json": json.dumps(clevis_config),
-            },
-        )
-
-        if return_code != StratisdErrors.OK:
-            raise StratisCliEngineError(return_code, return_msg)
-
-        if not changed:
-            raise StratisCliNoChangeError("bind", pool_name)
-
-    @staticmethod
-    def bind_tang(namespace):
-        """
-        Bind all devices in an encrypted pool using the specified tang server.
-
-        :raises StratisCliNoChangeError:
-        :raises StratisCliEngineError:
-        """
-        clevis_config = {CLEVIS_KEY_URL: namespace.url}
-        if namespace.trust_url:
-            clevis_config[CLEVIS_KEY_TANG_TRUST_URL] = True
-        else:
-            assert namespace.thumbprint is not None
-            clevis_config[CLEVIS_KEY_THP] = namespace.thumbprint
-
-        TopActions._bind_clevis(namespace, CLEVIS_PIN_TANG, clevis_config)
-
-    @staticmethod
-    def bind_tpm(namespace):
-        """
-        Bind all devices in an encrypted pool using TPM.
-
-        :raises StratisCliNoChangeError:
-        :raises StratisCliEngineError:
-        """
-
-        TopActions._bind_clevis(namespace, CLEVIS_PIN_TPM2, {})
-
-    @staticmethod
-    def bind_keyring(namespace):
-        """
-        Bind all devices in an encrypted pool using the kernel keyring.
-        """
-        # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, Pool, pools
-
-        proxy = get_object(TOP_OBJECT)
-        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        pool_name = namespace.pool_name
-        (pool_object_path, _) = next(
-            pools(props={"Name": pool_name})
-            .require_unique_match(True)
-            .search(managed_objects)
-        )
-        (changed, return_code, return_msg) = Pool.Methods.BindKeyring(
-            get_object(pool_object_path),
-            {
-                "key_desc": namespace.keydesc,
-            },
-        )
-
-        if return_code != StratisdErrors.OK:
-            raise StratisCliEngineError(return_code, return_msg)
-
-        if not changed:
-            raise StratisCliNoChangeError("bind", pool_name)
