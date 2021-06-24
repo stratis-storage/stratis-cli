@@ -15,7 +15,7 @@
 Package mediating dbus actions.
 """
 
-from ._bind import BindActions
+from ._bind import BindActions, RebindActions
 from ._constants import BLOCKDEV_INTERFACE, FILESYSTEM_INTERFACE, POOL_INTERFACE
 from ._logical import LogicalActions
 from ._physical import PhysicalActions
