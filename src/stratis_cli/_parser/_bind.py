@@ -80,7 +80,10 @@ REBIND_SUBCMDS = [
     (
         "clevis",
         dict(
-            help="Rebind using current Clevis nbde/tang configuration",
+            help=(
+                "Rebind the devices in the specified pool using their current "
+                "Clevis configuration"
+            ),
             args=[
                 ("pool_name", dict(action="store", help="Pool name")),
             ],
@@ -90,7 +93,10 @@ REBIND_SUBCMDS = [
     (
         "keyring",
         dict(
-            help="Rebind with a key specified in the kernel keyring",
+            help=(
+                "Rebind the devices in the specified pool using the specified "
+                "key in the kernel keyring"
+            ),
             args=[
                 ("pool_name", dict(action="store", help="Pool name")),
                 ("keydesc", dict(action="store", help="key description")),
