@@ -87,7 +87,7 @@ try:
     # This minimal specification includes only the specification for the
     # Version property.
     manager_spec = """
-    <interface name="org.storage.stratis2.Manager">
+    <interface name="org.storage.stratis3.Manager.r0">
         <property access="read" name="Version" type="s">
             <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const" />
         </property>
