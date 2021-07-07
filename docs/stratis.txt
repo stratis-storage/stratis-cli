@@ -68,6 +68,12 @@ pool bind tpm2 <pool name>::
 pool bind keyring <pool name> <keydesc>::
      Bind the devices in the specified pool to a supplementary encryption
      mechanism using a key in the kernel keyring.
+pool rebind clevis <pool name>::
+     Rebind the devices in the spcified pool using the Clevis configuration
+     with which the devices in the pool were previously bound.
+pool rebind keyring <pool_name> <keydesc>::
+     Rebind the devices in the specified pool using the specified key
+     description.
 pool unbind <(clevis|keyring)> <pool name> ::
      Unbind the devices in the specified pool from the specified encryption
      mechanism.
