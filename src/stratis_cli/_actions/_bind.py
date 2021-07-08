@@ -30,6 +30,7 @@ from .._stratisd_constants import (
 )
 from ._connection import get_object
 from ._constants import TOP_OBJECT
+from ._utils import get_pool_object_path
 
 
 class BindActions:
@@ -48,16 +49,12 @@ class BindActions:
         :param dict clevis_config: configuration, may contain Stratis keys
         """
         # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, Pool, pools
+        from ._data import Pool
+
+        pool_name = namespace.pool_name
 
         proxy = get_object(TOP_OBJECT)
-        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        pool_name = namespace.pool_name
-        (pool_object_path, _) = next(
-            pools(props={"Name": pool_name})
-            .require_unique_match(True)
-            .search(managed_objects)
-        )
+        pool_object_path = get_pool_object_path(proxy, pool_name)
         (changed, return_code, return_msg) = Pool.Methods.Bind(
             get_object(pool_object_path),
             {
@@ -106,16 +103,14 @@ class BindActions:
         Bind all devices in an encrypted pool using the kernel keyring.
         """
         # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, Pool, pools
+        from ._data import Pool
+
+        pool_name = namespace.pool_name
 
         proxy = get_object(TOP_OBJECT)
-        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        pool_name = namespace.pool_name
-        (pool_object_path, _) = next(
-            pools(props={"Name": pool_name})
-            .require_unique_match(True)
-            .search(managed_objects)
-        )
+
+        pool_object_path = get_pool_object_path(proxy, pool_name)
+
         (changed, return_code, return_msg) = Pool.Methods.BindKeyring(
             get_object(pool_object_path),
             {
@@ -138,16 +133,12 @@ class BindActions:
         :raises StratisCliEngineError:
         """
         # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, Pool, pools
+        from ._data import Pool
+
+        pool_name = namespace.pool_name
 
         proxy = get_object(TOP_OBJECT)
-        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        pool_name = namespace.pool_name
-        (pool_object_path, _) = next(
-            pools(props={"Name": pool_name})
-            .require_unique_match(True)
-            .search(managed_objects)
-        )
+        pool_object_path = get_pool_object_path(proxy, pool_name)
 
         unbind_method = (
             Pool.Methods.Unbind
@@ -177,17 +168,13 @@ class RebindActions:
         Rebind with Clevis nbde/tang
         """
         # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, Pool, pools
+        from ._data import Pool
 
         pool_name = namespace.pool_name
 
         proxy = get_object(TOP_OBJECT)
-        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        (pool_object_path, _) = next(
-            pools(props={"Name": pool_name})
-            .require_unique_match(True)
-            .search(managed_objects)
-        )
+        pool_object_path = get_pool_object_path(proxy, pool_name)
+
         (changed, return_code, return_msg) = Pool.Methods.RebindClevis(
             get_object(pool_object_path), {}
         )
@@ -205,18 +192,13 @@ class RebindActions:
         Rebind with a kernel keyring
         """
         # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, Pool, pools
+        from ._data import Pool
 
         pool_name = namespace.pool_name
         keydesc = namespace.keydesc
 
         proxy = get_object(TOP_OBJECT)
-        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        (pool_object_path, _) = next(
-            pools(props={"Name": pool_name})
-            .require_unique_match(True)
-            .search(managed_objects)
-        )
+        pool_object_path = get_pool_object_path(proxy, pool_name)
 
         (changed, return_code, return_msg) = Pool.Methods.RebindKeyring(
             get_object(pool_object_path), {"key_desc": keydesc}

@@ -120,3 +120,20 @@ def get_clevis_info(namespace):
         if clevis_info is None
         else (clevis_info[0], json.dumps(clevis_info[1]))
     )
+
+
+def get_pool_object_path(top_object, name):
+    """
+    Get a pool's object path based on its name.
+
+    :param top_object: the top object
+    :param str name: the pool name
+    """
+    # pylint: disable=import-outside-toplevel
+    from ._data import ObjectManager, pools
+
+    managed_objects = ObjectManager.Methods.GetManagedObjects(top_object, {})
+    (pool_object_path, _) = next(
+        pools(props={"Name": name}).require_unique_match(True).search(managed_objects)
+    )
+    return pool_object_path

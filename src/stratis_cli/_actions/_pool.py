@@ -37,7 +37,7 @@ from .._stratisd_constants import BlockDevTiers, StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import TABLE_FAILURE_STRING, get_property, print_table, to_hyphenated
-from ._utils import fetch_property, get_clevis_info
+from ._utils import fetch_property, get_clevis_info, get_pool_object_path
 
 
 def _generate_pools_to_blockdevs(managed_objects, to_be_added, tier):
@@ -380,15 +380,10 @@ class PoolActions:
         :raises StratisCliIncoherenceError:
         """
         # pylint: disable=import-outside-toplevel
-        from ._data import Manager, ObjectManager, pools
+        from ._data import Manager
 
         proxy = get_object(TOP_OBJECT)
-        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        (pool_object_path, _) = next(
-            pools(props={"Name": namespace.pool_name})
-            .require_unique_match(True)
-            .search(managed_objects)
-        )
+        pool_object_path = get_pool_object_path(proxy, namespace.pool_name)
 
         ((changed, _), return_code, message) = Manager.Methods.DestroyPool(
             proxy, {"pool": pool_object_path}
@@ -418,15 +413,10 @@ class PoolActions:
         :raises StratisCliNoChangeError:
         """
         # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, Pool, pools
+        from ._data import Pool
 
         proxy = get_object(TOP_OBJECT)
-        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        (pool_object_path, _) = next(
-            pools(props={"Name": namespace.current})
-            .require_unique_match(True)
-            .search(managed_objects)
-        )
+        pool_object_path = get_pool_object_path(proxy, namespace.current)
 
         ((changed, _), return_code, message) = Pool.Methods.SetName(
             get_object(pool_object_path), {"name": namespace.new}
