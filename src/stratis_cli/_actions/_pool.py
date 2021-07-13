@@ -138,14 +138,14 @@ def _check_same_tier(pool_name, managed_objects, to_be_added, this_tier):
 
 def _fetch_locked_pools_property(proxy):
     """
-    Fetch the LockedPools property from stratisd.
+    Fetch the LockedPoolsWithDevs property from stratisd.
     :param proxy: proxy to the top object in stratisd
     :return: list of pool UUIDs as strings
     :rtype: list of str
     :raises StratisCliPropertyNotFoundError:
     :raises StratisCliEnginePropertyError:
     """
-    return fetch_property(proxy, "LockedPools")
+    return fetch_property(proxy, "LockedPoolsWithDevs")
 
 
 class PoolActions:
