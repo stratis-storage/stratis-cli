@@ -73,12 +73,14 @@ class LogicalActions:
                 "create", requested_names.difference(already_names), already_names
             )
 
+        requested_specs = [(n, (False, "")) for n in requested_names]
+
         (
             (created, list_created),
             return_code,
             message,
         ) = Pool.Methods.CreateFilesystems(
-            get_object(pool_object_path), {"specs": list(requested_names)}
+            get_object(pool_object_path), {"specs": requested_specs}
         )
 
         if return_code != StratisdErrors.OK:
