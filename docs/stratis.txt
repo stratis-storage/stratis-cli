@@ -77,8 +77,10 @@ pool rebind keyring <pool_name> <keydesc>::
 pool unbind <(clevis|keyring)> <pool name> ::
      Unbind the devices in the specified pool from the specified encryption
      mechanism.
-filesystem create <pool_name> <fs_name> [<fs_name>..]::
+filesystem create <pool_name> <fs_name> [<fs_name>..] [--size <size>]::
 	   Create one or more filesystems from the specified pool.
+           If '--size' option is specified, make each filesystem the specified
+           size. Otherwise, accept the stratisd default.
            NOTE: There is a temporary restriction on the number of filesystems
            that can be specified with this command. Specifying more than one
            filesystem will result in an error.
@@ -142,6 +144,12 @@ OPTIONS
         the URL of the server.
 --clevis <(nbde | tang | tpm2)> ::
         The clevis method that should be used to encrypt the created pool.
+--size <size spec> ::
+        Used to specify the size of, e.g., a filesystem. The format of the
+        specification is '<magnitude> <unit specifier>' where the magnitude
+        may be a decimal number and the unit specifier may be any of 'B',
+        'KiB', 'MiB', 'GiB', 'TiB'. The parsed size value is rounded down to
+        the nearest byte.
 
 ENVIRONMENT VARIABLES
 ---------------------

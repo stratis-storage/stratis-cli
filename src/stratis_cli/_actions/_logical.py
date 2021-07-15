@@ -73,7 +73,12 @@ class LogicalActions:
                 "create", requested_names.difference(already_names), already_names
             )
 
-        requested_specs = [(n, (False, "")) for n in requested_names]
+        requested_size_arg = (
+            (False, "")
+            if namespace.size is None
+            else (True, str(namespace.size.magnitude))
+        )
+        requested_specs = [(n, requested_size_arg) for n in requested_names]
 
         (
             (created, list_created),
