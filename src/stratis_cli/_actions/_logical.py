@@ -73,12 +73,19 @@ class LogicalActions:
                 "create", requested_names.difference(already_names), already_names
             )
 
+        requested_size_arg = (
+            (False, "")
+            if namespace.size is None
+            else (True, str(namespace.size.magnitude))
+        )
+        requested_specs = [(n, requested_size_arg) for n in requested_names]
+
         (
             (created, list_created),
             return_code,
             message,
         ) = Pool.Methods.CreateFilesystems(
-            get_object(pool_object_path), {"specs": list(requested_names)}
+            get_object(pool_object_path), {"specs": requested_specs}
         )
 
         if return_code != StratisdErrors.OK:
