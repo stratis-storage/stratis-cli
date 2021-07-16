@@ -33,7 +33,7 @@ from .._errors import (
     StratisCliPartialChangeError,
     StratisCliPartialFailureError,
 )
-from .._stratisd_constants import BlockDevTiers, EncryptionMethod, StratisdErrors
+from .._stratisd_constants import BlockDevTiers, StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import TABLE_FAILURE_STRING, get_property, print_table, to_hyphenated
@@ -138,14 +138,14 @@ def _check_same_tier(pool_name, managed_objects, to_be_added, this_tier):
 
 def _fetch_locked_pools_property(proxy):
     """
-    Fetch the LockedPools property from stratisd.
+    Fetch the LockedPoolsWithDevs property from stratisd.
     :param proxy: proxy to the top object in stratisd
     :return: list of pool UUIDs as strings
     :rtype: list of str
     :raises StratisCliPropertyNotFoundError:
     :raises StratisCliEnginePropertyError:
     """
-    return fetch_property(proxy, "LockedPools")
+    return fetch_property(proxy, "LockedPoolsWithDevs")
 
 
 class PoolActions:
@@ -547,42 +547,6 @@ class PoolActions:
                 )
                 % (namespace.pool_name, ", ".join(devnodes_added), ", ".join(blockdevs))
             )
-
-    @staticmethod
-    def unbind(namespace):
-        """
-        Unbind all devices in an encrypted pool.
-
-        :raises StratisCliNoChangeError:
-        :raises StratisCliEngineError:
-        """
-        # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, Pool, pools
-
-        proxy = get_object(TOP_OBJECT)
-        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        pool_name = namespace.pool_name
-        (pool_object_path, _) = next(
-            pools(props={"Name": pool_name})
-            .require_unique_match(True)
-            .search(managed_objects)
-        )
-
-        unbind_method = (
-            Pool.Methods.Unbind
-            if namespace.method == str(EncryptionMethod.CLEVIS)
-            else Pool.Methods.UnbindKeyring
-        )
-
-        (changed, return_code, return_msg) = unbind_method(
-            get_object(pool_object_path), {}
-        )
-
-        if return_code != StratisdErrors.OK:
-            raise StratisCliEngineError(return_code, return_msg)
-
-        if not changed:
-            raise StratisCliNoChangeError("unbind", pool_name)
 
     @staticmethod
     def unlock_pools(namespace):
