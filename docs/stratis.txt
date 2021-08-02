@@ -186,6 +186,9 @@ Properties::
           Cr - indicates the pool is encrypted.
 UUID::
           The UUID of the pool.
+Alerts::
+          Any unusual or urgent information about the pool of which the
+          user should be made aware.
 
 FIELDS for stratis filesystem list
 
