@@ -16,6 +16,7 @@ Definition of pool actions to display in the CLI.
 """
 
 from .._actions import BindActions, PoolActions
+from .._constants import PoolMaintenanceErrorCode
 from .._stratisd_constants import EncryptionMethod
 from ._bind import BIND_SUBCMDS, REBIND_SUBCMDS
 
@@ -245,6 +246,23 @@ POOL_SUBCMDS = [
                 )
             ],
             func=PoolActions.unlock_pools,
+        ),
+    ),
+    (
+        "explain",
+        dict(
+            help="Explain pool alert codes",
+            args=[
+                (
+                    "code",
+                    dict(
+                        action="store",
+                        choices=[str(x) for x in list(PoolMaintenanceErrorCode)],
+                        help="Error code to explain",
+                    ),
+                )
+            ],
+            func=PoolActions.explain_code,
         ),
     ),
 ]

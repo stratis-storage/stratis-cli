@@ -22,6 +22,7 @@ from collections import defaultdict
 # isort: THIRDPARTY
 from justbytes import Range
 
+from .._constants import PoolMaintenanceErrorCode
 from .._errors import (
     StratisCliAggregateError,
     StratisCliEngineError,
@@ -33,7 +34,7 @@ from .._errors import (
     StratisCliPartialChangeError,
     StratisCliPartialFailureError,
 )
-from .._stratisd_constants import BlockDevTiers, StratisdErrors
+from .._stratisd_constants import BlockDevTiers, PoolActionAvailability, StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import TABLE_FAILURE_STRING, get_property, print_table, to_hyphenated
@@ -353,20 +354,36 @@ class PoolActions:
             (lambda mo_uuid: mo_uuid) if namespace.unhyphenated_uuids else to_hyphenated
         )
 
+        def alert_string(mopool):
+            """
+            Alert information to display, if any
+
+            :param mopool: object to access pool properties
+
+            :returns: string w/ alert information, "" if no alert
+            :rtype: str
+            """
+            action_availability = PoolActionAvailability.from_str(
+                mopool.AvailableActions()
+            )
+            error_codes = action_availability.pool_maintenance_error_codes()
+            return ", ".join(sorted(str(code) for code in error_codes))
+
         tables = [
             (
                 mopool.Name(),
                 physical_size_triple(props),
                 properties_string(mopool, props),
                 format_uuid(mopool.Uuid()),
+                alert_string(mopool),
             )
             for props, mopool in pools_with_props
         ]
 
         print_table(
-            ["Name", "Total Physical", "Properties", "UUID"],
+            ["Name", "Total Physical", "Properties", "UUID", "Alerts"],
             sorted(tables, key=lambda entry: entry[0]),
-            ["<", ">", ">", ">"],
+            ["<", ">", ">", ">", "<"],
         )
 
     @staticmethod
@@ -595,3 +612,12 @@ class PoolActions:
 
         if errors != []:  # pragma: no cover
             raise StratisCliAggregateError("unlock", "pool", errors)
+
+    @staticmethod
+    def explain_code(namespace):
+        """
+        Print an explanation of pool error code.
+        """
+        error_code = PoolMaintenanceErrorCode.from_str(namespace.code)
+        assert error_code is not None
+        print(error_code.explain())

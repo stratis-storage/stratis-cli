@@ -18,6 +18,8 @@ Stratisd error classes.
 # isort: STDLIB
 from enum import Enum, IntEnum
 
+from ._constants import PoolMaintenanceErrorCode
+
 
 def value_to_name(klass):
     """
@@ -126,3 +128,56 @@ class ReportKey(Enum):
 
     def __str__(self):  # pylint: disable=invalid-str-returned
         return self.value
+
+
+class PoolActionAvailability(IntEnum):
+    """
+    What category of interactions a pool is enabled for.
+    """
+
+    FULLY_OPERATIONAL = 0
+    NO_IPC_REQUESTS = 1
+    NO_POOL_CHANGES = 2
+    NO_WRITE_IO = 3
+
+    def __str__(self):  # pylint: disable=inconsistent-return-statements
+        if self is PoolActionAvailability.FULLY_OPERATIONAL:
+            return "fully_operational"
+        if self is PoolActionAvailability.NO_IPC_REQUESTS:
+            return "no_ipc_requests"
+        if self is PoolActionAvailability.NO_POOL_CHANGES:
+            return "no_pool_changes"
+        if self is PoolActionAvailability.NO_WRITE_IO:  # pragma: no cover
+            return "no_write_io"
+
+        assert False, "impossible value reached"  # pragma: no cover
+
+    @staticmethod
+    def from_str(code_str):
+        """
+        Get ActionAvailability object from a string.
+        :param str code_str: a code string
+        :rtype: str or NoneType
+        """
+        for item in list(PoolActionAvailability):
+            if code_str == str(item):
+                return item
+        return None
+
+    def pool_maintenance_error_codes(self):
+        """
+        Return the list of PoolMaintenanceErrorCodes for this availability.
+
+        :rtype: list of PoolMaintenanceErrorCode
+        """
+        codes = []
+        if self >= PoolActionAvailability.NO_IPC_REQUESTS:
+            codes.append(PoolMaintenanceErrorCode.NO_IPC_REQUESTS)
+
+        if self >= PoolActionAvailability.NO_POOL_CHANGES:
+            codes.append(PoolMaintenanceErrorCode.NO_POOL_CHANGES)
+
+        if self >= PoolActionAvailability.NO_WRITE_IO:
+            codes.append(PoolMaintenanceErrorCode.READ_ONLY)
+
+        return codes
