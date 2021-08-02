@@ -126,3 +126,17 @@ class ReportKey(Enum):
 
     def __str__(self):  # pylint: disable=invalid-str-returned
         return self.value
+
+
+class PoolActionAvailability(Enum):
+    """
+    What category of interactions a pool is enabled for.
+    """
+
+    FULL = "fully_operational"
+    NO_REQUESTS = "no_ipc_requests"
+    NO_POOL_CHANGES = "no_pool_changes"
+    READ_ONLY = "no_write_io"
+
+    def __str__(self):  # pylint: disable=invalid-str-returned
+        return self.value
