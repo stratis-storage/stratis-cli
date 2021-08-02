@@ -164,6 +164,8 @@ Properties::
           "?", representing "unknown", is prepended to the property code.
           The property codes are: Ca - indicates the pool has a cache,
           Cr - indicates the pool is encrypted.
+UUID::
+          The UUID of the pool.
 
 FIELDS for stratis filesystem list
 
