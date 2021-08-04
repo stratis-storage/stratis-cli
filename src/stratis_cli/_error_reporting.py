@@ -114,11 +114,12 @@ def _interpret_errors_0(error):
             "Most likely stratis has insufficient permissions for the action requested."
         )
 
-    # We have observed two causes of this problem. The first is that
+    # We have observed three causes of this problem. The first is that
     # stratisd is not running at all. The second is that stratisd has not
-    # yet established its D-Bus service. While coverage of the first condition
-    # can be replicated by simply not starting stratisd, the second condition
-    # is difficult to replicate through testing.
+    # yet established its D-Bus service. The third is that stratisd is
+    # running with a new major version and is supplying a different name on the
+    # D-Bus than stratis is attempting to use. The second and third
+    # possibilities are both covered by a single error message.
     if error.get_dbus_name() == "org.freedesktop.DBus.Error.NameHasNoOwner":
         for proc in psutil.process_iter():
             try:
