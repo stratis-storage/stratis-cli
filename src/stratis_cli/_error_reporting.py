@@ -20,7 +20,6 @@ import sys
 
 # isort: THIRDPARTY
 import dbus
-import psutil
 
 # isort: FIRSTPARTY
 from dbus_client_gen import (
@@ -121,14 +120,25 @@ def _interpret_errors_0(error):
     # D-Bus than stratis is attempting to use. The second and third
     # possibilities are both covered by a single error message.
     if error.get_dbus_name() == "org.freedesktop.DBus.Error.NameHasNoOwner":
-        for proc in psutil.process_iter():
-            try:
-                if proc.name() == "stratisd":  # pragma: no cover
-                    return "Most likely stratis is unable to connect to the stratisd D-Bus service."
-            except psutil.NoSuchProcess:  # pragma: no cover
-                pass
+        try:
+            # pylint: disable=import-outside-toplevel
+            # isort: THIRDPARTY
+            import psutil
 
-        return "It appears that there is no stratisd process running."
+            for proc in psutil.process_iter():
+                try:
+                    if proc.name() == "stratisd":  # pragma: no cover
+                        return (
+                            "Most likely stratis is unable to connect to the "
+                            "stratisd D-Bus service."
+                        )
+                except psutil.NoSuchProcess:  # pragma: no cover
+                    pass
+
+            return "It appears that there is no stratisd process running."
+
+        except ImportError:  # pragma: no cover
+            return "Most likely there is no stratisd process running."
 
     # Due to the uncertain behavior with which libdbus
     # treats a timeout value of 0, it proves difficult to test this case,
