@@ -124,7 +124,7 @@ def _interpret_errors_0(error):
         for proc in psutil.process_iter():
             try:
                 if proc.name() == "stratisd":  # pragma: no cover
-                    return "Most likely stratis is unable to connect to the stratis D-Bus service."
+                    return "Most likely stratis is unable to connect to the stratisd D-Bus service."
             except psutil.NoSuchProcess:  # pragma: no cover
                 pass
 
