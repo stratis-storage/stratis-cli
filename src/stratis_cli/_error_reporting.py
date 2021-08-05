@@ -113,8 +113,32 @@ def _interpret_errors_0(error):
             "Most likely stratis has insufficient permissions for the action requested."
         )
 
+    # We have observed three causes of this problem. The first is that
+    # stratisd is not running at all. The second is that stratisd has not
+    # yet established its D-Bus service. The third is that stratisd is
+    # running with a new major version and is supplying a different name on the
+    # D-Bus than stratis is attempting to use. The second and third
+    # possibilities are both covered by a single error message.
     if error.get_dbus_name() == "org.freedesktop.DBus.Error.NameHasNoOwner":
-        return "Most likely there is no stratisd process running."
+        try:
+            # pylint: disable=import-outside-toplevel
+            # isort: THIRDPARTY
+            import psutil
+
+            for proc in psutil.process_iter():
+                try:
+                    if proc.name() == "stratisd":  # pragma: no cover
+                        return (
+                            "Most likely stratis is unable to connect to the "
+                            "stratisd D-Bus service."
+                        )
+                except psutil.NoSuchProcess:  # pragma: no cover
+                    pass
+
+            return "It appears that there is no stratisd process running."
+
+        except ImportError:  # pragma: no cover
+            return "Most likely there is no stratisd process running."
 
     # Due to the uncertain behavior with which libdbus
     # treats a timeout value of 0, it proves difficult to test this case,
