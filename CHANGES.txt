@@ -1,3 +1,9 @@
+stratis-cli 2.4.4
+=================
+Recommended development environment: Fedora 33
+Lowest supported Python interpreter: 3.6.8
+
+
 stratis-cli 2.4.3
 =================
 Recommended development environment: Fedora 33
