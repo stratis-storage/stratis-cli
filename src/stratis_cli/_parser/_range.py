@@ -51,7 +51,6 @@ class RangeAction(argparse.Action):
     Round down to the nearest byte
     """
 
-    # pylint: disable=redefined-builtin
     def __init__(self, option_strings, dest, **kwargs):
         """
         Initialize the object
