@@ -37,7 +37,7 @@ LOGICAL_SUBCMDS = [
                     dict(
                         action=RangeAction,
                         dest="size",
-                        help='The size of the filesystems to be created, e.g., "32.25 GiB"',
+                        help='The size of the filesystems to be created, e.g., "32GiB"',
                     ),
                 ),
             ],

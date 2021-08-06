@@ -17,11 +17,22 @@ Definition of filesystem actions to display in the CLI.
 
 # isort: STDLIB
 import argparse
+import re
 
 # isort: THIRDPARTY
-from justbytes import ROUND_DOWN, B, GiB, KiB, MiB, Range, RangeValueError, TiB
+from justbytes import B, GiB, KiB, MiB, PiB, Range, TiB
+
+_RANGE_RE = re.compile(r"^(?P<magnitude>[0-9]+)(?P<units>([KMGTP]i)?B)$")
+
+_SIZE_SPECIFICATION = (
+    "Size must be speified using the format <magnitude><units> where "
+    "<magnitude> is a decimal integer value and <units> is any binary "
+    'unit specifier in the set "B", "KiB", "MiB", "GiB", "TiB", '
+    'and "PiB".'
+)
 
 
+# pylint: disable=inconsistent-return-statements
 def _unit_map(unit_specifier):
     """
     A simple function that maps a unit_specifier string
@@ -41,7 +52,9 @@ def _unit_map(unit_specifier):
         return GiB
     if unit_specifier == "TiB":
         return TiB
-    raise RuntimeError('Unknown unit specifier "%s"' % unit_specifier)
+    if unit_specifier == "PiB":
+        return PiB
+    assert False, 'Unknown unit specifier "%s"' % unit_specifier
 
 
 class RangeAction(argparse.Action):
@@ -61,22 +74,16 @@ class RangeAction(argparse.Action):
         """
         Set dest namespace attribute to Range value parsed from values.
         """
-        parts = values.split(" ", 1)
-        try:
-            (magnitude, unit) = (parts[0], parts[1])
-        except IndexError as err:
+        match = _RANGE_RE.search(values)
+        if match is None:
             raise argparse.ArgumentError(
-                self, "Space required between magnitude and unit specifier"
-            ) from err
+                self, "Ill-formed size specification: %s" % _SIZE_SPECIFICATION
+            )
 
-        try:
-            units = _unit_map(unit)
-        except RuntimeError as err:
-            raise argparse.ArgumentError(self, str(err)) from err
+        (magnitude, unit) = (match.group("magnitude"), match.group("units"))
 
-        try:
-            size = Range(magnitude, units).roundTo(B, rounding=ROUND_DOWN)
-        except RangeValueError as err:
-            raise argparse.ArgumentError(self, str(err)) from err
+        units = _unit_map(unit)
+
+        size = Range(magnitude, units)
 
         setattr(namespace, self.dest, size)

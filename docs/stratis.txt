@@ -145,11 +145,17 @@ OPTIONS
 --clevis <(nbde | tang | tpm2)> ::
         The clevis method that should be used to encrypt the created pool.
 --size <size spec> ::
-        Used to specify the size of, e.g., a filesystem. The format of the
-        specification is '<magnitude> <unit specifier>' where the magnitude
-        may be a decimal number and the unit specifier may be any of 'B',
-        'KiB', 'MiB', 'GiB', 'TiB'. The parsed size value is rounded down to
-        the nearest byte.
+        Used to specify the size of, e.g., a filesystem. The specification
+        format must follow the standard size specification format for input
+        (see below).
+
+
+SIZE SPECIFICATION FORMAT FOR INPUT
+-----------------------------------
+	The format of a size specification is '<magnitude><unit specifier>'
+        where the magnitude must be a decimal integer and the unit specifier
+        may be any of 'B', 'KiB', 'MiB', 'GiB', 'TiB'. or 'PiB'.
+
 
 ENVIRONMENT VARIABLES
 ---------------------
