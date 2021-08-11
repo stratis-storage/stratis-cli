@@ -22,6 +22,7 @@ from collections import defaultdict
 # isort: THIRDPARTY
 from justbytes import Range
 
+from .._constants import PoolMaintenanceErrorCode
 from .._errors import (
     StratisCliAggregateError,
     StratisCliEngineError,
@@ -362,10 +363,11 @@ class PoolActions:
             :returns: string w/ alert information, "" if no alert
             :rtype: str
             """
-            action_availability = mopool.AvailableActions()
-            if action_availability == str(PoolActionAvailability.FULL):
-                return "-----"
-            return str(action_availability)  # pragma: no cover
+            action_availability = PoolActionAvailability.from_str(
+                mopool.AvailableActions()
+            )
+            error_codes = action_availability.pool_maintenance_error_codes()
+            return ", ".join(sorted(str(code) for code in error_codes))
 
         tables = [
             (
@@ -610,3 +612,12 @@ class PoolActions:
 
         if errors != []:  # pragma: no cover
             raise StratisCliAggregateError("unlock", "pool", errors)
+
+    @staticmethod
+    def explain_code(namespace):
+        """
+        Print an explanation of pool error code.
+        """
+        error_code = PoolMaintenanceErrorCode.from_str(namespace.code)
+        assert error_code is not None
+        print(error_code.explain())

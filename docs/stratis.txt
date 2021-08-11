@@ -77,6 +77,9 @@ pool rebind keyring <pool_name> <keydesc>::
 pool unbind <(clevis|keyring)> <pool name> ::
      Unbind the devices in the specified pool from the specified encryption
      mechanism.
+pool explain <code> ::
+     Explain any error code that might show up in the Alerts column when
+     listing a pool.
 filesystem create <pool_name> <fs_name> [<fs_name>..] [--size <size>]::
 	   Create one or more filesystems from the specified pool.
            If '--size' option is specified, make each filesystem the specified
