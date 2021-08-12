@@ -114,6 +114,61 @@ class ParserTestCase(RunTestCase):
             self.check_system_exit(prefix + command_line, _PARSE_ERROR)
 
 
+class TestFilesystemSizeParsing(RunTestCase):
+    """
+    Test that parser errors are properly returned on badly formatted sizes.
+    """
+
+    def test_integer_magnitude(self):
+        """
+        Verify that a parse error occurs if the size magnitude is not an
+        integer.
+        """
+        command_line = ["filesystem", "create", "pn", "fn", '--size="32.2GiB"']
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
+    def test_gibberish_magnitude(self):
+        """
+        Verify that a parse error occurs if the size magnitude is not a number.
+        """
+        command_line = ["filesystem", "create", "pn", "fn", '--size="carbonGiB"']
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
+    def test_extra_space(self):
+        """
+        Verify no spaces allowed between magnitude and units.
+        """
+        command_line = ["filesystem", "create", "pn", "fn", '--size="312 GiB"']
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
+    def test_funny_units(self):
+        """
+        Verify no funny units allowed.
+        """
+        command_line = ["filesystem", "create", "pn", "fn", '--size="312WiB"']
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
+    def test_decimal_units(self):
+        """
+        Verify no decimal units allowed.
+        """
+        command_line = ["filesystem", "create", "pn", "fn", '--size="312GB"']
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
+    def test_empty_units(self):
+        """
+        Verify units specification is mandatory.
+        """
+        command_line = ["filesystem", "create", "pn", "fn", '--size="312"']
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
+
 class ParserSimTestCase(SimTestCase):
     """
     Parser tests which require the sim engine to be running.
