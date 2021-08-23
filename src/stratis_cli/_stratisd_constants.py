@@ -43,7 +43,7 @@ def value_to_name(klass):
         :rtype: str
         """
         try:
-            the_str = str(klass(num)).rsplit(".")[-1].replace("_", " ")
+            the_str = str(klass(num)).rsplit(".", maxsplit=1)[-1].replace("_", " ")
 
         # This branch is taken only if the constants defined here do not
         # match those defined in stratisd. We should remedy such a situation
