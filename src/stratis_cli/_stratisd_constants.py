@@ -87,8 +87,8 @@ class BlockDevTiers(IntEnum):
     Tier to which a blockdev device belongs.
     """
 
-    Data = 0
-    Cache = 1
+    DATA = 0
+    CACHE = 1
 
 
 BLOCK_DEV_TIER_TO_NAME = value_to_name(BlockDevTiers)

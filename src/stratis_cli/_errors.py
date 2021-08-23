@@ -254,9 +254,9 @@ class StratisCliInUseOtherTierError(StratisCliInUseError):
         (target_blockdev_tier, already_blockdev_tier) = (
             BLOCK_DEV_TIER_TO_NAME(self.added_as),
             BLOCK_DEV_TIER_TO_NAME(
-                BlockDevTiers.Data
-                if self.added_as == BlockDevTiers.Cache
-                else BlockDevTiers.Cache
+                BlockDevTiers.DATA
+                if self.added_as == BlockDevTiers.CACHE
+                else BlockDevTiers.CACHE
             ),
         )
 
