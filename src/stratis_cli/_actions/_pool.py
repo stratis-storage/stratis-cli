@@ -96,9 +96,9 @@ def _check_opposite_tier(managed_objects, to_be_added, other_tier):
     if pools_to_blockdevs != {}:
         raise StratisCliInUseOtherTierError(
             pools_to_blockdevs,
-            BlockDevTiers.Data
-            if other_tier == BlockDevTiers.Cache
-            else BlockDevTiers.Cache,
+            BlockDevTiers.DATA
+            if other_tier == BlockDevTiers.CACHE
+            else BlockDevTiers.CACHE,
         )
 
 
@@ -129,7 +129,7 @@ def _check_same_tier(pool_name, managed_objects, to_be_added, this_tier):
 
     if owned_by_current_pool != frozenset():
         raise StratisCliPartialChangeError(
-            "add to cache" if this_tier == BlockDevTiers.Cache else "add to data",
+            "add to cache" if this_tier == BlockDevTiers.CACHE else "add to data",
             to_be_added.difference(owned_by_current_pool),
             to_be_added.intersection(owned_by_current_pool),
         )
@@ -174,9 +174,9 @@ class PoolActions:
         if list(names) != []:
             raise StratisCliNameConflictError("pool", pool_name)
 
-        _check_opposite_tier(managed_objects, blockdevs, BlockDevTiers.Cache)
+        _check_opposite_tier(managed_objects, blockdevs, BlockDevTiers.CACHE)
 
-        _check_same_tier(pool_name, managed_objects, blockdevs, BlockDevTiers.Data)
+        _check_same_tier(pool_name, managed_objects, blockdevs, BlockDevTiers.DATA)
 
         clevis_info = get_clevis_info(namespace)
 
@@ -230,9 +230,9 @@ class PoolActions:
         )
         blockdevs = frozenset([os.path.abspath(p) for p in namespace.blockdevs])
 
-        _check_opposite_tier(managed_objects, blockdevs, BlockDevTiers.Data)
+        _check_opposite_tier(managed_objects, blockdevs, BlockDevTiers.DATA)
 
-        _check_same_tier(pool_name, managed_objects, blockdevs, BlockDevTiers.Cache)
+        _check_same_tier(pool_name, managed_objects, blockdevs, BlockDevTiers.CACHE)
 
         ((changed, devs_added), return_code, message) = Pool.Methods.InitCache(
             get_object(pool_object_path), {"devices": blockdevs}
@@ -474,10 +474,10 @@ class PoolActions:
 
         blockdevs = frozenset([os.path.abspath(p) for p in namespace.blockdevs])
 
-        _check_opposite_tier(managed_objects, blockdevs, BlockDevTiers.Cache)
+        _check_opposite_tier(managed_objects, blockdevs, BlockDevTiers.CACHE)
 
         _check_same_tier(
-            namespace.pool_name, managed_objects, blockdevs, BlockDevTiers.Data
+            namespace.pool_name, managed_objects, blockdevs, BlockDevTiers.DATA
         )
 
         (pool_object_path, _) = next(
@@ -529,10 +529,10 @@ class PoolActions:
 
         blockdevs = frozenset([os.path.abspath(p) for p in namespace.blockdevs])
 
-        _check_opposite_tier(managed_objects, blockdevs, BlockDevTiers.Data)
+        _check_opposite_tier(managed_objects, blockdevs, BlockDevTiers.DATA)
 
         _check_same_tier(
-            namespace.pool_name, managed_objects, blockdevs, BlockDevTiers.Cache
+            namespace.pool_name, managed_objects, blockdevs, BlockDevTiers.CACHE
         )
 
         (pool_object_path, _) = next(
