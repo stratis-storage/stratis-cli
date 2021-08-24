@@ -21,7 +21,7 @@ from ._constants import MAXIMUM_STRATISD_VERSION, MINIMUM_STRATISD_VERSION, TOP_
 
 try:
     # isort: THIRDPARTY
-    from semantic_version import Spec, Version
+    from packaging.specifiers import SpecifierSet, Version
 
     def check_stratisd_version():
         """
@@ -33,8 +33,8 @@ try:
         # pylint: disable=import-outside-toplevel
         from ._data import Manager0
 
-        version_spec = Spec(
-            ">=%s,<%s" % (MINIMUM_STRATISD_VERSION, MAXIMUM_STRATISD_VERSION)
+        version_spec = SpecifierSet(">=%s" % MINIMUM_STRATISD_VERSION) & SpecifierSet(
+            "<%s" % MAXIMUM_STRATISD_VERSION
         )
         version = Manager0.Properties.Version.Get(get_object(TOP_OBJECT))
 

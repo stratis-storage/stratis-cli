@@ -39,8 +39,8 @@ jobs:
               python3-dbus-client-gen
               python3-dbus-python-client-gen
               python3-justbytes
+              python3-packaging
               python3-psutil
-              python3-semantic_version
               python3-wcwidth
             image: fedora:33
             task: PYTHONPATH=./src make -f Makefile lint
@@ -76,13 +76,11 @@ jobs:
             image: fedora:33
             additional_dependencies: >
               python3-wcwidth
-              python3-semantic_version
           - task: make -f Makefile coverage-no-html
             rust_log:
             image: fedora:33
             additional_dependencies: >
               python3-wcwidth
-              python3-semantic_version
           # MANDATORY CHECKS USING LOWEST SUPPORTED ENVIRONMENT PROXY
           - task: make -f Makefile all-tests-version
             rust_log: RUST_LOG=libstratis=debug,stratisd=debug
@@ -109,6 +107,7 @@ jobs:
           python3-dbus-python-client-gen
           python3-justbytes
           python3-dateutil
+          python3-packaging
           python3-psutil
           systemd-devel
           ${{ matrix.additional_dependencies }}
