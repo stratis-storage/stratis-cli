@@ -82,7 +82,7 @@ jobs:
             additional_dependencies: >
               python3-wcwidth
           # MANDATORY CHECKS USING LOWEST SUPPORTED ENVIRONMENT PROXY
-          - task: make -f Makefile all-tests-version
+          - task: make -f Makefile all-tests
             rust_log: RUST_LOG=libstratis=debug,stratisd=debug
             image: fedora:30
             additional_dependencies:
