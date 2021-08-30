@@ -42,17 +42,14 @@ jobs:
               python3-packaging
               python3-psutil
               python3-wcwidth
-            image: fedora:33  # CURRENT DEVELOPMENT ENVIRONMENT
             task: PYTHONPATH=./src make -f Makefile lint
           - dependencies: black python3-isort
-            image: fedora:33  # CURRENT DEVELOPMENT ENVIRONMENT
             task: make -f Makefile fmt-ci
           # VERIFICATION OF TEST INFRASTRUCTURE
           - dependencies: yamllint
-            image: fedora:33  # CURRENT DEVELOPMENT ENVIRONMENT
             task: make -f Makefile yamllint
     runs-on: ubuntu-18.04
-    container: ${{ matrix.image }}
+    container: fedora:33  # CURRENT DEVELOPMENT ENVIRONMENT
     steps:
       - uses: actions/checkout@v2
       - name: Install dependencies
