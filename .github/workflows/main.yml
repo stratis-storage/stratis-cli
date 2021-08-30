@@ -42,14 +42,14 @@ jobs:
               python3-packaging
               python3-psutil
               python3-wcwidth
-            image: fedora:33
+            image: fedora:33  # CURRENT DEVELOPMENT ENVIRONMENT
             task: PYTHONPATH=./src make -f Makefile lint
           - dependencies: black python3-isort
-            image: fedora:33
+            image: fedora:33  # CURRENT DEVELOPMENT ENVIRONMENT
             task: make -f Makefile fmt-ci
           # VERIFICATION OF TEST INFRASTRUCTURE
           - dependencies: yamllint
-            image: fedora:33
+            image: fedora:33  # CURRENT DEVELOPMENT ENVIRONMENT
             task: make -f Makefile yamllint
     runs-on: ubuntu-18.04
     container: ${{ matrix.image }}
@@ -73,18 +73,18 @@ jobs:
           # MANDATORY CHECKS USING CURRENT DEVELOPMENT ENVIRONMENT
           - task: make -f Makefile all-tests
             rust_log: RUST_LOG=libstratis=debug,stratisd=debug
-            image: fedora:33
+            image: fedora:33  # CURRENT DEVELOPMENT ENVIRONMENT
             additional_dependencies: >
               python3-wcwidth
           - task: make -f Makefile coverage-no-html
             rust_log:
-            image: fedora:33
+            image: fedora:33  # CURRENT DEVELOPMENT ENVIRONMENT
             additional_dependencies: >
               python3-wcwidth
           # MANDATORY CHECKS USING LOWEST SUPPORTED ENVIRONMENT PROXY
           - task: make -f Makefile all-tests
             rust_log: RUST_LOG=libstratis=debug,stratisd=debug
-            image: fedora:30
+            image: fedora:30  # LOWEST DEVELOPMENT ENVIRONMENT
             additional_dependencies:
     runs-on: ubuntu-18.04
     container: ${{ matrix.image }}
