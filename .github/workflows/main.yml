@@ -42,17 +42,14 @@ jobs:
               python3-packaging
               python3-psutil
               python3-wcwidth
-            image: fedora:33  # CURRENT DEVELOPMENT ENVIRONMENT
             task: PYTHONPATH=./src make -f Makefile lint
           - dependencies: black python3-isort
-            image: fedora:33  # CURRENT DEVELOPMENT ENVIRONMENT
             task: make -f Makefile fmt-ci
           # VERIFICATION OF TEST INFRASTRUCTURE
           - dependencies: yamllint
-            image: fedora:33  # CURRENT DEVELOPMENT ENVIRONMENT
             task: make -f Makefile yamllint
     runs-on: ubuntu-18.04
-    container: ${{ matrix.image }}
+    container: fedora:33  # CURRENT DEVELOPMENT ENVIRONMENT
     steps:
       - uses: actions/checkout@v2
       - name: Install dependencies
@@ -72,7 +69,7 @@ jobs:
         include:
           # MANDATORY CHECKS USING CURRENT DEVELOPMENT ENVIRONMENT
           - task: make -f Makefile all-tests
-            rust_log: RUST_LOG=libstratis=debug,stratisd=debug
+            rust_log: RUST_LOG=libstratis=debug
             image: fedora:33  # CURRENT DEVELOPMENT ENVIRONMENT
             additional_dependencies: >
               python3-wcwidth
@@ -83,7 +80,7 @@ jobs:
               python3-wcwidth
           # MANDATORY CHECKS USING LOWEST SUPPORTED ENVIRONMENT PROXY
           - task: make -f Makefile all-tests
-            rust_log: RUST_LOG=libstratis=debug,stratisd=debug
+            rust_log: RUST_LOG=libstratis=debug
             image: fedora:30  # LOWEST DEVELOPMENT ENVIRONMENT
             additional_dependencies:
     runs-on: ubuntu-18.04
@@ -114,7 +111,7 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           components: cargo
-          toolchain: 1.53.0
+          toolchain: 1.54.0  # CURRENT DEVELOPMENT RUST TOOLCHAIN
           override: true
       - name: Check out stratisd
         run: git clone https://github.com/stratis-storage/stratisd.git
