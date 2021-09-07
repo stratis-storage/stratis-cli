@@ -96,6 +96,7 @@ class _Service:
     Handle starting and stopping the stratisd daemon.
     """
 
+    # pylint: disable=consider-using-with
     def setup(self):
         """
         Start the stratisd daemon with the simulator.
