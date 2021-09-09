@@ -199,6 +199,8 @@ Pool Name::
 	  The name of the pool containing the filesystem.
 Name::
           The name of the filesystem.
+Size::
+          The size of the filesystem.
 Used::
 	  The amount of storage space used in the pool by this filesystem.
 Created::

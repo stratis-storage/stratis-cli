@@ -171,6 +171,7 @@ class LogicalActions:
             (
                 path_to_name[mofilesystem.Pool()],
                 mofilesystem.Name(),
+                str(Range(mofilesystem.Size())),
                 filesystem_used(props),
                 date_parser.parse(mofilesystem.Created())
                 .astimezone()
@@ -182,9 +183,9 @@ class LogicalActions:
         ]
 
         print_table(
-            ["Pool Name", "Name", "Used", "Created", "Device", "UUID"],
+            ["Pool Name", "Name", "Size", "Used", "Created", "Device", "UUID"],
             sorted(tables, key=lambda entry: entry[0]),
-            ["<", "<", "<", "<", "<", "<"],
+            ["<", "<", "<", "<", "<", "<", "<"],
         )
 
     @staticmethod
