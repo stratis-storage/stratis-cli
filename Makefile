@@ -30,15 +30,7 @@ view:
 	pyreverse ${PYREVERSE_OPTS} --project="test-whitebox" tests/whitebox/_misc.py -a 1
 	mv classes_test-whitebox.pdf _pyreverse
 
-.PHONY: archive
-archive:
-	git archive --output=./stratis_cli.tar.gz HEAD
-
-.PHONY: upload-release
-upload-release:
-	python setup.py register sdist upload
-
-.PHONY: docs
+.PHONY: api-docs
 api-docs:
 	sphinx-apidoc-3 -P -F -o api src/stratis_cli
 	sphinx-build-3 -b html api api/_build/html

@@ -197,6 +197,8 @@ FIELDS for stratis filesystem list
 
 Pool Name::
 	  The name of the pool containing the filesystem.
+Name::
+          The name of the filesystem.
 Used::
 	  The amount of storage space used in the pool by this filesystem.
 Created::
@@ -274,9 +276,7 @@ SEE ALSO
 REPORTING BUGS & DEVELOPMENT
 -----------------------------
 GitHub for issues and development::
-       https://github.com/stratis-storage, against either 'stratis-cli' or
-'stratisd' projects, based on likelihood of issue being with the command-line
-tool or the service daemon.
+        https://github.com/stratis-storage/project/issues
 Mailing list::
 	stratis-devel@lists.fedorahosted.org for general development
 	discussion
