@@ -276,9 +276,7 @@ SEE ALSO
 REPORTING BUGS & DEVELOPMENT
 -----------------------------
 GitHub for issues and development::
-       https://github.com/stratis-storage, against either 'stratis-cli' or
-'stratisd' projects, based on likelihood of issue being with the command-line
-tool or the service daemon.
+        https://github.com/stratis-storage/project/issues
 Mailing list::
 	stratis-devel@lists.fedorahosted.org for general development
 	discussion
