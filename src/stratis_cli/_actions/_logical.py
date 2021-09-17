@@ -28,7 +28,7 @@ from .._errors import (
 from .._stratisd_constants import StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
-from ._formatting import TABLE_FAILURE_STRING, get_property, print_table, to_hyphenated
+from ._formatting import get_property, print_table, size_triple, to_hyphenated
 
 
 class LogicalActions:
@@ -148,20 +148,21 @@ class LogicalActions:
             ).search(managed_objects)
         )
 
-        def filesystem_used(props):
+        def filesystem_size_triple(props, dbus_props):
             """
-            Calculate the string value to display for filesystem used.
+            Calcuate the triple to display for filesystem size.
 
-            The format is just that chosen by justbytes default configuration.
+            :param props: a dictionary of property values obtained.
+            :type props: dict of str * object
+            :param dbus_props: filesystem D-Bus properties
+            :type dbus_props: MOFilesystem
 
-            :param props: a dictionary of property values obtained
-            :type props: a dict of str * object
-            :returns: a string to display in the resulting list output
+            :returns: a string a formatted string showing all three values
             :rtype: str
             """
-            return get_property(
-                props, "Used", lambda x: str(Range(x)), TABLE_FAILURE_STRING
-            )
+            total = Range(dbus_props.Size())
+            used = get_property(props, "Used", Range, None)
+            return size_triple(total, used)
 
         format_uuid = (
             (lambda mo_uuid: mo_uuid) if namespace.unhyphenated_uuids else to_hyphenated
@@ -171,8 +172,7 @@ class LogicalActions:
             (
                 path_to_name[mofilesystem.Pool()],
                 mofilesystem.Name(),
-                str(Range(mofilesystem.Size())),
-                filesystem_used(props),
+                filesystem_size_triple(props, mofilesystem),
                 date_parser.parse(mofilesystem.Created())
                 .astimezone()
                 .strftime("%b %d %Y %H:%M"),
@@ -183,9 +183,9 @@ class LogicalActions:
         ]
 
         print_table(
-            ["Pool Name", "Name", "Size", "Used", "Created", "Device", "UUID"],
+            ["Pool Name", "Name", "Size", "Created", "Device", "UUID"],
             sorted(tables, key=lambda entry: entry[0]),
-            ["<", "<", "<", "<", "<", "<", "<"],
+            ["<", "<", "<", "<", "<", "<"],
         )
 
     @staticmethod
