@@ -46,6 +46,26 @@ except ImportError:  # pragma: no cover
 TABLE_FAILURE_STRING = "FAILURE"
 
 
+def size_triple(size, used):
+    """
+    Given size and used, return a properly formatted string Total/ Used / Free
+
+    :param size: total size
+    :type size: Range or NoneType
+    :param used: total amount used
+    :type used: Range or NoneType
+    :rtype: str
+    :returns: formatted string for display
+    """
+    free = None if size is None or used is None else size - used
+
+    return "%s / %s / %s" % (
+        TABLE_FAILURE_STRING if size is None else size,
+        TABLE_FAILURE_STRING if used is None else used,
+        TABLE_FAILURE_STRING if free is None else free,
+    )
+
+
 def get_property(props, name, to_repr, default):
     """
     Get a representation of a property fetched through FetchProperties

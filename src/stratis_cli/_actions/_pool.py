@@ -37,7 +37,7 @@ from .._errors import (
 from .._stratisd_constants import BlockDevTiers, PoolActionAvailability, StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
-from ._formatting import TABLE_FAILURE_STRING, get_property, print_table, to_hyphenated
+from ._formatting import get_property, print_table, size_triple, to_hyphenated
 from ._utils import fetch_property, get_clevis_info
 
 
@@ -292,26 +292,8 @@ class PoolActions:
             :rtype: str
             """
             total_physical_size = get_property(props, "TotalPhysicalSize", Range, None)
-
             total_physical_used = get_property(props, "TotalPhysicalUsed", Range, None)
-
-            total_physical_free = (
-                None
-                if total_physical_size is None or total_physical_used is None
-                else total_physical_size - total_physical_used
-            )
-
-            return "%s / %s / %s" % (
-                TABLE_FAILURE_STRING
-                if total_physical_size is None
-                else total_physical_size,
-                TABLE_FAILURE_STRING
-                if total_physical_used is None
-                else total_physical_used,
-                TABLE_FAILURE_STRING
-                if total_physical_free is None
-                else total_physical_free,
-            )
+            return size_triple(total_physical_size, total_physical_used)
 
         def properties_string(mopool, props_map):
             """
