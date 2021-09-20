@@ -184,7 +184,7 @@ class LogicalActions:
 
         print_table(
             ["Pool Name", "Name", "Size", "Created", "Device", "UUID"],
-            sorted(tables, key=lambda entry: entry[0]),
+            sorted(tables, key=lambda entry: (entry[0], entry[1])),
             ["<", "<", "<", "<", "<", "<"],
         )
 
