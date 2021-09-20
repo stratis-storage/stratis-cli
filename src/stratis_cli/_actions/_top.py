@@ -145,7 +145,7 @@ class TopActions:
 
             json_report = json.loads(report)
 
-        json.dump(json_report, sys.stdout, indent=4, sort_keys=True)
+        json.dump(json_report, sys.stdout, indent=4)
         print(file=sys.stdout)
 
     @staticmethod
