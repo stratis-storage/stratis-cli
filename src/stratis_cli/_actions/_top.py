@@ -84,7 +84,7 @@ def _add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
 
     add_ret = Manager.Methods.SetKey(
         proxy,
-        {"key_desc": key_desc, "key_fd": file_desc, "interactive": False},
+        {"key_desc": key_desc, "key_fd": file_desc},
     )
 
     if fd_is_pipe:  # pragma: no cover
