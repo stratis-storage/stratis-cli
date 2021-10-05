@@ -58,7 +58,7 @@ class BindActions:
             .require_unique_match(True)
             .search(managed_objects)
         )
-        (changed, return_code, return_msg) = Pool.Methods.Bind(
+        (changed, return_code, return_msg) = Pool.Methods.BindClevis(
             get_object(pool_object_path),
             {
                 "pin": clevis_pin,
@@ -150,7 +150,7 @@ class BindActions:
         )
 
         unbind_method = (
-            Pool.Methods.Unbind
+            Pool.Methods.UnbindClevis
             if namespace.method == str(EncryptionMethod.CLEVIS)
             else Pool.Methods.UnbindKeyring
         )
