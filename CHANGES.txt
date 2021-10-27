@@ -1,3 +1,79 @@
+stratis-cli 3.0.0 (UNRELEASED)
+==============================
+Required stratisd version: 3.0.0
+
+Recommended development environment: Fedora 34
+Lowest supported Python interpreter: 3.6.8
+
+- Bump stratisd required version to 3.0:
+  https://github.com/stratis-storage/stratis-cli/pull/836
+  https://github.com/stratis-storage/stratis-cli/pull/835
+  https://github.com/stratis-storage/stratis-cli/pull/810
+  https://github.com/stratis-storage/stratis-cli/pull/809
+  https://github.com/stratis-storage/stratis-cli/pull/806
+
+- Make dependency on psutil optional:
+  https://github.com/stratis-storage/stratis-cli/issues/798
+  https://github.com/stratis-storage/stratis-cli/pull/820
+  https://github.com/stratis-storage/stratis-cli/pull/812
+
+- Display an Alerts column in pool listing:
+  https://github.com/stratis-storage/stratis-cli/pull/823
+
+- Extend filesystem listing to show filesystem size:
+  https://github.com/stratis-storage/stratis-cli/issues/832
+  https://github.com/stratis-storage/stratis-cli/pull/833
+  https://github.com/stratis-storage/stratis-cli/pull/830
+
+- Add support for rebinding with Clevis and with a key in the kernel keyring:
+  https://github.com/stratis-storage/stratis-cli/issues/776
+  https://github.com/stratis-storage/stratis-cli/pull/805
+
+- Allow setting filesystem size on filesystem creation:
+  https://github.com/stratis-storage/stratis-cli/pull/822
+
+- Update D-Bus API revision numbers:
+  https://github.com/stratis-storage/stratis-cli/pull/777
+
+- No longer track error codes that stratisd no longer reports:
+  https://github.com/stratis-storage/stratis-cli/pull/799
+
+- Use packaging instead of semantic_version:
+  https://github.com/stratis-storage/stratis-cli/issues/803
+  https://github.com/stratis-storage/stratis-cli/issues/807
+  https://github.com/stratis-storage/stratis-cli/pull/825
+  https://github.com/stratis-storage/stratis-cli/pull/785
+
+- Document the UUID column for pool listing in the man pages:
+  https://github.com/stratis-storage/stratis-cli/pull/817
+
+- Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/834
+  https://github.com/stratis-storage/stratis-cli/pull/831
+  https://github.com/stratis-storage/stratis-cli/pull/829
+  https://github.com/stratis-storage/stratis-cli/pull/828
+  https://github.com/stratis-storage/stratis-cli/pull/827
+  https://github.com/stratis-storage/stratis-cli/pull/826
+  https://github.com/stratis-storage/stratis-cli/pull/824
+  https://github.com/stratis-storage/stratis-cli/pull/819
+  https://github.com/stratis-storage/stratis-cli/pull/818
+  https://github.com/stratis-storage/stratis-cli/pull/815
+  https://github.com/stratis-storage/stratis-cli/pull/802
+  https://github.com/stratis-storage/stratis-cli/pull/801
+  https://github.com/stratis-storage/stratis-cli/pull/797
+  https://github.com/stratis-storage/stratis-cli/pull/796
+  https://github.com/stratis-storage/stratis-cli/pull/782
+  https://github.com/stratis-storage/stratis-cli/pull/781
+  https://github.com/stratis-storage/stratis-cli/pull/780
+  https://github.com/stratis-storage/stratis-cli/pull/778
+  https://github.com/stratis-storage/stratis-cli/pull/774
+  https://github.com/stratis-storage/stratis-cli/pull/773
+  https://github.com/stratis-storage/stratis-cli/pull/770
+  https://github.com/stratis-storage/stratis-cli/pull/768
+  https://github.com/stratis-storage/stratis-cli/pull/767
+  https://github.com/stratis-storage/stratis-cli/pull/766
+
+
 stratis-cli 2.4.1
 =================
 
