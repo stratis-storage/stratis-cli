@@ -107,14 +107,7 @@ class LogicalActions:
         List the volumes in a pool.
         """
         # pylint: disable=import-outside-toplevel
-        from ._data import (
-            FetchProperties,
-            MOFilesystem,
-            MOPool,
-            ObjectManager,
-            filesystems,
-            pools,
-        )
+        from ._data import MOFilesystem, MOPool, ObjectManager, filesystems, pools
 
         # This method is invoked as the default for "stratis filesystem";
         # the namespace may not have a pool_name field.
@@ -124,10 +117,7 @@ class LogicalActions:
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
         filesystems_with_props = [
-            (
-                FetchProperties.Methods.GetAllProperties(get_object(objpath), {}),
-                MOFilesystem(info),
-            )
+            MOFilesystem(info)
             for objpath, info in filesystems(
                 props=None
                 if pool_name is None
@@ -148,12 +138,10 @@ class LogicalActions:
             ).search(managed_objects)
         )
 
-        def filesystem_size_triple(props, dbus_props):
+        def filesystem_size_triple(dbus_props):
             """
             Calcuate the triple to display for filesystem size.
 
-            :param props: a dictionary of property values obtained.
-            :type props: dict of str * object
             :param dbus_props: filesystem D-Bus properties
             :type dbus_props: MOFilesystem
 
@@ -161,7 +149,7 @@ class LogicalActions:
             :rtype: str
             """
             total = Range(dbus_props.Size())
-            used = get_property(props, "Used", Range, None)
+            used = get_property(dbus_props.Used(), Range, None)
             return size_triple(total, used)
 
         format_uuid = (
@@ -172,14 +160,14 @@ class LogicalActions:
             (
                 path_to_name[mofilesystem.Pool()],
                 mofilesystem.Name(),
-                filesystem_size_triple(props, mofilesystem),
+                filesystem_size_triple(mofilesystem),
                 date_parser.parse(mofilesystem.Created())
                 .astimezone()
                 .strftime("%b %d %Y %H:%M"),
                 mofilesystem.Devnode(),
                 format_uuid(mofilesystem.Uuid()),
             )
-            for props, mofilesystem in filesystems_with_props
+            for mofilesystem in filesystems_with_props
         ]
 
         print_table(

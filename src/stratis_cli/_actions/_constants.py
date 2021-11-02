@@ -29,7 +29,6 @@ assert Version(MINIMUM_STRATISD_VERSION) < Version(MAXIMUM_STRATISD_VERSION)
 REVISION = "r%s" % MINIMUM_STRATISD_VERSION.split(".")[1]
 
 BLOCKDEV_INTERFACE = "org.storage.stratis3.blockdev.%s" % REVISION
-FETCH_PROPERTIES_INTERFACE = "org.storage.stratis3.FetchProperties.%s" % REVISION
 FILESYSTEM_INTERFACE = "org.storage.stratis3.filesystem.%s" % REVISION
 MANAGER_INTERFACE = "org.storage.stratis3.Manager.%s" % REVISION
 POOL_INTERFACE = "org.storage.stratis3.pool.%s" % REVISION
