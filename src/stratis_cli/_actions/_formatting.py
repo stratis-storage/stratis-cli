@@ -19,9 +19,6 @@ Formatting for tables.
 import sys
 import uuid
 
-from .._errors import StratisCliEnginePropertyError, StratisCliPropertyNotFoundError
-from ._utils import unpack_property
-
 # If the wcwidth package is not available the wcswidth function will not
 # be available. In that case, use the standard function len where wcswidth
 # would otherwise be used. Since len determines the number of _characters_
@@ -66,30 +63,21 @@ def size_triple(size, used):
     )
 
 
-def get_property(props, name, to_repr, default):
+def get_property(prop, to_repr, default):
     """
-    Get a representation of a property fetched through FetchProperties
-    :param props: dictionary of property names mapped to values
-    :type props: dict of str * (bool, object)
-    :param str name: the name of the property
-    :param to_repr: function expecting one object argument to convert
+    Get a representation of an optional D-Bus property. An optional
+    D-Bus property is one that may be unknown to stratisd.
+
+    :param prop: the property value
+    :type prop: a pair of bool * T
+    :param to_repr: conversion function
     :type to_repr: object -> object
-    :param default: object to return in lieu of propagating an exception
-    :type default: object
+    :param object default: default for display
     :returns: object produced by to_repr or default
     :rtype: object
     """
-    try:
-        return to_repr(unpack_property(props, name))
-    # An exception should only be raised if the property can not be obtained.
-    # This requires either running against an interface that does not support
-    # the property or the engine encountering an error getting the property,
-    # or a bug in our code.
-    except (
-        StratisCliEnginePropertyError,
-        StratisCliPropertyNotFoundError,
-    ):  # pragma: no cover
-        return default
+    (valid, value) = prop
+    return to_repr(value) if valid else default
 
 
 def _get_column_len(column_width, entry_len, entry_width):

@@ -38,7 +38,7 @@ from .._stratisd_constants import BlockDevTiers, PoolActionAvailability, Stratis
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import get_property, print_table, size_triple, to_hyphenated
-from ._utils import fetch_property, get_clevis_info
+from ._utils import get_clevis_info
 
 
 def _generate_pools_to_blockdevs(managed_objects, to_be_added, tier):
@@ -139,14 +139,17 @@ def _check_same_tier(pool_name, managed_objects, to_be_added, this_tier):
 
 def _fetch_locked_pools_property(proxy):
     """
-    Fetch the LockedPoolsWithDevs property from stratisd.
+    Fetch the LockedPools property from stratisd.
     :param proxy: proxy to the top object in stratisd
-    :return: list of pool UUIDs as strings
-    :rtype: list of str
-    :raises StratisCliPropertyNotFoundError:
-    :raises StratisCliEnginePropertyError:
+    :return: a representation of unlocked devices
+    :rtype: dict
+    :raises StratisCliEngineError:
     """
-    return fetch_property(proxy, "LockedPoolsWithDevs")
+
+    # pylint: disable=import-outside-toplevel
+    from ._data import Manager
+
+    return Manager.Properties.LockedPools.Get(proxy)
 
 
 class PoolActions:
@@ -265,20 +268,16 @@ class PoolActions:
         List all stratis pools.
         """
         # pylint: disable=import-outside-toplevel
-        from ._data import FetchProperties, MOPool, ObjectManager, pools
+        from ._data import MOPool, ObjectManager, pools
 
         proxy = get_object(TOP_OBJECT)
 
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
         pools_with_props = [
-            (
-                FetchProperties.Methods.GetAllProperties(get_object(objpath), {}),
-                MOPool(info),
-            )
-            for objpath, info in pools().search(managed_objects)
+            MOPool(info) for objpath, info in pools().search(managed_objects)
         ]
 
-        def physical_size_triple(props):
+        def physical_size_triple(mopool):
             """
             Calculate the triple to display for total physical size.
 
@@ -286,16 +285,16 @@ class PoolActions:
             member of the tuple are chosen automatically according to justbytes'
             configuration.
 
-            :param props: a dictionary of property values obtained
-            :type props: dict of str * object
+            :param mopool: an object representing all the properties of the pool
+            :type mopool: MOPool
             :returns: a string to display in the resulting list output
             :rtype: str
             """
-            total_physical_size = get_property(props, "TotalPhysicalSize", Range, None)
-            total_physical_used = get_property(props, "TotalPhysicalUsed", Range, None)
+            total_physical_size = Range(mopool.TotalPhysicalSize())
+            total_physical_used = get_property(mopool.TotalPhysicalUsed(), Range, None)
             return size_triple(total_physical_size, total_physical_used)
 
-        def properties_string(mopool, props_map):
+        def properties_string(mopool):
             """
             Make a string encoding some important properties of the pool
 
@@ -325,12 +324,8 @@ class PoolActions:
                     prefix = "?"
                 return prefix + code
 
-            prop_list = []
-            prop_list.append(
-                gen_string(get_property(props_map, "HasCache", lambda x: x, None), "Ca")
-            )
-            prop_list.append(gen_string(mopool.Encrypted(), "Cr"))
-            return ",".join(prop_list)
+            props_list = [(mopool.HasCache(), "Ca"), (mopool.Encrypted(), "Cr")]
+            return ",".join(gen_string(x, y) for x, y in props_list)
 
         format_uuid = (
             (lambda mo_uuid: mo_uuid) if namespace.unhyphenated_uuids else to_hyphenated
@@ -354,12 +349,12 @@ class PoolActions:
         tables = [
             (
                 mopool.Name(),
-                physical_size_triple(props),
-                properties_string(mopool, props),
+                physical_size_triple(mopool),
+                properties_string(mopool),
                 format_uuid(mopool.Uuid()),
                 alert_string(mopool),
             )
-            for props, mopool in pools_with_props
+            for mopool in pools_with_props
         ]
 
         print_table(

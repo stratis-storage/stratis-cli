@@ -34,7 +34,6 @@ from ._errors import (
     StratisCliActionError,
     StratisCliAggregateError,
     StratisCliEngineError,
-    StratisCliEnginePropertyError,
     StratisCliIncoherenceError,
     StratisCliParserError,
     StratisCliStratisdVersionError,
@@ -193,11 +192,6 @@ def _interpret_errors_1(
             "the D-Bus: %s."
         )
         return fmt_str % error
-
-    # This should arise only if the engine encounters an error while
-    # obtaining a property. Therefore, it is not tested.
-    if isinstance(error, StratisCliEnginePropertyError):  # pragma: no cover
-        return str(error)
 
     if isinstance(error, StratisCliParserError):
         fmt_str = "You entered an invalid command: %s"

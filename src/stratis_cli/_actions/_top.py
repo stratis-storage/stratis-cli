@@ -33,19 +33,23 @@ from .._stratisd_constants import ReportKey, StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import print_table
-from ._utils import fetch_property
 
 
-def _fetch_keylist_property(proxy):
+def _fetch_keylist(proxy):
     """
-    Fetch the KeyList property from stratisd.
+    Fetch the list of Stratis keys from stratisd.
     :param proxy: proxy to the top object in stratisd
     :return: list of key descriptions
     :rtype: list of str
-    :raises StratisCliPropertyNotFoundError:
-    :raises StratisCliEnginePropertyError:
+    :raises StratisCliEngineError:
     """
-    return fetch_property(proxy, "KeyList")
+    # pylint: disable=import-outside-toplevel
+    from ._data import Manager
+
+    (keys, return_code, message) = Manager.Methods.ListKeys(proxy, {})
+    if return_code != StratisdErrors.OK:  # pragma: no cover
+        raise StratisCliEngineError(return_code, message)
+    return keys
 
 
 def _add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
@@ -154,14 +158,12 @@ class TopActions:
         Set a key in the kernel keyring.
 
         :raises StratisCliEngineError:
-        :raises StratisCliEnginePropertyError:
-        :raises StratisCliPropertyNotFoundError:
         :raises StratisCliNameConflictError:
         :raises StratisCliIncoherenceError:
         """
         proxy = get_object(TOP_OBJECT)
 
-        key_list = _fetch_keylist_property(proxy)
+        key_list = _fetch_keylist(proxy)
         if namespace.keydesc in key_list:
             raise StratisCliNameConflictError("key", namespace.keydesc)
 
@@ -200,14 +202,12 @@ class TopActions:
         Reset the key data for an existing key in the kernel keyring.
 
         :raises StratisCliEngineError:
-        :raises StratisCliEnginePropertyError:
         :raises StratisCliResourceNotFoundError:
-        :raises StratisCliPropertyNotFoundError:
         :raises StratisCliIncoherenceError:
         """
         proxy = get_object(TOP_OBJECT)
 
-        key_list = _fetch_keylist_property(proxy)
+        key_list = _fetch_keylist(proxy)
         if namespace.keydesc not in key_list:
             raise StratisCliResourceNotFoundError("reset", namespace.keydesc)
 
@@ -241,8 +241,6 @@ class TopActions:
         Unset a key in kernel keyring.
 
         :raises StratisCliEngineError:
-        :raises StratisCliEnginePropertyError:
-        :raises StratisCliPropertyNotFoundError:
         :raises StratisCliNoChangeError:
         :raises StratisCliIncoherenceError:
         """
@@ -251,7 +249,7 @@ class TopActions:
 
         proxy = get_object(TOP_OBJECT)
 
-        key_list = _fetch_keylist_property(proxy)
+        key_list = _fetch_keylist(proxy)
         if namespace.keydesc not in key_list:
             raise StratisCliNoChangeError("remove", namespace.keydesc)
 
@@ -276,12 +274,11 @@ class TopActions:
         """
         List keys in kernel keyring.
 
-        :raises StratisCliPropertyNotFoundError:
-        :raises StratisCliEnginePropertyError:
+        :raises StratisCliEngineError:
         """
         proxy = get_object(TOP_OBJECT)
 
-        key_list = [[key_desc] for key_desc in _fetch_keylist_property(proxy)]
+        key_list = [[key_desc] for key_desc in _fetch_keylist(proxy)]
 
         print_table(
             ["Key Description"], sorted(key_list, key=lambda entry: entry[0]), ["<"]

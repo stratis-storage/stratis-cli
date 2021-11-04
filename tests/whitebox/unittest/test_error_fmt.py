@@ -22,11 +22,9 @@ import unittest
 from stratis_cli._errors import (
     StratisCliAggregateError,
     StratisCliEngineError,
-    StratisCliEnginePropertyError,
     StratisCliGenerationError,
     StratisCliIncoherenceError,
     StratisCliPartialFailureError,
-    StratisCliPropertyNotFoundError,
     StratisCliUnknownInterfaceError,
 )
 
@@ -42,12 +40,6 @@ class ErrorFmtTestCase(unittest.TestCase):
         :type exception: Exception
         """
         self.assertNotEqual(str(exception), "")
-
-    def test_stratis_cli_property_not_found_error_fmt(self):
-        """
-        Test 'StratisCliPropertyNotFoundError'
-        """
-        self._string_not_empty(StratisCliPropertyNotFoundError("BadProperty"))
 
     def test_stratis_cli_incoherence_error_fmt(self):
         """
@@ -66,12 +58,6 @@ class ErrorFmtTestCase(unittest.TestCase):
         Test 'StratisCliGenerationError'
         """
         self._string_not_empty(StratisCliGenerationError("Error"))
-
-    def test_stratis_cli_engine_property_error_fmt(self):
-        """
-        Test 'StratisCliEnginePropertyError'
-        """
-        self._string_not_empty(StratisCliEnginePropertyError("name", "whoops"))
 
     def test_stratis_cli_aggregate_error_fmt(self):
         """
