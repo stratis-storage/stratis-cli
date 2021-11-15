@@ -32,7 +32,6 @@ _SIZE_SPECIFICATION = (
 )
 
 
-# pylint: disable=inconsistent-return-statements
 def _unit_map(unit_specifier):
     """
     A simple function that maps a unit_specifier string
