@@ -43,7 +43,7 @@ class PoolMaintenanceErrorCode(IntEnum):
                 return code
         return None
 
-    def explain(self):  # pylint: disable=inconsistent-return-statements
+    def explain(self):
         """
         Return an explanation of the error return code.
         """

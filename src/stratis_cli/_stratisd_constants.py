@@ -102,7 +102,7 @@ class EncryptionMethod(Enum):
     KEYRING = "keyring"
     CLEVIS = "clevis"
 
-    def __str__(self):  # pylint: disable=invalid-str-returned
+    def __str__(self):
         return self.value
 
 
@@ -126,7 +126,7 @@ class ReportKey(Enum):
     ERRORED_POOL = "errored_pool_report"
     MANAGED_OBJECTS = "managed_objects_report"
 
-    def __str__(self):  # pylint: disable=invalid-str-returned
+    def __str__(self):
         return self.value
 
 
@@ -140,7 +140,7 @@ class PoolActionAvailability(IntEnum):
     NO_POOL_CHANGES = 2
     NO_WRITE_IO = 3
 
-    def __str__(self):  # pylint: disable=inconsistent-return-statements
+    def __str__(self):
         if self is PoolActionAvailability.FULLY_OPERATIONAL:
             return "fully_operational"
         if self is PoolActionAvailability.NO_IPC_REQUESTS:
