@@ -16,6 +16,7 @@ Definition of filesystem actions to display in the CLI.
 """
 
 from .._actions import LogicalActions
+from ._range import RangeAction
 
 LOGICAL_SUBCMDS = [
     (
@@ -29,6 +30,14 @@ LOGICAL_SUBCMDS = [
                     dict(
                         help="Create filesystems in this pool using the given names",
                         nargs="+",
+                    ),
+                ),
+                (
+                    "--size",
+                    dict(
+                        action=RangeAction,
+                        dest="size",
+                        help='The size of the filesystems to be created, e.g., "32GiB"',
                     ),
                 ),
             ],

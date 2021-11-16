@@ -68,11 +68,22 @@ pool bind tpm2 <pool name>::
 pool bind keyring <pool name> <keydesc>::
      Bind the devices in the specified pool to a supplementary encryption
      mechanism using a key in the kernel keyring.
+pool rebind clevis <pool name>::
+     Rebind the devices in the spcified pool using the Clevis configuration
+     with which the devices in the pool were previously bound.
+pool rebind keyring <pool_name> <keydesc>::
+     Rebind the devices in the specified pool using the specified key
+     description.
 pool unbind <(clevis|keyring)> <pool name> ::
      Unbind the devices in the specified pool from the specified encryption
      mechanism.
-filesystem create <pool_name> <fs_name> [<fs_name>..]::
+pool explain <code> ::
+     Explain any error code that might show up in the Alerts column when
+     listing a pool.
+filesystem create <pool_name> <fs_name> [<fs_name>..] [--size <size>]::
 	   Create one or more filesystems from the specified pool.
+           If '--size' option is specified, make each filesystem the specified
+           size. Otherwise, accept the stratisd default.
            NOTE: There is a temporary restriction on the number of filesystems
            that can be specified with this command. Specifying more than one
            filesystem will result in an error.
@@ -136,6 +147,18 @@ OPTIONS
         the URL of the server.
 --clevis <(nbde | tang | tpm2)> ::
         The clevis method that should be used to encrypt the created pool.
+--size <size spec> ::
+        Used to specify the size of, e.g., a filesystem. The specification
+        format must follow the standard size specification format for input
+        (see below).
+
+
+SIZE SPECIFICATION FORMAT FOR INPUT
+-----------------------------------
+	The format of a size specification is '<magnitude><unit specifier>'
+        where the magnitude must be a decimal integer and the unit specifier
+        may be any of 'B', 'KiB', 'MiB', 'GiB', 'TiB'. or 'PiB'.
+
 
 ENVIRONMENT VARIABLES
 ---------------------
@@ -164,13 +187,20 @@ Properties::
           "?", representing "unknown", is prepended to the property code.
           The property codes are: Ca - indicates the pool has a cache,
           Cr - indicates the pool is encrypted.
+UUID::
+          The UUID of the pool.
+Alerts::
+          Any unusual or urgent information about the pool of which the
+          user should be made aware.
 
 FIELDS for stratis filesystem list
 
 Pool Name::
 	  The name of the pool containing the filesystem.
-Used::
-	  The amount of storage space used in the pool by this filesystem.
+Name::
+          The name of the filesystem.
+Size::
+	  The size of the filesystem (Total / Used / Free).
 Created::
 	  The time the filesystem was created.
 Device::
@@ -246,9 +276,7 @@ SEE ALSO
 REPORTING BUGS & DEVELOPMENT
 -----------------------------
 GitHub for issues and development::
-       https://github.com/stratis-storage, against either 'stratis-cli' or
-'stratisd' projects, based on likelihood of issue being with the command-line
-tool or the service daemon.
+        https://github.com/stratis-storage/project/issues
 Mailing list::
 	stratis-devel@lists.fedorahosted.org for general development
 	discussion

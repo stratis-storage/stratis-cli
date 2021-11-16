@@ -6,11 +6,23 @@ on:
   push:
     branches:
       - master
-      - develop-2.4.0
+      - develop-2.4.1
+    paths-ignore:
+      - 'CHANGES.txt'
+      - '**/README.rst'
+      - 'LICENSE'
+      - 'docs/**'
+      - 'shell-completion/**'
   pull_request:
     branches:
       - master
-      - develop-2.4.0
+      - develop-2.4.1
+    paths-ignore:
+      - 'CHANGES.txt'
+      - '**/README.rst'
+      - 'LICENSE'
+      - 'docs/**'
+      - 'shell-completion/**'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -21,55 +33,104 @@ jobs:
       matrix:
         include:
           # MANDATORY CHECKS USING CURRENT DEVELOPMENT INTERPRETER
-          - python-version: 3.8.6
-            dependencies: >
-              pylint==2.4.4
-              dbus-client-gen==0.4
-              dbus-python-client-gen==0.7
-              justbytes==0.11
-              python-dateutil==2.8.0
-              wcwidth==0.2.4
-              psutil==5.6.7
-              semantic_version==2.8.4
+          - dependencies: >
+              pylint
+              python3-dateutil
+              python3-dbus-client-gen
+              python3-dbus-python-client-gen
+              python3-justbytes
+              python3-packaging
+              python3-psutil
+              python3-wcwidth
             task: PYTHONPATH=./src make -f Makefile lint
-          - python-version: 3.8.6
-            dependencies: black==20.8b1 isort==4.3.21
-            task: make -f Makefile fmt-travis
-          - python-version: 3.8.6
-            dependencies: >
-              dbus-client-gen==0.4
-              dbus-python-client-gen==0.7
-              justbytes==0.11
-              python-dateutil==2.8.0
-              wcwidth==0.2.4
-              psutil==5.6.7
-              semantic_version==2.8.4
-            task: PYTHONPATH=./src make -f Makefile test-travis
-          # MANDATORY CHECKS USING LOWEST SUPPORTED INTERPRETER
-          - python-version: 3.6.8
-            dependencies: >
-              pylint==2.4.4
-              dbus-client-gen==0.4
-              dbus-python-client-gen==0.7
-              justbytes==0.11
-              python-dateutil==2.6.1
-              psutil==5.4.3
-              semantic_version==2.6.0
-            task: PYTHONPATH=./src make -f Makefile lint
+          - dependencies: black python3-isort
+            task: make -f Makefile fmt-ci
           # VERIFICATION OF TEST INFRASTRUCTURE
-          - python-version: 3.8.6
-            dependencies: yamllint==1.26.0
+          - dependencies: yamllint
             task: make -f Makefile yamllint
     runs-on: ubuntu-18.04
+    container: fedora:34  # CURRENT DEVELOPMENT ENVIRONMENT
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
       - name: Install dependencies
-        run: |
-          sudo apt-get -q update
-          sudo apt-get -y install libdbus-glib-1-dev
-          pip3 install ${{ matrix.dependencies }}
+        run: >
+          dnf install -y
+          make
+          python-unversioned-command
+          ${{ matrix.dependencies }}
+      - name: Display Python version
+        run: python --version
       - name: Run test
         run: ${{ matrix.task }}
+
+  test-runs:
+    strategy:
+      matrix:
+        include:
+          # MANDATORY CHECKS USING CURRENT DEVELOPMENT ENVIRONMENT
+          - task: make -f Makefile all-tests
+            rust_log: RUST_LOG=stratisd=debug
+            image: fedora:34  # CURRENT DEVELOPMENT ENVIRONMENT
+            additional_dependencies: >
+              python3-wcwidth
+          - task: make -f Makefile coverage-no-html
+            rust_log:
+            image: fedora:34  # CURRENT DEVELOPMENT ENVIRONMENT
+            additional_dependencies: >
+              python3-wcwidth
+          # MANDATORY CHECKS USING LOWEST SUPPORTED ENVIRONMENT PROXY
+          - task: make -f Makefile all-tests
+            rust_log: RUST_LOG=stratisd=debug
+            image: fedora:30  # LOWEST DEVELOPMENT ENVIRONMENT
+            additional_dependencies:
+    runs-on: ubuntu-18.04
+    container: ${{ matrix.image }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: >
+          dnf install -y
+          asciidoc
+          clang
+          cryptsetup-devel
+          dbus-daemon
+          dbus-tools
+          dbus-devel
+          libblkid-devel
+          git
+          make
+          python3-coverage
+          python3-dbus-client-gen
+          python3-dbus-python-client-gen
+          python3-justbytes
+          python3-dateutil
+          python3-packaging
+          python3-psutil
+          systemd-devel
+          ${{ matrix.additional_dependencies }}
+      - uses: actions-rs/toolchain@v1
+        with:
+          components: cargo
+          toolchain: 1.54.0  # CURRENT DEVELOPMENT RUST TOOLCHAIN
+          override: true
+      - name: Check out stratisd
+        run: git clone https://github.com/stratis-storage/stratisd.git
+      - name: Build stratisd
+        run: PROFILEDIR=debug make install
+        working-directory: ./stratisd
+      - name: Set up for D-Bus
+        run: |
+          mkdir -p /var/lib/dbus
+          dbus-uuidgen > /var/lib/dbus/machine-id
+          mkdir -p /var/run/dbus
+      - name: Start D-Bus
+        run: >
+          dbus-daemon
+          --config-file=/usr/share/dbus-1/system.conf
+          --print-address
+      - name: Run test
+        run: >
+          ${{ matrix.rust_log }}
+          STRATISD=/usr/libexec/stratisd
+          PYTHONPATH=./src
+          ${{ matrix.task }}

@@ -28,7 +28,7 @@ from .._errors import (
 from .._stratisd_constants import StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
-from ._formatting import TABLE_FAILURE_STRING, get_property, print_table, to_hyphenated
+from ._formatting import get_property, print_table, size_triple, to_hyphenated
 
 
 class LogicalActions:
@@ -48,11 +48,7 @@ class LogicalActions:
         # pylint: disable=too-many-locals
 
         # pylint: disable=import-outside-toplevel
-        from ._data import MOFilesystem
-        from ._data import ObjectManager
-        from ._data import Pool
-        from ._data import filesystems
-        from ._data import pools
+        from ._data import MOFilesystem, ObjectManager, Pool, filesystems, pools
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -77,12 +73,19 @@ class LogicalActions:
                 "create", requested_names.difference(already_names), already_names
             )
 
+        requested_size_arg = (
+            (False, "")
+            if namespace.size is None
+            else (True, str(namespace.size.magnitude))
+        )
+        requested_specs = [(n, requested_size_arg) for n in requested_names]
+
         (
             (created, list_created),
             return_code,
             message,
         ) = Pool.Methods.CreateFilesystems(
-            get_object(pool_object_path), {"specs": list(requested_names)}
+            get_object(pool_object_path), {"specs": requested_specs}
         )
 
         if return_code != StratisdErrors.OK:
@@ -104,12 +107,7 @@ class LogicalActions:
         List the volumes in a pool.
         """
         # pylint: disable=import-outside-toplevel
-        from ._data import FetchProperties
-        from ._data import MOFilesystem
-        from ._data import MOPool
-        from ._data import ObjectManager
-        from ._data import filesystems
-        from ._data import pools
+        from ._data import MOFilesystem, MOPool, ObjectManager, filesystems, pools
 
         # This method is invoked as the default for "stratis filesystem";
         # the namespace may not have a pool_name field.
@@ -119,10 +117,7 @@ class LogicalActions:
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
         filesystems_with_props = [
-            (
-                FetchProperties.Methods.GetAllProperties(get_object(objpath), {}),
-                MOFilesystem(info),
-            )
+            MOFilesystem(info)
             for objpath, info in filesystems(
                 props=None
                 if pool_name is None
@@ -143,20 +138,19 @@ class LogicalActions:
             ).search(managed_objects)
         )
 
-        def filesystem_used(props):
+        def filesystem_size_triple(dbus_props):
             """
-            Calculate the string value to display for filesystem used.
+            Calcuate the triple to display for filesystem size.
 
-            The format is just that chosen by justbytes default configuration.
+            :param dbus_props: filesystem D-Bus properties
+            :type dbus_props: MOFilesystem
 
-            :param props: a dictionary of property values obtained
-            :type props: a dict of str * object
-            :returns: a string to display in the resulting list output
+            :returns: a string a formatted string showing all three values
             :rtype: str
             """
-            return get_property(
-                props, "Used", lambda x: str(Range(x)), TABLE_FAILURE_STRING
-            )
+            total = Range(dbus_props.Size())
+            used = get_property(dbus_props.Used(), Range, None)
+            return size_triple(total, used)
 
         format_uuid = (
             (lambda mo_uuid: mo_uuid) if namespace.unhyphenated_uuids else to_hyphenated
@@ -166,19 +160,19 @@ class LogicalActions:
             (
                 path_to_name[mofilesystem.Pool()],
                 mofilesystem.Name(),
-                filesystem_used(props),
+                filesystem_size_triple(mofilesystem),
                 date_parser.parse(mofilesystem.Created())
                 .astimezone()
                 .strftime("%b %d %Y %H:%M"),
                 mofilesystem.Devnode(),
                 format_uuid(mofilesystem.Uuid()),
             )
-            for props, mofilesystem in filesystems_with_props
+            for mofilesystem in filesystems_with_props
         ]
 
         print_table(
-            ["Pool Name", "Name", "Used", "Created", "Device", "UUID"],
-            sorted(tables, key=lambda entry: entry[0]),
+            ["Pool Name", "Name", "Size", "Created", "Device", "UUID"],
+            sorted(tables, key=lambda entry: (entry[0], entry[1])),
             ["<", "<", "<", "<", "<", "<"],
         )
 
@@ -194,11 +188,7 @@ class LogicalActions:
         # pylint: disable=too-many-locals
 
         # pylint: disable=import-outside-toplevel
-        from ._data import MOFilesystem
-        from ._data import ObjectManager
-        from ._data import Pool
-        from ._data import filesystems
-        from ._data import pools
+        from ._data import MOFilesystem, ObjectManager, Pool, filesystems, pools
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -240,7 +230,6 @@ class LogicalActions:
             raise StratisCliEngineError(return_code, message)
 
         if not destroyed or len(list_destroyed) < len(
-            # pylint: disable=bad-continuation
             fs_object_paths
         ):  # pragma: no cover
             raise StratisCliIncoherenceError(
@@ -261,10 +250,7 @@ class LogicalActions:
         :raises StratisCliNoChangeError:
         """
         # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager
-        from ._data import Pool
-        from ._data import filesystems
-        from ._data import pools
+        from ._data import ObjectManager, Pool, filesystems, pools
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -300,10 +286,7 @@ class LogicalActions:
         :raises StratisCliNoChangeError:
         """
         # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager
-        from ._data import Filesystem
-        from ._data import filesystems
-        from ._data import pools
+        from ._data import Filesystem, ObjectManager, filesystems, pools
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})

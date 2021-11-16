@@ -21,7 +21,7 @@ from justbytes import Range
 from .._stratisd_constants import BLOCK_DEV_TIER_TO_NAME
 from ._connection import get_object
 from ._constants import TOP_OBJECT
-from ._formatting import TABLE_FAILURE_STRING, get_property, print_table
+from ._formatting import print_table
 
 
 class PhysicalActions:
@@ -38,12 +38,7 @@ class PhysicalActions:
         for that pool. Otherwise, list all devices for all pools.
         """
         # pylint: disable=import-outside-toplevel
-        from ._data import devs
-        from ._data import pools
-        from ._data import FetchProperties
-        from ._data import MODev
-        from ._data import MOPool
-        from ._data import ObjectManager
+        from ._data import MODev, MOPool, ObjectManager, devs, pools
 
         # This method is invoked as the default for "stratis blockdev";
         # the namespace may not have a pool_name field.
@@ -53,10 +48,7 @@ class PhysicalActions:
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
         modevs = [
-            (
-                FetchProperties.Methods.GetAllProperties(get_object(objpath), {}),
-                MODev(info),
-            )
+            MODev(info)
             for objpath, info in devs(
                 props=None
                 if pool_name is None
@@ -76,25 +68,6 @@ class PhysicalActions:
                 props=None if pool_name is None else {"Name": pool_name}
             ).search(managed_objects)
         )
-
-        def total_physical_size(props):
-            """
-            Calculate the string value to display for physical size of block
-            device.
-
-            The format is just that chosen by justbytes default configuration.
-
-            :param props: a dictionary of property values obtained
-            :type props: a dict of str * object
-            :returns: a string to display in the resulting list output
-            :rtype: str
-            """
-            return get_property(
-                props,
-                "TotalPhysicalSize",
-                lambda x: str(Range(x)),
-                TABLE_FAILURE_STRING,
-            )
 
         def paths(modev):
             """
@@ -121,10 +94,10 @@ class PhysicalActions:
             [
                 path_to_name[modev.Pool()],
                 paths(modev),
-                total_physical_size(props),
+                str(Range(modev.TotalPhysicalSize())),
                 BLOCK_DEV_TIER_TO_NAME(modev.Tier(), True),
             ]
-            for (props, modev) in modevs
+            for modev in modevs
         ]
         print_table(
             ["Pool Name", "Device Node", "Physical Size", "Tier"],

@@ -29,31 +29,27 @@ from .._errors import (
     StratisCliNoChangeError,
     StratisCliResourceNotFoundError,
 )
-from .._stratisd_constants import (
-    CLEVIS_KEY_TANG_TRUST_URL,
-    CLEVIS_KEY_THP,
-    CLEVIS_KEY_URL,
-    CLEVIS_PIN_TANG,
-    CLEVIS_PIN_TPM2,
-    ReportKey,
-    StratisdErrors,
-)
+from .._stratisd_constants import ReportKey, StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import print_table
-from ._utils import fetch_property
 
 
-def _fetch_keylist_property(proxy):
+def _fetch_keylist(proxy):
     """
-    Fetch the KeyList property from stratisd.
+    Fetch the list of Stratis keys from stratisd.
     :param proxy: proxy to the top object in stratisd
     :return: list of key descriptions
     :rtype: list of str
-    :raises StratisCliPropertyNotFoundError:
-    :raises StratisCliEnginePropertyError:
+    :raises StratisCliEngineError:
     """
-    return fetch_property(proxy, "KeyList")
+    # pylint: disable=import-outside-toplevel
+    from ._data import Manager
+
+    (keys, return_code, message) = Manager.Methods.ListKeys(proxy, {})
+    if return_code != StratisdErrors.OK:  # pragma: no cover
+        raise StratisCliEngineError(return_code, message)
+    return keys
 
 
 def _add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
@@ -92,7 +88,7 @@ def _add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
 
     add_ret = Manager.Methods.SetKey(
         proxy,
-        {"key_desc": key_desc, "key_fd": file_desc, "interactive": False},
+        {"key_desc": key_desc, "key_fd": file_desc},
     )
 
     if fd_is_pipe:  # pragma: no cover
@@ -153,7 +149,7 @@ class TopActions:
 
             json_report = json.loads(report)
 
-        json.dump(json_report, sys.stdout, indent=4, sort_keys=True)
+        json.dump(json_report, sys.stdout, indent=4)
         print(file=sys.stdout)
 
     @staticmethod
@@ -162,14 +158,12 @@ class TopActions:
         Set a key in the kernel keyring.
 
         :raises StratisCliEngineError:
-        :raises StratisCliEnginePropertyError:
-        :raises StratisCliPropertyNotFoundError:
         :raises StratisCliNameConflictError:
         :raises StratisCliIncoherenceError:
         """
         proxy = get_object(TOP_OBJECT)
 
-        key_list = _fetch_keylist_property(proxy)
+        key_list = _fetch_keylist(proxy)
         if namespace.keydesc in key_list:
             raise StratisCliNameConflictError("key", namespace.keydesc)
 
@@ -208,14 +202,12 @@ class TopActions:
         Reset the key data for an existing key in the kernel keyring.
 
         :raises StratisCliEngineError:
-        :raises StratisCliEnginePropertyError:
         :raises StratisCliResourceNotFoundError:
-        :raises StratisCliPropertyNotFoundError:
         :raises StratisCliIncoherenceError:
         """
         proxy = get_object(TOP_OBJECT)
 
-        key_list = _fetch_keylist_property(proxy)
+        key_list = _fetch_keylist(proxy)
         if namespace.keydesc not in key_list:
             raise StratisCliResourceNotFoundError("reset", namespace.keydesc)
 
@@ -249,8 +241,6 @@ class TopActions:
         Unset a key in kernel keyring.
 
         :raises StratisCliEngineError:
-        :raises StratisCliEnginePropertyError:
-        :raises StratisCliPropertyNotFoundError:
         :raises StratisCliNoChangeError:
         :raises StratisCliIncoherenceError:
         """
@@ -259,7 +249,7 @@ class TopActions:
 
         proxy = get_object(TOP_OBJECT)
 
-        key_list = _fetch_keylist_property(proxy)
+        key_list = _fetch_keylist(proxy)
         if namespace.keydesc not in key_list:
             raise StratisCliNoChangeError("remove", namespace.keydesc)
 
@@ -284,105 +274,12 @@ class TopActions:
         """
         List keys in kernel keyring.
 
-        :raises StratisCliPropertyNotFoundError:
-        :raises StratisCliEnginePropertyError:
+        :raises StratisCliEngineError:
         """
         proxy = get_object(TOP_OBJECT)
 
-        key_list = [[key_desc] for key_desc in _fetch_keylist_property(proxy)]
+        key_list = [[key_desc] for key_desc in _fetch_keylist(proxy)]
 
         print_table(
             ["Key Description"], sorted(key_list, key=lambda entry: entry[0]), ["<"]
         )
-
-    @staticmethod
-    def _bind_clevis(namespace, clevis_pin, clevis_config):
-        """
-        Generic bind method. For further information about Clevis, and
-        discussion of the pin and the configuration, consult Clevis
-        documentation.
-
-        :param str clevis_pin: Clevis pin
-        :param dict clevis_config: configuration, may contain Stratis keys
-        """
-        # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, Pool, pools
-
-        proxy = get_object(TOP_OBJECT)
-        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        pool_name = namespace.pool_name
-        (pool_object_path, _) = next(
-            pools(props={"Name": pool_name})
-            .require_unique_match(True)
-            .search(managed_objects)
-        )
-        (changed, return_code, return_msg) = Pool.Methods.Bind(
-            get_object(pool_object_path),
-            {
-                "pin": clevis_pin,
-                "json": json.dumps(clevis_config),
-            },
-        )
-
-        if return_code != StratisdErrors.OK:
-            raise StratisCliEngineError(return_code, return_msg)
-
-        if not changed:
-            raise StratisCliNoChangeError("bind", pool_name)
-
-    @staticmethod
-    def bind_tang(namespace):
-        """
-        Bind all devices in an encrypted pool using the specified tang server.
-
-        :raises StratisCliNoChangeError:
-        :raises StratisCliEngineError:
-        """
-        clevis_config = {CLEVIS_KEY_URL: namespace.url}
-        if namespace.trust_url:
-            clevis_config[CLEVIS_KEY_TANG_TRUST_URL] = True
-        else:
-            assert namespace.thumbprint is not None
-            clevis_config[CLEVIS_KEY_THP] = namespace.thumbprint
-
-        TopActions._bind_clevis(namespace, CLEVIS_PIN_TANG, clevis_config)
-
-    @staticmethod
-    def bind_tpm(namespace):
-        """
-        Bind all devices in an encrypted pool using TPM.
-
-        :raises StratisCliNoChangeError:
-        :raises StratisCliEngineError:
-        """
-
-        TopActions._bind_clevis(namespace, CLEVIS_PIN_TPM2, {})
-
-    @staticmethod
-    def bind_keyring(namespace):
-        """
-        Bind all devices in an encrypted pool using the kernel keyring.
-        """
-        # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, Pool, pools
-
-        proxy = get_object(TOP_OBJECT)
-        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        pool_name = namespace.pool_name
-        (pool_object_path, _) = next(
-            pools(props={"Name": pool_name})
-            .require_unique_match(True)
-            .search(managed_objects)
-        )
-        (changed, return_code, return_msg) = Pool.Methods.BindKeyring(
-            get_object(pool_object_path),
-            {
-                "key_desc": namespace.keydesc,
-            },
-        )
-
-        if return_code != StratisdErrors.OK:
-            raise StratisCliEngineError(return_code, return_msg)
-
-        if not changed:
-            raise StratisCliNoChangeError("bind", pool_name)

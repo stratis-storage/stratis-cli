@@ -18,6 +18,8 @@ Stratisd error classes.
 # isort: STDLIB
 from enum import Enum, IntEnum
 
+from ._constants import PoolMaintenanceErrorCode
+
 
 def value_to_name(klass):
     """
@@ -41,7 +43,7 @@ def value_to_name(klass):
         :rtype: str
         """
         try:
-            the_str = str(klass(num)).rsplit(".")[-1].replace("_", " ")
+            the_str = str(klass(num)).rsplit(".", maxsplit=1)[-1].replace("_", " ")
 
         # This branch is taken only if the constants defined here do not
         # match those defined in stratisd. We should remedy such a situation
@@ -65,11 +67,6 @@ class StratisdErrors(IntEnum):
     OK = 0
     ERROR = 1
 
-    ALREADY_EXISTS = 2
-    BUSY = 3
-    INTERNAL_ERROR = 4
-    NOT_FOUND = 5
-
 
 STRATISD_ERROR_TO_NAME = value_to_name(StratisdErrors)
 
@@ -90,8 +87,8 @@ class BlockDevTiers(IntEnum):
     Tier to which a blockdev device belongs.
     """
 
-    Data = 0
-    Cache = 1
+    DATA = 0
+    CACHE = 1
 
 
 BLOCK_DEV_TIER_TO_NAME = value_to_name(BlockDevTiers)
@@ -131,3 +128,56 @@ class ReportKey(Enum):
 
     def __str__(self):
         return self.value
+
+
+class PoolActionAvailability(IntEnum):
+    """
+    What category of interactions a pool is enabled for.
+    """
+
+    FULLY_OPERATIONAL = 0
+    NO_IPC_REQUESTS = 1
+    NO_POOL_CHANGES = 2
+    NO_WRITE_IO = 3
+
+    def __str__(self):
+        if self is PoolActionAvailability.FULLY_OPERATIONAL:
+            return "fully_operational"
+        if self is PoolActionAvailability.NO_IPC_REQUESTS:
+            return "no_ipc_requests"
+        if self is PoolActionAvailability.NO_POOL_CHANGES:
+            return "no_pool_changes"
+        if self is PoolActionAvailability.NO_WRITE_IO:  # pragma: no cover
+            return "no_write_io"
+
+        assert False, "impossible value reached"  # pragma: no cover
+
+    @staticmethod
+    def from_str(code_str):
+        """
+        Get ActionAvailability object from a string.
+        :param str code_str: a code string
+        :rtype: str or NoneType
+        """
+        for item in list(PoolActionAvailability):
+            if code_str == str(item):
+                return item
+        return None
+
+    def pool_maintenance_error_codes(self):
+        """
+        Return the list of PoolMaintenanceErrorCodes for this availability.
+
+        :rtype: list of PoolMaintenanceErrorCode
+        """
+        codes = []
+        if self >= PoolActionAvailability.NO_IPC_REQUESTS:
+            codes.append(PoolMaintenanceErrorCode.NO_IPC_REQUESTS)
+
+        if self >= PoolActionAvailability.NO_POOL_CHANGES:
+            codes.append(PoolMaintenanceErrorCode.NO_POOL_CHANGES)
+
+        if self >= PoolActionAvailability.NO_WRITE_IO:
+            codes.append(PoolMaintenanceErrorCode.READ_ONLY)
+
+        return codes

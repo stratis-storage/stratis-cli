@@ -68,29 +68,6 @@ class StratisCliResourceNotFoundError(StratisCliUserError):
         )
 
 
-class StratisCliPropertyNotFoundError(StratisCliRuntimeError):
-    """
-    Exception raised when a property can not be found in the result of
-    a FetchProperties call. This can be due to a bug in our code or to
-    a property being unavailable via the FetchProperties interface.
-    """
-
-    def __init__(self, prop_name):
-        """
-        Initializer.
-
-        :param str prop_name: the property that did not exist
-        """
-        # pylint: disable=super-init-not-called
-        self.prop_name = prop_name
-
-    def __str__(self):
-        return (
-            "The requested property '%s' was not found in the FetchProperties "
-            "result for a D-Bus object" % self.prop_name
-        )
-
-
 class StratisCliPartialChangeError(StratisCliUserError):
     """
     Raised if a request made of stratisd must result in a partial or no change
@@ -254,9 +231,9 @@ class StratisCliInUseOtherTierError(StratisCliInUseError):
         (target_blockdev_tier, already_blockdev_tier) = (
             BLOCK_DEV_TIER_TO_NAME(self.added_as),
             BLOCK_DEV_TIER_TO_NAME(
-                BlockDevTiers.Data
-                if self.added_as == BlockDevTiers.Cache
-                else BlockDevTiers.Cache
+                BlockDevTiers.DATA
+                if self.added_as == BlockDevTiers.CACHE
+                else BlockDevTiers.CACHE
             ),
         )
 
@@ -374,35 +351,6 @@ class StratisCliUnknownInterfaceError(StratisCliRuntimeError):
 
     def __str__(self):
         return "unexpected interface name %s" % self._interface_name
-
-
-class StratisCliEnginePropertyError(StratisCliRuntimeError):
-    """
-    Raised if there was a failure to obtain a property due to an error in
-    stratisd's engine.
-
-    In this case, stratisd does not return an error code, but an error message
-    is still transmitted.
-    """
-
-    def __init__(self, prop_name, message):
-        """
-        Initializer.
-
-        :param str prop_name: the property that could not be obtained
-        :param str message: the error message returned by the engine in
-                            place of the property
-        """
-        # pylint: disable=super-init-not-called
-        self.prop_name = prop_name
-        self.message = message
-
-    def __str__(self):
-        return (
-            "stratisd encountered the following error while obtaining the "
-            "requested property '%s' via the FetchProperties interface for a "
-            "D-Bus object: %s"
-        ) % (self.prop_name, self.message)
 
 
 class StratisCliEngineError(StratisCliRuntimeError):

@@ -30,7 +30,6 @@ from dbus_python_client_gen import DPClientGenerationError, make_class
 from .._errors import StratisCliGenerationError
 from ._constants import (
     BLOCKDEV_INTERFACE,
-    FETCH_PROPERTIES_INTERFACE,
     FILESYSTEM_INTERFACE,
     MANAGER_INTERFACE,
     POOL_INTERFACE,
@@ -53,9 +52,6 @@ try:
     timeout = get_timeout(
         os.environ.get("STRATIS_DBUS_TIMEOUT", DBUS_TIMEOUT_SECONDS * 1000)
     )
-
-    fetch_properties_spec = ET.fromstring(SPECS[FETCH_PROPERTIES_INTERFACE])
-    FetchProperties = make_class("FetchProperties", fetch_properties_spec, timeout)
 
     report_spec = ET.fromstring(SPECS[REPORT_INTERFACE])
     Report = make_class("Report", report_spec, timeout)
@@ -87,7 +83,7 @@ try:
     # This minimal specification includes only the specification for the
     # Version property.
     manager_spec = """
-    <interface name="org.storage.stratis2.Manager">
+    <interface name="org.storage.stratis3.Manager.r0">
         <property access="read" name="Version" type="s">
             <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const" />
         </property>

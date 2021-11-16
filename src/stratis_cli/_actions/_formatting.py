@@ -19,9 +19,6 @@ Formatting for tables.
 import sys
 import uuid
 
-from .._errors import StratisCliEnginePropertyError, StratisCliPropertyNotFoundError
-from ._utils import unpack_property
-
 # If the wcwidth package is not available the wcswidth function will not
 # be available. In that case, use the standard function len where wcswidth
 # would otherwise be used. Since len determines the number of _characters_
@@ -32,13 +29,11 @@ from ._utils import unpack_property
 # installation mechanism, which builds functions dynamically from tables
 # made available online at www.unicode.org.
 
-# Disable coverage for conditional import. We do not want to make our
-# coverage result dependent on whether wcwidth is available or not, as our
-# tests might be run, and succeed either with or without.
 try:
+    # isort: THIRDPARTY
     from wcwidth import wcswidth
 
-    MAYBE_WCSWIDTH = wcswidth  # pragma: no cover
+    MAYBE_WCSWIDTH = wcswidth
 
 except ImportError:  # pragma: no cover
     MAYBE_WCSWIDTH = len
@@ -48,31 +43,41 @@ except ImportError:  # pragma: no cover
 TABLE_FAILURE_STRING = "FAILURE"
 
 
-def get_property(props, name, to_repr, default):
+def size_triple(size, used):
     """
-    Get a representation of a property fetched through FetchProperties
-    :param props: dictionary of property names mapped to values
-    :type props: dict of str * (bool, object)
-    :param str name: the name of the property
-    :param to_repr: function expecting one object argument to convert
+    Given size and used, return a properly formatted string Total/ Used / Free
+
+    :param size: total size
+    :type size: Range or NoneType
+    :param used: total amount used
+    :type used: Range or NoneType
+    :rtype: str
+    :returns: formatted string for display
+    """
+    free = None if size is None or used is None else size - used
+
+    return "%s / %s / %s" % (
+        TABLE_FAILURE_STRING if size is None else size,
+        TABLE_FAILURE_STRING if used is None else used,
+        TABLE_FAILURE_STRING if free is None else free,
+    )
+
+
+def get_property(prop, to_repr, default):
+    """
+    Get a representation of an optional D-Bus property. An optional
+    D-Bus property is one that may be unknown to stratisd.
+
+    :param prop: the property value
+    :type prop: a pair of bool * T
+    :param to_repr: conversion function
     :type to_repr: object -> object
-    :param default: object to return in lieu of propagating an exception
-    :type default: object
+    :param object default: default for display
     :returns: object produced by to_repr or default
     :rtype: object
     """
-    try:
-        return to_repr(unpack_property(props, name))
-    # An exception should only be raised if the property can not be obtained.
-    # This requires either running against an interface that does not support
-    # the property or the engine encountering an error getting the property,
-    # or a bug in our code.
-    except (
-        # pylint: disable=bad-continuation
-        StratisCliEnginePropertyError,
-        StratisCliPropertyNotFoundError,
-    ):  # pragma: no cover
-        return default
+    (valid, value) = prop
+    return to_repr(value) if valid else default
 
 
 def _get_column_len(column_width, entry_len, entry_width):

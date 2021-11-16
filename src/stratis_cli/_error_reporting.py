@@ -20,7 +20,6 @@ import sys
 
 # isort: THIRDPARTY
 import dbus
-import psutil
 
 # isort: FIRSTPARTY
 from dbus_client_gen import (
@@ -35,7 +34,6 @@ from ._errors import (
     StratisCliActionError,
     StratisCliAggregateError,
     StratisCliEngineError,
-    StratisCliEnginePropertyError,
     StratisCliIncoherenceError,
     StratisCliParserError,
     StratisCliStratisdVersionError,
@@ -108,28 +106,38 @@ def _interpret_errors_0(error):
     # control the contents or installation of "stratisd.conf"
     # and therefore, we cannot test this case reliably.
     if (
-        # pylint: disable=bad-continuation
-        error.get_dbus_name()
-        == "org.freedesktop.DBus.Error.AccessDenied"
+        error.get_dbus_name() == "org.freedesktop.DBus.Error.AccessDenied"
     ):  # pragma: no cover
         return (
             "Most likely stratis has insufficient permissions for the action requested."
         )
 
-    # We have observed two causes of this problem. The first is that
+    # We have observed three causes of this problem. The first is that
     # stratisd is not running at all. The second is that stratisd has not
-    # yet established its D-Bus service. While coverage of the first condition
-    # can be replicated by simply not starting stratisd, the second condition
-    # is difficult to replicate through testing.
+    # yet established its D-Bus service. The third is that stratisd is
+    # running with a new major version and is supplying a different name on the
+    # D-Bus than stratis is attempting to use. The second and third
+    # possibilities are both covered by a single error message.
     if error.get_dbus_name() == "org.freedesktop.DBus.Error.NameHasNoOwner":
-        for proc in psutil.process_iter():
-            try:
-                if proc.name() == "stratisd":  # pragma: no cover
-                    return "Most likely stratis is unable to connect to the stratis D-Bus service."
-            except psutil.NoSuchProcess:  # pragma: no cover
-                pass
+        try:
+            # pylint: disable=import-outside-toplevel
+            # isort: THIRDPARTY
+            import psutil
 
-        return "It appears that there is no stratisd process running."
+            for proc in psutil.process_iter():
+                try:
+                    if proc.name() == "stratisd":  # pragma: no cover
+                        return (
+                            "Most likely stratis is unable to connect to the "
+                            "stratisd D-Bus service."
+                        )
+                except psutil.NoSuchProcess:  # pragma: no cover
+                    pass
+
+            return "It appears that there is no stratisd process running."
+
+        except ImportError:  # pragma: no cover
+            return "Most likely there is no stratisd process running."
 
     # Due to the uncertain behavior with which libdbus
     # treats a timeout value of 0, it proves difficult to test this case,
@@ -137,9 +145,7 @@ def _interpret_errors_0(error):
     # Additional information may be found in the issue filed against libdbus
     # here: https://gitlab.freedesktop.org/dbus/dbus/issues/293
     if (
-        # pylint: disable=bad-continuation
-        error.get_dbus_name()
-        == "org.freedesktop.DBus.Error.NoReply"
+        error.get_dbus_name() == "org.freedesktop.DBus.Error.NoReply"
     ):  # pragma: no cover
         return (
             "stratis attempted communication with the daemon, stratisd, "
@@ -153,7 +159,6 @@ def _interpret_errors_0(error):
 
 
 def _interpret_errors_1(
-    # pylint: disable=bad-continuation
     errors,
 ):  # pylint: disable=too-many-return-statements, too-many-branches
     """
@@ -165,11 +170,7 @@ def _interpret_errors_1(
     """
     error = errors[0]
 
-    if (
-        # pylint: disable=bad-continuation
-        isinstance(error, DbusClientUniqueResultError)
-        and error.result == []
-    ):
+    if isinstance(error, DbusClientUniqueResultError) and error.result == []:
         fmt_str = "Most likely you specified a %s which does not exist."
         return fmt_str % _interface_name_to_common_name(error.interface_name)
 
@@ -179,7 +180,6 @@ def _interpret_errors_1(
     # daemon interface. This situation is unlikely and difficult to
     # elicit in a test.
     if isinstance(
-        # pylint: disable=bad-continuation
         error,
         (DbusClientMissingSearchPropertiesError, DbusClientMissingPropertyError),
     ):  # pragma: no cover
@@ -192,11 +192,6 @@ def _interpret_errors_1(
             "the D-Bus: %s."
         )
         return fmt_str % error
-
-    # This should arise only if the engine encounters an error while
-    # obtaining a property. Therefore, it is not tested.
-    if isinstance(error, StratisCliEnginePropertyError):  # pragma: no cover
-        return str(error)
 
     if isinstance(error, StratisCliParserError):
         fmt_str = "You entered an invalid command: %s"
@@ -295,7 +290,6 @@ def _interpret_errors_2(errors):  # pragma: no cover
             if next_error.get_dbus_name() == "org.freedesktop.DBus.Error.Failed":
                 context = error.context
                 if (
-                    # pylint: disable=bad-continuation
                     error.interface_name == "org.freedesktop.DBus.ObjectManager"
                     and isinstance(context, DPClientMethodCallContext)
                     and context.method_name == "GetManagedObjects"

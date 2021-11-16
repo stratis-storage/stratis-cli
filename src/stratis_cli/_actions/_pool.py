@@ -22,6 +22,7 @@ from collections import defaultdict
 # isort: THIRDPARTY
 from justbytes import Range
 
+from .._constants import PoolMaintenanceErrorCode
 from .._errors import (
     StratisCliAggregateError,
     StratisCliEngineError,
@@ -33,11 +34,11 @@ from .._errors import (
     StratisCliPartialChangeError,
     StratisCliPartialFailureError,
 )
-from .._stratisd_constants import BlockDevTiers, EncryptionMethod, StratisdErrors
+from .._stratisd_constants import BlockDevTiers, PoolActionAvailability, StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
-from ._formatting import TABLE_FAILURE_STRING, get_property, print_table, to_hyphenated
-from ._utils import fetch_property, get_clevis_info
+from ._formatting import get_property, print_table, size_triple, to_hyphenated
+from ._utils import get_clevis_info
 
 
 def _generate_pools_to_blockdevs(managed_objects, to_be_added, tier):
@@ -53,10 +54,7 @@ def _generate_pools_to_blockdevs(managed_objects, to_be_added, tier):
     :rtype: dict of str * frozenset of str
     """
     # pylint: disable=import-outside-toplevel
-    from ._data import MODev
-    from ._data import MOPool
-    from ._data import devs
-    from ._data import pools
+    from ._data import MODev, MOPool, devs, pools
 
     pool_map = dict(
         (path, str(MOPool(info).Name()))
@@ -65,7 +63,6 @@ def _generate_pools_to_blockdevs(managed_objects, to_be_added, tier):
 
     pools_to_blockdevs = defaultdict(list)
     for modev in (
-        # pylint: disable=bad-continuation
         modev
         for modev in (
             MODev(info)
@@ -99,9 +96,9 @@ def _check_opposite_tier(managed_objects, to_be_added, other_tier):
     if pools_to_blockdevs != {}:
         raise StratisCliInUseOtherTierError(
             pools_to_blockdevs,
-            BlockDevTiers.Data
-            if other_tier == BlockDevTiers.Cache
-            else BlockDevTiers.Cache,
+            BlockDevTiers.DATA
+            if other_tier == BlockDevTiers.CACHE
+            else BlockDevTiers.CACHE,
         )
 
 
@@ -132,7 +129,7 @@ def _check_same_tier(pool_name, managed_objects, to_be_added, this_tier):
 
     if owned_by_current_pool != frozenset():
         raise StratisCliPartialChangeError(
-            "add to cache" if this_tier == BlockDevTiers.Cache else "add to data",
+            "add to cache" if this_tier == BlockDevTiers.CACHE else "add to data",
             to_be_added.difference(owned_by_current_pool),
             to_be_added.intersection(owned_by_current_pool),
         )
@@ -144,12 +141,15 @@ def _fetch_locked_pools_property(proxy):
     """
     Fetch the LockedPools property from stratisd.
     :param proxy: proxy to the top object in stratisd
-    :return: list of pool UUIDs as strings
-    :rtype: list of str
-    :raises StratisCliPropertyNotFoundError:
-    :raises StratisCliEnginePropertyError:
+    :return: a representation of unlocked devices
+    :rtype: dict
+    :raises StratisCliEngineError:
     """
-    return fetch_property(proxy, "LockedPools")
+
+    # pylint: disable=import-outside-toplevel
+    from ._data import Manager
+
+    return Manager.Properties.LockedPools.Get(proxy)
 
 
 class PoolActions:
@@ -167,9 +167,7 @@ class PoolActions:
         :raises StratisCliNameConflictError:
         """
         # pylint: disable=import-outside-toplevel
-        from ._data import Manager
-        from ._data import ObjectManager
-        from ._data import pools
+        from ._data import Manager, ObjectManager, pools
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -179,9 +177,9 @@ class PoolActions:
         if list(names) != []:
             raise StratisCliNameConflictError("pool", pool_name)
 
-        _check_opposite_tier(managed_objects, blockdevs, BlockDevTiers.Cache)
+        _check_opposite_tier(managed_objects, blockdevs, BlockDevTiers.CACHE)
 
-        _check_same_tier(pool_name, managed_objects, blockdevs, BlockDevTiers.Data)
+        _check_same_tier(pool_name, managed_objects, blockdevs, BlockDevTiers.DATA)
 
         clevis_info = get_clevis_info(namespace)
 
@@ -196,7 +194,6 @@ class PoolActions:
                     if namespace.key_desc is not None
                     else (False, "")
                 ),
-                # pylint: disable=bad-continuation
                 "clevis_info": (False, ("", ""))
                 if clevis_info is None
                 else (True, clevis_info),
@@ -224,11 +221,7 @@ class PoolActions:
         :raises StratisCliIncoherenceError:
         """
         # pylint: disable=import-outside-toplevel
-        from ._data import MODev
-        from ._data import ObjectManager
-        from ._data import Pool
-        from ._data import devs
-        from ._data import pools
+        from ._data import MODev, ObjectManager, Pool, devs, pools
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -240,9 +233,9 @@ class PoolActions:
         )
         blockdevs = frozenset([os.path.abspath(p) for p in namespace.blockdevs])
 
-        _check_opposite_tier(managed_objects, blockdevs, BlockDevTiers.Data)
+        _check_opposite_tier(managed_objects, blockdevs, BlockDevTiers.DATA)
 
-        _check_same_tier(pool_name, managed_objects, blockdevs, BlockDevTiers.Cache)
+        _check_same_tier(pool_name, managed_objects, blockdevs, BlockDevTiers.CACHE)
 
         ((changed, devs_added), return_code, message) = Pool.Methods.InitCache(
             get_object(pool_object_path), {"devices": blockdevs}
@@ -275,23 +268,16 @@ class PoolActions:
         List all stratis pools.
         """
         # pylint: disable=import-outside-toplevel
-        from ._data import FetchProperties
-        from ._data import MOPool
-        from ._data import ObjectManager
-        from ._data import pools
+        from ._data import MOPool, ObjectManager, pools
 
         proxy = get_object(TOP_OBJECT)
 
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
         pools_with_props = [
-            (
-                FetchProperties.Methods.GetAllProperties(get_object(objpath), {}),
-                MOPool(info),
-            )
-            for objpath, info in pools().search(managed_objects)
+            MOPool(info) for objpath, info in pools().search(managed_objects)
         ]
 
-        def physical_size_triple(props):
+        def physical_size_triple(mopool):
             """
             Calculate the triple to display for total physical size.
 
@@ -299,34 +285,16 @@ class PoolActions:
             member of the tuple are chosen automatically according to justbytes'
             configuration.
 
-            :param props: a dictionary of property values obtained
-            :type props: dict of str * object
+            :param mopool: an object representing all the properties of the pool
+            :type mopool: MOPool
             :returns: a string to display in the resulting list output
             :rtype: str
             """
-            total_physical_size = get_property(props, "TotalPhysicalSize", Range, None)
+            total_physical_size = Range(mopool.TotalPhysicalSize())
+            total_physical_used = get_property(mopool.TotalPhysicalUsed(), Range, None)
+            return size_triple(total_physical_size, total_physical_used)
 
-            total_physical_used = get_property(props, "TotalPhysicalUsed", Range, None)
-
-            total_physical_free = (
-                None
-                if total_physical_size is None or total_physical_used is None
-                else total_physical_size - total_physical_used
-            )
-
-            return "%s / %s / %s" % (
-                TABLE_FAILURE_STRING
-                if total_physical_size is None
-                else total_physical_size,
-                TABLE_FAILURE_STRING
-                if total_physical_used is None
-                else total_physical_used,
-                TABLE_FAILURE_STRING
-                if total_physical_free is None
-                else total_physical_free,
-            )
-
-        def properties_string(mopool, props_map):
+        def properties_string(mopool):
             """
             Make a string encoding some important properties of the pool
 
@@ -356,31 +324,43 @@ class PoolActions:
                     prefix = "?"
                 return prefix + code
 
-            prop_list = []
-            prop_list.append(
-                gen_string(get_property(props_map, "HasCache", lambda x: x, None), "Ca")
-            )
-            prop_list.append(gen_string(mopool.Encrypted(), "Cr"))
-            return ",".join(prop_list)
+            props_list = [(mopool.HasCache(), "Ca"), (mopool.Encrypted(), "Cr")]
+            return ",".join(gen_string(x, y) for x, y in props_list)
 
         format_uuid = (
             (lambda mo_uuid: mo_uuid) if namespace.unhyphenated_uuids else to_hyphenated
         )
 
+        def alert_string(mopool):
+            """
+            Alert information to display, if any
+
+            :param mopool: object to access pool properties
+
+            :returns: string w/ alert information, "" if no alert
+            :rtype: str
+            """
+            action_availability = PoolActionAvailability.from_str(
+                mopool.AvailableActions()
+            )
+            error_codes = action_availability.pool_maintenance_error_codes()
+            return ", ".join(sorted(str(code) for code in error_codes))
+
         tables = [
             (
                 mopool.Name(),
-                physical_size_triple(props),
-                properties_string(mopool, props),
+                physical_size_triple(mopool),
+                properties_string(mopool),
                 format_uuid(mopool.Uuid()),
+                alert_string(mopool),
             )
-            for props, mopool in pools_with_props
+            for mopool in pools_with_props
         ]
 
         print_table(
-            ["Name", "Total Physical", "Properties", "UUID"],
+            ["Name", "Total Physical", "Properties", "UUID", "Alerts"],
             sorted(tables, key=lambda entry: entry[0]),
-            ["<", ">", ">", ">"],
+            ["<", ">", ">", ">", "<"],
         )
 
     @staticmethod
@@ -394,9 +374,7 @@ class PoolActions:
         :raises StratisCliIncoherenceError:
         """
         # pylint: disable=import-outside-toplevel
-        from ._data import Manager
-        from ._data import ObjectManager
-        from ._data import pools
+        from ._data import Manager, ObjectManager, pools
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -434,9 +412,7 @@ class PoolActions:
         :raises StratisCliNoChangeError:
         """
         # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager
-        from ._data import Pool
-        from ._data import pools
+        from ._data import ObjectManager, Pool, pools
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -468,21 +444,17 @@ class PoolActions:
         :raises StratisCliPartialChangeError:
         """
         # pylint: disable=import-outside-toplevel
-        from ._data import MODev
-        from ._data import ObjectManager
-        from ._data import Pool
-        from ._data import devs
-        from ._data import pools
+        from ._data import MODev, ObjectManager, Pool, devs, pools
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
         blockdevs = frozenset([os.path.abspath(p) for p in namespace.blockdevs])
 
-        _check_opposite_tier(managed_objects, blockdevs, BlockDevTiers.Cache)
+        _check_opposite_tier(managed_objects, blockdevs, BlockDevTiers.CACHE)
 
         _check_same_tier(
-            namespace.pool_name, managed_objects, blockdevs, BlockDevTiers.Data
+            namespace.pool_name, managed_objects, blockdevs, BlockDevTiers.DATA
         )
 
         (pool_object_path, _) = next(
@@ -527,21 +499,17 @@ class PoolActions:
         :raises StratisCliPartialChangeError:
         """
         # pylint: disable=import-outside-toplevel
-        from ._data import MODev
-        from ._data import ObjectManager
-        from ._data import Pool
-        from ._data import devs
-        from ._data import pools
+        from ._data import MODev, ObjectManager, Pool, devs, pools
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
         blockdevs = frozenset([os.path.abspath(p) for p in namespace.blockdevs])
 
-        _check_opposite_tier(managed_objects, blockdevs, BlockDevTiers.Data)
+        _check_opposite_tier(managed_objects, blockdevs, BlockDevTiers.DATA)
 
         _check_same_tier(
-            namespace.pool_name, managed_objects, blockdevs, BlockDevTiers.Cache
+            namespace.pool_name, managed_objects, blockdevs, BlockDevTiers.CACHE
         )
 
         (pool_object_path, _) = next(
@@ -573,42 +541,6 @@ class PoolActions:
                 )
                 % (namespace.pool_name, ", ".join(devnodes_added), ", ".join(blockdevs))
             )
-
-    @staticmethod
-    def unbind(namespace):
-        """
-        Unbind all devices in an encrypted pool.
-
-        :raises StratisCliNoChangeError:
-        :raises StratisCliEngineError:
-        """
-        # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, Pool, pools
-
-        proxy = get_object(TOP_OBJECT)
-        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        pool_name = namespace.pool_name
-        (pool_object_path, _) = next(
-            pools(props={"Name": pool_name})
-            .require_unique_match(True)
-            .search(managed_objects)
-        )
-
-        unbind_method = (
-            Pool.Methods.Unbind
-            if namespace.method == str(EncryptionMethod.CLEVIS)
-            else Pool.Methods.UnbindKeyring
-        )
-
-        (changed, return_code, return_msg) = unbind_method(
-            get_object(pool_object_path), {}
-        )
-
-        if return_code != StratisdErrors.OK:
-            raise StratisCliEngineError(return_code, return_msg)
-
-        if not changed:
-            raise StratisCliNoChangeError("unbind", pool_name)
 
     @staticmethod
     def unlock_pools(namespace):
@@ -657,3 +589,12 @@ class PoolActions:
 
         if errors != []:  # pragma: no cover
             raise StratisCliAggregateError("unlock", "pool", errors)
+
+    @staticmethod
+    def explain_code(namespace):
+        """
+        Print an explanation of pool error code.
+        """
+        error_code = PoolMaintenanceErrorCode.from_str(namespace.code)
+        assert error_code is not None
+        print(error_code.explain())
