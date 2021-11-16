@@ -1,5 +1,5 @@
-stratis-cli 3.0.0 (UNRELEASED)
-==============================
+stratis-cli 3.0.0
+=================
 Required stratisd version: 3.0.0
 
 Recommended development environment: Fedora 34
@@ -11,6 +11,10 @@ Lowest supported Python interpreter: 3.6.8
   https://github.com/stratis-storage/stratis-cli/pull/810
   https://github.com/stratis-storage/stratis-cli/pull/809
   https://github.com/stratis-storage/stratis-cli/pull/806
+
+- Drop dependency on FetchProperties D-Bus interface:
+  https://github.com/stratis-storage/stratis-cli/issues/838
+  https://github.com/stratis-storage/stratis-cli/pull/839
 
 - Make dependency on psutil optional:
   https://github.com/stratis-storage/stratis-cli/issues/798
@@ -48,6 +52,8 @@ Lowest supported Python interpreter: 3.6.8
   https://github.com/stratis-storage/stratis-cli/pull/817
 
 - Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/842
+  https://github.com/stratis-storage/stratis-cli/pull/841
   https://github.com/stratis-storage/stratis-cli/pull/834
   https://github.com/stratis-storage/stratis-cli/pull/831
   https://github.com/stratis-storage/stratis-cli/pull/829
@@ -66,6 +72,7 @@ Lowest supported Python interpreter: 3.6.8
   https://github.com/stratis-storage/stratis-cli/pull/781
   https://github.com/stratis-storage/stratis-cli/pull/780
   https://github.com/stratis-storage/stratis-cli/pull/778
+  https://github.com/stratis-storage/stratis-cli/pull/775
   https://github.com/stratis-storage/stratis-cli/pull/774
   https://github.com/stratis-storage/stratis-cli/pull/773
   https://github.com/stratis-storage/stratis-cli/pull/770
