@@ -1,6 +1,6 @@
 _stratis()
 {
-	local cur prev x2prev opts root_subcommands pool_subcommands fs_subcommands blockdev_subcommands daemon_subcommands complete_pools blockdevs first second third
+	local comp_cword_adj root_subcommand subcommand cur prev x2prev opts root_subcommands pool_subcommands fs_subcommands blockdev_subcommands daemon_subcommands complete_pools blockdevs first second third
 
 	COMPREPLY=()
 
@@ -20,36 +20,72 @@ _stratis()
 	pool_bind_subcommands="nbde tang tpm2"
 	pool_unlock_subcommands="clevis keyring"
 	fs_subcommands="create snapshot list rename destroy"
+	fs_create_opts="--size"
 	blockdev_subcommands="list"
 	daemon_subcommands="redundancy version"
 	key_subcommands="set unset reset list"
 	key_set_reset_opts="--keyfile-path --capture-key"
 	blockdevs="$(echo /dev/disk/*/*) $(lsblk -n -o name -p -l)"
+	root_subcommand="none"
+	subcommand="none"
+	comp_cword_adj=${COMP_CWORD}
+	
+	# find root subcommand and command if possible
+	if [[ ${COMP_CWORD} -ge 2 ]]; then
+		# find the root subcommand and compute an adjusted value of COMP_CWORD
+		# that doesn't count options
+		for el in ${COMP_WORDS[@]}; do
+			if [[ ${el} != -* && ${el} != "none" ]]; then
+				if [[ ${root_subcommand} == "none" && ${el} != "stratis" ]]; then
+					root_subcommand=${el}
+				fi
+			else
+				let "comp_cword_adj--"
+			fi
+
+		done
+		# find the subcommand 
+		for el in ${COMP_WORDS[@]}; do
+			if [[ ${COMP_CWORD} -ge 3 ]]; then
+				if [[ ${el} != -* && ${el} != "none" && ${el} != ${root_subcommand}  && ${el} != "stratis" ]]; then
+					subcommand=${el}
+					break
+				fi
+			fi
+		done
+	fi
+	if [[ ${comp_cword_adj} -eq 1 ]]; then
+		# we're at the root: complete root subcommands and global options
+		COMPREPLY=( $(compgen -W "${root_subcommands} ${global_opts} ${opts}" -- ${cur}) )
+		return 0
+	fi
+
 
 	if [[ ${prev} == "--redundancy" ]]; then
+		# at the moment there are no other redundancy values allowed
 		COMPREPLY=( $(compgen -W "none" -- ${cur}) )
 		return 0
-	elif [[ ${prev} == "--key-desc" ]]; then
+	elif [[ ${prev} == "--key-desc" || ${prev} == "--size" ]]; then
+		# nothing to suggest to the user
 		return 0
 	elif [[ ${cur} == -* ]] ; then
-        if [[ ${COMP_CWORD} -eq 1 ]]; then
-            COMPREPLY=( $(compgen -W "${global_opts} ${opts}" -- ${cur}) )
-	elif [[ ${second} == "list" ]]; then
-	    COMPREPLY=( $(compgen -W "${opts} ${listing_opts}" -- ${cur}) )
-        elif [[ ${first} == "pool" ]]; then
-			if [[ ${second} == "create" ]]; then
+		# complete options
+		if [[ ${subcommand} == "list" ]]; then
+			# complete option used by listing commands
+			COMPREPLY=( $(compgen -W "${opts} ${listing_opts}" -- ${cur}) )
+		elif [[ ${root_subcommand} == "pool" ]]; then
+			if [[ ${subcommand} == "create" ]]; then
 				COMPREPLY=( $(compgen -W "${pool_create_opts} ${opts}" -- ${cur}) )
-			elif [[ ${second} == "bind" ]] && [[ ${third} != "tpm2" ]]; then
+			elif [[ ${subcommand} == "bind" ]] && [[ ${third} != "tpm2" ]]; then
 				COMPREPLY=( $(compgen -W "${pool_bind_opts} ${opts}" -- ${cur}) )
 			else
 				COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
 			fi
 			
 			return 0
-        	
-        elif [[ ${first} == "key" ]]; then
-        	case ${second} in
-        		set|reset)
+		elif [[ ${root_subcommand} == "key" ]]; then
+			case ${subcommand} in
+				set|reset)
 					COMPREPLY=( $(compgen -W "${key_set_reset_opts} ${opts}" -- ${cur}) )
 					return 0
 					;;
@@ -57,14 +93,16 @@ _stratis()
 					COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
 					return 0
 					;;
-        	esac
-        	
-        else
-            COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
-        fi
+			esac
+		else
+			# complete options when we aren't at the root
+			# or for a subcommand that has specific options
+			COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+		fi
 		return 0
-	elif [[ ${COMP_CWORD} -eq 2 ]]; then
-		case ${prev} in
+	elif [[ ${comp_cword_adj} -eq 2 ]]; then
+		# completion of subcommands
+		case ${root_subcommand} in
 			-h|--help|--version|report)
 				return 0
 				;;
@@ -89,23 +127,18 @@ _stratis()
 				return 0
 				;;
 		esac
-	elif [[ ${COMP_CWORD} -eq 3 ]]; then
-		case ${x2prev} in
+	elif [[ ${comp_cword_adj} -eq 3 ]]; then
+		# completing the first parameter of a subcommand
+		case ${root_subcommand} in
 			filesystem|fs)
-				case ${prev} in
+				case ${subcommand} in
 					create|snapshot|list|destroy|rename)
-						COMPREPLY=( $(compgen -W  "$(stratis pool list | awk '{if (NR!=1) {print $1}}')" -- ${cur}) )
+						COMPREPLY=( $(compgen -W  "$(stratis pool list | awk '{if (NR!=1) {print $1}}') ${fs_create_opts}" -- ${cur}) )
 						return 0
-						;;
-					-h|--help)
-						return 0;
 				esac
 				;;
 			blockdev)
-				case ${prev} in
-					-h|--help)
-						return 0
-						;;
+				case ${subcommand} in
 					list)
 						COMPREPLY=( $(compgen -W  "$(stratis pool list | awk '{if (NR!=1) {print $1}}')" -- ${cur}) )
 						return 0
@@ -116,15 +149,13 @@ _stratis()
 				return 0
 				;;
 			pool)
-				case ${prev} in
+				case ${subcommand} in
 					unlock)
 						COMPREPLY=( $(compgen -W "${pool_unlock_subcommands}" -- ${cur}) )
 						return 0
 						;;
 					bind)
 						COMPREPLY=( $(compgen -W "${pool_bind_subcommands}" -- ${cur}) )
-						;;
-					-h|--help|create|list|unlock)
 						return 0
 						;;
 					rename|destroy|add-data|add-cache|init-cache|unbind)
@@ -134,7 +165,7 @@ _stratis()
 				esac
 				;;
 			key)
-				case ${prev} in
+				case ${subcommand} in
 					unset|list)
 						return 0
 						;;
@@ -145,10 +176,10 @@ _stratis()
 				esac
 				;;
 		esac
-	elif [[ ${COMP_CWORD} -eq 4 ]]; then
-		case ${first} in
+	elif [[ ${comp_cword_adj} -eq 4 ]]; then
+		case ${root_subcommand} in
 			filesystem|fs)
-				case ${second} in
+				case ${subcommand} in
 					list|create|-h|--help)
 						return 0;
 						;;
@@ -165,8 +196,8 @@ _stratis()
 				return 0
 				;;
 			pool)
-				case ${second} in
-					-h|--help|list|rename|destroy|unbind|unlock)
+				case ${subcommand} in
+					list|rename|destroy|unbind|unlock)
 						return 0
 						;;
 					create|add-data|add-cache|init-cache)
@@ -180,7 +211,7 @@ _stratis()
 				esac
 				;;
 			key)
-				case ${second} in
+				case ${subcommand} in
 					unset|list)
 						return 0
 						;;
@@ -200,12 +231,12 @@ _stratis()
 		esac
 #	Code to handle multiple block device names or multiple filesystem names for filesystem destroy and pool create/add-data/add-cache
 	elif [[ ${COMP_CWORD} > 4 ]]; then
-		case ${first} in
+		case ${root_subcommand} in
 			key|daemon|report|blockdev)
 				return 0
 				;;
 			filesystem|fs)
-				case ${second} in
+				case ${subcommand} in
 					snapshot|list|create|rename|-h|--help)
 						return 0
 						;;
@@ -216,8 +247,8 @@ _stratis()
 				esac
 				;;
 			pool)
-				case ${second} in
-					-h|--help|list|rename|destroy|bind|unbind|unlock)
+				case ${subcommand} in
+					list|rename|destroy|bind|unbind|unlock)
 						return 0
 						;;
 					create|add-cache|add-data|init-cache)
@@ -230,11 +261,6 @@ _stratis()
 				esac
 				;;
 		esac
-	elif [[ ${COMP_CWORD} -eq 1 ]]; then
-		COMPREPLY=( $(compgen -W "${root_subcommands} ${global_opts}" -- ${cur}) )
-		return 0
-	elif [[ ${prev} == "--propagate" ]]; then
-		COMPREPLY=( $(compgen -W "${root_subcommands}" -- ${cur}) )
 	fi
 	return 0
 }
