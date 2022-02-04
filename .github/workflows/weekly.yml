@@ -27,6 +27,8 @@ jobs:
             task: PYTHONPATH=./src make -f Makefile lint
           - dependencies: black python3-isort
             task: make -f Makefile fmt-ci
+          - dependencies: shfmt
+            task: make -f Makefile fmt-shell-ci
           - dependencies: yamllint
             task: make -f Makefile yamllint
     runs-on: ubuntu-18.04

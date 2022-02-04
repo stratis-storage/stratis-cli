@@ -1,11 +1,10 @@
-_stratis()
-{
+_stratis() {
 	local comp_cword_adj root_subcommand subcommand subcommand_opt cur prev opts root_subcommands pool_subcommands fs_subcommands blockdev_subcommands daemon_subcommands complete_pools blockdevs
 
 	COMPREPLY=()
 
 	cur="${COMP_WORDS[COMP_CWORD]}"
-	prev="${COMP_WORDS[COMP_CWORD-1]}"
+	prev="${COMP_WORDS[COMP_CWORD - 1]}"
 	opts="-h --help"
 	global_opts="--version --propagate ${opts} --unhyphenated-uuids"
 	root_subcommands="daemon pool blockdev filesystem key report"
@@ -51,7 +50,7 @@ _stratis()
 		# find the subcommand
 		for el in ${COMP_WORDS[@]}; do
 			if [[ ${COMP_CWORD} -ge 3 ]]; then
-				if [[ ${el} != -* && ${el} != "none" && ${el} != ${root_subcommand}  && ${el} != "stratis" ]]; then
+				if [[ ${el} != -* && ${el} != "none" && ${el} != ${root_subcommand} && ${el} != "stratis" ]]; then
 					break
 				fi
 			fi
@@ -59,211 +58,213 @@ _stratis()
 	fi
 	if [[ ${comp_cword_adj} -eq 1 ]]; then
 		# we're at the root: complete root subcommands and global options
-		COMPREPLY=( $(compgen -W "${root_subcommands} ${global_opts}" -- ${cur}) )
+		COMPREPLY=($(compgen -W "${root_subcommands} ${global_opts}" -- ${cur}))
 		return 0
 	fi
 
 	if [[ ${prev} == "--redundancy" ]]; then
 		# at the moment there are no other redundancy values allowed
-		COMPREPLY=( $(compgen -W "none" -- ${cur}) )
+		COMPREPLY=($(compgen -W "none" -- ${cur}))
 		return 0
 	elif [[ ${prev} == "--key-desc" || ${prev} == "--size" ]]; then
 		# nothing to suggest to the user
 		return 0
-	elif [[ ${cur} == -* ]] ; then
+	elif [[ ${cur} == -* ]]; then
 		# complete options
 		case ${root_subcommand} in
-			pool)
-				if [[ ${subcommand} == "create" ]]; then
-					COMPREPLY=( $(compgen -W "${pool_create_opts} ${opts}" -- ${cur}) )
-				elif [[ ${subcommand} == "bind" ]] && [[ ${subcommand_first_param} != "tpm2" ]]; then
-					COMPREPLY=( $(compgen -W "${pool_bind_opts} ${opts}" -- ${cur}) )
-				else
-					COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
-				fi
+		pool)
+			if [[ ${subcommand} == "create" ]]; then
+				COMPREPLY=($(compgen -W "${pool_create_opts} ${opts}" -- ${cur}))
+			elif [[ ${subcommand} == "bind" ]] && [[ ${subcommand_first_param} != "tpm2" ]]; then
+				COMPREPLY=($(compgen -W "${pool_bind_opts} ${opts}" -- ${cur}))
+			else
+				COMPREPLY=($(compgen -W "${opts}" -- ${cur}))
+			fi
 
+			return 0
+			;;
+		key)
+			case ${subcommand} in
+			set | reset)
+				COMPREPLY=($(compgen -W "${key_set_reset_opts} ${opts}" -- ${cur}))
 				return 0
 				;;
-			key)
-				case ${subcommand} in
-					set|reset)
-						COMPREPLY=( $(compgen -W "${key_set_reset_opts} ${opts}" -- ${cur}) )
-						return 0
-						;;
-					unset)
-						COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
-						return 0
-						;;
-				esac
+			unset)
+				COMPREPLY=($(compgen -W "${opts}" -- ${cur}))
+				return 0
 				;;
-			filesystem|fs)
-				if [[ ${subcommand} == "create" ]]; then
-					COMPREPLY=( $(compgen -W "${fs_create_opts} ${opts}" -- ${cur}) )
-					return 0
-				fi
+			esac
+			;;
+		filesystem | fs)
+			if [[ ${subcommand} == "create" ]]; then
+				COMPREPLY=($(compgen -W "${fs_create_opts} ${opts}" -- ${cur}))
+				return 0
+			fi
+			;;
 		esac
 		# complete options when we aren't at the root
 		# or for a subcommand that has specific options
-		COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+		COMPREPLY=($(compgen -W "${opts}" -- ${cur}))
 
 		return 0
 	elif [[ ${comp_cword_adj} -eq 2 ]]; then
 		# completion of subcommands
 		case ${root_subcommand} in
-			-h|--help|--version|report)
-				return 0
-				;;
-			filesystem|fs)
-				COMPREPLY=( $(compgen -W "${fs_subcommands}" -- ${cur}) )
-				return 0
-				;;
-			blockdev)
-				COMPREPLY=( $(compgen -W "${blockdev_subcommands}" -- ${cur}) )
-				return 0
-				;;
-			daemon)
-				COMPREPLY=( $(compgen -W "${daemon_subcommands}" -- ${cur}) )
-				return 0
-				;;
-			pool)
-				COMPREPLY=( $(compgen -W "${pool_subcommands}" -- ${cur}) )
-				return 0
-				;;
-			key)
-				COMPREPLY=( $(compgen -W "${key_subcommands}" -- ${cur}) )
-				return 0
-				;;
+		-h | --help | --version | report)
+			return 0
+			;;
+		filesystem | fs)
+			COMPREPLY=($(compgen -W "${fs_subcommands}" -- ${cur}))
+			return 0
+			;;
+		blockdev)
+			COMPREPLY=($(compgen -W "${blockdev_subcommands}" -- ${cur}))
+			return 0
+			;;
+		daemon)
+			COMPREPLY=($(compgen -W "${daemon_subcommands}" -- ${cur}))
+			return 0
+			;;
+		pool)
+			COMPREPLY=($(compgen -W "${pool_subcommands}" -- ${cur}))
+			return 0
+			;;
+		key)
+			COMPREPLY=($(compgen -W "${key_subcommands}" -- ${cur}))
+			return 0
+			;;
 		esac
 	elif [[ ${comp_cword_adj} -eq 3 ]]; then
 		# completing the first parameter of a subcommand
 		case ${root_subcommand} in
-			filesystem|fs)
-				case ${subcommand} in
-					create|snapshot|list|destroy|rename)
-						COMPREPLY=( $(compgen -W  "$(stratis pool list | awk '{if (NR!=1) {print $1}}')" -- ${cur}) )
-						return 0
-				esac
-				;;
-			blockdev)
-				case ${subcommand} in
-					list)
-						COMPREPLY=( $(compgen -W  "$(stratis pool list | awk '{if (NR!=1) {print $1}}')" -- ${cur}) )
-						return 0
-						;;
-				esac
-				;;
-			daemon)
+		filesystem | fs)
+			case ${subcommand} in
+			create | snapshot | list | destroy | rename)
+				COMPREPLY=($(compgen -W "$(stratis pool list | awk '{if (NR!=1) {print $1}}')" -- ${cur}))
 				return 0
 				;;
-			pool)
-				case ${subcommand} in
-					unlock)
-						COMPREPLY=( $(compgen -W "${pool_unlock_subcommands}" -- ${cur}) )
-						return 0
-						;;
-					bind)
-						COMPREPLY=( $(compgen -W "${pool_bind_subcommands}" -- ${cur}) )
-						return 0
-						;;
-					rename|destroy|add-data|add-cache|init-cache|unbind)
-						COMPREPLY=( $(compgen -W  "$(stratis pool list | awk '{if (NR!=1) {print $1}}')" -- ${cur}) )
-						return 0
-						;;
-				esac
+			esac
+			;;
+		blockdev)
+			case ${subcommand} in
+			list)
+				COMPREPLY=($(compgen -W "$(stratis pool list | awk '{if (NR!=1) {print $1}}')" -- ${cur}))
+				return 0
 				;;
-			key)
-				case ${subcommand} in
-					unset|list)
-						return 0
-						;;
-					set|reset)
-						COMPREPLY=( $(compgen -W "${key_set_reset_opts}" -- ${cur}) )
-						return 0
-						;;
-				esac
+			esac
+			;;
+		daemon)
+			return 0
+			;;
+		pool)
+			case ${subcommand} in
+			unlock)
+				COMPREPLY=($(compgen -W "${pool_unlock_subcommands}" -- ${cur}))
+				return 0
 				;;
+			bind)
+				COMPREPLY=($(compgen -W "${pool_bind_subcommands}" -- ${cur}))
+				return 0
+				;;
+			rename | destroy | add-data | add-cache | init-cache | unbind)
+				COMPREPLY=($(compgen -W "$(stratis pool list | awk '{if (NR!=1) {print $1}}')" -- ${cur}))
+				return 0
+				;;
+			esac
+			;;
+		key)
+			case ${subcommand} in
+			unset | list)
+				return 0
+				;;
+			set | reset)
+				COMPREPLY=($(compgen -W "${key_set_reset_opts}" -- ${cur}))
+				return 0
+				;;
+			esac
+			;;
 		esac
 	elif [[ ${comp_cword_adj} -eq 4 ]]; then
 		case ${root_subcommand} in
-			filesystem|fs)
-				case ${subcommand} in
-					list|create|-h|--help)
-						return 0;
-						;;
-					snapshot|destroy|rename)
-						COMPREPLY=( $(compgen -W  "$(stratis filesystem list ${subcommand_first_param} | awk '{if (NR!=1) {print $2}}')" -- ${cur}) )
-						return 0
-						;;
-				esac
-				;;
-			blockdev)
+		filesystem | fs)
+			case ${subcommand} in
+			list | create | -h | --help)
 				return 0
 				;;
-			daemon)
+			snapshot | destroy | rename)
+				COMPREPLY=($(compgen -W "$(stratis filesystem list ${subcommand_first_param} | awk '{if (NR!=1) {print $2}}')" -- ${cur}))
 				return 0
 				;;
-			pool)
-				case ${subcommand} in
-					list|rename|destroy|unbind|unlock)
-						return 0
-						;;
-					create|add-data|add-cache|init-cache)
-						COMPREPLY=( $(compgen -W  "${blockdevs}" -- ${cur}) )
-						return 0
-						;;
-					bind)
-						COMPREPLY=( $(compgen -W  "$(stratis pool list | awk '{if (NR!=1) {print $1}}')" -- ${cur}) )
-						return 0
-						;;
+			esac
+			;;
+		blockdev)
+			return 0
+			;;
+		daemon)
+			return 0
+			;;
+		pool)
+			case ${subcommand} in
+			list | rename | destroy | unbind | unlock)
+				return 0
+				;;
+			create | add-data | add-cache | init-cache)
+				COMPREPLY=($(compgen -W "${blockdevs}" -- ${cur}))
+				return 0
+				;;
+			bind)
+				COMPREPLY=($(compgen -W "$(stratis pool list | awk '{if (NR!=1) {print $1}}')" -- ${cur}))
+				return 0
+				;;
+			esac
+			;;
+		key)
+			case ${subcommand} in
+			unset | list)
+				return 0
+				;;
+			set | reset)
+				case ${subcommand_opt} in
+				--capture-key)
+					return 0
+					;;
+				--keyfile-path)
+					COMPREPLY=($(compgen -f -- ${cur}))
+					return 0
+					;;
 				esac
 				;;
-			key)
-				case ${subcommand} in
-					unset|list)
-						return 0
-						;;
-					set|reset)
-						case ${subcommand_opt} in
-							--capture-key)
-								return 0
-								;;
-							--keyfile-path)
-								COMPREPLY=( $(compgen -f -- ${cur}) )
-								return 0
-								;;
-						esac
-						;;
-				esac
-				;;
+			esac
+			;;
 		esac
-#	Code to handle multiple block device names or multiple filesystem names for filesystem destroy and pool create/add-data/add-cache
+		#	Code to handle multiple block device names or multiple filesystem names for filesystem destroy and pool create/add-data/add-cache
 	elif [[ ${comp_cword_adj} > 4 ]]; then
 		case ${root_subcommand} in
-			key|daemon|report|blockdev)
+		key | daemon | report | blockdev)
+			return 0
+			;;
+		filesystem | fs)
+			case ${subcommand} in
+			snapshot | list | create | rename | -h | --help)
 				return 0
 				;;
-			filesystem|fs)
-				case ${subcommand} in
-					snapshot|list|create|rename|-h|--help)
-						return 0
-						;;
-					destroy)
-						COMPREPLY=( $(compgen -W  "$(stratis filesystem list ${subcommand_first_param} | awk '{if (NR!=1) {print $2}}')" -- ${cur}) )
-						return 0
-						;;
-				esac
+			destroy)
+				COMPREPLY=($(compgen -W "$(stratis filesystem list ${subcommand_first_param} | awk '{if (NR!=1) {print $2}}')" -- ${cur}))
+				return 0
 				;;
-			pool)
-				case ${subcommand} in
-					list|rename|destroy|bind|unbind|unlock)
-						return 0
-						;;
-					create|add-cache|add-data|init-cache)
-						COMPREPLY=( $(compgen -W  "${blockdevs}" -- ${cur}) )
-						return 0
-						;;
-				esac
+			esac
+			;;
+		pool)
+			case ${subcommand} in
+			list | rename | destroy | bind | unbind | unlock)
+				return 0
 				;;
+			create | add-cache | add-data | init-cache)
+				COMPREPLY=($(compgen -W "${blockdevs}" -- ${cur}))
+				return 0
+				;;
+			esac
+			;;
 		esac
 	fi
 	return 0
