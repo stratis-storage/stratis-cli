@@ -17,6 +17,14 @@ fmt-ci:
 	isort --diff --check-only setup.py bin/stratis src tests
 	black ./bin/stratis . --check
 
+.PHONY: fmt-shell
+fmt-shell:
+	shfmt -l -w shell-completion/bash/stratis
+
+.PHONY: fmt-shell-ci
+fmt-shell-ci:
+	shfmt -d shell-completion/bash/stratis
+
 PYREVERSE_OPTS = --output=pdf
 .PHONY: view
 view:
