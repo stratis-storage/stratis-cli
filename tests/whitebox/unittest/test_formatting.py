@@ -34,7 +34,7 @@ class FormattingTestCase1(unittest.TestCase):
         self.output = io.StringIO()
 
         self.table = [
-            [u"Pool Na\u030ame", u"Na\u030ame", "Used", "Created", "Device", "UUID"],
+            ["Pool Na\u030ame", "Na\u030ame", "Used", "Created", "Device", "UUID"],
             [
                 "unicode",
                 "e",
