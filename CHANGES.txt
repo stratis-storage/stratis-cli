@@ -1,3 +1,26 @@
+stratis-cli 3.0.1
+=================
+Required stratisd version: 3.0.0
+
+Recommended development environment: Fedora 35
+Lowest supported Python interpreter: 3.6.8
+
+- New version 3.0.1:
+  https://github.com/stratis-storage/stratis-cli/pull/847
+
+- Improve handling of options in bash tab-completion:
+  https://github.com/stratis-storage/stratis-cli/pull/853
+
+- Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/856
+  https://github.com/stratis-storage/stratis-cli/pull/855
+  https://github.com/stratis-storage/stratis-cli/pull/851
+  https://github.com/stratis-storage/stratis-cli/pull/849
+  https://github.com/stratis-storage/stratis-cli/pull/848
+  https://github.com/stratis-storage/stratis-cli/pull/846
+  https://github.com/stratis-storage/stratis-cli/pull/845
+
+
 stratis-cli 3.0.0
 =================
 Required stratisd version: 3.0.0
