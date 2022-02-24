@@ -77,6 +77,9 @@ pool rebind keyring <pool_name> <keydesc>::
 pool unbind <(clevis|keyring)> <pool name> ::
      Unbind the devices in the specified pool from the specified encryption
      mechanism.
+pool set-fs-limit <pool name> <amount> ::
+     Set the limit on the number of file systems allowed per-pool. This number
+     may only be increased from its current value.
 pool explain <code> ::
      Explain any error code that might show up in the Alerts column when
      listing a pool.

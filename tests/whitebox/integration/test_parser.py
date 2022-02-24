@@ -113,6 +113,22 @@ class ParserTestCase(RunTestCase):
         for prefix in [[], ["--propagate"]]:
             self.check_system_exit(prefix + command_line, _PARSE_ERROR)
 
+    def test_negative_filesystem_limit(self):
+        """
+        Verify that a negative integer filesystem limit is rejected.
+        """
+        command_line = ["pool", "set-fs-limit", "thispool", "-1"]
+        for prefix in [[], ["-propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
+    def test_non_integer_filesystem_limit(self):
+        """
+        Verify that a non_integer filesystem limit is rejected.
+        """
+        command_line = ["pool", "set-fs-limit", "thispool", "1.2"]
+        for prefix in [[], ["-propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
     def test_explain_non_existent_code(self):
         """
         Verify parser error on bogus pool code.
