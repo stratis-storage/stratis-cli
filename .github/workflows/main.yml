@@ -110,6 +110,11 @@ jobs:
           override: true
       - name: Check out stratisd
         run: git clone https://github.com/stratis-storage/stratisd.git
+      - name: Check out branch
+        run: |
+          git checkout -b jbaublitz-issue-stratisd-2814 master
+          git pull https://github.com/jbaublitz/stratisd.git issue-stratisd-2814
+        working-directory: ./stratisd
       - name: Build stratisd
         run: PROFILEDIR=debug make install
         working-directory: ./stratisd
