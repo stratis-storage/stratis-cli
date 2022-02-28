@@ -15,9 +15,11 @@
 Test 'set-fs-limit'.
 """
 
+# isort: FIRSTPARTY
+from dbus_python_client_gen import DPClientInvocationError
+
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
-from stratis_cli._errors import StratisCliEngineError
 
 from .._misc import RUNNER, TEST_RUNNER, SimTestCase, device_name_list
 
@@ -46,7 +48,7 @@ class SetFsLimitTestCase(SimTestCase):
         Test setting the filesystem limit to a small number.
         """
         command_line = self._MENU + [self._POOLNAME] + ["1"]
-        self.check_error(StratisCliEngineError, command_line, _ERROR)
+        self.check_error(DPClientInvocationError, command_line, _ERROR)
 
     def test_set_fs_limit_large(self):
         """

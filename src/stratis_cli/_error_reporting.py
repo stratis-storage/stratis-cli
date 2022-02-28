@@ -27,7 +27,11 @@ from dbus_client_gen import (
     DbusClientMissingSearchPropertiesError,
     DbusClientUniqueResultError,
 )
-from dbus_python_client_gen import DPClientInvocationError, DPClientMethodCallContext
+from dbus_python_client_gen import (
+    DPClientInvocationError,
+    DPClientMethodCallContext,
+    DPClientSetPropertyContext,
+)
 
 from ._actions import BLOCKDEV_INTERFACE, FILESYSTEM_INTERFACE, POOL_INTERFACE
 from ._errors import (
@@ -278,17 +282,19 @@ def _interpret_errors_2(errors):  # pragma: no cover
                     "prohibit that particular D-Bus interaction."
                 )
 
-            # We do not test this error, as the only known way to cause it is
-            # to spam the daemon with a succession of mutating commands from
-            # separate processes. The circumstances that cause this exception
-            # to be raised are a call to GetManagedObjects() that is initiated
-            # while a call that removes a filesystem or pool is in progress.
-            # In that case, the GetManagedObjects() call may process object
-            # paths that have not yet been removed and may encounter an error
-            # when calculating the object properties since the engine no longer
-            # has any record of the filesystem or pool.
             if next_error.get_dbus_name() == "org.freedesktop.DBus.Error.Failed":
                 context = error.context
+
+                # We do not test this error, as the only known way to cause it
+                # is to spam the daemon with a succession of mutating commands
+                # from separate processes. The circumstances that cause this
+                # exception to be raised are a call to GetManagedObjects() that
+                # is initiated while a call that removes a filesystem or pool
+                # is in progress. In that case, the GetManagedObjects() call
+                # may process object paths that have not yet been removed and
+                # may encounter an error when calculating the object properties
+                # since the engine no longer has any record of the filesystem
+                # or pool.
                 if (
                     error.interface_name == "org.freedesktop.DBus.ObjectManager"
                     and isinstance(context, DPClientMethodCallContext)
@@ -300,6 +306,15 @@ def _interpret_errors_2(errors):  # pragma: no cover
                         "to a transient inconsistency in the D-Bus interface "
                         "and the command will succeed if run again."
                     )
+
+                if isinstance(context, DPClientSetPropertyContext):
+                    fmt_str = (
+                        "stratisd failed to perform the operation that you "
+                        "requested, because it could not set the D-Bus "
+                        'property "%s" to "%s". It returned the following '
+                        "error: %s."
+                    )
+                    return fmt_str % (context.property_name, context.value, error)
 
     return None
 
