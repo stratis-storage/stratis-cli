@@ -19,24 +19,8 @@ Formatting for tables.
 import sys
 import uuid
 
-# If the wcwidth package is not available the wcswidth function will not
-# be available. In that case, use the standard function len where wcswidth
-# would otherwise be used. Since len determines the number of _characters_
-# in a string, rather than its width in cells, text containing characters
-# occupying more or less than one cell, will in the general case, not be
-# properly aligned in the column output. The wcwidth package may not be
-# available in every distribution due to the non-local nature of its
-# installation mechanism, which builds functions dynamically from tables
-# made available online at www.unicode.org.
-
-try:
-    # isort: THIRDPARTY
-    from wcwidth import wcswidth
-
-    MAYBE_WCSWIDTH = wcswidth
-
-except ImportError:  # pragma: no cover
-    MAYBE_WCSWIDTH = len
+# isort: THIRDPARTY
+from wcwidth import wcswidth
 
 # placeholder for tables where a desired value was not obtained from stratisd
 # when the value should be supported.
@@ -161,7 +145,7 @@ def print_table(column_headings, row_entries, alignment, file=sys.stdout):
     for row_index, row in enumerate(row_entries):
         cell_widths.append([])
         for column_index, cell in enumerate(row):
-            cell_width = MAYBE_WCSWIDTH(cell)
+            cell_width = wcswidth(cell)
             cell_widths[row_index].append(cell_width)
             column_widths[column_index] = max(column_widths[column_index], cell_width)
 
