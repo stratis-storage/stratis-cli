@@ -112,7 +112,7 @@ class _Service:
                 [os.path.join(stratisd_var), "--sim"],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                universal_newlines=True,
+                text=True,
             )
         )
         time.sleep(1)
