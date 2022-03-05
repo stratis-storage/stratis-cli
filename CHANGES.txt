@@ -1,3 +1,54 @@
+stratis-cli 3.1.0 (UNRELEASED)
+==============================
+Required stratisd version: 3.1.0
+
+Recommended development environment: Fedora 36
+Lowest supported Python interpreter: 3.9.0
+
+Lowest supported Rust toolchain (for testing): 1.58.1
+
+- Require stratisd 3.1.0:
+  https://github.com/stratis-storage/stratis-cli/pull/870
+  https://github.com/stratis-storage/stratis-cli/pull/857
+
+- Allow user to specify overprovision mode; display it in pool list:
+  https://github.com/stratis-storage/stratis-cli/pull/867
+
+- Allow user to set filesystem limit on a pool:
+  https://github.com/stratis-storage/stratis-cli/pull/882
+  https://github.com/stratis-storage/stratis-cli/pull/878
+  https://github.com/stratis-storage/stratis-cli/pull/872
+  https://github.com/stratis-storage/stratis-cli/pull/868
+  https://github.com/stratis-storage/stratis-cli/pull/865
+
+- Remove redundancy-related options:
+  https://github.com/stratis-storage/stratis-cli/issues/850
+  https://github.com/stratis-storage/stratis-cli/pull/877
+
+- Remove conditional wcwidth import:
+  https://github.com/stratis-storage/stratis-cli/issues/771
+  https://github.com/stratis-storage/stratis-cli/pull/862
+
+- Change size display for filesystem and pool:
+  https://github.com/stratis-storage/stratis-cli/pull/873
+
+- Add debug subcommand for pool, filesystem, blockdev:
+  https://github.com/stratis-storage/stratis-cli/issues/864
+  https://github.com/stratis-storage/stratis-cli/pull/874
+
+- Remove unused value from list of ActionAvailability codes:
+  https://github.com/stratis-storage/stratis-cli/pull/869
+
+- Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/884
+  https://github.com/stratis-storage/stratis-cli/pull/881
+  https://github.com/stratis-storage/stratis-cli/pull/880
+  https://github.com/stratis-storage/stratis-cli/pull/876
+  https://github.com/stratis-storage/stratis-cli/pull/871
+  https://github.com/stratis-storage/stratis-cli/pull/861
+  https://github.com/stratis-storage/stratis-cli/pull/860
+
+
 stratis-cli 3.0.1
 =================
 Required stratisd version: 3.0.0
