@@ -180,8 +180,26 @@ FIELDS for stratis pool list
 
 Name::
 	  The name of the pool.
-Total Physical::
-	  The physical usage statistics for the pool (Total / Used / Free).
+Size+Usage::
+	  The usage statistics for the pool. This consists of the following
+          values:
+          * The sum of the sizes of every data device belonging to
+          the pool.
+          * The amount of space allocated from all the data devices,
+          intended for use by devices higher in the storage stack. This does
+          not include the space reserved on the devices for Stratis metadata.
+          Stratis monitors the pool, and automatically increases this space
+          as necessary.
+          * The amount of allocated space used by the pool for administrative
+          purposes + the amount of the pool's data area that has been consumed
+          by user data.
+          * The amount of free space for user data remaining from the amount
+          that has been allocated. This increases whenever Stratis automatically
+          increases the allocated size.
+          * The amount of space that is not yet allocated from the data devices.
+          When this value becomes sufficiently small, it is generally time to
+          add new devices to the pool.
+
 Properties::
           Boolean valued properties that the pool may have. Each property has
           a two-letter camel-case code. If the pool does not have the

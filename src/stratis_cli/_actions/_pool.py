@@ -37,7 +37,7 @@ from .._errors import (
 from .._stratisd_constants import BlockDevTiers, PoolActionAvailability, StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
-from ._formatting import get_property, print_table, size_triple, to_hyphenated
+from ._formatting import TABLE_FAILURE_STRING, get_property, print_table, to_hyphenated
 from ._utils import get_clevis_info
 
 
@@ -277,13 +277,12 @@ class PoolActions:
             MOPool(info) for objpath, info in pools().search(managed_objects)
         ]
 
-        def physical_size_triple(mopool):
+        def physical_size_tuple(mopool):
             """
-            Calculate the triple to display for total physical size.
+            Calculate the 4-tuple to display for total physical size.
 
-            The format is total/used/free where the display value for each
-            member of the tuple are chosen automatically according to justbytes'
-            configuration.
+            The display values for each member of the tuple are chosen
+            automatically according to justbytes' configuration.
 
             :param mopool: an object representing all the properties of the pool
             :type mopool: MOPool
@@ -291,8 +290,33 @@ class PoolActions:
             :rtype: str
             """
             total_physical_size = Range(mopool.TotalPhysicalSize())
+            total_allocated_to_cap = Range(mopool.AllocatedSize())
             total_physical_used = get_property(mopool.TotalPhysicalUsed(), Range, None)
-            return size_triple(total_physical_size, total_physical_used)
+            total_free_data_space_without_expansion = (
+                None
+                if total_physical_used is None
+                else total_allocated_to_cap - total_physical_used
+            )
+
+            total_unallocated_pool_space = (
+                None
+                if total_physical_used is None
+                else total_physical_size - total_allocated_to_cap
+            )
+
+            return "%s / %s / %s / %s / %s" % (
+                total_physical_size,
+                total_allocated_to_cap,
+                TABLE_FAILURE_STRING
+                if total_physical_used is None
+                else total_physical_used,
+                TABLE_FAILURE_STRING
+                if total_free_data_space_without_expansion is None
+                else total_free_data_space_without_expansion,
+                TABLE_FAILURE_STRING
+                if total_unallocated_pool_space is None
+                else total_unallocated_pool_space,
+            )
 
         def properties_string(mopool):
             """
@@ -349,7 +373,7 @@ class PoolActions:
         tables = [
             (
                 mopool.Name(),
-                physical_size_triple(mopool),
+                physical_size_tuple(mopool),
                 properties_string(mopool),
                 format_uuid(mopool.Uuid()),
                 alert_string(mopool),
@@ -358,7 +382,7 @@ class PoolActions:
         ]
 
         print_table(
-            ["Name", "Total Physical", "Properties", "UUID", "Alerts"],
+            ["Name", "Size+Usage", "Properties", "UUID", "Alerts"],
             sorted(tables, key=lambda entry: entry[0]),
             ["<", ">", ">", ">", "<"],
         )
