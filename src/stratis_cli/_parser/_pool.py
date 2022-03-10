@@ -15,10 +15,28 @@
 Definition of pool actions to display in the CLI.
 """
 
+# isort: STDLIB
+from argparse import ArgumentTypeError
+
 from .._actions import BindActions, PoolActions
 from .._constants import PoolMaintenanceErrorCode
 from .._stratisd_constants import EncryptionMethod
 from ._bind import BIND_SUBCMDS, REBIND_SUBCMDS
+
+
+def _ensure_nat(arg):
+    """
+    Raise error if argument is not an natural number.
+    """
+    try:
+        result = int(arg)
+    except Exception as err:
+        raise ArgumentTypeError("Argument %s is not a natural number." % arg) from err
+
+    if result < 0:
+        raise ArgumentTypeError("Argument %s is not a natural number." % arg)
+    return result
+
 
 POOL_SUBCMDS = [
     (
@@ -246,6 +264,22 @@ POOL_SUBCMDS = [
                 )
             ],
             func=PoolActions.unlock_pools,
+        ),
+    ),
+    (
+        "set-fs-limit",
+        dict(
+            help="Set the maximum number of filesystems the pool can support.",
+            args=[
+                ("pool_name", dict(action="store", help="Pool name")),
+                (
+                    "amount",
+                    dict(
+                        action="store", type=_ensure_nat, help="Number of filesystems."
+                    ),
+                ),
+            ],
+            func=PoolActions.set_fs_limit,
         ),
     ),
     (

@@ -27,7 +27,11 @@ from dbus_client_gen import (
     DbusClientMissingSearchPropertiesError,
     DbusClientUniqueResultError,
 )
-from dbus_python_client_gen import DPClientInvocationError, DPClientMethodCallContext
+from dbus_python_client_gen import (
+    DPClientInvocationError,
+    DPClientMethodCallContext,
+    DPClientSetPropertyContext,
+)
 
 from ._actions import BLOCKDEV_INTERFACE, FILESYSTEM_INTERFACE, POOL_INTERFACE
 from ._errors import (
@@ -251,7 +255,7 @@ def _interpret_errors_1(
     return None  # pragma: no cover
 
 
-def _interpret_errors_2(errors):  # pragma: no cover
+def _interpret_errors_2(errors):
     """
     Interpret the error when it is known that the first error is a
     DPClientInvocationError
@@ -271,29 +275,33 @@ def _interpret_errors_2(errors):  # pragma: no cover
             # We do not test this error, as the only known way to cause it is
             # manipulation of selinux configuration, which is too laborious to
             # bother with at this time.
-            if next_error.get_dbus_name() == "org.freedesktop.DBus.Error.Disconnected":
+            if (
+                next_error.get_dbus_name() == "org.freedesktop.DBus.Error.Disconnected"
+            ):  # pragma: no cover
                 return (
                     "The D-Bus connection was disconnected during a "
                     "D-Bus interaction. Most likely, your selinux settings "
                     "prohibit that particular D-Bus interaction."
                 )
 
-            # We do not test this error, as the only known way to cause it is
-            # to spam the daemon with a succession of mutating commands from
-            # separate processes. The circumstances that cause this exception
-            # to be raised are a call to GetManagedObjects() that is initiated
-            # while a call that removes a filesystem or pool is in progress.
-            # In that case, the GetManagedObjects() call may process object
-            # paths that have not yet been removed and may encounter an error
-            # when calculating the object properties since the engine no longer
-            # has any record of the filesystem or pool.
             if next_error.get_dbus_name() == "org.freedesktop.DBus.Error.Failed":
                 context = error.context
+
+                # We do not test this error, as the only known way to cause it
+                # is to spam the daemon with a succession of mutating commands
+                # from separate processes. The circumstances that cause this
+                # exception to be raised are a call to GetManagedObjects() that
+                # is initiated while a call that removes a filesystem or pool
+                # is in progress. In that case, the GetManagedObjects() call
+                # may process object paths that have not yet been removed and
+                # may encounter an error when calculating the object properties
+                # since the engine no longer has any record of the filesystem
+                # or pool.
                 if (
                     error.interface_name == "org.freedesktop.DBus.ObjectManager"
                     and isinstance(context, DPClientMethodCallContext)
                     and context.method_name == "GetManagedObjects"
-                ):
+                ):  # pragma: no cover
                     return (
                         "A D-Bus method failed during execution of the "
                         "selected command. Most likely, the failure was due "
@@ -301,7 +309,21 @@ def _interpret_errors_2(errors):  # pragma: no cover
                         "and the command will succeed if run again."
                     )
 
-    return None
+                if isinstance(context, DPClientSetPropertyContext):
+                    fmt_str = (
+                        "stratisd failed to perform the operation that you "
+                        "requested, because it could not set the D-Bus "
+                        'property "%s" belonging to inteface "%s" to "%s". It '
+                        "returned the following error: %s."
+                    )
+                    return fmt_str % (
+                        context.property_name,
+                        error.interface_name,
+                        context.value,
+                        next_error.get_dbus_message(),
+                    )
+
+    return None  # pragma: no cover
 
 
 def _interpret_errors(errors):

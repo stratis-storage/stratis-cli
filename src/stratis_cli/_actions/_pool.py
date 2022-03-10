@@ -591,6 +591,24 @@ class PoolActions:
             raise StratisCliAggregateError("unlock", "pool", errors)
 
     @staticmethod
+    def set_fs_limit(namespace):
+        """
+        Set the filesystem limit.
+        """
+        # pylint: disable=import-outside-toplevel
+        from ._data import ObjectManager, Pool, pools
+
+        proxy = get_object(TOP_OBJECT)
+        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
+        (pool_object_path, _) = next(
+            pools(props={"Name": namespace.pool_name})
+            .require_unique_match(True)
+            .search(managed_objects)
+        )
+
+        Pool.Properties.FsLimit.Set(get_object(pool_object_path), namespace.amount)
+
+    @staticmethod
     def explain_code(namespace):
         """
         Print an explanation of pool error code.
