@@ -15,50 +15,31 @@
 General constants.
 """
 # isort: STDLIB
-from enum import IntEnum
+from enum import Enum
 
 
-class PoolMaintenanceErrorCode(IntEnum):
+class YesOrNo(Enum):
     """
-    Maintenance error codes for the pool.
+    Generic Yes or No enum, for toggling modes in CI.
     """
 
-    NO_IPC_REQUESTS = 1
-    NO_POOL_CHANGES = 2
+    YES = "yes"
+    NO = "no"
 
     def __str__(self):
-        return "EM%s" % str(self.value).zfill(3)
+        return self.value
+
+    def __bool__(self):
+        return self is YesOrNo.YES
 
     @staticmethod
     def from_str(code_str):
         """
-        Discover the code, if any, from the code string.
+        From a string code, return the YesOrNo value.
 
-        :returns: the code if it finds a match, otherwise None
-        :rtype: PoolMaintenanceErrorCode or NoneType
+        :param str code_str: the string code
+        :returns: the YesOrNo value
+        :rtype: YesOrNo
+        :raises: StopIteration
         """
-        for code in PoolMaintenanceErrorCode:
-            if code_str == str(code):
-                return code
-        return None
-
-    def explain(self):
-        """
-        Return an explanation of the error return code.
-        """
-        if self is PoolMaintenanceErrorCode.NO_IPC_REQUESTS:
-            return (
-                "The pool will return an error on any IPC request that could "
-                "cause a change in the pool state, for example, a request to "
-                "rename a filesystem. It will still be able to respond to "
-                "purely informational requests."
-            )
-
-        if self is PoolMaintenanceErrorCode.NO_POOL_CHANGES:  # pragma: no cover
-            return (
-                "The pool is unable to manage itself by reacting to events, "
-                "such as devicemapper events, that might require it to take "
-                "any maintenance operations."
-            )
-
-        assert False, "impossible error code reached"  # pragma: no cover
+        return next(item for item in list(YesOrNo) if code_str == str(item))

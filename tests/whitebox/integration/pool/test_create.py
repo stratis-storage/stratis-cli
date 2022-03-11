@@ -146,3 +146,22 @@ class Create5TestCase(SimTestCase):
             + ["--clevis=tang", "--thumbprint=print", "--tang-url=http"]
         )
         TEST_RUNNER(command_line)
+
+
+class Create6TestCase(SimTestCase):
+    """
+    Test create with --no-overprovision flag set.
+    """
+
+    _MENU = ["--propagate", "pool", "create"]
+    _DEVICES = _DEVICE_STRATEGY()
+    _POOLNAME = "thispool"
+
+    def test_no_overprovision(self):
+        """
+        Test create with no overprovisioning.
+        """
+        command_line = (
+            self._MENU + [self._POOLNAME] + self._DEVICES + ["--no-overprovision"]
+        )
+        TEST_RUNNER(command_line)

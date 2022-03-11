@@ -36,7 +36,7 @@ GLOBAL OPTIONS
 
 COMMANDS
 --------
-pool create [--redundancy <redundancy>] [--key-desc <key_desc>] [--clevis <(nbde|tang|tpm2)> [--tang-url <tang_url>] [<(--thumbprint <thp> | --trust-url)>] <pool_name> <blockdev> [<blockdev>..]::
+pool create [--redundancy <redundancy>] [--key-desc <key_desc>] [--clevis <(nbde|tang|tpm2)> [--tang-url <tang_url>] [<(--thumbprint <thp> | --trust-url)>] [--no-overprovision] <pool_name> <blockdev> [<blockdev>..]::
      Create a pool from one or more block devices, with the given pool name.
 pool list::
      List all pools on the system.
@@ -80,6 +80,11 @@ pool unbind <(clevis|keyring)> <pool name> ::
 pool set-fs-limit <pool name> <amount> ::
      Set the limit on the number of file systems allowed per-pool. This number
      may only be increased from its current value.
+pool overprovision <pool name> <(yes|no)> ::
+     Set overprovisioning mode. If set to "yes", the pool may allow
+     overprovisioning, i.e, the sum of the logical sizes of the Stratis
+     filesystems supported by the pool may exceed the amount of data space
+     available.
 pool explain <code> ::
      Explain any error code that might show up in the Alerts column when
      listing a pool.
@@ -150,6 +155,9 @@ OPTIONS
         the URL of the server.
 --clevis <(nbde | tang | tpm2)> ::
         The clevis method that should be used to encrypt the created pool.
+--no-overprovision ::
+        Do not allow the pool to allocate more logical space for its
+        filesystems than it has physical space available.
 --size <size spec> ::
         Used to specify the size of, e.g., a filesystem. The specification
         format must follow the standard size specification format for input
@@ -189,7 +197,8 @@ Properties::
           If the engine experienced an error when obtaining the property, a
           "?", representing "unknown", is prepended to the property code.
           The property codes are: Ca - indicates the pool has a cache,
-          Cr - indicates the pool is encrypted.
+          Cr - indicates the pool is encrypted, Op - indicates the pool allows
+          overprovisioning.
 UUID::
           The UUID of the pool.
 Alerts::
