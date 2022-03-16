@@ -25,7 +25,6 @@ class PoolMaintenanceErrorCode(IntEnum):
 
     NO_IPC_REQUESTS = 1
     NO_POOL_CHANGES = 2
-    READ_ONLY = 3
 
     def __str__(self):
         return "EM%s" % str(self.value).zfill(3)
@@ -55,14 +54,11 @@ class PoolMaintenanceErrorCode(IntEnum):
                 "purely informational requests."
             )
 
-        if self is PoolMaintenanceErrorCode.NO_POOL_CHANGES:
+        if self is PoolMaintenanceErrorCode.NO_POOL_CHANGES:  # pragma: no cover
             return (
                 "The pool is unable to manage itself by reacting to events, "
                 "such as devicemapper events, that might require it to take "
                 "any maintenance operations."
             )
-
-        if self is PoolMaintenanceErrorCode.READ_ONLY:  # pragma: no cover
-            return "The pool is in read-only mode."
 
         assert False, "impossible error code reached"  # pragma: no cover
