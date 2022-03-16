@@ -313,7 +313,7 @@ def _interpret_errors_2(errors):
                     fmt_str = (
                         "stratisd failed to perform the operation that you "
                         "requested, because it could not set the D-Bus "
-                        'property "%s" belonging to inteface "%s" to "%s". It '
+                        'property "%s" belonging to interface "%s" to "%s". It '
                         "returned the following error: %s."
                     )
                     return fmt_str % (
