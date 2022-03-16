@@ -138,17 +138,14 @@ class PoolActionAvailability(IntEnum):
     FULLY_OPERATIONAL = 0
     NO_IPC_REQUESTS = 1
     NO_POOL_CHANGES = 2
-    NO_WRITE_IO = 3
 
     def __str__(self):
         if self is PoolActionAvailability.FULLY_OPERATIONAL:
             return "fully_operational"
         if self is PoolActionAvailability.NO_IPC_REQUESTS:
             return "no_ipc_requests"
-        if self is PoolActionAvailability.NO_POOL_CHANGES:
+        if self is PoolActionAvailability.NO_POOL_CHANGES:  # pragma: no cover
             return "no_pool_changes"
-        if self is PoolActionAvailability.NO_WRITE_IO:  # pragma: no cover
-            return "no_write_io"
 
         assert False, "impossible value reached"  # pragma: no cover
 
@@ -176,8 +173,5 @@ class PoolActionAvailability(IntEnum):
 
         if self >= PoolActionAvailability.NO_POOL_CHANGES:
             codes.append(PoolMaintenanceErrorCode.NO_POOL_CHANGES)
-
-        if self >= PoolActionAvailability.NO_WRITE_IO:
-            codes.append(PoolMaintenanceErrorCode.READ_ONLY)
 
         return codes

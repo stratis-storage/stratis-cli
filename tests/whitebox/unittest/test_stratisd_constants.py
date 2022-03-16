@@ -56,9 +56,3 @@ class PoolActionAvailabilityTestCase(unittest.TestCase):
         self.assertEqual(len(result), 2)
         self.assertIn(PoolMaintenanceErrorCode.NO_IPC_REQUESTS, result)
         self.assertIn(PoolMaintenanceErrorCode.NO_POOL_CHANGES, result)
-
-        result = PoolActionAvailability.NO_WRITE_IO.pool_maintenance_error_codes()
-        self.assertEqual(len(result), 3)
-        self.assertIn(PoolMaintenanceErrorCode.NO_IPC_REQUESTS, result)
-        self.assertIn(PoolMaintenanceErrorCode.NO_POOL_CHANGES, result)
-        self.assertIn(PoolMaintenanceErrorCode.READ_ONLY, result)
