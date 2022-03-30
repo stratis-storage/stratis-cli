@@ -111,7 +111,7 @@ jobs:
       - name: Check out stratisd
         run: git clone https://github.com/stratis-storage/stratisd.git
       - name: Build stratisd
-        run: PROFILEDIR=debug make install
+        run: make install-debug
         working-directory: ./stratisd
       - name: Set up for D-Bus
         run: |
