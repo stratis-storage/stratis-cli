@@ -26,6 +26,8 @@ from wcwidth import wcswidth
 # when the value should be supported.
 TABLE_FAILURE_STRING = "FAILURE"
 
+TOTAL_USED_FREE = "Total / Used / Free"
+
 
 def size_triple(size, used):
     """
