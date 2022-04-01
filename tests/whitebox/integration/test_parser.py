@@ -129,6 +129,14 @@ class ParserTestCase(RunTestCase):
         for prefix in [[], ["-propagate"]]:
             self.check_system_exit(prefix + command_line, _PARSE_ERROR)
 
+    def test_invalid_overprovision_value(self):
+        """
+        Overprovision command only accepts yes or no.
+        """
+        command_line = ["pool", "overprovision", "thispool", "1.2"]
+        for prefix in [[], ["-propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
     def test_explain_non_existent_code(self):
         """
         Verify parser error on bogus pool code.

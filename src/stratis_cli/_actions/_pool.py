@@ -22,7 +22,8 @@ from collections import defaultdict
 # isort: THIRDPARTY
 from justbytes import Range
 
-from .._constants import PoolMaintenanceErrorCode
+from .._constants import YesOrNo
+from .._error_codes import PoolAllocSpaceErrorCode, PoolErrorCode
 from .._errors import (
     StratisCliAggregateError,
     StratisCliEngineError,
@@ -164,7 +165,7 @@ class PoolActions:
     """
 
     @staticmethod
-    def create_pool(namespace):
+    def create_pool(namespace):  # pylint: disable=too-many-locals
         """
         Create a stratis pool.
 
@@ -173,7 +174,7 @@ class PoolActions:
         :raises StratisCliNameConflictError:
         """
         # pylint: disable=import-outside-toplevel
-        from ._data import Manager, ObjectManager, pools
+        from ._data import Manager, ObjectManager, Pool, pools
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -189,7 +190,11 @@ class PoolActions:
 
         clevis_info = get_clevis_info(namespace)
 
-        ((changed, (_, _)), return_code, message) = Manager.Methods.CreatePool(
+        (
+            (changed, (pool_object_path, _)),
+            return_code,
+            message,
+        ) = Manager.Methods.CreatePool(
             proxy,
             {
                 "name": pool_name,
@@ -217,6 +222,9 @@ class PoolActions:
                 )
                 % pool_name
             )
+
+        if namespace.no_overprovision:
+            Pool.Properties.Overprovisioning.Set(get_object(pool_object_path), False)
 
     @staticmethod
     def init_cache(namespace):  # pylint: disable=too-many-locals
@@ -330,7 +338,11 @@ class PoolActions:
                     prefix = "?"
                 return prefix + code
 
-            props_list = [(mopool.HasCache(), "Ca"), (mopool.Encrypted(), "Cr")]
+            props_list = [
+                (mopool.HasCache(), "Ca"),
+                (mopool.Encrypted(), "Cr"),
+                (mopool.Overprovisioning(), "Op"),
+            ]
             return ",".join(gen_string(x, y) for x, y in props_list)
 
         format_uuid = (
@@ -349,7 +361,18 @@ class PoolActions:
             action_availability = PoolActionAvailability.from_str(
                 mopool.AvailableActions()
             )
-            error_codes = action_availability.pool_maintenance_error_codes()
+            availability_error_codes = (
+                action_availability.pool_maintenance_error_codes()
+            )
+
+            no_alloc_space_error_codes = (
+                [PoolAllocSpaceErrorCode.NO_ALLOC_SPACE]
+                if mopool.NoAllocSpace()
+                else []
+            )
+
+            error_codes = availability_error_codes + no_alloc_space_error_codes
+
             return ", ".join(sorted(str(code) for code in error_codes))
 
         tables = [
@@ -621,10 +644,28 @@ class PoolActions:
         Pool.Properties.FsLimit.Set(get_object(pool_object_path), namespace.amount)
 
     @staticmethod
+    def set_overprovisioning_mode(namespace):
+        """
+        Set the overprovisioning mode.
+        """
+        # pylint: disable=import-outside-toplevel
+        from ._data import ObjectManager, Pool, pools
+
+        decision = bool(YesOrNo.from_str(namespace.decision))
+
+        proxy = get_object(TOP_OBJECT)
+        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
+        (pool_object_path, _) = next(
+            pools(props={"Name": namespace.pool_name})
+            .require_unique_match(True)
+            .search(managed_objects)
+        )
+
+        Pool.Properties.Overprovisioning.Set(get_object(pool_object_path), decision)
+
+    @staticmethod
     def explain_code(namespace):
         """
         Print an explanation of pool error code.
         """
-        error_code = PoolMaintenanceErrorCode.from_str(namespace.code)
-        assert error_code is not None
-        print(error_code.explain())
+        print(PoolErrorCode.explain(namespace.code))

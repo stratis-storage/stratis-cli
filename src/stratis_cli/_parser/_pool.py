@@ -19,7 +19,8 @@ Definition of pool actions to display in the CLI.
 from argparse import ArgumentTypeError
 
 from .._actions import BindActions, PoolActions
-from .._constants import PoolMaintenanceErrorCode
+from .._constants import YesOrNo
+from .._error_codes import PoolErrorCode
 from .._stratisd_constants import EncryptionMethod
 from ._bind import BIND_SUBCMDS, REBIND_SUBCMDS
 
@@ -90,6 +91,18 @@ POOL_SUBCMDS = [
                             "--clevis=[tang|nbde] not set)"
                         ),
                         dest="tang_url",
+                    ),
+                ),
+                (
+                    "--no-overprovision",
+                    dict(
+                        action="store_true",
+                        help=(
+                            "Do not allow the sum of the logical size of the "
+                            "pool's filesystems to exceed the size of the "
+                            "pool's data area."
+                        ),
+                        dest="no_overprovision",
                     ),
                 ),
             ],
@@ -283,6 +296,24 @@ POOL_SUBCMDS = [
         ),
     ),
     (
+        "overprovision",
+        dict(
+            help="Specify whether or not to allow overprovisioning for the pool.",
+            args=[
+                ("pool_name", dict(action="store", help="Pool name")),
+                (
+                    "decision",
+                    dict(
+                        action="store",
+                        help="yes to allow overprovisioning, otherwise no",
+                        choices=[str(x) for x in list(YesOrNo)],
+                    ),
+                ),
+            ],
+            func=PoolActions.set_overprovisioning_mode,
+        ),
+    ),
+    (
         "explain",
         dict(
             help="Explain pool alert codes",
@@ -291,7 +322,7 @@ POOL_SUBCMDS = [
                     "code",
                     dict(
                         action="store",
-                        choices=[str(x) for x in list(PoolMaintenanceErrorCode)],
+                        choices=[str(x) for x in PoolErrorCode.codes()],
                         help="Error code to explain",
                     ),
                 )

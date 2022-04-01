@@ -19,7 +19,12 @@ Test 'constants'.
 import unittest
 
 # isort: LOCAL
-from stratis_cli._constants import PoolMaintenanceErrorCode
+from stratis_cli._constants import YesOrNo
+from stratis_cli._error_codes import (
+    PoolAllocSpaceErrorCode,
+    PoolErrorCode,
+    PoolMaintenanceErrorCode,
+)
 
 
 class PoolMaintenanceErrorCodeTestCase(unittest.TestCase):
@@ -39,3 +44,41 @@ class PoolMaintenanceErrorCodeTestCase(unittest.TestCase):
         Parsing a string that does not correspond to any value returns None.
         """
         self.assertIsNone(PoolMaintenanceErrorCode.from_str("totally super"))
+
+
+class YesOrNoTestCase(unittest.TestCase):
+    """
+    Test behavior of YesOrNo class.
+    """
+
+    def test_parsing_bogus_str(self):
+        """
+        Parsing neither yes nor no returns None.
+        """
+        with self.assertRaises(StopIteration):
+            YesOrNo.from_str("maybe")
+
+
+class PoolAllocSpaceErrorCodeTestCase(unittest.TestCase):
+    """
+    Tests for PoolAllocSpaceErrorCode methods.
+    """
+
+    def test_parsing_bogus_str(self):
+        """
+        Parsing a string that does not correspond to any value returns None.
+        """
+        self.assertIsNone(PoolAllocSpaceErrorCode.from_str("totally super"))
+
+
+class PoolErrorCodeTestCase(unittest.TestCase):
+    """
+    Tests for PoolErrorCode methods.
+    """
+
+    def test_parsing_bogus_str(self):
+        """
+        Test parsing a string that does not correspond to any value.
+        """
+        with self.assertRaises(StopIteration):
+            PoolErrorCode.error_from_str("bogus")

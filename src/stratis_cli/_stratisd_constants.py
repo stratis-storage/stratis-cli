@@ -18,7 +18,7 @@ Stratisd error classes.
 # isort: STDLIB
 from enum import Enum, IntEnum
 
-from ._constants import PoolMaintenanceErrorCode
+from ._error_codes import PoolMaintenanceErrorCode
 
 
 def value_to_name(klass):
