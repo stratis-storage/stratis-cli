@@ -37,7 +37,13 @@ from .._errors import (
 from .._stratisd_constants import BlockDevTiers, PoolActionAvailability, StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
-from ._formatting import get_property, print_table, size_triple, to_hyphenated
+from ._formatting import (
+    TOTAL_USED_FREE,
+    get_property,
+    print_table,
+    size_triple,
+    to_hyphenated,
+)
 from ._utils import get_clevis_info
 
 
@@ -358,7 +364,13 @@ class PoolActions:
         ]
 
         print_table(
-            ["Name", "Total Physical", "Properties", "UUID", "Alerts"],
+            [
+                "Name",
+                TOTAL_USED_FREE,
+                "Properties",
+                "UUID",
+                "Alerts",
+            ],
             sorted(tables, key=lambda entry: entry[0]),
             ["<", ">", ">", ">", "<"],
         )

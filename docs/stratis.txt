@@ -180,8 +180,8 @@ FIELDS for stratis pool list
 
 Name::
 	  The name of the pool.
-Total Physical::
-	  The physical usage statistics for the pool (Total / Used / Free).
+Total / Used / Free::
+	  The physical usage statistics for the pool.
 Properties::
           Boolean valued properties that the pool may have. Each property has
           a two-letter camel-case code. If the pool does not have the
@@ -198,12 +198,12 @@ Alerts::
 
 FIELDS for stratis filesystem list
 
-Pool Name::
+Pool::
 	  The name of the pool containing the filesystem.
-Name::
+Filesystem::
           The name of the filesystem.
-Size::
-	  The size of the filesystem (Total / Used / Free).
+Total / Used / Free::
+	  The size of the filesystem.
 Created::
 	  The time the filesystem was created.
 Device::

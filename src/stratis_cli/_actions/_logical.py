@@ -28,7 +28,13 @@ from .._errors import (
 from .._stratisd_constants import StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
-from ._formatting import get_property, print_table, size_triple, to_hyphenated
+from ._formatting import (
+    TOTAL_USED_FREE,
+    get_property,
+    print_table,
+    size_triple,
+    to_hyphenated,
+)
 
 
 class LogicalActions:
@@ -171,7 +177,14 @@ class LogicalActions:
         ]
 
         print_table(
-            ["Pool Name", "Name", "Size", "Created", "Device", "UUID"],
+            [
+                "Pool",
+                "Filesystem",
+                TOTAL_USED_FREE,
+                "Created",
+                "Device",
+                "UUID",
+            ],
             sorted(tables, key=lambda entry: (entry[0], entry[1])),
             ["<", "<", "<", "<", "<", "<"],
         )
