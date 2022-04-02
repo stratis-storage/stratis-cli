@@ -88,6 +88,8 @@ pool overprovision <pool name> <(yes|no)> ::
 pool explain <code> ::
      Explain any error code that might show up in the Alerts column when
      listing a pool.
+pool debug get-object-path <(--uuid <uuid> |--name <name>)> ::
+     Look up the D-Bus object path for a pool given the UUID or name.
 filesystem create <pool_name> <fs_name> [<fs_name>..] [--size <size>]::
 	   Create one or more filesystems from the specified pool.
            If '--size' option is specified, make each filesystem the specified
@@ -104,9 +106,13 @@ filesystem destroy <pool_name> <fs_name> [<fs_name>..]::
 	   Destroy one or more filesystems that exist in the specified pool.
 filesystem rename <pool_name> <fs_name> <new_name>::
      Rename a filesystem.
+filesystem debug get-object-path <(--uuid <uuid> |--name <name>)> ::
+     Look up the D-Bus object path for a filesystem given the UUID or name.
 blockdev list [pool_name]::
 	 List all blockdevs that make up the specified pool, or all pools, if
 	 no pool name is given.
+blockdev debug get-object-path <(--uuid <uuid>)> ::
+     Look up the D-Bus object path for a blockdev given the UUID.
 key list::
      List all key-descriptions in the kernel keyring that can be used for encryption.
 key set <(--keyfile-path <path> | --capture-key)> <key_desc>::

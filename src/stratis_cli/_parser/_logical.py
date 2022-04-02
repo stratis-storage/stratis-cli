@@ -16,6 +16,7 @@ Definition of filesystem actions to display in the CLI.
 """
 
 from .._actions import LogicalActions
+from ._debug import FILESYSTEM_DEBUG_SUBCMDS
 from ._range import RangeAction
 
 LOGICAL_SUBCMDS = [
@@ -105,6 +106,13 @@ LOGICAL_SUBCMDS = [
                 ),
             ],
             func=LogicalActions.rename_fs,
+        ),
+    ),
+    (
+        "debug",
+        dict(
+            help=("Miscellaneous filesystem-level debug commands"),
+            subcmds=FILESYSTEM_DEBUG_SUBCMDS,
         ),
     ),
 ]

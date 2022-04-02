@@ -201,6 +201,36 @@ class TestFilesystemSizeParsing(RunTestCase):
             self.check_system_exit(prefix + command_line, _PARSE_ERROR)
 
 
+class TestBadlyFormattedUuid(RunTestCase):
+    """
+    Test that parser errors are properly returned on badly formatted UUIDs.
+    """
+
+    def test_bad_uuid_pool(self):
+        """
+        Test badly formatted pool UUID.
+        """
+        command_line = ["pool", "debug", "get-object-path", "--uuid=%s" % "not"]
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
+    def test_bad_uuid_filesystem(self):
+        """
+        Test badly formatted filesystem UUID.
+        """
+        command_line = ["filesystem", "debug", "get-object-path", "--uuid=%s" % "not"]
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
+    def test_bad_uuid_blockdev(self):
+        """
+        Test badly formatted blockdev UUID.
+        """
+        command_line = ["blockdev", "debug", "get-object-path", "--uuid=%s" % "not"]
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
+
 class ParserSimTestCase(SimTestCase):
     """
     Parser tests which require the sim engine to be running.
