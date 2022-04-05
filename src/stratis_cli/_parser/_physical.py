@@ -16,6 +16,7 @@ Definition of block device actions to display in the CLI.
 """
 
 from .._actions import PhysicalActions
+from ._debug import BLOCKDEV_DEBUG_SUBCMDS
 
 PHYSICAL_SUBCMDS = [
     (
@@ -30,5 +31,12 @@ PHYSICAL_SUBCMDS = [
             ],
             func=PhysicalActions.list_devices,
         ),
-    )
+    ),
+    (
+        "debug",
+        dict(
+            help=("Miscellaneous blockdev-level debug commands"),
+            subcmds=BLOCKDEV_DEBUG_SUBCMDS,
+        ),
+    ),
 ]
