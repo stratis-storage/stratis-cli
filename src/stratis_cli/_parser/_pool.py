@@ -52,15 +52,6 @@ POOL_SUBCMDS = [
                     dict(help="Create the pool using these block devs", nargs="+"),
                 ),
                 (
-                    "--redundancy",
-                    dict(
-                        action="store",
-                        choices=["none"],
-                        default="none",
-                        help="Redundancy level for this pool",
-                    ),
-                ),
-                (
                     "--key-desc",
                     dict(
                         default=None,

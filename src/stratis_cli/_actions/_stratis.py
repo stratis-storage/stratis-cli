@@ -15,23 +15,14 @@
 Miscellaneous actions about stratis.
 """
 
-from .._stratisd_constants import RedundancyCodes
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 
 
-class StratisActions:
+class StratisActions:  # pylint: disable=too-few-public-methods
     """
     Stratis actions.
     """
-
-    @staticmethod
-    def list_stratisd_redundancy(_namespace):
-        """
-        List the stratisd redundancy designations.
-        """
-        for code in RedundancyCodes:
-            print("%s: %d" % (code.name, code.value))
 
     @staticmethod
     def list_stratisd_version(_namespace):

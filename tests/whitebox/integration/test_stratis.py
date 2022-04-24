@@ -40,13 +40,6 @@ class StratisTestCase(SimTestCase):
         command_line = self._MENU + ["version"]
         TEST_RUNNER(command_line)
 
-    def test_stratis_redundancy(self):
-        """
-        Getting redundancy should just succeed.
-        """
-        command_line = self._MENU + ["redundancy"]
-        TEST_RUNNER(command_line)
-
 
 class PropagateTestCase(RunTestCase):
     """

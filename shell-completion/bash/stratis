@@ -9,14 +9,14 @@ _stratis() {
 	global_opts="--version --propagate ${opts} --unhyphenated-uuids"
 	root_subcommands="daemon pool blockdev filesystem key report"
 	pool_subcommands="add-cache add-data bind create destroy init-cache list rename unbind unlock"
-	pool_create_opts="--redundancy --key-desc"
+	pool_create_opts="--key-desc"
 	pool_bind_opts="--thumbprint --trust-url"
 	pool_bind_subcommands="nbde tang tpm2"
 	pool_unlock_subcommands="clevis keyring"
 	fs_subcommands="create snapshot list rename destroy"
 	fs_create_opts="--size"
 	blockdev_subcommands="list"
-	daemon_subcommands="redundancy version"
+	daemon_subcommands="version"
 	key_subcommands="set unset reset list"
 	key_set_reset_opts="--keyfile-path --capture-key"
 	blockdevs="$(echo /dev/disk/*/*) $(lsblk -n -o name -p -l)"
@@ -62,11 +62,7 @@ _stratis() {
 		return 0
 	fi
 
-	if [[ ${prev} == "--redundancy" ]]; then
-		# at the moment there are no other redundancy values allowed
-		COMPREPLY=($(compgen -W "none" -- ${cur}))
-		return 0
-	elif [[ ${prev} == "--key-desc" || ${prev} == "--size" ]]; then
+	if [[ ${prev} == "--key-desc" || ${prev} == "--size" ]]; then
 		# nothing to suggest to the user
 		return 0
 	elif [[ ${cur} == -* ]]; then

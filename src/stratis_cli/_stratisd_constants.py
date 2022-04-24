@@ -71,17 +71,6 @@ class StratisdErrors(IntEnum):
 STRATISD_ERROR_TO_NAME = value_to_name(StratisdErrors)
 
 
-class RedundancyCodes(IntEnum):
-    """
-    Redundancy Codes
-    """
-
-    NONE = 0
-
-
-REDUNDANCY_CODE_TO_NAME = value_to_name(RedundancyCodes)
-
-
 class BlockDevTiers(IntEnum):
     """
     Tier to which a blockdev device belongs.
