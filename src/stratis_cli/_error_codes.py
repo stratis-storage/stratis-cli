@@ -65,8 +65,7 @@ class PoolMaintenanceErrorCode(IntEnum):
 
 class PoolAllocSpaceErrorCode(IntEnum):
     """
-    Error code if the pool does not allow overprovisioning and has run out
-    of space.
+    Error code if the pool has run out of space.
     """
 
     NO_ALLOC_SPACE = 1
@@ -79,10 +78,7 @@ class PoolAllocSpaceErrorCode(IntEnum):
         Return an explanation of the error return code.
         """
         if self is PoolAllocSpaceErrorCode.NO_ALLOC_SPACE:
-            return (
-                "The pool does not allow overprovisioning and has no data "
-                "space left for additional user data."
-            )
+            return "The pool has no data space left for additional user data."
 
         assert False, "impossible error code reached"  # pragma: no cover
 
