@@ -35,7 +35,6 @@ if [[ -n $state ]]; then
   case ${(j.:.)line[1,2]} in
     pool:create)
       _arguments $help \
-	'--redundancy=[specify redundancy level for this pool]:redundancy:(none)' \
 	':pool name' '*:block device:_files -P/ -W/ -g "*(-%)"'
     ;;
     pool:list) _arguments $help && ret=0 ;;
@@ -76,9 +75,9 @@ if [[ -n $state ]]; then
       _wanted commands expl command compadd -M 'r:|-=* r:|=*' \
 	  add-data add-cache list
     ;;
-    daemon:(redundancy|version)) _arguments $help ;;
+    daemon:(version)) _arguments $help ;;
     daemon:*)
-      _wanted commands expl command compadd redundancy version
+      _wanted commands expl command compadd version
     ;;
   esac
 fi

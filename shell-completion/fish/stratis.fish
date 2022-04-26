@@ -69,7 +69,7 @@ function __fish_stratis_filesystem
 end
 
 function __fish_stratis_daemon
-    set -l daemon_cmds 'redundancy' 'version' '-h'
+    set -l daemon_cmds 'version' '-h'
 
     set cur_cmds (commandline -opc)
     if [ (count $cur_cmds) -le 2 ]

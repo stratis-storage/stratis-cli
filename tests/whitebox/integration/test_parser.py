@@ -46,15 +46,6 @@ class ParserTestCase(RunTestCase):
             for prefix in [[], ["--propagate"]]:
                 self.check_system_exit(prefix + command_line, _PARSE_ERROR)
 
-    def test_stratis_two_options(self):
-        """
-        Exactly one option should be set, so this should fail,
-        but only because redundancy accepts no arguments.
-        """
-        for prefix in [[], ["--propagate"]]:
-            command_line = ["daemon", "redundancy", "version"]
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
-
     def test_stratis_bad_subcommand(self):
         """
         If an unknown subcommand return exit code of 2.
@@ -68,24 +59,6 @@ class ParserTestCase(RunTestCase):
         ]:
             for prefix in [[], ["--propagate"]]:
                 self.check_system_exit(prefix + command_line, _PARSE_ERROR)
-
-    def test_redundancy(self):
-        """
-        Verify that there is a parser error if redundancy is not "none" in
-        pool creation.
-        """
-        command_line = [
-            "pool",
-            "create",
-            "--redundancy",
-            "raid6",
-            "the_pool",
-            "a_blockdev",
-            "another_blockdev",
-        ]
-
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
 
     def test_nonexistent_report(self):
         """

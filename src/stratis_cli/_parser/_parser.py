@@ -95,13 +95,6 @@ def add_subcommand(subparser, cmd):
 
 DAEMON_SUBCMDS = [
     (
-        "redundancy",
-        dict(
-            help="Redundancy designations understood by stratisd daemon",
-            func=StratisActions.list_stratisd_redundancy,
-        ),
-    ),
-    (
         "version",
         dict(
             help="version of stratisd daemon", func=StratisActions.list_stratisd_version

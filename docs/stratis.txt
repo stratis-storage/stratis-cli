@@ -12,7 +12,7 @@ SYNOPSIS
   stratis [GLOBAL OPTIONS] blockdev <command> [args] [COMMAND OPTIONS]
   stratis [GLOBAL OPTIONS] key <command> [args] [COMMAND OPTIONS]
   stratis [GLOBAL OPTIONS] report <report_name>
-  stratis [GLOBAL OPTIONS] daemon <redundancy|version>
+  stratis [GLOBAL OPTIONS] daemon <version>
 
 DESCRIPTION
 -----------
@@ -36,7 +36,7 @@ GLOBAL OPTIONS
 
 COMMANDS
 --------
-pool create [--redundancy <redundancy>] [--key-desc <key_desc>] [--clevis <(nbde|tang|tpm2)> [--tang-url <tang_url>] [<(--thumbprint <thp> | --trust-url)>] [--no-overprovision] <pool_name> <blockdev> [<blockdev>..]::
+pool create [--key-desc <key_desc>] [--clevis <(nbde|tang|tpm2)> [--tang-url <tang_url>] [<(--thumbprint <thp> | --trust-url)>] [--no-overprovision] <pool_name> <blockdev> [<blockdev>..]::
      Create a pool from one or more block devices, with the given pool name.
 pool list::
      List all pools on the system.
@@ -127,16 +127,11 @@ report <report_name>::
         The engine_state_report name will be supported in future releases.
         Any other report name should be considered unstable and may be removed
         in a future release. The JSON schema of any report must always be considered unstable.
-daemon redundancy::
-       List the redundancy levels that the Stratis service supports.
 daemon version::
        Show the Stratis service's version.
 
 OPTIONS
 -------
---redundancy::
-        The redundancy for the created pool. The only option is "none" which
-        is also the default.
 --key-desc::
         The key description of the key that should be used to encrypt the
         created pool. The key description must correspond to a key
