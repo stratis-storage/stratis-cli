@@ -16,8 +16,29 @@ Miscellaneous debugging actions.
 """
 
 
+from .._errors import StratisCliEngineError
+from .._stratisd_constants import StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
+
+
+class TopDebugActions:  # pylint: disable=too-few-public-methods
+    """
+    Top level object debug actions.
+    """
+
+    @staticmethod
+    def refresh_state(_namespace):
+        """
+        Refresh pools from their metadata up.
+        """
+        from ._data import Manager  # pylint: disable=import-outside-toplevel
+
+        (return_code, message) = Manager.Methods.RefreshState(
+            get_object(TOP_OBJECT), {}
+        )
+        if return_code != StratisdErrors.OK:  # pragma: no cover
+            raise StratisCliEngineError(return_code, message)
 
 
 class PoolDebugActions:  # pylint: disable=too-few-public-methods

@@ -20,8 +20,6 @@ import unittest
 
 # isort: LOCAL
 from stratis_cli._errors import (
-    StratisCliAggregateError,
-    StratisCliEngineError,
     StratisCliGenerationError,
     StratisCliIncoherenceError,
     StratisCliPartialFailureError,
@@ -58,16 +56,6 @@ class ErrorFmtTestCase(unittest.TestCase):
         Test 'StratisCliGenerationError'
         """
         self._string_not_empty(StratisCliGenerationError("Error"))
-
-    def test_stratis_cli_aggregate_error_fmt(self):
-        """
-        Test 'StratisCliAggregateError'
-        """
-        self._string_not_empty(
-            StratisCliAggregateError(
-                "do lots of things", "toy", [StratisCliEngineError(1, "bad")]
-            )
-        )
 
     def test_stratis_cli_partial_failure_error(self):
         """

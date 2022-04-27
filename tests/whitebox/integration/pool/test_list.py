@@ -1,4 +1,4 @@
-# Copyright 2016 Red Hat, Inc.
+# Copyright 2022 Red Hat, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,9 +15,31 @@
 Test 'list'.
 """
 
-from .._misc import RUNNER, TEST_RUNNER, SimTestCase, device_name_list
+# isort: STDLIB
+from uuid import uuid4
+
+# isort: FIRSTPARTY
+from dbus_client_gen import DbusClientUniqueResultError
+
+# isort: LOCAL
+from stratis_cli import StratisCliErrorCodes
+from stratis_cli._actions._connection import get_object
+from stratis_cli._actions._constants import TOP_OBJECT
+from stratis_cli._errors import StratisCliResourceNotFoundError
+
+from .._keyutils import RandomKeyTmpFile
+from .._misc import (
+    RUNNER,
+    TEST_RUNNER,
+    SimTestCase,
+    device_name_list,
+    get_pool,
+    stop_pool,
+)
 
 _DEVICE_STRATEGY = device_name_list(1)
+
+_ERROR = StratisCliErrorCodes.ERROR
 
 
 class ListTestCase(SimTestCase):
@@ -90,3 +112,117 @@ class List2TestCase(SimTestCase):
         TEST_RUNNER(command_line)
         command_line = self._MENU
         TEST_RUNNER(command_line)
+
+    def test_list_bogus_uuid(self):
+        """
+        Test listing a bogus stopped pool.
+        """
+        command_line = self._MENU + [f"--uuid={uuid4()}"]
+        self.check_error(DbusClientUniqueResultError, command_line, _ERROR)
+
+    def test_list_with_uuid(self):
+        """
+        Test detailed list view for a specific uuid.
+        """
+        # pylint: disable=import-outside-toplevel
+        # isort: LOCAL
+        from stratis_cli._actions._data import MOPool
+
+        proxy = get_object(TOP_OBJECT)
+
+        mopool = MOPool(get_pool(proxy, self._POOLNAME)[1])
+        command_line = self._MENU + [f"--uuid={mopool.Uuid()}"]
+        TEST_RUNNER(command_line)
+
+
+class List3TestCase(SimTestCase):
+    """
+    Test listing stopped pools.
+    """
+
+    _MENU = ["--propagate", "pool", "list", "--stopped"]
+    _POOLNAME = "deadpool"
+
+    def setUp(self):
+        """
+        Start the stratisd daemon with the simulator. Create a pool.
+        """
+        super().setUp()
+        command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
+        RUNNER(command_line)
+
+    def test_list(self):
+        """
+        Test listing all with a stopped pool.
+        """
+        command_line = ["pool", "stop", self._POOLNAME]
+        RUNNER(command_line)
+        TEST_RUNNER(self._MENU)
+
+    def test_list_empty(self):
+        """
+        Test listing when there are no stopped pools.
+        """
+        TEST_RUNNER(self._MENU)
+
+    def test_list_specific(self):
+        """
+        Test listing a specific stopped pool.
+        """
+
+        pool_uuid = stop_pool(self._POOLNAME)
+
+        command_line = self._MENU + [f"--uuid={pool_uuid}"]
+        TEST_RUNNER(command_line)
+
+    def test_list_bogus(self):
+        """
+        Test listing a bogus stopped pool.
+        """
+        command_line = self._MENU + [f"--uuid={uuid4()}"]
+        self.check_error(StratisCliResourceNotFoundError, command_line, _ERROR)
+
+
+class List4TestCase(SimTestCase):
+    """
+    Test listing stopped pools that have been encrypted.
+    """
+
+    _MENU = ["--propagate", "pool", "list", "--stopped"]
+    _POOLNAME = "deadpool"
+    _KEY_DESC = "keydesc"
+
+    def setUp(self):
+        """
+        Start the stratisd daemon with the simulator. Create a pool.
+        """
+        super().setUp()
+
+        with RandomKeyTmpFile() as fname:
+            command_line = [
+                "--propagate",
+                "key",
+                "set",
+                "--keyfile-path",
+                fname,
+                self._KEY_DESC,
+            ]
+            RUNNER(command_line)
+
+        command_line = [
+            "--propagate",
+            "pool",
+            "create",
+            "--key-desc",
+            self._KEY_DESC,
+            self._POOLNAME,
+        ] + _DEVICE_STRATEGY()
+        RUNNER(command_line)
+
+    def test_list(self):
+        """
+        Test listing all with a stopped pool.
+        """
+        command_line = ["pool", "stop", self._POOLNAME]
+        RUNNER(command_line)
+        TEST_RUNNER(self._MENU)

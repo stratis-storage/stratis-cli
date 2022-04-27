@@ -8,11 +8,10 @@ _stratis() {
 	opts="-h --help"
 	global_opts="--version --propagate ${opts} --unhyphenated-uuids"
 	root_subcommands="daemon pool blockdev filesystem key report"
-	pool_subcommands="add-cache add-data bind create destroy init-cache list rename unbind unlock"
+	pool_subcommands="add-cache add-data bind create destroy init-cache list rename unbind"
 	pool_create_opts="--key-desc"
 	pool_bind_opts="--thumbprint --trust-url"
 	pool_bind_subcommands="nbde tang tpm2"
-	pool_unlock_subcommands="clevis keyring"
 	fs_subcommands="create snapshot list rename destroy"
 	fs_create_opts="--size"
 	blockdev_subcommands="list"
@@ -154,10 +153,6 @@ _stratis() {
 			;;
 		pool)
 			case ${subcommand} in
-			unlock)
-				COMPREPLY=($(compgen -W "${pool_unlock_subcommands}" -- ${cur}))
-				return 0
-				;;
 			bind)
 				COMPREPLY=($(compgen -W "${pool_bind_subcommands}" -- ${cur}))
 				return 0
@@ -201,7 +196,7 @@ _stratis() {
 			;;
 		pool)
 			case ${subcommand} in
-			list | rename | destroy | unbind | unlock)
+			list | rename | destroy | unbind)
 				return 0
 				;;
 			create | add-data | add-cache | init-cache)
@@ -252,7 +247,7 @@ _stratis() {
 			;;
 		pool)
 			case ${subcommand} in
-			list | rename | destroy | bind | unbind | unlock)
+			list | rename | destroy | bind | unbind)
 				return 0
 				;;
 			create | add-cache | add-data | init-cache)

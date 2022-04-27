@@ -17,6 +17,7 @@ Definition of pool actions to display in the CLI.
 
 # isort: STDLIB
 from argparse import ArgumentTypeError
+from uuid import UUID
 
 from .._actions import BindActions, PoolActions
 from .._constants import YesOrNo
@@ -133,6 +134,52 @@ POOL_SUBCMDS = [
         ),
     ),
     (
+        "stop",
+        dict(
+            help=(
+                "Stop a pool. Tear down the pool's storage stack "
+                "but do not erase any metadata."
+            ),
+            args=[
+                (
+                    "pool_name",
+                    dict(
+                        action="store",
+                        help="Name of the pool to stop",
+                    ),
+                )
+            ],
+            func=PoolActions.stop_pool,
+        ),
+    ),
+    (
+        "start",
+        dict(
+            help="Start a pool.",
+            args=[
+                (
+                    "pool_uuid",
+                    dict(
+                        action="store",
+                        type=UUID,
+                        help="UUID of the pool to start",
+                    ),
+                ),
+                (
+                    "--unlock-method",
+                    dict(
+                        default=None,
+                        dest="unlock_method",
+                        action="store",
+                        choices=[str(x) for x in list(EncryptionMethod)],
+                        help="Method to use to unlock the pool if encrypted.",
+                    ),
+                ),
+            ],
+            func=PoolActions.start_pool,
+        ),
+    ),
+    (
         "init-cache",
         dict(
             help="Initialize the cache with block devices",
@@ -159,7 +206,25 @@ POOL_SUBCMDS = [
         "list",
         dict(
             help="List pools",
-            description="Lists Stratis pools that exist on the system",
+            description="List Stratis pools",
+            args=[
+                (
+                    "--uuid",
+                    dict(
+                        action="store",
+                        default=None,
+                        type=UUID,
+                        help="UUID of pool to list",
+                    ),
+                ),
+                (
+                    "--stopped",
+                    dict(
+                        action="store_true",
+                        help="Display information about stopped pools only.",
+                    ),
+                ),
+            ],
             func=PoolActions.list_pools,
         ),
     ),
@@ -251,24 +316,6 @@ POOL_SUBCMDS = [
                 ("pool_name", dict(action="store", help="Pool name")),
             ],
             func=BindActions.unbind,
-        ),
-    ),
-    (
-        "unlock",
-        dict(
-            help="Unlock all of the currently locked encrypted pools",
-            args=[
-                (
-                    "unlock_method",
-                    dict(
-                        default=str(EncryptionMethod.KEYRING),
-                        action="store",
-                        choices=[str(x) for x in list(EncryptionMethod)],
-                        help="Method to use to unlock encrypted pools",
-                    ),
-                )
-            ],
-            func=PoolActions.unlock_pools,
         ),
     ),
     (

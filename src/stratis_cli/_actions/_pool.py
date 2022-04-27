@@ -25,7 +25,6 @@ from justbytes import Range
 from .._constants import YesOrNo
 from .._error_codes import PoolAllocSpaceErrorCode, PoolErrorCode
 from .._errors import (
-    StratisCliAggregateError,
     StratisCliEngineError,
     StratisCliIncoherenceError,
     StratisCliInUseOtherTierError,
@@ -33,12 +32,13 @@ from .._errors import (
     StratisCliNameConflictError,
     StratisCliNoChangeError,
     StratisCliPartialChangeError,
-    StratisCliPartialFailureError,
+    StratisCliResourceNotFoundError,
 )
 from .._stratisd_constants import BlockDevTiers, PoolActionAvailability, StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import (
+    TABLE_FAILURE_STRING,
     TOTAL_USED_FREE,
     get_property,
     print_table,
@@ -145,7 +145,7 @@ def _check_same_tier(pool_name, managed_objects, to_be_added, this_tier):
         raise StratisCliInUseSameTierError(owned_by_other_pools, this_tier)
 
 
-def _fetch_locked_pools_property(proxy):
+def _fetch_stopped_pools_property(proxy):
     """
     Fetch the LockedPools property from stratisd.
     :param proxy: proxy to the top object in stratisd
@@ -157,7 +157,32 @@ def _fetch_locked_pools_property(proxy):
     # pylint: disable=import-outside-toplevel
     from ._data import Manager
 
-    return Manager.Properties.LockedPools.Get(proxy)
+    return Manager.Properties.StoppedPools.Get(proxy)
+
+
+def _maybe_inconsistent(value, interp):
+    """
+    Take a value that represents possible inconsistency via result type.
+
+    :param value: a tuple, second item is the value
+    :param interp: a function to intepret the optional value
+    :type value: bool * object
+    :rtype: str
+    """
+    (real, value) = value
+    return interp(value) if real else "inconsistent"
+
+
+def _interp_inconsistent_option(value):
+    """
+    Interpret a result that also may not exist.
+    """
+
+    def my_func(value):
+        (exists, value) = value
+        return str(value) if exists else "N/A"
+
+    return _maybe_inconsistent(value, my_func)
 
 
 class PoolActions:
@@ -228,6 +253,67 @@ class PoolActions:
             Pool.Properties.Overprovisioning.Set(get_object(pool_object_path), False)
 
     @staticmethod
+    def stop_pool(namespace):
+        """
+        Stop a pool.
+
+        :raises StratisCliIncoherenceError:
+        :raises StratisCliEngineError:
+        """
+        # pylint: disable=import-outside-toplevel
+        from ._data import Manager, ObjectManager, pools
+
+        proxy = get_object(TOP_OBJECT)
+        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
+        pool_name = namespace.pool_name
+        (pool_object_path, _) = next(
+            pools(props={"Name": pool_name})
+            .require_unique_match(True)
+            .search(managed_objects)
+        )
+
+        ((stopped, _), return_code, message) = Manager.Methods.StopPool(
+            proxy, {"pool": pool_object_path}
+        )
+
+        if return_code != StratisdErrors.OK:  # pragma: no cover
+            raise StratisCliEngineError(return_code, message)
+
+        if not stopped:  # pragma: no cover
+            raise StratisCliIncoherenceError(
+                f"Expected to stop pool with name {pool_name} but it was already stopped."
+            )
+
+    @staticmethod
+    def start_pool(namespace):
+        """
+        Start a pool.
+
+        :raises StratisCliIncoherenceError:
+        :raises StratisCliEngineError:
+        """
+        # pylint: disable=import-outside-toplevel
+        from ._data import Manager
+
+        proxy = get_object(TOP_OBJECT)
+
+        ((started, _), return_code, message) = Manager.Methods.StartPool(
+            proxy,
+            {
+                "pool_uuid": str(namespace.pool_uuid),
+                "unlock_method": (False, "")
+                if namespace.unlock_method is None
+                else (True, namespace.unlock_method),
+            },
+        )
+
+        if return_code != StratisdErrors.OK:
+            raise StratisCliEngineError(return_code, message)
+
+        if not started:
+            raise StratisCliNoChangeError("start", namespace.pool_uuid)
+
+    @staticmethod
     def init_cache(namespace):  # pylint: disable=too-many-locals
         """
         Initialize the cache of an existing stratis pool.
@@ -280,17 +366,31 @@ class PoolActions:
     @staticmethod
     def list_pools(namespace):
         """
-        List all stratis pools.
+        List Stratis pools.
+        """
+        # This method may be invoked as a result of the command line argument
+        # "pool", without any options, in which case these attributes have not
+        # been set.
+        (stopped, pool_uuid) = (
+            getattr(namespace, "stopped", False),
+            getattr(namespace, "uuid", None),
+        )
+
+        if stopped:
+            return PoolActions._list_stopped_pools(namespace, pool_uuid=pool_uuid)
+        return PoolActions._list_pools_default(namespace, pool_uuid=pool_uuid)
+
+    @staticmethod
+    def _list_pools_default(
+        namespace, *, pool_uuid=None
+    ):  # pylint: disable=too-many-locals
+        """
+        List all pools that are listed by default. These are all started pools.
         """
         # pylint: disable=import-outside-toplevel
         from ._data import MOPool, ObjectManager, pools
 
         proxy = get_object(TOP_OBJECT)
-
-        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        pools_with_props = [
-            MOPool(info) for objpath, info in pools().search(managed_objects)
-        ]
 
         def physical_size_triple(mopool):
             """
@@ -376,28 +476,172 @@ class PoolActions:
 
             return ", ".join(sorted(str(code) for code in error_codes))
 
-        tables = [
-            (
-                mopool.Name(),
-                physical_size_triple(mopool),
-                properties_string(mopool),
-                format_uuid(mopool.Uuid()),
-                alert_string(mopool),
-            )
-            for mopool in pools_with_props
-        ]
+        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
+        if pool_uuid is None:
+            pools_with_props = [
+                MOPool(info) for objpath, info in pools().search(managed_objects)
+            ]
 
-        print_table(
-            [
-                "Name",
-                TOTAL_USED_FREE,
-                "Properties",
-                "UUID",
-                "Alerts",
-            ],
-            sorted(tables, key=lambda entry: entry[0]),
-            ["<", ">", ">", ">", "<"],
-        )
+            tables = [
+                (
+                    mopool.Name(),
+                    physical_size_triple(mopool),
+                    properties_string(mopool),
+                    format_uuid(mopool.Uuid()),
+                    alert_string(mopool),
+                )
+                for mopool in pools_with_props
+            ]
+
+            print_table(
+                [
+                    "Name",
+                    TOTAL_USED_FREE,
+                    "Properties",
+                    "UUID",
+                    "Alerts",
+                ],
+                sorted(tables, key=lambda entry: entry[0]),
+                ["<", ">", ">", ">", "<"],
+            )
+
+        else:
+            this_uuid = pool_uuid.hex
+            mopool = MOPool(
+                next(
+                    pools(props={"Uuid": this_uuid})
+                    .require_unique_match(True)
+                    .search(managed_objects)
+                )[1]
+            )
+
+            encrypted = mopool.Encrypted()
+
+            print(f"UUID: {format_uuid(this_uuid)}")
+            print(f"Name: {mopool.Name()}")
+            print(
+                f"Actions Allowed: "
+                f"{PoolActionAvailability.from_str(mopool.AvailableActions())}"
+            )
+            print(f"Cache: {'Yes' if mopool.HasCache() else 'No'}")
+            print(f"Filesystem Limit: {mopool.FsLimit()}")
+            print(
+                f"Allows Overprovisioning: "
+                f"{'Yes' if mopool.Overprovisioning() else 'No'}"
+            )
+
+            key_description_str = (
+                _interp_inconsistent_option(mopool.KeyDescription())
+                if encrypted
+                else "unencrypted"
+            )
+            print(f"Key Description: {key_description_str}")
+
+            clevis_info_str = (
+                _interp_inconsistent_option(mopool.ClevisInfo())
+                if encrypted
+                else "unencrypted"
+            )
+            print(f"Clevis Configuration: {clevis_info_str}")
+
+            total_physical_used = get_property(mopool.TotalPhysicalUsed(), Range, None)
+
+            print("Space Usage:")
+            print(f"Fully Allocated: {'Yes' if mopool.NoAllocSpace() else 'No'}")
+            print(f"    Size: {Range(mopool.TotalPhysicalSize())}")
+            print(f"    Allocated: {Range(mopool.AllocatedSize())}")
+
+            total_physical_used = get_property(mopool.TotalPhysicalUsed(), Range, None)
+            total_physical_used_str = (
+                TABLE_FAILURE_STRING
+                if total_physical_used is None
+                else total_physical_used
+            )
+
+            print(f"    Used: {total_physical_used_str}")
+
+    @staticmethod
+    def _list_stopped_pools(namespace, *, pool_uuid=None):
+        """
+        List stopped pools.
+        """
+
+        proxy = get_object(TOP_OBJECT)
+
+        stopped_pools = _fetch_stopped_pools_property(proxy)
+
+        format_uuid = (
+            (lambda mo_uuid: mo_uuid) if namespace.unhyphenated_uuids else to_hyphenated
+        )  # pragma: no cover // bug in coverage requires this
+
+        def interp_clevis(value):
+            """
+            Intepret Clevis info for table display.
+            """
+
+            def my_func(value):
+                (exists, value) = value
+                return "present" if exists else "N/A"
+
+            return _maybe_inconsistent(value, my_func)
+
+        def unencrypted_string(value, interp):
+            """
+            Get a cell value or "unencrypted" if None. Apply interp
+            function to the value.
+
+            :param value: some value
+            :type value: str or NoneType
+            :param interp_option: function to interpret optional value
+            :type interp_option: object -> str
+            :rtype: str
+            """
+            return "unencrypted" if value is None else interp(value)
+
+        if pool_uuid is None:
+            tables = [
+                (
+                    format_uuid(pool_uuid),
+                    str(len(info["devs"])),
+                    unencrypted_string(
+                        info.get("key_description"), _interp_inconsistent_option
+                    ),
+                    unencrypted_string(info.get("clevis_info"), interp_clevis),
+                )
+                for (pool_uuid, info) in stopped_pools.items()
+            ]
+
+            print_table(
+                ["UUID", "# Devices", "Key Description", "Clevis"],
+                sorted(tables, key=lambda entry: entry[0]),
+                ["<", ">", "<", "<"],
+            )
+
+        else:
+            this_uuid = pool_uuid.hex
+            stopped_pool = next(
+                (info for (uuid, info) in stopped_pools.items() if uuid == this_uuid),
+                None,
+            )
+
+            if stopped_pool is None:
+                raise StratisCliResourceNotFoundError("list", this_uuid)
+
+            print(f"UUID: {format_uuid(this_uuid)}")
+
+            key_description_str = unencrypted_string(
+                stopped_pool.get("key_description"), _interp_inconsistent_option
+            )
+            print(f"Key Description: {key_description_str}")
+
+            clevis_info_str = unencrypted_string(
+                stopped_pool.get("clevis_info"), _interp_inconsistent_option
+            )
+            print(f"Clevis Configuration: {clevis_info_str}")
+
+            print("Devices:")
+            for dev in stopped_pool["devs"]:
+                print(f"{format_uuid(dev['uuid'])}  {dev['devnode']}")
 
     @staticmethod
     def destroy_pool(namespace):
@@ -576,54 +820,6 @@ class PoolActions:
                     f"devices requested: ({', '.join(blockdevs)})"
                 )
             )
-
-    @staticmethod
-    def unlock_pools(namespace):
-        """
-        Unlock all of the encrypted pools that have been detected by the daemon
-        but are still locked.
-        :raises StratisCliIncoherenceError:
-        :raises StratisCliNoChangeError:
-        :raises StratisCliAggregateError:
-        """
-        # pylint: disable=import-outside-toplevel
-        from ._data import Manager
-
-        proxy = get_object(TOP_OBJECT)
-
-        locked_pools = _fetch_locked_pools_property(proxy)
-        if locked_pools == {}:  # pragma: no cover
-            raise StratisCliNoChangeError("unlock", "pools")
-
-        # This block is not covered as the sim engine does not simulate the
-        # management of unlocked devices, so locked_pools is always empty.
-        errors = []  # pragma: no cover
-        for uuid in locked_pools:  # pragma: no cover
-            (
-                (is_some, unlocked_devices),
-                return_code,
-                message,
-            ) = Manager.Methods.UnlockPool(
-                proxy, {"pool_uuid": uuid, "unlock_method": namespace.unlock_method}
-            )
-
-            if return_code != StratisdErrors.OK:
-                errors.append(
-                    StratisCliPartialFailureError(
-                        "unlock", "pool with UUID {uuid}", error_message=message
-                    )
-                )
-
-            if is_some and unlocked_devices == []:
-                raise StratisCliIncoherenceError(
-                    (
-                        "stratisd reported that some existing devices are locked but "
-                        "no new devices were unlocked during this operation"
-                    )
-                )
-
-        if errors:  # pragma: no cover
-            raise StratisCliAggregateError("unlock", "pool", errors)
 
     @staticmethod
     def set_fs_limit(namespace):

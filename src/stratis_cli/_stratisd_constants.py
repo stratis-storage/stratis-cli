@@ -112,8 +112,8 @@ class ReportKey(Enum):
     """
 
     ENGINE_STATE = "engine_state_report"
-    ERRORED_POOL = "errored_pool_report"
     MANAGED_OBJECTS = "managed_objects_report"
+    STOPPED_POOLS = "stopped_pools"
 
     def __str__(self):
         return self.value

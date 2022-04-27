@@ -24,14 +24,19 @@ import subprocess
 import sys
 import time
 import unittest
+from uuid import UUID
 
 # isort: THIRDPARTY
 import psutil
 
 # isort: LOCAL
-from stratis_cli import run
+from stratis_cli import StratisCliErrorCodes, run
+from stratis_cli._actions._connection import get_object
+from stratis_cli._actions._constants import TOP_OBJECT
 from stratis_cli._error_reporting import handle_error
 from stratis_cli._errors import StratisCliActionError
+
+_OK = StratisCliErrorCodes.OK
 
 
 def device_name_list(min_devices=0, max_devices=10, unique=False):
@@ -271,3 +276,61 @@ def test_runner(command_line):
 
 
 TEST_RUNNER = test_runner
+
+
+def get_pool(proxy, pool_name):
+    """
+    Get pool information given a pool name.
+
+    :param proxy: D-Bus proxy object for top object
+    :param str pool_name: the name of the pool with the D-Bus info
+    :returns: pool object path and pool info
+    :rtype: str * dict
+    :raise DbusClientUniqueError:
+    """
+    # pylint: disable=import-outside-toplevel
+    # isort: LOCAL
+    from stratis_cli._actions._data import ObjectManager, pools
+
+    managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
+    return next(
+        pools(props={"Name": pool_name})
+        .require_unique_match(True)
+        .search(managed_objects)
+    )
+
+
+def stop_pool(pool_name):
+    """
+    Stop a pool and return the UUID of the pool.
+    This method exists because it is the most direct way to get the UUID of
+    a pool that has just been stopped, for testing.
+
+    :param str pool_name: the name of the pool to stop
+
+    :returns: the UUID of the stopped pool
+    :rtype: UUID
+    :raises: RuntimeError
+    """
+
+    # pylint: disable=import-outside-toplevel
+    # isort: LOCAL
+    from stratis_cli._actions._data import Manager
+
+    proxy = get_object(TOP_OBJECT)
+
+    (pool_object_path, _) = get_pool(proxy, pool_name)
+
+    ((stopped, pool_uuid), return_code, message) = Manager.Methods.StopPool(
+        proxy, {"pool": pool_object_path}
+    )
+
+    if not return_code == _OK:
+        raise RuntimeError(f"Pool with name {pool_name} was not stopped: {message}")
+
+    if not stopped:
+        raise RuntimeError(
+            f"Pool with name {pool_name} was supposed to have been started but was not"
+        )
+
+    return UUID(pool_uuid)

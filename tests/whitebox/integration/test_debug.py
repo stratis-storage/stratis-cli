@@ -1,4 +1,4 @@
-# Copyright 2016 Red Hat, Inc.
+# Copyright 2022 Red Hat, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,20 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """
-Package mediating dbus actions.
+Test 'stratis debug'.
 """
 
-from ._bind import BindActions, RebindActions
-from ._constants import BLOCKDEV_INTERFACE, FILESYSTEM_INTERFACE, POOL_INTERFACE
-from ._debug import (
-    BlockdevDebugActions,
-    FilesystemDebugActions,
-    PoolDebugActions,
-    TopDebugActions,
-)
-from ._logical import LogicalActions
-from ._physical import PhysicalActions
-from ._pool import PoolActions
-from ._stratis import StratisActions
-from ._stratisd_version import check_stratisd_version
-from ._top import TopActions
+from ._misc import TEST_RUNNER, SimTestCase
+
+
+class DebugTestCase(SimTestCase):
+    """
+    Test debug commands.
+    """
+
+    _MENU = ["--propagate", "debug", "refresh"]
+
+    def test_refresh(self):
+        """
+        Test calling refresh.
+        """
+        TEST_RUNNER(self._MENU)
