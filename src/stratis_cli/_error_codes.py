@@ -65,20 +65,24 @@ class PoolMaintenanceErrorCode(IntEnum):
 
 class PoolAllocSpaceErrorCode(IntEnum):
     """
-    Error code if the pool has run out of space.
+    Code if the pool has run out of space to allocate.
     """
 
     NO_ALLOC_SPACE = 1
 
     def __str__(self):
-        return "ES%s" % str(self.value).zfill(3)
+        return "WS%s" % str(self.value).zfill(3)
 
     def explain(self):
         """
-        Return an explanation of the error return code.
+        Return an explanation of the return code.
         """
         if self is PoolAllocSpaceErrorCode.NO_ALLOC_SPACE:
-            return "The pool has no data space left for additional user data."
+            return (
+                "Every device belonging to the pool has been fully allocated. "
+                "To increase the allocable space, add additional data devices "
+                "to the pool."
+            )
 
         assert False, "impossible error code reached"  # pragma: no cover
 
