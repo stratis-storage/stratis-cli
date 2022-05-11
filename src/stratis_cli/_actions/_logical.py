@@ -100,11 +100,11 @@ class LogicalActions:
         if not created or len(list_created) < len(requested_names):  # pragma: no cover
             raise StratisCliIncoherenceError(
                 (
-                    "Expected to create the specified filesystems in pool %s "
-                    "but stratisd reports that it did not actually create "
-                    "some or all of the filesystems requested"
+                    f"Expected to create the specified filesystems in pool "
+                    f"{namespace.pool_name} but stratisd reports that it did "
+                    f"not actually create some or all of the filesystems "
+                    f"requested"
                 )
-                % namespace.pool_name
             )
 
     @staticmethod
@@ -247,11 +247,11 @@ class LogicalActions:
         ):  # pragma: no cover
             raise StratisCliIncoherenceError(
                 (
-                    "Expected to destroy the specified filesystems in pool %s "
-                    "but stratisd reports that it did not actually destroy "
-                    "some or all of the filesystems requested"
+                    f"Expected to destroy the specified filesystems in pool "
+                    f"{namespace.pool_name} but stratisd reports that it did "
+                    f"not actually destroy some or all of the filesystems "
+                    f"requested"
                 )
-                % namespace.pool_name
             )
 
     @staticmethod

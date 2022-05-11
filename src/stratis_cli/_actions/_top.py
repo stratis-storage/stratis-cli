@@ -180,20 +180,18 @@ class TopActions:
         if not changed and not existing_modified:  # pragma: no cover
             raise StratisCliIncoherenceError(
                 (
-                    "Key %s was reported to not exist but stratisd reported "
-                    "that no change was made to the key"
+                    f"Key {namespace.keydesc} was reported to not exist but stratisd reported "
+                    f"that no change was made to the key"
                 )
-                % namespace.keydesc
             )
 
         # A key was updated even though there was no key reported to already exist.
         if changed and existing_modified:  # pragma: no cover
             raise StratisCliIncoherenceError(
                 (
-                    "Key %s was reported to not exist but stratisd reported "
-                    "that it reset an existing key"
+                    f"Key {namespace.keydesc} was reported to not exist but stratisd reported "
+                    f"that it reset an existing key"
                 )
-                % namespace.keydesc
             )
 
     @staticmethod
@@ -229,10 +227,9 @@ class TopActions:
         if changed and not existing_modified:  # pragma: no cover
             raise StratisCliIncoherenceError(
                 (
-                    "Key %s was reported to already exist but stratisd reported "
-                    "that it created a new key"
+                    f"Key {namespace.keydesc} was reported to already exist but stratisd reported "
+                    f"that it created a new key"
                 )
-                % namespace.keydesc
             )
 
     @staticmethod
@@ -263,10 +260,9 @@ class TopActions:
         if not changed:  # pragma: no cover
             raise StratisCliIncoherenceError(
                 (
-                    "Key %s was reported to exist but stratisd reported "
-                    "that no key was unset"
+                    f"Key {namespace.keydesc} was reported to exist but stratisd reported "
+                    f"that no key was unset"
                 )
-                % namespace.keydesc
             )
 
     @staticmethod

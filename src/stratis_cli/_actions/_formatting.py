@@ -42,10 +42,10 @@ def size_triple(size, used):
     """
     free = None if size is None or used is None else size - used
 
-    return "%s / %s / %s" % (
-        TABLE_FAILURE_STRING if size is None else size,
-        TABLE_FAILURE_STRING if used is None else used,
-        TABLE_FAILURE_STRING if free is None else free,
+    return (
+        f"{TABLE_FAILURE_STRING if size is None else size} / "
+        f"{TABLE_FAILURE_STRING if used is None else used} / "
+        f"{TABLE_FAILURE_STRING if free is None else free}"
     )
 
 
@@ -109,11 +109,7 @@ def _print_row(file, row, row_widths, column_widths, column_alignments):
         column_len = _get_column_len(
             column_widths[index], len(entry), row_widths[index]
         )
-        entries.append(
-            "{0:{align}{width}}".format(
-                entry, align=column_alignments[index], width=column_len
-            )
-        )
+        entries.append(f"{entry:{column_alignments[index]}{column_len}}")
     print("   ".join(entries), end="", file=file)
 
 
