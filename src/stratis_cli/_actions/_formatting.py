@@ -42,10 +42,10 @@ def size_triple(size, used):
     """
     free = None if size is None or used is None else size - used
 
-    return "%s / %s / %s" % (
-        TABLE_FAILURE_STRING if size is None else size,
-        TABLE_FAILURE_STRING if used is None else used,
-        TABLE_FAILURE_STRING if free is None else free,
+    return (
+        f"{TABLE_FAILURE_STRING if size is None else size,} / "
+        f"{TABLE_FAILURE_STRING if used is None else used,} / "
+        f"{TABLE_FAILURE_STRING if free is None else free,}"
     )
 
 
