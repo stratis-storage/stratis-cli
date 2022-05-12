@@ -17,13 +17,13 @@
 Entry script for stratis CLI.
 """
 
+# isort: STDLIB
+import sys
+
+# isort: LOCAL
+from stratis_cli import StratisCliEnvironmentError, StratisCliErrorCodes, exit_, run
+
 try:
-
-    # isort: STDLIB
-    import sys
-
-    # isort: LOCAL
-    from stratis_cli import StratisCliEnvironmentError, StratisCliErrorCodes, exit_, run
 
     def main():
         """
