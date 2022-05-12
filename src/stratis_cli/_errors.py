@@ -63,8 +63,8 @@ class StratisCliResourceNotFoundError(StratisCliUserError):
 
     def __str__(self):
         return (
-            "Command '%s' assumes that resource '%s' exists but it was not "
-            "found." % (self.command, self.resource)
+            f"Command '{self.command}' assumes that resource '{self.resource}' "
+            f"exists but it was not found."
         )
 
 
@@ -95,21 +95,21 @@ class StratisCliPartialChangeError(StratisCliUserError):
 
     def __str__(self):
         if len(self.unchanged_resources) > 1:
-            msg = "The '%s' action has no effect for resources %s" % (
-                self.command,
-                list(self.unchanged_resources),
+            msg = (
+                f"The '{self.command}' action has no effect for resources "
+                f"{list(self.unchanged_resources)}"
             )
         else:
-            msg = "The '%s' action has no effect for resource %s" % (
-                self.command,
-                list(self.unchanged_resources)[0],
+            msg = (
+                f"The '{self.command}' action has no effect for resource "
+                f"{list(self.unchanged_resources)[0]}"
             )
 
         if self.changed_resources != frozenset():
             if len(self.changed_resources) > 1:
-                msg += " but does for resources %s" % list(self.changed_resources)
+                msg += f" but does for resources {list(self.changed_resources)}"
             else:
-                msg += " but does for resource %s" % list(self.changed_resources)[0]
+                msg += f" but does for resource {list(self.changed_resources)[0]}"
 
         return msg
 
@@ -151,7 +151,7 @@ class StratisCliNameConflictError(StratisCliUserError):
         self.name = name
 
     def __str__(self):
-        return "A %s named %s already exists" % (self.object_type, self.name)
+        return f"A {self.object_type} named {self.name} already exists"
 
 
 class StratisCliParserError(StratisCliRuntimeError):
@@ -238,32 +238,22 @@ class StratisCliInUseOtherTierError(StratisCliInUseError):
         )
 
         msg = (
-            "At least one of the provided devices is already owned by an "
-            "existing pool's %s tier" % (already_blockdev_tier,)
+            f"At least one of the provided devices is already owned by an "
+            f"existing pool's {already_blockdev_tier} tier"
         )
 
         for pool_name, blockdevs in self.pools_to_blockdevs.items():
             if len(blockdevs) > 1:
                 msg += (
-                    "; devices %s would be added to the %s tier but are "
-                    "already in use in the %s tier of pool %s"
-                    % (
-                        list(blockdevs),
-                        target_blockdev_tier,
-                        already_blockdev_tier,
-                        pool_name,
-                    )
+                    f"; devices {list(blockdevs)} would be added to the {target_blockdev_tier} "
+                    f"tier but are already in use in the {already_blockdev_tier} tier "
+                    f"of pool {pool_name}"
                 )
             else:
                 msg += (
-                    "; device %s would be added to the %s tier but is "
-                    "already in use in the %s tier of pool %s"
-                    % (
-                        list(blockdevs)[0],
-                        target_blockdev_tier,
-                        already_blockdev_tier,
-                        pool_name,
-                    )
+                    "; device {list(blockdevs)[0]} would be added to the {target_blockdev_tier} "
+                    f"tier but is already in use in the {already_blockdev_tier} tier "
+                    f"of pool {pool_name}"
                 )
 
         return msg
@@ -295,22 +285,20 @@ class StratisCliInUseSameTierError(StratisCliInUseError):
         blockdev_tier = BLOCK_DEV_TIER_TO_NAME(self.added_as)
 
         msg = (
-            "At least one of the provided devices is already owned by an "
-            "existing pool's %s tier" % (blockdev_tier,)
+            f"At least one of the provided devices is already owned by an "
+            f"existing pool's {blockdev_tier} tier"
         )
 
         for pool_name, blockdevs in self.pools_to_blockdevs.items():
             if len(blockdevs) > 1:
                 msg += (
-                    "; devices %s would be added to the %s tier but are "
-                    "already in use in the %s tier of pool %s"
-                    % (list(blockdevs), blockdev_tier, blockdev_tier, pool_name)
+                    f"; devices {list(blockdevs)} would be added to the {blockdev_tier} tier "
+                    f"but are already in use in the {blockdev_tier} tier of pool {pool_name}"
                 )
             else:
                 msg += (
-                    "; device %s would be added to the %s tier but is "
-                    "already in use in the %s tier of pool %s"
-                    % (list(blockdevs)[0], blockdev_tier, blockdev_tier, pool_name)
+                    f"; device {list(blockdevs)[0]} would be added to the {blockdev_tier} tier "
+                    f"but is already in use in the {blockdev_tier} tier of pool {pool_name}"
                 )
 
         return msg
@@ -332,7 +320,7 @@ class StratisCliKeyfileNotFoundError(StratisCliUserError):
         self.keyfile_path = keyfile_path
 
     def __str__(self):
-        return 'There is no keyfile at the path "%s"' % self.keyfile_path
+        return f'There is no keyfile at the path "{self.keyfile_path}"'
 
 
 class StratisCliUnknownInterfaceError(StratisCliRuntimeError):
@@ -350,7 +338,7 @@ class StratisCliUnknownInterfaceError(StratisCliRuntimeError):
         self._interface_name = interface_name
 
     def __str__(self):
-        return "unexpected interface name %s" % self._interface_name
+        return f"unexpected interface name {self._interface_name}"
 
 
 class StratisCliEngineError(StratisCliRuntimeError):
@@ -370,7 +358,7 @@ class StratisCliEngineError(StratisCliRuntimeError):
         self.message = message
 
     def __str__(self):
-        return "%s: %s" % (STRATISD_ERROR_TO_NAME(self.error_code), self.message)
+        return f"{STRATISD_ERROR_TO_NAME(self.error_code)}: {self.message}"
 
 
 class StratisCliActionError(StratisCliRuntimeError):
@@ -460,12 +448,9 @@ class StratisCliAggregateError(StratisCliRuntimeError):
 
     def __str__(self):
         return (
-            "The operation '%s' on a resource of type %s failed. The following "
-            "errors occurred:\n%s"
-        ) % (
-            self.operation,
-            self.type,
-            os.linesep.join([str(error) for error in self.errors]),
+            f"The operation '{self.operation}' on a resource of type {self.type} failed. "
+            f"The following errors occurred:\n"
+            f"{os.linesep.join([str(error) for error in self.errors])}"
         )
 
 
@@ -490,10 +475,7 @@ class StratisCliPartialFailureError(StratisCliRuntimeError):
         self.error_message = error_message
 
     def __str__(self):
-        fmt_str = 'Partial action "%s" failed for %s' % (
-            self.action,
-            self.identifier_string,
-        )
+        fmt_str = f'Partial action "{self.action}" failed for {self.identifier_string}'
         if self.error_message is not None:
-            fmt_str += ": %s" % self.error_message
+            fmt_str += f": {self.error_message}"
         return fmt_str
