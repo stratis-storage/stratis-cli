@@ -109,11 +109,7 @@ def _print_row(file, row, row_widths, column_widths, column_alignments):
         column_len = _get_column_len(
             column_widths[index], len(entry), row_widths[index]
         )
-        entries.append(
-            "{0:{align}{width}}".format(
-                entry, align=column_alignments[index], width=column_len
-            )
-        )
+        entries.append(f"{entry:{column_alignments[index]}{column_len}}")
     print("   ".join(entries), end="", file=file)
 
 
