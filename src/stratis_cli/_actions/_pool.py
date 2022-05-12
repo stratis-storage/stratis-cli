@@ -273,7 +273,6 @@ class PoolActions:
                     f"devices added: ({', '.join(devnodes_added)}), "
                     f"devices requested: ({', '.join(blockdevs)})"
                 )
-                % (namespace.pool_name, ", ".join(devnodes_added), ", ".join(blockdevs))
             )
 
     @staticmethod
