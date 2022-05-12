@@ -64,7 +64,7 @@ def get_clevis_info(namespace):
 
         else:
             raise AssertionError(
-                "unexpected value %s for clevis option" % namespace.clevis
+                "unexpected value {namespace.clevis} for clevis option"
             )  # pragma: no cover
 
     return (
