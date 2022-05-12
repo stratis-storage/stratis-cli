@@ -123,7 +123,7 @@ def _add_abs_path_assertion(klass, method_name, key):
         rel_paths = [path for path in args[key] if not os.path.isabs(path)]
         assert (
             rel_paths == []
-        ), f"Precondition violated: paths {', '.join(rel_paths)} should be absolute"
+        ), "Precondition violated: paths %s should be absolute" % ", ".join(rel_paths)
         return orig_method(proxy, args)
 
     setattr(method_class, method_name, new_method)

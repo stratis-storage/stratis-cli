@@ -87,7 +87,7 @@ class PhysicalActions:
             return (
                 metadata_path
                 if metadata_path == physical_path
-                else f"{physical_path}, ({metadata_path})"
+                else "%s (%s)" % (physical_path, metadata_path)
             )
 
         tables = [
