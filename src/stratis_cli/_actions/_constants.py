@@ -26,10 +26,10 @@ MAXIMUM_STRATISD_VERSION = "4.0.0"
 MINIMUM_STRATISD_VERSION = "3.1.0"
 assert Version(MINIMUM_STRATISD_VERSION) < Version(MAXIMUM_STRATISD_VERSION)
 
-REVISION = "r%s" % MINIMUM_STRATISD_VERSION.split(".")[1]
+REVISION = f"r{MINIMUM_STRATISD_VERSION.split('.')[1]}"
 
-BLOCKDEV_INTERFACE = "org.storage.stratis3.blockdev.%s" % REVISION
-FILESYSTEM_INTERFACE = "org.storage.stratis3.filesystem.%s" % REVISION
-MANAGER_INTERFACE = "org.storage.stratis3.Manager.%s" % REVISION
-POOL_INTERFACE = "org.storage.stratis3.pool.%s" % REVISION
-REPORT_INTERFACE = "org.storage.stratis3.Report.%s" % REVISION
+BLOCKDEV_INTERFACE = f"org.storage.stratis3.blockdev.{REVISION}"
+FILESYSTEM_INTERFACE = f"org.storage.stratis3.filesystem.{REVISION}"
+MANAGER_INTERFACE = f"org.storage.stratis3.Manager.{REVISION}"
+POOL_INTERFACE = f"org.storage.stratis3.pool.{REVISION}"
+REPORT_INTERFACE = f"org.storage.stratis3.Report.{REVISION}"
