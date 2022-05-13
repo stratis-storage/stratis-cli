@@ -53,7 +53,7 @@ def _unit_map(unit_specifier):
         return TiB
     if unit_specifier == "PiB":
         return PiB
-    assert False, 'Unknown unit specifier "%s"' % unit_specifier
+    assert False, f'Unknown unit specifier "{unit_specifier}"'
 
 
 class RangeAction(argparse.Action):
@@ -76,7 +76,7 @@ class RangeAction(argparse.Action):
         match = _RANGE_RE.search(values)
         if match is None:
             raise argparse.ArgumentError(
-                self, "Ill-formed size specification: %s" % _SIZE_SPECIFICATION
+                self, f"Ill-formed size specification: {_SIZE_SPECIFICATION}"
             )
 
         (magnitude, unit) = (match.group("magnitude"), match.group("units"))
