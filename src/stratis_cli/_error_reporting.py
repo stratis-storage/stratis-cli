@@ -175,8 +175,11 @@ def _interpret_errors_1(
     error = errors[0]
 
     if isinstance(error, DbusClientUniqueResultError) and error.result == []:
-        fmt_str = "Most likely you specified a %s which does not exist."
-        return fmt_str % _interface_name_to_common_name(error.interface_name)
+        return (
+            f"Most likely you specified a "
+            f"{_interface_name_to_common_name(error.interface_name)} "
+            f"which does not exist."
+        )
 
     # These errors can only arise if there is a bug in the way automatically
     # generated code is constructed, or if the introspection data from
@@ -190,34 +193,29 @@ def _interpret_errors_1(
         return _DBUS_INTERFACE_MSG
 
     if isinstance(error, StratisCliEngineError):
-        fmt_str = (
-            "stratisd failed to perform the operation that you "
-            "requested. It returned the following information via "
-            "the D-Bus: %s."
+        return (
+            f"stratisd failed to perform the operation that you "
+            f"requested. It returned the following information via "
+            f"the D-Bus: {error}."
         )
-        return fmt_str % error
 
     if isinstance(error, StratisCliParserError):
-        fmt_str = "You entered an invalid command: %s"
-        return fmt_str % error
+        return f"You entered an invalid command: {error}"
 
     if isinstance(error, StratisCliUserError):
-        fmt_str = "It appears that you issued an unintended command: %s"
-        return fmt_str % error
+        return f"It appears that you issued an unintended command: {error}"
 
     # The only situation in which an AggregateError can be raised is if there
     # is a problem activating devcies, but the sim engine does not simulate
     # activation of locked devices.
     if isinstance(error, StratisCliAggregateError):  # pragma: no cover
-        fmt_str = "An iterative command generated one or more errors: %s"
-        return fmt_str % error
+        return f"An iterative command generated one or more errors: {error}"
 
     if isinstance(error, StratisCliStratisdVersionError):
-        fmt_str = (
-            "%s. stratis can execute only the subset of its "
-            "commands that do not require stratisd."
+        return (
+            f"{error}. stratis can execute only the subset of its "
+            f"commands that do not require stratisd."
         )
-        return fmt_str % error
 
     # An incoherence error should be pretty untestable. It can arise
     # * in the case of a stratisd bug. We would expect to fix that very
@@ -226,12 +224,11 @@ def _interpret_errors_1(
     # state while a command is being executed. This could be tested for,
     # but only with considerable difficulty, so we choose not to test.
     if isinstance(error, StratisCliIncoherenceError):  # pragma: no cover
-        fmt_str = (
-            "stratisd reported that it did not execute every action "
-            "that it would have been expected to execute as a result "
-            "of the command that you requested: %s"
+        return (
+            f"stratisd reported that it did not execute every action "
+            f"that it would have been expected to execute as a result "
+            f"of the command that you requested: {error}"
         )
-        return fmt_str % error
 
     # Some method calls may have an assignable underlying cause.
     # At present, automated testing of any of these assignable causes is
@@ -310,17 +307,13 @@ def _interpret_errors_2(errors):
                     )
 
                 if isinstance(context, DPClientSetPropertyContext):
-                    fmt_str = (
-                        "stratisd failed to perform the operation that you "
-                        "requested, because it could not set the D-Bus "
-                        'property "%s" belonging to interface "%s" to "%s". It '
-                        "returned the following error: %s."
-                    )
-                    return fmt_str % (
-                        context.property_name,
-                        error.interface_name,
-                        context.value,
-                        next_error.get_dbus_message(),
+                    return (
+                        f"stratisd failed to perform the operation that you "
+                        f"requested, because it could not set the D-Bus "
+                        f'property "{context.property_name}" belonging to '
+                        f'interface "error.interface_name" to "{context.value}". '
+                        f"It returned the following error: "
+                        f"{next_error.get_dbus_message()}."
                     )
 
     return None  # pragma: no cover
@@ -375,5 +368,5 @@ def handle_error(err):
         print(exit_msg, os.linesep, file=sys.stderr, flush=True)
         raise err
 
-    exit_msg = "Execution failed:%s%s" % (os.linesep, explanation)
+    exit_msg = f"Execution failed:{os.linesep}{explanation}"
     exit_(StratisCliErrorCodes.ERROR, exit_msg)
