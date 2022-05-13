@@ -43,10 +43,10 @@ def size_triple(size, used):
     free = None if size is None or used is None else size - used
 
     return (
-            f"{TABLE_FAILURE_STRING if size is None else size} / "
-            f"{TABLE_FAILURE_STRING if size is None else used} / "
-            f"{TABLE_FAILURE_STRING if size is None else free}"
-        )
+        f"{TABLE_FAILURE_STRING if size is None else size} / "
+        f"{TABLE_FAILURE_STRING if size is None else used} / "
+        f"{TABLE_FAILURE_STRING if size is None else free}"
+    )
 
 
 def get_property(prop, to_repr, default):
