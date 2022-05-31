@@ -217,10 +217,9 @@ class PoolActions:
         if not changed:  # pragma: no cover
             raise StratisCliIncoherenceError(
                 (
-                    "Expected to create the specified pool %s but stratisd "
-                    "reports that it did not actually create the pool"
+                    f"Expected to create the specified pool {pool_name} but stratisd "
+                    f"reports that it did not actually create the pool"
                 )
-                % pool_name
             )
 
         if namespace.no_overprovision:
@@ -268,12 +267,12 @@ class PoolActions:
             ]
             raise StratisCliIncoherenceError(
                 (
-                    "Expected to add the specified blockdevs as cache "
-                    "to pool %s but stratisd reports that it did not actually "
-                    "add some or all of the blockdevs requested; devices "
-                    "added: (%s), devices requested: (%s)"
+                    f"Expected to add the specified blockdevs as cache to pool "
+                    f"{namespace.pool_name} but stratisd reports that it did not "
+                    f"actually add some or all of the blockdevs requested; "
+                    f"devices added: ({', '.join(devnodes_added)}), "
+                    f"devices requested: ({', '.join(blockdevs)})"
                 )
-                % (namespace.pool_name, ", ".join(devnodes_added), ", ".join(blockdevs))
             )
 
     @staticmethod
@@ -431,11 +430,10 @@ class PoolActions:
         if not changed:  # pragma: no cover
             raise StratisCliIncoherenceError(
                 (
-                    "Expected to destroy the specified pool %s but "
-                    "stratisd reports that it did not actually "
-                    "destroy the pool requested"
+                    f"Expected to destroy the specified pool {namespace.pool_name} but "
+                    f"stratisd reports that it did not actually "
+                    f"destroy the pool requested"
                 )
-                % namespace.pool_name
             )
 
     @staticmethod
@@ -514,12 +512,12 @@ class PoolActions:
             ]
             raise StratisCliIncoherenceError(
                 (
-                    "Expected to add the specified blockdevs to the data tier "
-                    "in pool %s but stratisd reports that it did not actually "
-                    "add some or all of the blockdevs requested; devices "
-                    "added: (%s), devices requested: (%s)"
+                    f"Expected to add the specified blockdevs to the data tier "
+                    f"in pool {namespace.pool_name} but stratisd reports that it did not "
+                    f"actually add some or all of the blockdevs requested; "
+                    f"devices added: ({', '.join(devnodes_added)}), "
+                    f"devices requested: ({', '.join(blockdevs)})"
                 )
-                % (namespace.pool_name, ", ".join(devnodes_added), ", ".join(blockdevs))
             )
 
     @staticmethod
@@ -569,12 +567,12 @@ class PoolActions:
             ]
             raise StratisCliIncoherenceError(
                 (
-                    "Expected to add the specified blockdevs to the cache tier "
-                    "in pool %s but stratisd reports that it did not actually "
-                    "add some or all of the blockdevs requested; devices "
-                    "added: (%s), devices requested: (%s)"
+                    f"Expected to add the specified blockdevs to the cache tier "
+                    f"in pool {namespace.pool_name} but stratisd reports that it did not "
+                    f"actually add some or all of the blockdevs requested; "
+                    f"devices added: ({', '.join(devnodes_added)}), "
+                    f"devices requested: ({', '.join(blockdevs)})"
                 )
-                % (namespace.pool_name, ", ".join(devnodes_added), ", ".join(blockdevs))
             )
 
     @staticmethod
@@ -610,7 +608,7 @@ class PoolActions:
             if return_code != StratisdErrors.OK:
                 errors.append(
                     StratisCliPartialFailureError(
-                        "unlock", "pool with UUID %s" % uuid, error_message=message
+                        "unlock", "pool with UUID {uuid}", error_message=message
                     )
                 )
 

@@ -33,10 +33,10 @@ def _ensure_nat(arg):
     try:
         result = int(arg)
     except Exception as err:
-        raise ArgumentTypeError("Argument %s is not a natural number." % arg) from err
+        raise ArgumentTypeError(f"Argument {arg} is not a natural number.") from err
 
     if result < 0:
-        raise ArgumentTypeError("Argument %s is not a natural number." % arg)
+        raise ArgumentTypeError(f"Argument {arg} is not a natural number.")
     return result
 
 

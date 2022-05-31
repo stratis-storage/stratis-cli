@@ -27,7 +27,7 @@ class PoolMaintenanceErrorCode(IntEnum):
     NO_POOL_CHANGES = 2
 
     def __str__(self):
-        return "EM%s" % str(self.value).zfill(3)
+        return f"EM{str(self.value).zfill(3)}"
 
     @staticmethod
     def from_str(code_str):
@@ -71,7 +71,7 @@ class PoolAllocSpaceErrorCode(IntEnum):
     NO_ALLOC_SPACE = 1
 
     def __str__(self):
-        return "WS%s" % str(self.value).zfill(3)
+        return f"WS{str(self.value).zfill(3)}"
 
     def explain(self):
         """

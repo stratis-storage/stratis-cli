@@ -52,7 +52,7 @@ def value_to_name(klass):
             the_str = (
                 "???"
                 if terse_unknown
-                else "Unknown value (%s) for %s constant" % (num, klass.__name__)
+                else f"Unknown value ({num}) for {klass.__name__} constant"
             )
         return the_str
 
