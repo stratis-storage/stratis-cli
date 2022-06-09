@@ -100,7 +100,8 @@ def _check_opposite_tier(managed_objects, to_be_added, other_tier):
         managed_objects, to_be_added, other_tier
     )
 
-    if isinstance(pools_to_blockdevs, dict) and pools_to_blockdevs:
+    assert isinstance(pools_to_blockdevs, dict)
+    if pools_to_blockdevs:
         raise StratisCliInUseOtherTierError(
             pools_to_blockdevs,
             BlockDevTiers.DATA
