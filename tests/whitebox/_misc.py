@@ -45,11 +45,13 @@ def device_name_list(min_devices=0, max_devices=10, unique=False):
     """
 
     def the_func():
-        return [
-            "/dev/%s"
-            % "".join(
+        def random_string():
+            return "".join(
                 random.choice(string.ascii_uppercase + string.digits) for _ in range(4)
             )
+
+        return [
+            f"/dev/{random_string()}"
             for _ in range(random.randrange(min_devices, max_devices + 1))
         ]
 
@@ -213,8 +215,7 @@ class SimTestCase(RunTestCase):
             try:
                 if psutil.Process(pid).name() == "stratisd":
                     raise RuntimeError(
-                        "Evidently a stratisd process with process id %u is running"
-                        % pid
+                        f"Evidently a stratisd process with process id {pid} is running"
                     )
             except psutil.NoSuchProcess:
                 pass

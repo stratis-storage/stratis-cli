@@ -100,7 +100,7 @@ def _check_opposite_tier(managed_objects, to_be_added, other_tier):
         managed_objects, to_be_added, other_tier
     )
 
-    if pools_to_blockdevs != {}:
+    if isinstance(pools_to_blockdevs, dict) and pools_to_blockdevs:
         raise StratisCliInUseOtherTierError(
             pools_to_blockdevs,
             BlockDevTiers.DATA
@@ -128,19 +128,19 @@ def _check_same_tier(pool_name, managed_objects, to_be_added, this_tier):
     )
 
     owned_by_current_pool = frozenset(pools_to_blockdevs.get(pool_name, []))
-    owned_by_other_pools = dict(
-        (pool, devnodes)
-        for pool, devnodes in pools_to_blockdevs.items()
-        if pool_name != pool
-    )
-
     if owned_by_current_pool != frozenset():
         raise StratisCliPartialChangeError(
             "add to cache" if this_tier == BlockDevTiers.CACHE else "add to data",
             to_be_added.difference(owned_by_current_pool),
             to_be_added.intersection(owned_by_current_pool),
         )
-    if owned_by_other_pools != {}:
+
+    owned_by_other_pools = dict(
+        (pool, devnodes)
+        for pool, devnodes in pools_to_blockdevs.items()
+        if pool_name != pool
+    )
+    if owned_by_other_pools:
         raise StratisCliInUseSameTierError(owned_by_other_pools, this_tier)
 
 
@@ -179,9 +179,10 @@ class PoolActions:
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
         pool_name = namespace.pool_name
-        names = pools(props={"Name": pool_name}).search(managed_objects)
         blockdevs = frozenset([os.path.abspath(p) for p in namespace.blockdevs])
-        if list(names) != []:
+
+        names = pools(props={"Name": pool_name}).search(managed_objects)
+        if next(names, None) is not None:
             raise StratisCliNameConflictError("pool", pool_name)
 
         _check_opposite_tier(managed_objects, blockdevs, BlockDevTiers.CACHE)
@@ -620,7 +621,7 @@ class PoolActions:
                     )
                 )
 
-        if errors != []:  # pragma: no cover
+        if errors:  # pragma: no cover
             raise StratisCliAggregateError("unlock", "pool", errors)
 
     @staticmethod
