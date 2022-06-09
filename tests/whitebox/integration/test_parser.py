@@ -183,7 +183,7 @@ class TestBadlyFormattedUuid(RunTestCase):
         """
         Test badly formatted pool UUID.
         """
-        command_line = ["pool", "debug", "get-object-path", "--uuid=%s" % "not"]
+        command_line = ["pool", "debug", "get-object-path", "--uuid=not"]
         for prefix in [[], ["--propagate"]]:
             self.check_system_exit(prefix + command_line, _PARSE_ERROR)
 
@@ -191,7 +191,7 @@ class TestBadlyFormattedUuid(RunTestCase):
         """
         Test badly formatted filesystem UUID.
         """
-        command_line = ["filesystem", "debug", "get-object-path", "--uuid=%s" % "not"]
+        command_line = ["filesystem", "debug", "get-object-path", "--uuid=not"]
         for prefix in [[], ["--propagate"]]:
             self.check_system_exit(prefix + command_line, _PARSE_ERROR)
 
@@ -199,7 +199,7 @@ class TestBadlyFormattedUuid(RunTestCase):
         """
         Test badly formatted blockdev UUID.
         """
-        command_line = ["blockdev", "debug", "get-object-path", "--uuid=%s" % "not"]
+        command_line = ["blockdev", "debug", "get-object-path", "--uuid=not"]
         for prefix in [[], ["--propagate"]]:
             self.check_system_exit(prefix + command_line, _PARSE_ERROR)
 
