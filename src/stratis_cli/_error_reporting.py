@@ -36,7 +36,6 @@ from dbus_python_client_gen import (
 from ._actions import BLOCKDEV_INTERFACE, FILESYSTEM_INTERFACE, POOL_INTERFACE
 from ._errors import (
     StratisCliActionError,
-    StratisCliAggregateError,
     StratisCliEngineError,
     StratisCliIncoherenceError,
     StratisCliParserError,
@@ -204,12 +203,6 @@ def _interpret_errors_1(
 
     if isinstance(error, StratisCliUserError):
         return f"It appears that you issued an unintended command: {error}"
-
-    # The only situation in which an AggregateError can be raised is if there
-    # is a problem activating devcies, but the sim engine does not simulate
-    # activation of locked devices.
-    if isinstance(error, StratisCliAggregateError):  # pragma: no cover
-        return f"An iterative command generated one or more errors: {error}"
 
     if isinstance(error, StratisCliStratisdVersionError):
         return (

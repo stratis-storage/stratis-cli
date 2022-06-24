@@ -28,6 +28,7 @@ from .._actions import (
 )
 from .._stratisd_constants import ReportKey
 from .._version import __version__
+from ._debug import TOP_DEBUG_SUBCMDS
 from ._key import KEY_SUBCMDS
 from ._logical import LOGICAL_SUBCMDS
 from ._physical import PHYSICAL_SUBCMDS
@@ -153,6 +154,13 @@ ROOT_SUBCOMMANDS = [
             help="Commands related to key operations for encrypted pools",
             subcmds=KEY_SUBCMDS,
             func=TopActions.list_keys,
+        ),
+    ),
+    (
+        "debug",
+        dict(
+            help="Commands for debugging operations.",
+            subcmds=TOP_DEBUG_SUBCMDS,
         ),
     ),
     ("daemon", dict(help="Stratis daemon information", subcmds=DAEMON_SUBCMDS)),

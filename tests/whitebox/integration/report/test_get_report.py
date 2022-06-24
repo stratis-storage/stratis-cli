@@ -35,7 +35,7 @@ class ReportTestCase(SimTestCase):
         """
         Test getting errored pool report.
         """
-        TEST_RUNNER(self._MENU + [str(ReportKey.ERRORED_POOL)])
+        TEST_RUNNER(self._MENU + [str(ReportKey.STOPPED_POOLS)])
 
     def test_report_no_name(self):
         """

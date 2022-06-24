@@ -18,7 +18,22 @@ Debugging commands for pool
 # isort: STDLIB
 from uuid import UUID
 
-from .._actions import BlockdevDebugActions, FilesystemDebugActions, PoolDebugActions
+from .._actions import (
+    BlockdevDebugActions,
+    FilesystemDebugActions,
+    PoolDebugActions,
+    TopDebugActions,
+)
+
+TOP_DEBUG_SUBCMDS = [
+    (
+        "refresh",
+        dict(
+            help="Refresh all un-stopped pools.",
+            func=TopDebugActions.refresh_state,
+        ),
+    )
+]
 
 POOL_DEBUG_SUBCMDS = [
     (

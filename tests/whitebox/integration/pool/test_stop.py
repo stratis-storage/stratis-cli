@@ -1,4 +1,4 @@
-# Copyright 2020 Red Hat, Inc.
+# Copyright 2022 Red Hat, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,28 +12,36 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """
-Test 'unlock'.
+Test 'stop'.
 """
 
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
-from stratis_cli._errors import StratisCliNoChangeError
-from stratis_cli._stratisd_constants import EncryptionMethod
 
-from .._misc import SimTestCase
+from .._misc import RUNNER, TEST_RUNNER, SimTestCase, device_name_list
 
 _ERROR = StratisCliErrorCodes.ERROR
+_DEVICE_STRATEGY = device_name_list(1, 1)
 
 
-class UnlockTestCase(SimTestCase):
+class StopTestCase(SimTestCase):
     """
-    Test 'unlock' when no pools are locked (the only state in the sim_engine).
+    Test 'stop' on a sim pool.
     """
 
-    _MENU = ["--propagate", "pool", "unlock", str(EncryptionMethod.KEYRING)]
+    _MENU = ["--propagate", "pool", "stop"]
+    _POOLNAME = "poolname"
 
-    def test_unlock(self):
+    def setUp(self):
+        super().setUp()
+        command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
+        RUNNER(command_line)
+
+    def test_stop(self):
         """
-        This should fail because no pools can be unlocked.
+        Stopping with known name should always succeed.
         """
-        self.check_error(StratisCliNoChangeError, self._MENU, _ERROR)
+        command_line = self._MENU + [
+            self._POOLNAME,
+        ]
+        TEST_RUNNER(command_line)
