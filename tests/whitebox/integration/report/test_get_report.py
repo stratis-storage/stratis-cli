@@ -26,14 +26,14 @@ _ERROR = StratisCliErrorCodes.ERROR
 
 class ReportTestCase(SimTestCase):
     """
-    Test getting the errored pool, engine state, and a nonexistent report
+    Test getting the stopped pool, engine state, and a nonexistent report
     """
 
     _MENU = ["--propagate", "report"]
 
     def test_report(self):
         """
-        Test getting errored pool report.
+        Test getting stopped pool report.
         """
         TEST_RUNNER(self._MENU + [str(ReportKey.STOPPED_POOLS)])
 
