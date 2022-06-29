@@ -15,6 +15,10 @@
 Test 'stratis report'.
 """
 
+# isort: STDLIB
+import os
+import unittest
+
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
 from stratis_cli._stratisd_constants import ReportKey
@@ -31,6 +35,12 @@ class ReportTestCase(SimTestCase):
 
     _MENU = ["--propagate", "report"]
 
+    @unittest.skipIf(
+        os.getenv("STRATIS_SKIP_UNSTABLE_TEST") is not None,
+        "This test relies on the Report interface's GetReport method which "
+        "does not guarantee the stability, between minor versions of stratisd, "
+        "of the report key arguments that it supports.",
+    )
     def test_report(self):
         """
         Test getting stopped pool report.
