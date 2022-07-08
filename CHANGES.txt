@@ -1,3 +1,26 @@
+stratis-cli 3.2.0
+=================
+Required stratisd version: 3.2.0
+
+Recommended development environment: Fedora 36
+Lowest supported Python interpreter: 3.9.0
+
+Lowest supported Rust toolchain (for testing): 1.58.1
+
+- Require stratisd 3.2.0:
+  https://github.com/stratis-storage/stratis-cli/pull/889
+
+- Support starting and stopping pools; introduce more pool list options:
+  https://github.com/stratis-storage/stratis-cli/pull/879
+
+- Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/896
+  https://github.com/stratis-storage/stratis-cli/pull/893
+  https://github.com/stratis-storage/stratis-cli/pull/892
+  https://github.com/stratis-storage/stratis-cli/pull/891
+  https://github.com/stratis-storage/stratis-cli/pull/886
+
+
 stratis-cli 3.1.0
 =================
 Required stratisd version: 3.1.0
