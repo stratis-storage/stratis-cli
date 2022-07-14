@@ -18,6 +18,8 @@ Pool actions.
 # isort: STDLIB
 import os
 from collections import defaultdict
+from itertools import tee
+from uuid import UUID
 
 # isort: THIRDPARTY
 from justbytes import Range
@@ -536,6 +538,99 @@ class PoolActions:
                     f"devices requested: ({', '.join(blockdevs)})"
                 )
             )
+
+    @staticmethod
+    def extend_data(namespace):  # pylint: disable=too-many-locals
+        """
+        Extend the pool making use of the additional space offered by component
+        devices. Exit immediately if something unexpected happens.
+
+        :raises StratisCliPartialChangeError:
+        :raises StratisCliEngineError:
+        :raises StratisCliIncoherenceError:
+        """
+        # pylint: disable=import-outside-toplevel
+        from ._data import MODev, ObjectManager, Pool, devs, pools
+
+        proxy = get_object(TOP_OBJECT)
+        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
+        (pool_object_path, _) = next(
+            pools(props={"Name": namespace.pool_name})
+            .require_unique_match(True)
+            .search(managed_objects)
+        )
+
+        modevs = (
+            MODev(info)
+            for objpath, info in devs(props={"Pool": pool_object_path}).search(
+                managed_objects
+            )
+        )
+
+        def expandable(modev):
+            """
+            Return true if the new size is greater than total.
+
+            :param MODev modev: blockdev representation
+            :rtype: bool
+            :returns: True if new physical size is greater than in-use size.
+            """
+            new_size = get_property(modev.NewPhysicalSize(), Range, None)
+            return (
+                False
+                if new_size is None
+                else new_size > Range(modev.TotalPhysicalSize())
+            )
+
+        if namespace.device_uuid == []:
+            expand_modevs = (modev for modev in modevs if expandable(modev))
+
+        else:
+            device_uuids = frozenset(uuid.hex for uuid in namespace.device_uuid)
+            expand_modevs = [modev for modev in modevs if modev.Uuid() in device_uuids]
+
+            if len(expand_modevs) < len(device_uuids):
+                missing_uuids = device_uuids.difference(
+                    frozenset(UUID(modev.Uuid()) for modev in expand_modevs)
+                )
+
+                missing_uuids = ", ".join(str(UUID(uuid)) for uuid in missing_uuids)
+
+                raise StratisCliResourceNotFoundError(
+                    "extend-data", f"devices with UUIDs {missing_uuids}"
+                )
+
+            t_1, t_2 = tee(expand_modevs)
+            expandable_modevs, unexpandable_modevs = (
+                [modev for modev in t_1 if expandable(modev)],
+                [modev for modev in t_2 if not expandable(modev)],
+            )
+
+            if unexpandable_modevs:
+                raise StratisCliPartialChangeError(
+                    "extend-data",
+                    frozenset(str(UUID(modev.Uuid())) for modev in expandable_modevs),
+                    frozenset(str(UUID(modev.Uuid())) for modev in unexpandable_modevs),
+                )
+
+            expand_modevs = expandable_modevs  # pragma: no cover
+
+        for modev in expand_modevs:  # pragma: no cover
+            (changed, return_code, message) = Pool.Methods.GrowPhysicalDevice(
+                get_object(pool_object_path), {"dev": modev.Uuid()}
+            )
+
+            if return_code != StratisdErrors.OK:
+                raise StratisCliEngineError(return_code, message)
+
+            if not changed:
+                raise StratisCliIncoherenceError(
+                    (
+                        f"Actual size of device with UUID {UUID(modev.Uuid())} "
+                        "appeared to be different from in-use size but no "
+                        "action was taken on the device."
+                    )
+                )
 
     @staticmethod
     def set_fs_limit(namespace):
