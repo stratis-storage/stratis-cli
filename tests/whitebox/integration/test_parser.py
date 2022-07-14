@@ -203,6 +203,14 @@ class TestBadlyFormattedUuid(RunTestCase):
         for prefix in [[], ["--propagate"]]:
             self.check_system_exit(prefix + command_line, _PARSE_ERROR)
 
+    def test_bad_uuid_blockdev_2(self):
+        """
+        Test badly formed UUID for blockdev on extend-data.
+        """
+        command_line = ["pool", "extend-data", "poolname", "--device-uuid=not"]
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
 
 class ParserSimTestCase(SimTestCase):
     """

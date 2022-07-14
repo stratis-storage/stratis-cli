@@ -300,6 +300,23 @@ def get_pool(proxy, pool_name):
     )
 
 
+def get_pool_blockdevs(proxy, pool_name):
+    """
+    Get a generator of blockdevs for a given pool.
+    """
+    pool_object_path, _ = get_pool(proxy, pool_name)
+
+    # pylint: disable=import-outside-toplevel
+    # isort: LOCAL
+    from stratis_cli._actions._data import MODev, ObjectManager, devs
+
+    managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
+    return (
+        (op, MODev(info))
+        for (op, info) in devs(props={"Pool": pool_object_path}).search(managed_objects)
+    )
+
+
 def stop_pool(pool_name):
     """
     Stop a pool and return the UUID of the pool.
