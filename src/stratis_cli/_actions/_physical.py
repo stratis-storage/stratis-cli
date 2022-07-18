@@ -21,7 +21,7 @@ from justbytes import Range
 from .._stratisd_constants import BLOCK_DEV_TIER_TO_NAME
 from ._connection import get_object
 from ._constants import TOP_OBJECT
-from ._formatting import print_table
+from ._formatting import get_property, print_table
 
 
 class PhysicalActions:
@@ -90,11 +90,24 @@ class PhysicalActions:
                 else f"{physical_path} ({metadata_path})"
             )
 
+        def size(modev):
+            """
+            Return in-use size (observed size) if they are different, otherwise
+            just in-use size.
+            """
+            in_use_size = Range(modev.TotalPhysicalSize())
+            observed_size = get_property(modev.NewPhysicalSize(), Range, in_use_size)
+            return (
+                f"{str(in_use_size)}"
+                if in_use_size == observed_size
+                else f"{str(in_use_size)} ({str(observed_size)})"
+            )
+
         tables = [
             [
                 path_to_name[modev.Pool()],
                 paths(modev),
-                str(Range(modev.TotalPhysicalSize())),
+                size(modev),
                 BLOCK_DEV_TIER_TO_NAME(modev.Tier(), True),
             ]
             for modev in modevs
