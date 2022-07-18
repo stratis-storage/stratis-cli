@@ -249,7 +249,11 @@ Physical Size::
 	  The total size of the device on which stratisd places Stratis
           metadata. If the device is encrypted, this size will be slightly
           smaller than the total size of the device specified by the user; it
-          will be the size of the associated dm-crypt device.
+          will be the size of the associated dm-crypt device. A second size will
+          be displayed in parentheses if stratisd has observed that the device
+          has a size that is different from the size that stratisd is making use
+          of. This can happen if, e.g., a RAID device was previously added to a
+          pool and has since been expanded.
 Tier::
 	  The data tier type ("Data" or "Cache")
 
