@@ -14,6 +14,7 @@
 """
 Pool actions.
 """
+# pylint: disable=too-many-lines
 
 # isort: STDLIB
 import os
@@ -25,7 +26,11 @@ from uuid import UUID
 from justbytes import Range
 
 from .._constants import YesOrNo
-from .._error_codes import PoolAllocSpaceErrorCode, PoolErrorCode
+from .._error_codes import (
+    PoolAllocSpaceErrorCode,
+    PoolDeviceSizeChangeCode,
+    PoolErrorCode,
+)
 from .._errors import (
     StratisCliEngineError,
     StratisCliFsLimitChangeError,
@@ -723,34 +728,30 @@ class _List:
         return _List._maybe_inconsistent(value, my_func)
 
     @staticmethod
-    def alert_string(mopool):
+    def alert_string(codes):
         """
         Alert information to display, if any
 
-        :param mopool: object to access pool properties
+        :param codes: list of error codes to display
+        :type codes: list of PoolErrorCode
 
         :returns: string w/ alert information, "" if no alert
         :rtype: str
         """
-        error_codes = _List.alert_codes(mopool)
-
-        return ", ".join(sorted(str(code) for code in error_codes))
+        return ", ".join(sorted(str(code) for code in codes))
 
     @staticmethod
-    def alert_summary(mopool):
+    def alert_summary(codes):
         """
         Alert summary to display, if any
-        :param mopool: object to access pool properties
+
+        :param codes: list of error codes to display
+        :type codes: list of PoolErrorCode
 
         :returns: string with alert summary
         :rtype: str
         """
-        error_codes = _List.alert_codes(mopool)
-
-        output = [f"    {str(code)}: {code.summarize()}" for code in error_codes]
-        output.insert(0, str(len(error_codes)))
-
-        return output
+        return [f"{str(code)}: {code.summarize()}" for code in codes]
 
     @staticmethod
     def alert_codes(mopool):
@@ -768,22 +769,84 @@ class _List:
             [PoolAllocSpaceErrorCode.NO_ALLOC_SPACE] if mopool.NoAllocSpace() else []
         )
 
-        error_codes = availability_error_codes + no_alloc_space_error_codes
+        return availability_error_codes + no_alloc_space_error_codes
 
-        return error_codes
+    @staticmethod
+    def _pools_with_changed_devs(devs_to_search):
+        """
+        Returns a tuple of sets containing (1) pools that have a device that
+        has increased in size and (2) pools that have a device that has
+        decreased in size.
 
-    def _print_detail_view(self, pool_uuid, mopool):
+        A pool may occupy both sets if one device has increased and one has
+        decreased.
+
+        :param devs_to_search: an iterable of device objects
+        :returns: a pair of sets
+        :rtype: tuple of (set of ObjectPath)
+        """
+        # pylint: disable=import-outside-toplevel
+        from ._data import MODev
+
+        (increased, decreased) = (set(), set())
+        for (_, info) in devs_to_search:
+            modev = MODev(info)
+            size = Range(modev.TotalPhysicalSize())
+            observed_size = get_property(modev.NewPhysicalSize(), Range, size)
+            if observed_size > size:  # pragma: no cover
+                increased.add(modev.Pool())
+            if observed_size < size:  # pragma: no cover
+                decreased.add(modev.Pool())
+
+        return (increased, decreased)
+
+    @staticmethod
+    def _from_sets(pool_object_path, increased, decreased):
+        """
+        Get the code from sets and one pool object path.
+
+        :param pool_object_path: the pool object path
+        :param increased: pools that have devices that have increased in size
+        :type increased: set of object path
+        :param decreased: pools that have devices that have decrease in size
+        :type increased: set of object path
+
+        :returns: the codes
+        """
+        if (
+            pool_object_path in increased and pool_object_path in decreased
+        ):  # pragma: no cover
+            return [
+                PoolDeviceSizeChangeCode.DEVICE_SIZE_INCREASED,
+                PoolDeviceSizeChangeCode.DEVICE_SIZE_DECREASED,
+            ]
+        if pool_object_path in increased:  # pragma: no cover
+            return [PoolDeviceSizeChangeCode.DEVICE_SIZE_INCREASED]
+        if pool_object_path in decreased:  # pragma: no cover
+            return [PoolDeviceSizeChangeCode.DEVICE_SIZE_DECREASED]
+        return []
+
+    def _print_detail_view(self, pool_uuid, mopool, size_change_codes):
         """
         Print the detailed view for a single pool.
 
         :param UUID uuid: the pool uuid
         :param MOPool mopool: properties of the pool
+        :param size_change_codes: size change codes
+        :type size_change_codes: list of PoolDeviceSizeChangeCode
         """
         encrypted = mopool.Encrypted()
 
         print(f"UUID: {self.uuid_formatter(pool_uuid)}")
         print(f"Name: {mopool.Name()}")
-        print(f"Alerts: {os.linesep.join(_List.alert_summary(mopool))}")
+
+        alert_summary = _List.alert_summary(
+            _List.alert_codes(mopool) + size_change_codes
+        )
+        print(f"Alerts: {str(len(alert_summary))}")
+        for line in alert_summary:  # pragma: no cover
+            print(f"     {line}")
+
         print(
             f"Actions Allowed: "
             f"{PoolActionAvailability.from_str(mopool.AvailableActions())}"
@@ -823,12 +886,12 @@ class _List:
 
         print(f"    Used: {total_physical_used_str}")
 
-    def list_pools_default(self, *, pool_uuid=None):
+    def list_pools_default(self, *, pool_uuid=None):  # pylint: disable=too-many-locals
         """
         List all pools that are listed by default. These are all started pools.
         """
         # pylint: disable=import-outside-toplevel
-        from ._data import MOPool, ObjectManager, pools
+        from ._data import MOPool, ObjectManager, devs, pools
 
         proxy = get_object(TOP_OBJECT)
 
@@ -888,8 +951,13 @@ class _List:
 
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
         if pool_uuid is None:
+            (increased, decreased) = _List._pools_with_changed_devs(
+                devs().search(managed_objects)
+            )
+
             pools_with_props = [
-                MOPool(info) for objpath, info in pools().search(managed_objects)
+                (objpath, MOPool(info))
+                for objpath, info in pools().search(managed_objects)
             ]
 
             tables = [
@@ -898,9 +966,12 @@ class _List:
                     physical_size_triple(mopool),
                     properties_string(mopool),
                     self.uuid_formatter(mopool.Uuid()),
-                    _List.alert_string(mopool),
+                    _List.alert_string(
+                        _List.alert_codes(mopool)
+                        + _List._from_sets(pool_object_path, increased, decreased)
+                    ),
                 )
-                for mopool in pools_with_props
+                for (pool_object_path, mopool) in pools_with_props
             ]
 
             print_table(
@@ -917,15 +988,21 @@ class _List:
 
         else:
             this_uuid = pool_uuid.hex
-            mopool = MOPool(
-                next(
-                    pools(props={"Uuid": this_uuid})
-                    .require_unique_match(True)
-                    .search(managed_objects)
-                )[1]
+            (pool_object_path, mopool) = next(
+                pools(props={"Uuid": this_uuid})
+                .require_unique_match(True)
+                .search(managed_objects)
             )
 
-            self._print_detail_view(pool_uuid, mopool)
+            (increased, decreased) = _List._pools_with_changed_devs(
+                devs(props={"Pool": pool_object_path}).search(managed_objects)
+            )
+
+            device_change_codes = _List._from_sets(
+                pool_object_path, increased, decreased
+            )
+
+            self._print_detail_view(pool_uuid, MOPool(mopool), device_change_codes)
 
     def list_stopped_pools(self, *, pool_uuid=None):
         """

@@ -19,6 +19,7 @@ Test error type string formatting.
 import unittest
 
 # isort: LOCAL
+from stratis_cli._error_codes import PoolDeviceSizeChangeCode
 from stratis_cli._errors import (
     StratisCliGenerationError,
     StratisCliIncoherenceError,
@@ -69,3 +70,26 @@ class ErrorFmtTestCase(unittest.TestCase):
                 "action", "unique resource", "something failed"
             )
         )
+
+
+class SummarizeTestCase(unittest.TestCase):
+    """
+    Test summarize() function.
+    """
+
+    def _summarize_test(self, summary_value):
+        """
+        Check that the summary value is a str and is non-empty.
+
+        :param summary_value: the result of calling summary()
+        """
+        self.assertIsInstance(summary_value, str)
+        self.assertNotEqual(summary_value, "")
+
+    def test_pool_device_size_change_code(self):
+        """
+        Verify valid strings returned from summary() method.
+        """
+
+        self._summarize_test(PoolDeviceSizeChangeCode.DEVICE_SIZE_INCREASED.summarize())
+        self._summarize_test(PoolDeviceSizeChangeCode.DEVICE_SIZE_DECREASED.summarize())

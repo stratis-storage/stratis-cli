@@ -96,8 +96,8 @@ pool overprovision <pool name> <(yes|no)> ::
      available.
 pool explain <code> ::
      Explain any code that might show up in the Alerts column when
-     listing a pool. Codes may be prefixed with a "W", for "warning", or an "E",
-     for "error".
+     listing a pool. Codes may be prefixed with an "I" for "info", a "W" for
+     "warning", or an "E" for "error".
 pool debug get-object-path <(--uuid <uuid> |--name <name>)> ::
      Look up the D-Bus object path for a pool given the UUID or name.
 filesystem create <pool_name> <fs_name> [<fs_name>..] [--size <size>]::
