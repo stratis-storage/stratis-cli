@@ -14,6 +14,7 @@
 """
 Pool actions.
 """
+# pylint: disable=too-many-lines
 
 # isort: STDLIB
 import os
@@ -25,7 +26,11 @@ from uuid import UUID
 from justbytes import Range
 
 from .._constants import YesOrNo
-from .._error_codes import PoolAllocSpaceErrorCode, PoolErrorCode
+from .._error_codes import (
+    PoolAllocSpaceErrorCode,
+    PoolDeviceSizeChangeCode,
+    PoolErrorCode,
+)
 from .._errors import (
     StratisCliEngineError,
     StratisCliIncoherenceError,
@@ -764,12 +769,12 @@ class _List:
 
         print(f"    Used: {total_physical_used_str}")
 
-    def list_pools_default(self, *, pool_uuid=None):
+    def list_pools_default(self, *, pool_uuid=None):  # pylint: disable=too-many-locals
         """
         List all pools that are listed by default. These are all started pools.
         """
         # pylint: disable=import-outside-toplevel
-        from ._data import MOPool, ObjectManager, pools
+        from ._data import MODev, MOPool, ObjectManager, devs, pools
 
         proxy = get_object(TOP_OBJECT)
 
@@ -827,11 +832,14 @@ class _List:
             ]
             return ",".join(gen_string(x, y) for x, y in props_list)
 
-        def alert_string(mopool):
+        def alert_string(mopool, pool_object_path, changed_devs):
             """
             Alert information to display, if any
 
             :param mopool: object to access pool properties
+            :param pool_object_path: object path of pool
+            :param changed_devs: devs with observed size change
+            :type changed_devs: pair of set<bool>
 
             :returns: string w/ alert information, "" if no alert
             :rtype: str
@@ -849,14 +857,36 @@ class _List:
                 else []
             )
 
-            error_codes = availability_error_codes + no_alloc_space_error_codes
+            device_size_codes = []
+            (increased, decreased) = changed_devs
+            if pool_object_path in increased:  # pragma: no cover
+                device_size_codes.append(PoolDeviceSizeChangeCode.DEVICE_SIZE_INCREASED)
+            if pool_object_path in decreased:  # pragma: no cover
+                device_size_codes.append(PoolDeviceSizeChangeCode.DEVICE_SIZE_DECREASED)
+
+            error_codes = (
+                availability_error_codes
+                + no_alloc_space_error_codes
+                + device_size_codes
+            )
 
             return ", ".join(sorted(str(code) for code in error_codes))
 
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
         if pool_uuid is None:
+            (increased, decreased) = (set(), set())
+            for (_, info) in devs().search(managed_objects):
+                modev = MODev(info)
+                size = Range(modev.TotalPhysicalSize())
+                observed_size = get_property(modev.NewPhysicalSize(), Range, size)
+                if observed_size > size:  # pragma: no cover
+                    increased.add(modev.Pool())
+                if observed_size < size:  # pragma: no cover
+                    decreased.add(modev.Pool())
+
             pools_with_props = [
-                MOPool(info) for objpath, info in pools().search(managed_objects)
+                (objpath, MOPool(info))
+                for objpath, info in pools().search(managed_objects)
             ]
 
             tables = [
@@ -865,9 +895,9 @@ class _List:
                     physical_size_triple(mopool),
                     properties_string(mopool),
                     self.uuid_formatter(mopool.Uuid()),
-                    alert_string(mopool),
+                    alert_string(mopool, pool_object_path, (increased, decreased)),
                 )
-                for mopool in pools_with_props
+                for pool_object_path, mopool in pools_with_props
             ]
 
             print_table(
