@@ -377,271 +377,8 @@ class PoolActions:
         )
 
         if stopped:
-            return PoolActions._list_stopped_pools(namespace, pool_uuid=pool_uuid)
-        return PoolActions._list_pools_default(namespace, pool_uuid=pool_uuid)
-
-    @staticmethod
-    def _list_pools_default(
-        namespace, *, pool_uuid=None
-    ):  # pylint: disable=too-many-locals
-        """
-        List all pools that are listed by default. These are all started pools.
-        """
-        # pylint: disable=import-outside-toplevel
-        from ._data import MOPool, ObjectManager, pools
-
-        proxy = get_object(TOP_OBJECT)
-
-        def physical_size_triple(mopool):
-            """
-            Calculate the triple to display for total physical size.
-
-            The format is total/used/free where the display value for each
-            member of the tuple are chosen automatically according to justbytes'
-            configuration.
-
-            :param mopool: an object representing all the properties of the pool
-            :type mopool: MOPool
-            :returns: a string to display in the resulting list output
-            :rtype: str
-            """
-            total_physical_size = Range(mopool.TotalPhysicalSize())
-            total_physical_used = get_property(mopool.TotalPhysicalUsed(), Range, None)
-            return size_triple(total_physical_size, total_physical_used)
-
-        def properties_string(mopool):
-            """
-            Make a string encoding some important properties of the pool
-
-            :param mopool: an object representing all the properties of the pool
-            :type mopool: MOPool
-            :param props_map: a map of properties returned by GetAllProperties
-            :type props_map: dict of str * any
-            """
-
-            def gen_string(has_property, code):
-                """
-                Generate the display string for a boolean property
-
-                :param has_property: whether the property is true or false
-                :type has_property: bool or NoneType
-                :param str code: the code to generate the string for
-                :returns: the generated string
-                :rtype: str
-                """
-                if has_property == True:  # pylint: disable=singleton-comparison
-                    prefix = " "
-                elif has_property == False:  # pylint: disable=singleton-comparison
-                    prefix = "~"
-                # This is only going to occur if the engine experiences an
-                # error while calculating a property or if our code has a bug.
-                else:  # pragma: no cover
-                    prefix = "?"
-                return prefix + code
-
-            props_list = [
-                (mopool.HasCache(), "Ca"),
-                (mopool.Encrypted(), "Cr"),
-                (mopool.Overprovisioning(), "Op"),
-            ]
-            return ",".join(gen_string(x, y) for x, y in props_list)
-
-        format_uuid = (
-            (lambda mo_uuid: mo_uuid) if namespace.unhyphenated_uuids else to_hyphenated
-        )
-
-        def alert_string(mopool):
-            """
-            Alert information to display, if any
-
-            :param mopool: object to access pool properties
-
-            :returns: string w/ alert information, "" if no alert
-            :rtype: str
-            """
-            action_availability = PoolActionAvailability.from_str(
-                mopool.AvailableActions()
-            )
-            availability_error_codes = (
-                action_availability.pool_maintenance_error_codes()
-            )
-
-            no_alloc_space_error_codes = (
-                [PoolAllocSpaceErrorCode.NO_ALLOC_SPACE]
-                if mopool.NoAllocSpace()
-                else []
-            )
-
-            error_codes = availability_error_codes + no_alloc_space_error_codes
-
-            return ", ".join(sorted(str(code) for code in error_codes))
-
-        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        if pool_uuid is None:
-            pools_with_props = [
-                MOPool(info) for objpath, info in pools().search(managed_objects)
-            ]
-
-            tables = [
-                (
-                    mopool.Name(),
-                    physical_size_triple(mopool),
-                    properties_string(mopool),
-                    format_uuid(mopool.Uuid()),
-                    alert_string(mopool),
-                )
-                for mopool in pools_with_props
-            ]
-
-            print_table(
-                [
-                    "Name",
-                    TOTAL_USED_FREE,
-                    "Properties",
-                    "UUID",
-                    "Alerts",
-                ],
-                sorted(tables, key=lambda entry: entry[0]),
-                ["<", ">", ">", ">", "<"],
-            )
-
-        else:
-            this_uuid = pool_uuid.hex
-            mopool = MOPool(
-                next(
-                    pools(props={"Uuid": this_uuid})
-                    .require_unique_match(True)
-                    .search(managed_objects)
-                )[1]
-            )
-
-            encrypted = mopool.Encrypted()
-
-            print(f"UUID: {format_uuid(this_uuid)}")
-            print(f"Name: {mopool.Name()}")
-            print(
-                f"Actions Allowed: "
-                f"{PoolActionAvailability.from_str(mopool.AvailableActions())}"
-            )
-            print(f"Cache: {'Yes' if mopool.HasCache() else 'No'}")
-            print(f"Filesystem Limit: {mopool.FsLimit()}")
-            print(
-                f"Allows Overprovisioning: "
-                f"{'Yes' if mopool.Overprovisioning() else 'No'}"
-            )
-
-            key_description_str = (
-                _interp_inconsistent_option(mopool.KeyDescription())
-                if encrypted
-                else "unencrypted"
-            )
-            print(f"Key Description: {key_description_str}")
-
-            clevis_info_str = (
-                _interp_inconsistent_option(mopool.ClevisInfo())
-                if encrypted
-                else "unencrypted"
-            )
-            print(f"Clevis Configuration: {clevis_info_str}")
-
-            total_physical_used = get_property(mopool.TotalPhysicalUsed(), Range, None)
-
-            print("Space Usage:")
-            print(f"Fully Allocated: {'Yes' if mopool.NoAllocSpace() else 'No'}")
-            print(f"    Size: {Range(mopool.TotalPhysicalSize())}")
-            print(f"    Allocated: {Range(mopool.AllocatedSize())}")
-
-            total_physical_used = get_property(mopool.TotalPhysicalUsed(), Range, None)
-            total_physical_used_str = (
-                TABLE_FAILURE_STRING
-                if total_physical_used is None
-                else total_physical_used
-            )
-
-            print(f"    Used: {total_physical_used_str}")
-
-    @staticmethod
-    def _list_stopped_pools(namespace, *, pool_uuid=None):
-        """
-        List stopped pools.
-        """
-
-        proxy = get_object(TOP_OBJECT)
-
-        stopped_pools = _fetch_stopped_pools_property(proxy)
-
-        format_uuid = (
-            (lambda mo_uuid: mo_uuid) if namespace.unhyphenated_uuids else to_hyphenated
-        )  # pragma: no cover // bug in coverage requires this
-
-        def interp_clevis(value):
-            """
-            Intepret Clevis info for table display.
-            """
-
-            def my_func(value):
-                (exists, value) = value
-                return "present" if exists else "N/A"
-
-            return _maybe_inconsistent(value, my_func)
-
-        def unencrypted_string(value, interp):
-            """
-            Get a cell value or "unencrypted" if None. Apply interp
-            function to the value.
-
-            :param value: some value
-            :type value: str or NoneType
-            :param interp_option: function to interpret optional value
-            :type interp_option: object -> str
-            :rtype: str
-            """
-            return "unencrypted" if value is None else interp(value)
-
-        if pool_uuid is None:
-            tables = [
-                (
-                    format_uuid(pool_uuid),
-                    str(len(info["devs"])),
-                    unencrypted_string(
-                        info.get("key_description"), _interp_inconsistent_option
-                    ),
-                    unencrypted_string(info.get("clevis_info"), interp_clevis),
-                )
-                for (pool_uuid, info) in stopped_pools.items()
-            ]
-
-            print_table(
-                ["UUID", "# Devices", "Key Description", "Clevis"],
-                sorted(tables, key=lambda entry: entry[0]),
-                ["<", ">", "<", "<"],
-            )
-
-        else:
-            this_uuid = pool_uuid.hex
-            stopped_pool = next(
-                (info for (uuid, info) in stopped_pools.items() if uuid == this_uuid),
-                None,
-            )
-
-            if stopped_pool is None:
-                raise StratisCliResourceNotFoundError("list", this_uuid)
-
-            print(f"UUID: {format_uuid(this_uuid)}")
-
-            key_description_str = unencrypted_string(
-                stopped_pool.get("key_description"), _interp_inconsistent_option
-            )
-            print(f"Key Description: {key_description_str}")
-
-            clevis_info_str = unencrypted_string(
-                stopped_pool.get("clevis_info"), _interp_inconsistent_option
-            )
-            print(f"Clevis Configuration: {clevis_info_str}")
-
-            print("Devices:")
-            for dev in stopped_pool["devs"]:
-                print(f"{format_uuid(dev['uuid'])}  {dev['devnode']}")
+            return _List.list_stopped_pools(namespace, pool_uuid=pool_uuid)
+        return _List.list_pools_default(namespace, pool_uuid=pool_uuid)
 
     @staticmethod
     def destroy_pool(namespace):
@@ -865,3 +602,272 @@ class PoolActions:
         Print an explanation of pool error code.
         """
         print(PoolErrorCode.explain(namespace.code))
+
+
+class _List:
+    """
+    Handle listing a pool.
+    """
+
+    @staticmethod
+    def list_pools_default(
+        namespace, *, pool_uuid=None
+    ):  # pylint: disable=too-many-locals
+        """
+        List all pools that are listed by default. These are all started pools.
+        """
+        # pylint: disable=import-outside-toplevel
+        from ._data import MOPool, ObjectManager, pools
+
+        proxy = get_object(TOP_OBJECT)
+
+        def physical_size_triple(mopool):
+            """
+            Calculate the triple to display for total physical size.
+
+            The format is total/used/free where the display value for each
+            member of the tuple are chosen automatically according to justbytes'
+            configuration.
+
+            :param mopool: an object representing all the properties of the pool
+            :type mopool: MOPool
+            :returns: a string to display in the resulting list output
+            :rtype: str
+            """
+            total_physical_size = Range(mopool.TotalPhysicalSize())
+            total_physical_used = get_property(mopool.TotalPhysicalUsed(), Range, None)
+            return size_triple(total_physical_size, total_physical_used)
+
+        def properties_string(mopool):
+            """
+            Make a string encoding some important properties of the pool
+
+            :param mopool: an object representing all the properties of the pool
+            :type mopool: MOPool
+            :param props_map: a map of properties returned by GetAllProperties
+            :type props_map: dict of str * any
+            """
+
+            def gen_string(has_property, code):
+                """
+                Generate the display string for a boolean property
+
+                :param has_property: whether the property is true or false
+                :type has_property: bool or NoneType
+                :param str code: the code to generate the string for
+                :returns: the generated string
+                :rtype: str
+                """
+                if has_property == True:  # pylint: disable=singleton-comparison
+                    prefix = " "
+                elif has_property == False:  # pylint: disable=singleton-comparison
+                    prefix = "~"
+                # This is only going to occur if the engine experiences an
+                # error while calculating a property or if our code has a bug.
+                else:  # pragma: no cover
+                    prefix = "?"
+                return prefix + code
+
+            props_list = [
+                (mopool.HasCache(), "Ca"),
+                (mopool.Encrypted(), "Cr"),
+                (mopool.Overprovisioning(), "Op"),
+            ]
+            return ",".join(gen_string(x, y) for x, y in props_list)
+
+        format_uuid = (
+            (lambda mo_uuid: mo_uuid) if namespace.unhyphenated_uuids else to_hyphenated
+        )
+
+        def alert_string(mopool):
+            """
+            Alert information to display, if any
+
+            :param mopool: object to access pool properties
+
+            :returns: string w/ alert information, "" if no alert
+            :rtype: str
+            """
+            action_availability = PoolActionAvailability.from_str(
+                mopool.AvailableActions()
+            )
+            availability_error_codes = (
+                action_availability.pool_maintenance_error_codes()
+            )
+
+            no_alloc_space_error_codes = (
+                [PoolAllocSpaceErrorCode.NO_ALLOC_SPACE]
+                if mopool.NoAllocSpace()
+                else []
+            )
+
+            error_codes = availability_error_codes + no_alloc_space_error_codes
+
+            return ", ".join(sorted(str(code) for code in error_codes))
+
+        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
+        if pool_uuid is None:
+            pools_with_props = [
+                MOPool(info) for objpath, info in pools().search(managed_objects)
+            ]
+
+            tables = [
+                (
+                    mopool.Name(),
+                    physical_size_triple(mopool),
+                    properties_string(mopool),
+                    format_uuid(mopool.Uuid()),
+                    alert_string(mopool),
+                )
+                for mopool in pools_with_props
+            ]
+
+            print_table(
+                [
+                    "Name",
+                    TOTAL_USED_FREE,
+                    "Properties",
+                    "UUID",
+                    "Alerts",
+                ],
+                sorted(tables, key=lambda entry: entry[0]),
+                ["<", ">", ">", ">", "<"],
+            )
+
+        else:
+            this_uuid = pool_uuid.hex
+            mopool = MOPool(
+                next(
+                    pools(props={"Uuid": this_uuid})
+                    .require_unique_match(True)
+                    .search(managed_objects)
+                )[1]
+            )
+
+            encrypted = mopool.Encrypted()
+
+            print(f"UUID: {format_uuid(this_uuid)}")
+            print(f"Name: {mopool.Name()}")
+            print(
+                f"Actions Allowed: "
+                f"{PoolActionAvailability.from_str(mopool.AvailableActions())}"
+            )
+            print(f"Cache: {'Yes' if mopool.HasCache() else 'No'}")
+            print(f"Filesystem Limit: {mopool.FsLimit()}")
+            print(
+                f"Allows Overprovisioning: "
+                f"{'Yes' if mopool.Overprovisioning() else 'No'}"
+            )
+
+            key_description_str = (
+                _interp_inconsistent_option(mopool.KeyDescription())
+                if encrypted
+                else "unencrypted"
+            )
+            print(f"Key Description: {key_description_str}")
+
+            clevis_info_str = (
+                _interp_inconsistent_option(mopool.ClevisInfo())
+                if encrypted
+                else "unencrypted"
+            )
+            print(f"Clevis Configuration: {clevis_info_str}")
+
+            total_physical_used = get_property(mopool.TotalPhysicalUsed(), Range, None)
+
+            print("Space Usage:")
+            print(f"Fully Allocated: {'Yes' if mopool.NoAllocSpace() else 'No'}")
+            print(f"    Size: {Range(mopool.TotalPhysicalSize())}")
+            print(f"    Allocated: {Range(mopool.AllocatedSize())}")
+
+            total_physical_used = get_property(mopool.TotalPhysicalUsed(), Range, None)
+            total_physical_used_str = (
+                TABLE_FAILURE_STRING
+                if total_physical_used is None
+                else total_physical_used
+            )
+
+            print(f"    Used: {total_physical_used_str}")
+
+    @staticmethod
+    def list_stopped_pools(namespace, *, pool_uuid=None):
+        """
+        List stopped pools.
+        """
+
+        proxy = get_object(TOP_OBJECT)
+
+        stopped_pools = _fetch_stopped_pools_property(proxy)
+
+        format_uuid = (
+            (lambda mo_uuid: mo_uuid) if namespace.unhyphenated_uuids else to_hyphenated
+        )  # pragma: no cover // bug in coverage requires this
+
+        def interp_clevis(value):
+            """
+            Intepret Clevis info for table display.
+            """
+
+            def my_func(value):
+                (exists, value) = value
+                return "present" if exists else "N/A"
+
+            return _maybe_inconsistent(value, my_func)
+
+        def unencrypted_string(value, interp):
+            """
+            Get a cell value or "unencrypted" if None. Apply interp
+            function to the value.
+
+            :param value: some value
+            :type value: str or NoneType
+            :param interp_option: function to interpret optional value
+            :type interp_option: object -> str
+            :rtype: str
+            """
+            return "unencrypted" if value is None else interp(value)
+
+        if pool_uuid is None:
+            tables = [
+                (
+                    format_uuid(pool_uuid),
+                    str(len(info["devs"])),
+                    unencrypted_string(
+                        info.get("key_description"), _interp_inconsistent_option
+                    ),
+                    unencrypted_string(info.get("clevis_info"), interp_clevis),
+                )
+                for (pool_uuid, info) in stopped_pools.items()
+            ]
+
+            print_table(
+                ["UUID", "# Devices", "Key Description", "Clevis"],
+                sorted(tables, key=lambda entry: entry[0]),
+                ["<", ">", "<", "<"],
+            )
+
+        else:
+            this_uuid = pool_uuid.hex
+            stopped_pool = next(
+                (info for (uuid, info) in stopped_pools.items() if uuid == this_uuid),
+                None,
+            )
+
+            if stopped_pool is None:
+                raise StratisCliResourceNotFoundError("list", this_uuid)
+
+            print(f"UUID: {format_uuid(this_uuid)}")
+
+            key_description_str = unencrypted_string(
+                stopped_pool.get("key_description"), _interp_inconsistent_option
+            )
+            print(f"Key Description: {key_description_str}")
+
+            clevis_info_str = unencrypted_string(
+                stopped_pool.get("clevis_info"), _interp_inconsistent_option
+            )
+            print(f"Clevis Configuration: {clevis_info_str}")
+
+            print("Devices:")
+            for dev in stopped_pool["devs"]:
+                print(f"{format_uuid(dev['uuid'])}  {dev['devnode']}")
