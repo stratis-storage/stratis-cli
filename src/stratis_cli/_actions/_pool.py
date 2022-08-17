@@ -619,6 +619,56 @@ class _List:
 
         return _List._maybe_inconsistent(value, my_func)
 
+    @staticmethod
+    def alert_string(mopool):
+        """
+        Alert information to display, if any
+
+        :param mopool: object to access pool properties
+
+        :returns: string w/ alert information, "" if no alert
+        :rtype: str
+        """
+        error_codes = _List.alert_codes(mopool)
+
+        return ", ".join(sorted(str(code) for code in error_codes))
+
+    @staticmethod
+    def alert_summary(mopool):
+        """
+        Alert summary to display, if any
+        :param mopool: object to access pool properties
+
+        :returns: string with alert summary
+        :rtype: str
+        """
+        error_codes = _List.alert_codes(mopool)
+
+        output = [f"    {str(code)}: {code.summarize()}" for code in error_codes]
+        output.insert(0, str(len(error_codes)))
+
+        return output
+
+    @staticmethod
+    def alert_codes(mopool):
+        """
+        Return error code objects for a pool.
+
+        :param mopool: object to access pool properties
+
+        :returns: list of PoolErrorCode
+        """
+        action_availability = PoolActionAvailability.from_str(mopool.AvailableActions())
+        availability_error_codes = action_availability.pool_maintenance_error_codes()
+
+        no_alloc_space_error_codes = (
+            [PoolAllocSpaceErrorCode.NO_ALLOC_SPACE] if mopool.NoAllocSpace() else []
+        )
+
+        error_codes = availability_error_codes + no_alloc_space_error_codes
+
+        return error_codes
+
     def _print_detail_view(self, pool_uuid, mopool):
         """
         Print the detailed view for a single pool.
@@ -630,6 +680,7 @@ class _List:
 
         print(f"UUID: {self.uuid_formatter(pool_uuid)}")
         print(f"Name: {mopool.Name()}")
+        print(f"Alerts: {os.linesep.join(_List.alert_summary(mopool))}")
         print(
             f"Actions Allowed: "
             f"{PoolActionAvailability.from_str(mopool.AvailableActions())}"
@@ -732,32 +783,6 @@ class _List:
             ]
             return ",".join(gen_string(x, y) for x, y in props_list)
 
-        def alert_string(mopool):
-            """
-            Alert information to display, if any
-
-            :param mopool: object to access pool properties
-
-            :returns: string w/ alert information, "" if no alert
-            :rtype: str
-            """
-            action_availability = PoolActionAvailability.from_str(
-                mopool.AvailableActions()
-            )
-            availability_error_codes = (
-                action_availability.pool_maintenance_error_codes()
-            )
-
-            no_alloc_space_error_codes = (
-                [PoolAllocSpaceErrorCode.NO_ALLOC_SPACE]
-                if mopool.NoAllocSpace()
-                else []
-            )
-
-            error_codes = availability_error_codes + no_alloc_space_error_codes
-
-            return ", ".join(sorted(str(code) for code in error_codes))
-
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
         if pool_uuid is None:
             pools_with_props = [
@@ -770,7 +795,7 @@ class _List:
                     physical_size_triple(mopool),
                     properties_string(mopool),
                     self.uuid_formatter(mopool.Uuid()),
-                    alert_string(mopool),
+                    _List.alert_string(mopool),
                 )
                 for mopool in pools_with_props
             ]
