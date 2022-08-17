@@ -18,6 +18,7 @@ Pool actions.
 # isort: STDLIB
 import os
 from collections import defaultdict
+from uuid import UUID
 
 # isort: THIRDPARTY
 from justbytes import Range
@@ -43,7 +44,6 @@ from ._formatting import (
     get_property,
     print_table,
     size_triple,
-    to_hyphenated,
 )
 from ._utils import get_clevis_info
 
@@ -351,9 +351,15 @@ class PoolActions:
             getattr(namespace, "uuid", None),
         )
 
+        uuid_formatter = (
+            (lambda u: UUID(str(u)).hex)
+            if namespace.unhyphenated_uuids
+            else (lambda u: str(UUID(str(u))))
+        )
+
         if stopped:
-            return _List.list_stopped_pools(namespace, pool_uuid=pool_uuid)
-        return _List.list_pools_default(namespace, pool_uuid=pool_uuid)
+            return _List(uuid_formatter).list_stopped_pools(pool_uuid=pool_uuid)
+        return _List(uuid_formatter).list_pools_default(pool_uuid=pool_uuid)
 
     @staticmethod
     def destroy_pool(namespace):
@@ -584,6 +590,14 @@ class _List:
     Handle listing a pool.
     """
 
+    def __init__(self, uuid_formatter):
+        """
+        Initialize a _List object.
+        :param uuid_formatter: function to format a UUID str or UUID
+        :param uuid_formatter: str or UUID -> str
+        """
+        self.uuid_formatter = uuid_formatter
+
     @staticmethod
     def _maybe_inconsistent(value, interp):
         """
@@ -609,10 +623,7 @@ class _List:
 
         return _List._maybe_inconsistent(value, my_func)
 
-    @staticmethod
-    def list_pools_default(
-        namespace, *, pool_uuid=None
-    ):  # pylint: disable=too-many-locals
+    def list_pools_default(self, *, pool_uuid=None):  # pylint: disable=too-many-locals
         """
         List all pools that are listed by default. These are all started pools.
         """
@@ -675,10 +686,6 @@ class _List:
             ]
             return ",".join(gen_string(x, y) for x, y in props_list)
 
-        format_uuid = (
-            (lambda mo_uuid: mo_uuid) if namespace.unhyphenated_uuids else to_hyphenated
-        )
-
         def alert_string(mopool):
             """
             Alert information to display, if any
@@ -716,7 +723,7 @@ class _List:
                     mopool.Name(),
                     physical_size_triple(mopool),
                     properties_string(mopool),
-                    format_uuid(mopool.Uuid()),
+                    self.uuid_formatter(mopool.Uuid()),
                     alert_string(mopool),
                 )
                 for mopool in pools_with_props
@@ -746,7 +753,7 @@ class _List:
 
             encrypted = mopool.Encrypted()
 
-            print(f"UUID: {format_uuid(this_uuid)}")
+            print(f"UUID: {self.uuid_formatter(this_uuid)}")
             print(f"Name: {mopool.Name()}")
             print(
                 f"Actions Allowed: "
@@ -789,8 +796,7 @@ class _List:
 
             print(f"    Used: {total_physical_used_str}")
 
-    @staticmethod
-    def list_stopped_pools(namespace, *, pool_uuid=None):
+    def list_stopped_pools(self, *, pool_uuid=None):
         """
         List stopped pools.
         """
@@ -798,10 +804,6 @@ class _List:
         proxy = get_object(TOP_OBJECT)
 
         stopped_pools = _fetch_stopped_pools_property(proxy)
-
-        format_uuid = (
-            (lambda mo_uuid: mo_uuid) if namespace.unhyphenated_uuids else to_hyphenated
-        )  # pragma: no cover // bug in coverage requires this
 
         def interp_clevis(value):
             """
@@ -830,7 +832,7 @@ class _List:
         if pool_uuid is None:
             tables = [
                 (
-                    format_uuid(pool_uuid),
+                    self.uuid_formatter(pool_uuid),
                     str(len(info["devs"])),
                     unencrypted_string(
                         info.get("key_description"), _List._interp_inconsistent_option
@@ -856,7 +858,7 @@ class _List:
             if stopped_pool is None:
                 raise StratisCliResourceNotFoundError("list", this_uuid)
 
-            print(f"UUID: {format_uuid(this_uuid)}")
+            print(f"UUID: {self.uuid_formatter(this_uuid)}")
 
             key_description_str = unencrypted_string(
                 stopped_pool.get("key_description"), _List._interp_inconsistent_option
@@ -870,4 +872,4 @@ class _List:
 
             print("Devices:")
             for dev in stopped_pool["devs"]:
-                print(f"{format_uuid(dev['uuid'])}  {dev['devnode']}")
+                print(f"{self.uuid_formatter(dev['uuid'])}  {dev['devnode']}")
