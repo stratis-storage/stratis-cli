@@ -17,7 +17,7 @@ Formatting for tables.
 
 # isort: STDLIB
 import sys
-import uuid
+from uuid import UUID
 
 # isort: THIRDPARTY
 from wcwidth import wcswidth
@@ -152,8 +152,14 @@ def print_table(column_headings, row_entries, alignment, file=sys.stdout):
         print(file=file)
 
 
-def to_hyphenated(mo_uuid):
+def get_uuid_formatter(unhyphenated):
     """
-    Convert uuid string to hyphenated format
+    Get a function to format UUIDs.
+
+    :param bool unhyphenated: whether the UUIDs are to be unhyphenated
+    :returns: function to format UUIDs
+    :rtype: str or UUID -> str
     """
-    return str(uuid.UUID(mo_uuid))
+    return (
+        (lambda u: UUID(str(u)).hex) if unhyphenated else (lambda u: str(UUID(str(u))))
+    )

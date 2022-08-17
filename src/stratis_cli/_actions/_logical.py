@@ -31,9 +31,9 @@ from ._constants import TOP_OBJECT
 from ._formatting import (
     TOTAL_USED_FREE,
     get_property,
+    get_uuid_formatter,
     print_table,
     size_triple,
-    to_hyphenated,
 )
 
 
@@ -158,9 +158,7 @@ class LogicalActions:
             used = get_property(dbus_props.Used(), Range, None)
             return size_triple(total, used)
 
-        format_uuid = (
-            (lambda mo_uuid: mo_uuid) if namespace.unhyphenated_uuids else to_hyphenated
-        )
+        format_uuid = get_uuid_formatter(namespace.unhyphenated_uuids)
 
         tables = [
             (
