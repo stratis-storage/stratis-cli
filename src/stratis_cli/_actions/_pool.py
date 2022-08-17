@@ -623,7 +623,57 @@ class _List:
 
         return _List._maybe_inconsistent(value, my_func)
 
-    def list_pools_default(self, *, pool_uuid=None):  # pylint: disable=too-many-locals
+    def _print_detail_view(self, pool_uuid, mopool):
+        """
+        Print the detailed view for a single pool.
+
+        :param UUID uuid: the pool uuid
+        :param MOPool mopool: properties of the pool
+        """
+        encrypted = mopool.Encrypted()
+
+        print(f"UUID: {self.uuid_formatter(pool_uuid)}")
+        print(f"Name: {mopool.Name()}")
+        print(
+            f"Actions Allowed: "
+            f"{PoolActionAvailability.from_str(mopool.AvailableActions())}"
+        )
+        print(f"Cache: {'Yes' if mopool.HasCache() else 'No'}")
+        print(f"Filesystem Limit: {mopool.FsLimit()}")
+        print(
+            f"Allows Overprovisioning: "
+            f"{'Yes' if mopool.Overprovisioning() else 'No'}"
+        )
+
+        key_description_str = (
+            _List._interp_inconsistent_option(mopool.KeyDescription())
+            if encrypted
+            else "unencrypted"
+        )
+        print(f"Key Description: {key_description_str}")
+
+        clevis_info_str = (
+            _List._interp_inconsistent_option(mopool.ClevisInfo())
+            if encrypted
+            else "unencrypted"
+        )
+        print(f"Clevis Configuration: {clevis_info_str}")
+
+        total_physical_used = get_property(mopool.TotalPhysicalUsed(), Range, None)
+
+        print("Space Usage:")
+        print(f"Fully Allocated: {'Yes' if mopool.NoAllocSpace() else 'No'}")
+        print(f"    Size: {Range(mopool.TotalPhysicalSize())}")
+        print(f"    Allocated: {Range(mopool.AllocatedSize())}")
+
+        total_physical_used = get_property(mopool.TotalPhysicalUsed(), Range, None)
+        total_physical_used_str = (
+            TABLE_FAILURE_STRING if total_physical_used is None else total_physical_used
+        )
+
+        print(f"    Used: {total_physical_used_str}")
+
+    def list_pools_default(self, *, pool_uuid=None):
         """
         List all pools that are listed by default. These are all started pools.
         """
@@ -751,50 +801,7 @@ class _List:
                 )[1]
             )
 
-            encrypted = mopool.Encrypted()
-
-            print(f"UUID: {self.uuid_formatter(this_uuid)}")
-            print(f"Name: {mopool.Name()}")
-            print(
-                f"Actions Allowed: "
-                f"{PoolActionAvailability.from_str(mopool.AvailableActions())}"
-            )
-            print(f"Cache: {'Yes' if mopool.HasCache() else 'No'}")
-            print(f"Filesystem Limit: {mopool.FsLimit()}")
-            print(
-                f"Allows Overprovisioning: "
-                f"{'Yes' if mopool.Overprovisioning() else 'No'}"
-            )
-
-            key_description_str = (
-                _List._interp_inconsistent_option(mopool.KeyDescription())
-                if encrypted
-                else "unencrypted"
-            )
-            print(f"Key Description: {key_description_str}")
-
-            clevis_info_str = (
-                _List._interp_inconsistent_option(mopool.ClevisInfo())
-                if encrypted
-                else "unencrypted"
-            )
-            print(f"Clevis Configuration: {clevis_info_str}")
-
-            total_physical_used = get_property(mopool.TotalPhysicalUsed(), Range, None)
-
-            print("Space Usage:")
-            print(f"Fully Allocated: {'Yes' if mopool.NoAllocSpace() else 'No'}")
-            print(f"    Size: {Range(mopool.TotalPhysicalSize())}")
-            print(f"    Allocated: {Range(mopool.AllocatedSize())}")
-
-            total_physical_used = get_property(mopool.TotalPhysicalUsed(), Range, None)
-            total_physical_used_str = (
-                TABLE_FAILURE_STRING
-                if total_physical_used is None
-                else total_physical_used
-            )
-
-            print(f"    Used: {total_physical_used_str}")
+            self._print_detail_view(pool_uuid, mopool)
 
     def list_stopped_pools(self, *, pool_uuid=None):
         """
