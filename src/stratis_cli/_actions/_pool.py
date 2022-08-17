@@ -18,7 +18,6 @@ Pool actions.
 # isort: STDLIB
 import os
 from collections import defaultdict
-from uuid import UUID
 
 # isort: THIRDPARTY
 from justbytes import Range
@@ -42,6 +41,7 @@ from ._formatting import (
     TABLE_FAILURE_STRING,
     TOTAL_USED_FREE,
     get_property,
+    get_uuid_formatter,
     print_table,
     size_triple,
 )
@@ -351,11 +351,7 @@ class PoolActions:
             getattr(namespace, "uuid", None),
         )
 
-        uuid_formatter = (
-            (lambda u: UUID(str(u)).hex)
-            if namespace.unhyphenated_uuids
-            else (lambda u: str(UUID(str(u))))
-        )
+        uuid_formatter = get_uuid_formatter(namespace.unhyphenated_uuids)
 
         if stopped:
             return _List(uuid_formatter).list_stopped_pools(pool_uuid=pool_uuid)
