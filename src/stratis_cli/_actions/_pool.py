@@ -873,7 +873,14 @@ class _List:
             return ", ".join(sorted(str(code) for code in error_codes))
 
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        if pool_uuid is None:
+
+        def get_pools_with_changed_devs():
+            """
+            Find pools where device sizes have increased or decreased.
+
+            :returns: a pair of sets, increased first, then decreased
+            :rtype: set * set
+            """
             (increased, decreased) = (set(), set())
             for (_, info) in devs().search(managed_objects):
                 modev = MODev(info)
@@ -883,6 +890,12 @@ class _List:
                     increased.add(modev.Pool())
                 if observed_size < size:  # pragma: no cover
                     decreased.add(modev.Pool())
+
+            return (increased, decreased)
+
+        if pool_uuid is None:
+
+            (increased, decreased) = get_pools_with_changed_devs()
 
             pools_with_props = [
                 (objpath, MOPool(info))
