@@ -62,6 +62,18 @@ class PoolMaintenanceErrorCode(IntEnum):
 
         assert False, "impossible error code reached"  # pragma: no cover
 
+    def summarize(self):
+        """
+        Return a short summary of the return code.
+        """
+        if self is PoolMaintenanceErrorCode.NO_IPC_REQUESTS:  # pragma: no cover
+            return "Pool state changes not possible"
+
+        if self is PoolMaintenanceErrorCode.NO_POOL_CHANGES:  # pragma: no cover
+            return "Pool maintenance operations not possible"
+
+        assert False, "impossible error code reached"  # pragma: no cover
+
 
 class PoolAllocSpaceErrorCode(IntEnum):
     """
@@ -83,6 +95,15 @@ class PoolAllocSpaceErrorCode(IntEnum):
                 "To increase the allocable space, add additional data devices "
                 "to the pool."
             )
+
+        assert False, "impossible error code reached"  # pragma: no cover
+
+    def summarize(self):
+        """
+        Return a short summary of the return code.
+        """
+        if self is PoolAllocSpaceErrorCode.NO_ALLOC_SPACE:  # pragma: no cover
+            return "All devices fully allocated"
 
         assert False, "impossible error code reached"  # pragma: no cover
 
