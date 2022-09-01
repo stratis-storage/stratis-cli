@@ -147,9 +147,9 @@ def _check_same_tier(pool_name, managed_objects, to_be_added, this_tier):
 
 def _fetch_stopped_pools_property(proxy):
     """
-    Fetch the LockedPools property from stratisd.
+    Fetch the StoppedPools property from stratisd.
     :param proxy: proxy to the top object in stratisd
-    :return: a representation of unlocked devices
+    :return: a representation of stopped devices
     :rtype: dict
     :raises StratisCliEngineError:
     """
