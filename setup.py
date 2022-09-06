@@ -17,7 +17,7 @@ def local_file(name):
 
 
 with open(local_file("src/stratis_cli/_version.py"), encoding="utf-8") as o:
-    exec(o.read())  # pylint: disable=exec-used
+    exec(o.read())  # pylint: disable=exec-used #nosec B102
 
 with open(local_file("README.rst"), encoding="utf-8") as o:
     long_description = o.read()

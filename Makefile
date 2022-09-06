@@ -6,6 +6,13 @@ lint:
 	pylint bin/stratis
 	pylint src/stratis_cli --disable=duplicate-code --ignore=_introspect.py
 	pylint tests/whitebox --disable=duplicate-code
+	bandit setup.py
+	bandit bin/stratis
+	# Ignore B101 errors. We do not distribute optimized code, i.e., .pyo
+	# files in Fedora, so we do not need to have concerns that assertions
+	# are removed by optimization.
+	bandit --recursive ./src --skip B101
+	bandit --recursive ./tests
 
 .PHONY: fmt
 fmt:
