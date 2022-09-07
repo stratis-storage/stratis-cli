@@ -16,6 +16,7 @@ jobs:
         include:
           # PYTHON CHECKS ON NEXT FEDORA PYTHON AND PYTHON TOOLS VERSION
           - dependencies: >
+              bandit
               pylint
               python3-dateutil
               python3-dbus-client-gen

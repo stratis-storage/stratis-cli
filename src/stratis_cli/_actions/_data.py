@@ -17,7 +17,7 @@ XML interface specifications.
 # isort: STDLIB
 import os
 import sys
-import xml.etree.ElementTree as ET
+import xml.etree.ElementTree as ET  # nosec B405
 
 # isort: FIRSTPARTY
 from dbus_client_gen import (
@@ -53,28 +53,30 @@ try:
         os.environ.get("STRATIS_DBUS_TIMEOUT", DBUS_TIMEOUT_SECONDS * 1000)
     )
 
-    report_spec = ET.fromstring(SPECS[REPORT_INTERFACE])
+    report_spec = ET.fromstring(SPECS[REPORT_INTERFACE])  # nosec B314
     Report = make_class("Report", report_spec, timeout)
 
-    filesystem_spec = ET.fromstring(SPECS[FILESYSTEM_INTERFACE])
+    filesystem_spec = ET.fromstring(SPECS[FILESYSTEM_INTERFACE])  # nosec B314
     Filesystem = make_class("Filesystem", filesystem_spec, timeout)
     MOFilesystem = managed_object_class("MOFilesystem", filesystem_spec)
     filesystems = mo_query_builder(filesystem_spec)
 
-    pool_spec = ET.fromstring(SPECS[POOL_INTERFACE])
+    pool_spec = ET.fromstring(SPECS[POOL_INTERFACE])  # nosec B314
     Pool = make_class("Pool", pool_spec, timeout)
     MOPool = managed_object_class("MOPool", pool_spec)
     pools = mo_query_builder(pool_spec)
 
-    blockdev_spec = ET.fromstring(SPECS[BLOCKDEV_INTERFACE])
+    blockdev_spec = ET.fromstring(SPECS[BLOCKDEV_INTERFACE])  # nosec B314
     MODev = managed_object_class("MODev", blockdev_spec)
     devs = mo_query_builder(blockdev_spec)
 
-    Manager = make_class("Manager", ET.fromstring(SPECS[MANAGER_INTERFACE]), timeout)
+    Manager = make_class(
+        "Manager", ET.fromstring(SPECS[MANAGER_INTERFACE]), timeout  # nosec B314
+    )
 
     ObjectManager = make_class(
         "ObjectManager",
-        ET.fromstring(SPECS["org.freedesktop.DBus.ObjectManager"]),
+        ET.fromstring(SPECS["org.freedesktop.DBus.ObjectManager"]),  # nosec B314
         timeout,
     )
 
@@ -89,7 +91,9 @@ try:
         </property>
     </interface>
     """
-    Manager0 = make_class("Manager0", ET.fromstring(manager_spec), timeout)
+    Manager0 = make_class(
+        "Manager0", ET.fromstring(manager_spec), timeout  # nosec B314
+    )
 
 # Do not expect to get coverage on Generation errors.
 # These can only occurs if the XML data in _SPECS is ill-formed; we have
