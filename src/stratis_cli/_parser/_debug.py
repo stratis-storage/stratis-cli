@@ -32,7 +32,15 @@ TOP_DEBUG_SUBCMDS = [
             help="Refresh all un-stopped pools.",
             func=TopDebugActions.refresh_state,
         ),
-    )
+    ),
+    (
+        "uevent",
+        dict(
+            help="Generate a synthetic uevent.",
+            args=[("device", dict(action="store", help="Path to device"))],
+            func=TopDebugActions.send_uevent,
+        ),
+    ),
 ]
 
 POOL_DEBUG_SUBCMDS = [
