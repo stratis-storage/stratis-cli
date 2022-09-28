@@ -1,3 +1,43 @@
+stratis-cli 3.3.0 (UNRELEASED)
+==============================
+Required stratisd version: 3.3.0
+
+Recommended development environment: Fedora 36
+Lowest supported Python interpreter: 3.9.0
+
+Lowest supported Rust toolchain (for testing): 1.62.1
+
+- Require stratisd 3.3.0:
+  https://github.com/stratis-storage/stratis-cli/pull/898
+
+- Add support for growing a physical device:
+  https://github.com/stratis-storage/stratis-cli/pull/906
+
+- Add debug subcommand for sending a synthetic uevent:
+  https://github.com/stratis-storage/stratis-cli/issues/894
+  https://github.com/stratis-storage/stratis-cli/pull/911
+
+- Return an error if the user sets overprovision mode or filesystem limit to
+  same as existing:
+  https://github.com/stratis-storage/stratis-cli/issues/915
+  https://github.com/stratis-storage/stratis-cli/pull/917
+  https://github.com/stratis-storage/stratis-cli/pull/916
+
+- Print an Alert string in the pool detail view:
+  https://github.com/stratis-storage/stratis-cli/pull/905
+
+- Refactor pool listing code:
+  https://github.com/stratis-storage/stratis-cli/pull/904
+
+- Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/918
+  https://github.com/stratis-storage/stratis-cli/pull/914
+  https://github.com/stratis-storage/stratis-cli/pull/912
+  https://github.com/stratis-storage/stratis-cli/pull/909
+  https://github.com/stratis-storage/stratis-cli/pull/908
+  https://github.com/stratis-storage/stratis-cli/pull/902
+
+
 stratis-cli 3.2.0
 =================
 Required stratisd version: 3.2.0
