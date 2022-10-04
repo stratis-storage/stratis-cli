@@ -17,6 +17,7 @@ Test 'overprovision'
 
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
+from stratis_cli._errors import StratisCliOverprovisionChangeError
 
 from .._misc import RUNNER, TEST_RUNNER, SimTestCase, device_name_list
 
@@ -26,7 +27,7 @@ _ERROR = StratisCliErrorCodes.ERROR
 
 class SetOverprovisionModeTestCase(SimTestCase):
     """
-    Test setting overprovision mode.
+    Test setting overprovision mode when setup in defaut fashion.
     """
 
     _MENU = ["--propagate", "pool", "overprovision"]
@@ -40,16 +41,52 @@ class SetOverprovisionModeTestCase(SimTestCase):
         command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
         RUNNER(command_line)
 
-    def test_set_overprovision_true(self):
+    def test_set_overprovision_true_true(self):
         """
-        Test setting overprovision mode to true.
+        Test setting overprovision mode to true when true.
         """
         command_line = self._MENU + [self._POOLNAME] + ["yes"]
-        TEST_RUNNER(command_line)
+        self.check_error(StratisCliOverprovisionChangeError, command_line, _ERROR)
 
-    def test_set_overprovision_false(self):
+    def test_set_overprovision_true_false(self):
         """
         Test setting overprovision mode to false.
         """
         command_line = self._MENU + [self._POOLNAME] + ["no"]
         TEST_RUNNER(command_line)
+
+
+class SetOverprovisionModeFromFalseTestCase(SimTestCase):
+    """
+    Test setting overprovision mode when setup with --no-overprovsion flag set.
+    """
+
+    _MENU = ["--propagate", "pool", "overprovision"]
+    _POOLNAME = "thispool"
+
+    def setUp(self):
+        """
+        Start stratisd and set up a pool.
+        """
+        super().setUp()
+        command_line = [
+            "pool",
+            "create",
+            "--no-overprovision",
+            self._POOLNAME,
+        ] + _DEVICE_STRATEGY()
+        RUNNER(command_line)
+
+    def test_set_overprovision_false_true(self):
+        """
+        Test setting overprovision mode to true when false.
+        """
+        command_line = self._MENU + [self._POOLNAME] + ["yes"]
+        TEST_RUNNER(command_line)
+
+    def test_set_overprovision_false_false(self):
+        """
+        Test setting overprovision mode to false.
+        """
+        command_line = self._MENU + [self._POOLNAME] + ["no"]
+        self.check_error(StratisCliOverprovisionChangeError, command_line, _ERROR)
