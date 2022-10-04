@@ -31,6 +31,7 @@ from .._errors import (
     StratisCliInUseSameTierError,
     StratisCliNameConflictError,
     StratisCliNoChangeError,
+    StratisCliOverprovisionChangeError,
     StratisCliPartialChangeError,
     StratisCliResourceNotFoundError,
 )
@@ -559,17 +560,20 @@ class PoolActions:
         Set the overprovisioning mode.
         """
         # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, Pool, pools
+        from ._data import MOPool, ObjectManager, Pool, pools
 
         decision = bool(YesOrNo.from_str(namespace.decision))
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        (pool_object_path, _) = next(
+        (pool_object_path, pool_info) = next(
             pools(props={"Name": namespace.pool_name})
             .require_unique_match(True)
             .search(managed_objects)
         )
+
+        if decision == MOPool(pool_info).Overprovisioning():
+            raise StratisCliOverprovisionChangeError(decision)
 
         Pool.Properties.Overprovisioning.Set(get_object(pool_object_path), decision)
 

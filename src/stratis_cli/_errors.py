@@ -41,6 +41,25 @@ class StratisCliUserError(StratisCliRuntimeError):
     """
 
 
+class StratisCliOverprovisionChangeError(StratisCliUserError):
+    """
+    Raised when the user requests the same overprovision state that the pool
+    already has. May in future be generalized to a no state change error.
+    """
+
+    def __init__(self, value):
+        """
+        Initializer.
+
+        :param bool value: overprovision value
+        """
+        # pylint: disable=super-init-not-called
+        self.value = value
+
+    def __str__(self):
+        return f"Pool's overprovision mode is already set to {str(self.value).lower()}"
+
+
 class StratisCliResourceNotFoundError(StratisCliUserError):
     """
     Raised if a request was made to stratisd to update a resource
