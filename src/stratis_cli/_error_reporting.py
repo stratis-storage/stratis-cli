@@ -40,6 +40,7 @@ from ._errors import (
     StratisCliIncoherenceError,
     StratisCliParserError,
     StratisCliStratisdVersionError,
+    StratisCliSynthUeventError,
     StratisCliUnknownInterfaceError,
     StratisCliUserError,
 )
@@ -222,6 +223,12 @@ def _interpret_errors_1(
             f"that it would have been expected to execute as a result "
             f"of the command that you requested: {error}"
         )
+
+    if isinstance(error, StratisCliSynthUeventError):
+        return (
+            f"stratis reported an error in generating a synethetic "
+            f"udev event: {error}"
+        )  # pragma: no cover
 
     # Some method calls may have an assignable underlying cause.
     # At present, automated testing of any of these assignable causes is

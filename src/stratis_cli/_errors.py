@@ -213,6 +213,12 @@ class StratisCliIncoherenceError(StratisCliRuntimeError):
     """
 
 
+class StratisCliSynthUeventError(StratisCliRuntimeError):
+    """
+    Raised if there was an error during a synthetic udev event generation.
+    """
+
+
 class StratisCliInUseError(StratisCliUserError):
     """
     Base class for if a request made of stratisd must result in a device being

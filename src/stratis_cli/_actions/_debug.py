@@ -15,8 +15,10 @@
 Miscellaneous debugging actions.
 """
 
+# isort: STDLIB
+import os
 
-from .._errors import StratisCliEngineError
+from .._errors import StratisCliEngineError, StratisCliSynthUeventError
 from .._stratisd_constants import StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
@@ -39,6 +41,26 @@ class TopDebugActions:  # pylint: disable=too-few-public-methods
         )
         if return_code != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(return_code, message)
+
+    @staticmethod
+    def send_uevent(namespace):
+        """
+        Issue a synthetic uevent from the CLI.
+        """
+        try:
+            realdevice = os.path.realpath(namespace.device, strict=True)
+            sysfs_device_uevent = (
+                realdevice.replace("/dev/", "/sys/class/block/") + "/uevent"
+            )  # pragma: no cover
+
+            with open(
+                sysfs_device_uevent, "w", encoding="utf-8"
+            ) as uevent_file:  # pragma: no cover
+                uevent_file.write("change")
+        except Exception as err:
+            raise StratisCliSynthUeventError(
+                f"Failed to send synth event: {err}"
+            ) from err
 
 
 class PoolDebugActions:  # pylint: disable=too-few-public-methods

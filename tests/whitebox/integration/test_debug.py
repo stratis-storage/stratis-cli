@@ -15,18 +15,42 @@
 Test 'stratis debug'.
 """
 
+# isort: LOCAL
+from stratis_cli import StratisCliErrorCodes
+from stratis_cli._errors import StratisCliSynthUeventError
+
 from ._misc import TEST_RUNNER, SimTestCase
 
+_ERROR = StratisCliErrorCodes.ERROR
 
-class DebugTestCase(SimTestCase):
+
+class RefreshTestCase(SimTestCase):
     """
-    Test debug commands.
+    Test the debug refresh command.
     """
 
-    _MENU = ["--propagate", "debug", "refresh"]
+    _MENU = ["--propagate", "debug"]
 
     def test_refresh(self):
         """
         Test calling refresh.
         """
-        TEST_RUNNER(self._MENU)
+        command_line = self._MENU + ["refresh"]
+        TEST_RUNNER(command_line)
+
+
+class UeventTestCase(SimTestCase):
+    """
+    Test the debug uevent command.
+    """
+
+    _MENU = ["--propagate", "debug"]
+
+    def test_uevent(self):
+        """
+        Test calling uevent.
+        """
+
+        device = ["/dev/nonexistentdevice"]
+        command_line = self._MENU + ["uevent"] + device
+        self.check_error(StratisCliSynthUeventError, command_line, _ERROR)
