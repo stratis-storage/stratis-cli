@@ -67,6 +67,16 @@ class StratisCliOverprovisionChangeError(StratisCliNoPropertyChangeError):
         return f"Pool's overprovision mode is already set to {str(self.value).lower()}"
 
 
+class StratisCliFsLimitChangeError(StratisCliNoPropertyChangeError):
+    """
+    Raised when the user requests the same FsLimti value that the pool already
+    has.
+    """
+
+    def __str__(self):
+        return f"Pool's filesystem limit is exactly {str(self.value).lower()}"
+
+
 class StratisCliResourceNotFoundError(StratisCliUserError):
     """
     Raised if a request was made to stratisd to update a resource
