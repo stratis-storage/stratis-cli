@@ -26,6 +26,7 @@ from .._constants import YesOrNo
 from .._error_codes import PoolAllocSpaceErrorCode, PoolErrorCode
 from .._errors import (
     StratisCliEngineError,
+    StratisCliFsLimitChangeError,
     StratisCliIncoherenceError,
     StratisCliInUseOtherTierError,
     StratisCliInUseSameTierError,
@@ -542,15 +543,18 @@ class PoolActions:
         Set the filesystem limit.
         """
         # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, Pool, pools
+        from ._data import MOPool, ObjectManager, Pool, pools
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        (pool_object_path, _) = next(
+        (pool_object_path, pool_info) = next(
             pools(props={"Name": namespace.pool_name})
             .require_unique_match(True)
             .search(managed_objects)
         )
+
+        if namespace.amount == MOPool(pool_info).FsLimit():
+            raise StratisCliFsLimitChangeError(namespace.amount)
 
         Pool.Properties.FsLimit.Set(get_object(pool_object_path), namespace.amount)
 

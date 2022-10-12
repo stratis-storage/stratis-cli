@@ -20,6 +20,7 @@ from dbus_python_client_gen import DPClientInvocationError
 
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
+from stratis_cli._errors import StratisCliFsLimitChangeError
 
 from .._misc import RUNNER, TEST_RUNNER, SimTestCase, device_name_list
 
@@ -56,3 +57,15 @@ class SetFsLimitTestCase(SimTestCase):
         """
         command_line = self._MENU + [self._POOLNAME] + ["1000000"]
         TEST_RUNNER(command_line)
+
+    def test_set_fs_limit_same(self):
+        """
+        Set the filesystem limit to the same value it already is.
+        """
+        fs_limit_value = "256"
+
+        command_line = self._MENU + [self._POOLNAME, fs_limit_value]
+        RUNNER(command_line)
+
+        command_line = self._MENU + [self._POOLNAME, fs_limit_value]
+        self.check_error(StratisCliFsLimitChangeError, command_line, _ERROR)
