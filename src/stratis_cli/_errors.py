@@ -41,10 +41,10 @@ class StratisCliUserError(StratisCliRuntimeError):
     """
 
 
-class StratisCliOverprovisionChangeError(StratisCliUserError):
+class StratisCliNoPropertyChangeError(StratisCliUserError):
     """
-    Raised when the user requests the same overprovision state that the pool
-    already has. May in future be generalized to a no state change error.
+    Raised when the user requests that a property be changed to its existing
+    value.
     """
 
     def __init__(self, value):
@@ -55,6 +55,13 @@ class StratisCliOverprovisionChangeError(StratisCliUserError):
         """
         # pylint: disable=super-init-not-called
         self.value = value
+
+
+class StratisCliOverprovisionChangeError(StratisCliNoPropertyChangeError):
+    """
+    Raised when the user requests the same overprovision state that the pool
+    already has.
+    """
 
     def __str__(self):
         return f"Pool's overprovision mode is already set to {str(self.value).lower()}"
