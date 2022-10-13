@@ -61,6 +61,12 @@ pool init-cache <pool_name> <blockdev> [<blockdev>..]::
 	 drives, such as SSDs, are used for this purpose.
 pool add-cache <pool_name> <blockdev> [<blockdev>..]::
 	 Add one or more blockdevs to an existing pool with an initialized cache.
+pool extend-data <pool_name> [--device-uuid <uuid>]::
+     Increase the pool's data capacity with additional storage space offered by
+     its component data devices through, e.g., expansion of a component RAID
+     device. Devices may be specified by their Stratis UUID. If no devices are
+     specified, then stratisd will attempt to make use of all data devices
+     belonging to the pool that appear to have been expanded.
 pool bind <(nbde|tang)> <pool name> <url> <(--thumbprint <thp> | --trust-url)>::
      Bind the devices in the specified pool to a supplementary encryption
      mechanism that uses NBDE (Network-Bound Disc Encryption). *tang* is
@@ -90,8 +96,8 @@ pool overprovision <pool name> <(yes|no)> ::
      available.
 pool explain <code> ::
      Explain any code that might show up in the Alerts column when
-     listing a pool. Codes may be prefixed with a "W", for "warning", or an "E",
-     for "error".
+     listing a pool. Codes may be prefixed with an "I" for "info", a "W" for
+     "warning", or an "E" for "error".
 pool debug get-object-path <(--uuid <uuid> |--name <name>)> ::
      Look up the D-Bus object path for a pool given the UUID or name.
 filesystem create <pool_name> <fs_name> [<fs_name>..] [--size <size>]::
@@ -243,7 +249,11 @@ Physical Size::
 	  The total size of the device on which stratisd places Stratis
           metadata. If the device is encrypted, this size will be slightly
           smaller than the total size of the device specified by the user; it
-          will be the size of the associated dm-crypt device.
+          will be the size of the associated dm-crypt device. A second size will
+          be displayed in parentheses if stratisd has observed that the device
+          has a size that is different from the size that stratisd is making use
+          of. This can happen if, e.g., a RAID device was previously added to a
+          pool and has since been expanded.
 Tier::
 	  The data tier type ("Data" or "Cache")
 

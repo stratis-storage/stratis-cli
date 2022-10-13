@@ -284,6 +284,36 @@ POOL_SUBCMDS = [
         ),
     ),
     (
+        "extend-data",
+        dict(
+            help=(
+                "Extend the pool's data capacity with additional storage "
+                "space offered by its component data devices through, e.g., "
+                "expansion of a component RAID device."
+            ),
+            args=[
+                ("pool_name", dict(action="store", help="Pool name")),
+                (
+                    "--device-uuid",
+                    dict(
+                        action="extend",
+                        dest="device_uuid",
+                        nargs="*",
+                        type=UUID,
+                        default=[],
+                        help=(
+                            "UUID of device to use; may be specified multiple "
+                            "times. If no devices are specified then all "
+                            "devices belonging to the pool that appear to have "
+                            "increased in size will be used."
+                        ),
+                    ),
+                ),
+            ],
+            func=PoolActions.extend_data,
+        ),
+    ),
+    (
         "bind",
         dict(
             help="Bind the given pool with an additional encryption facility",

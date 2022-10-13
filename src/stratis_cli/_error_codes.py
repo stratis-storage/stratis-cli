@@ -120,12 +120,77 @@ class PoolAllocSpaceErrorCode(IntEnum):
         )
 
 
+class PoolDeviceSizeChangeCode(IntEnum):
+    """
+    Codes for identifying for a pool if a device that belongs to the pool has
+    been detected to have increased or reduced in size.
+    """
+
+    DEVICE_SIZE_INCREASED = 1
+    DEVICE_SIZE_DECREASED = 2
+
+    def __str__(self):
+        if self is PoolDeviceSizeChangeCode.DEVICE_SIZE_INCREASED:
+            return f"IDS{str(self.value).zfill(3)}"
+
+        if self is PoolDeviceSizeChangeCode.DEVICE_SIZE_DECREASED:
+            return f"WDS{str(self.value).zfill(3)}"
+
+        assert False, "impossible error code reached"  # pragma: no cover
+
+    def explain(self):
+        """
+        Return an explanation of the return code.
+        """
+        if self is PoolDeviceSizeChangeCode.DEVICE_SIZE_INCREASED:
+            return (
+                "At least one device belonging to this pool appears to have "
+                "increased in size."
+            )
+
+        if self is PoolDeviceSizeChangeCode.DEVICE_SIZE_DECREASED:
+            return (
+                "At least one device belonging to this pool appears to have "
+                "decreased in size."
+            )
+
+        assert False, "impossible error code reached"  # pragma: no cover
+
+    def summarize(self):
+        """
+        Return a short summary of the return code.
+        """
+        if self is PoolDeviceSizeChangeCode.DEVICE_SIZE_INCREASED:
+            return "A device in this pool has increased in size."
+
+        if self is PoolDeviceSizeChangeCode.DEVICE_SIZE_DECREASED:
+            return "A device in this pool has decreased in size."
+
+        assert False, "impossible error code reached"  # pragma: no cover
+
+    @staticmethod
+    def from_str(code_str):
+        """
+        Discover the code, if any, from the code string.
+
+        :returns: the code if it finds a match, otherwise None
+        :rtype: PoolAllocSpaceErrorCode or NoneType
+        """
+        return next(
+            (code for code in PoolDeviceSizeChangeCode if code_str == str(code)), None
+        )
+
+
 class PoolErrorCode:
     """
     Summary class for all pool error codes.
     """
 
-    CLASSES = [PoolMaintenanceErrorCode, PoolAllocSpaceErrorCode]
+    CLASSES = [
+        PoolMaintenanceErrorCode,
+        PoolAllocSpaceErrorCode,
+        PoolDeviceSizeChangeCode,
+    ]
 
     @staticmethod
     def codes():
