@@ -82,12 +82,6 @@ SPECS = {
 """,
     "org.storage.stratis3.blockdev.r3": """
 <interface name="org.storage.stratis3.blockdev.r3">
-    <method name="SetUserInfo">
-      <arg name="id" type="(bs)" direction="in" />
-      <arg name="changed" type="(bs)" direction="out" />
-      <arg name="return_code" type="q" direction="out" />
-      <arg name="return_string" type="s" direction="out" />
-    </method>
     <property name="Devnode" type="s" access="read">
       <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const" />
     </property>
@@ -108,9 +102,7 @@ SPECS = {
       <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="false" />
     </property>
     <property name="TotalPhysicalSize" type="s" access="read" />
-    <property name="UserInfo" type="(bs)" access="read">
-      <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="false" />
-    </property>
+    <property name="UserInfo" type="(bs)" access="readwrite" />
     <property name="Uuid" type="s" access="read">
       <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const" />
     </property>
