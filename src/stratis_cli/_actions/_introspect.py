@@ -6,8 +6,8 @@ SPECS = {
     </method>
   </interface>
 """,
-    "org.storage.stratis3.Manager.r3": """
-<interface name="org.storage.stratis3.Manager.r3">
+    "org.storage.stratis3.Manager.r4": """
+<interface name="org.storage.stratis3.Manager.r4">
     <method name="CreatePool">
       <arg name="name" type="s" direction="in" />
       <arg name="redundancy" type="(bq)" direction="in" />
@@ -70,8 +70,8 @@ SPECS = {
     </property>
   </interface>
 """,
-    "org.storage.stratis3.Report.r3": """
-<interface name="org.storage.stratis3.Report.r3">
+    "org.storage.stratis3.Report.r4": """
+<interface name="org.storage.stratis3.Report.r4">
     <method name="GetReport">
       <arg name="name" type="s" direction="in" />
       <arg name="result" type="s" direction="out" />
@@ -80,14 +80,8 @@ SPECS = {
     </method>
   </interface>
 """,
-    "org.storage.stratis3.blockdev.r3": """
-<interface name="org.storage.stratis3.blockdev.r3">
-    <method name="SetUserInfo">
-      <arg name="id" type="(bs)" direction="in" />
-      <arg name="changed" type="(bs)" direction="out" />
-      <arg name="return_code" type="q" direction="out" />
-      <arg name="return_string" type="s" direction="out" />
-    </method>
+    "org.storage.stratis3.blockdev.r4": """
+<interface name="org.storage.stratis3.blockdev.r4">
     <property name="Devnode" type="s" access="read">
       <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const" />
     </property>
@@ -108,16 +102,14 @@ SPECS = {
       <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="false" />
     </property>
     <property name="TotalPhysicalSize" type="s" access="read" />
-    <property name="UserInfo" type="(bs)" access="read">
-      <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="false" />
-    </property>
+    <property name="UserInfo" type="(bs)" access="readwrite" />
     <property name="Uuid" type="s" access="read">
       <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const" />
     </property>
   </interface>
 """,
-    "org.storage.stratis3.filesystem.r3": """
-<interface name="org.storage.stratis3.filesystem.r3">
+    "org.storage.stratis3.filesystem.r4": """
+<interface name="org.storage.stratis3.filesystem.r4">
     <method name="SetName">
       <arg name="name" type="s" direction="in" />
       <arg name="result" type="(bs)" direction="out" />
@@ -141,8 +133,8 @@ SPECS = {
     </property>
   </interface>
 """,
-    "org.storage.stratis3.pool.r3": """
-<interface name="org.storage.stratis3.pool.r3">
+    "org.storage.stratis3.pool.r4": """
+<interface name="org.storage.stratis3.pool.r4">
     <method name="AddCacheDevs">
       <arg name="devices" type="as" direction="in" />
       <arg name="results" type="(bao)" direction="out" />
