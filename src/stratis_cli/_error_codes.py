@@ -53,7 +53,7 @@ class PoolMaintenanceErrorCode(IntEnum):
                 "purely informational requests."
             )
 
-        if self is PoolMaintenanceErrorCode.NO_POOL_CHANGES:  # pragma: no cover
+        if self is PoolMaintenanceErrorCode.NO_POOL_CHANGES:
             return (
                 "The pool is unable to manage itself by reacting to events, "
                 "such as devicemapper events, that might require it to take "
