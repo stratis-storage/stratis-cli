@@ -54,9 +54,8 @@ class StratisCliNoDeviceSizeChangeError(StratisCliUserError):
 
     def __str__(self):
         return (
-            "None of the pool's devices seem to have increased in size since "
-            "the pool was created; the pool's allocable space would not be "
-            "changed."
+            "None of the pool's devices seems to have increased in size; the "
+            "pool's allocatable space would not be changed."
         )
 
 
