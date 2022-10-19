@@ -41,6 +41,25 @@ class StratisCliUserError(StratisCliRuntimeError):
     """
 
 
+class StratisCliNoDeviceSizeChangeError(StratisCliUserError):
+    """
+    Exception raised when the user requests to extend a pool to include new
+    space on data devices, but there isn't any.
+    """
+
+    def __init__(self):  # pylint: disable=super-init-not-called
+        """
+        Initializer.
+        """
+
+    def __str__(self):
+        return (
+            "None of the pool's devices seem to have increased in size since "
+            "the pool was created; the pool's allocable space would not be "
+            "changed."
+        )
+
+
 class StratisCliNoPropertyChangeError(StratisCliUserError):
     """
     Raised when the user requests that a property be changed to its existing
