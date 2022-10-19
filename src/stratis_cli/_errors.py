@@ -465,30 +465,3 @@ class StratisCliStratisdVersionError(StratisCliRuntimeError):
             self.minimum_version,
             self.maximum_version,
         )
-
-
-class StratisCliPartialFailureError(StratisCliRuntimeError):
-    """
-    A non-fatal error to be reported at the end as part of a StratisCliAggregateError.
-    """
-
-    def __init__(self, action, identifier_string, error_message=None):
-        """
-        Initializer.
-        :param str action: the action that failed
-        :param str identifier_string: a string that uniquely identifies the resource
-                                      for which the action failed
-        :param error_message: an optional error message for the cause of the partial
-                              failure
-        :type error_message: NoneType or str
-        """
-        # pylint: disable=super-init-not-called
-        self.action = action
-        self.identifier_string = identifier_string
-        self.error_message = error_message
-
-    def __str__(self):
-        fmt_str = f'Partial action "{self.action}" failed for {self.identifier_string}'
-        if self.error_message is not None:
-            fmt_str += f": {self.error_message}"
-        return fmt_str
