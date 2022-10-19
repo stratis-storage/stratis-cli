@@ -66,10 +66,10 @@ class PoolMaintenanceErrorCode(IntEnum):
         """
         Return a short summary of the return code.
         """
-        if self is PoolMaintenanceErrorCode.NO_IPC_REQUESTS:  # pragma: no cover
+        if self is PoolMaintenanceErrorCode.NO_IPC_REQUESTS:
             return "Pool state changes not possible"
 
-        if self is PoolMaintenanceErrorCode.NO_POOL_CHANGES:  # pragma: no cover
+        if self is PoolMaintenanceErrorCode.NO_POOL_CHANGES:
             return "Pool maintenance operations not possible"
 
         assert False, "impossible error code reached"  # pragma: no cover
@@ -102,7 +102,7 @@ class PoolAllocSpaceErrorCode(IntEnum):
         """
         Return a short summary of the return code.
         """
-        if self is PoolAllocSpaceErrorCode.NO_ALLOC_SPACE:  # pragma: no cover
+        if self is PoolAllocSpaceErrorCode.NO_ALLOC_SPACE:
             return "All devices fully allocated"
 
         assert False, "impossible error code reached"  # pragma: no cover

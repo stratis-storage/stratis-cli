@@ -19,7 +19,11 @@ Test error type string formatting.
 import unittest
 
 # isort: LOCAL
-from stratis_cli._error_codes import PoolDeviceSizeChangeCode
+from stratis_cli._error_codes import (
+    PoolAllocSpaceErrorCode,
+    PoolDeviceSizeChangeCode,
+    PoolMaintenanceErrorCode,
+)
 from stratis_cli._errors import (
     StratisCliGenerationError,
     StratisCliIncoherenceError,
@@ -74,8 +78,22 @@ class SummarizeTestCase(unittest.TestCase):
 
     def test_pool_device_size_change_code(self):
         """
-        Verify valid strings returned from summary() method.
+        Verify valid strings returned from summarize() method.
+        """
+        for code in PoolDeviceSizeChangeCode:
+            self._summarize_test(code.summarize())
+
+    def test_pool_alloc_space_error_codes(self):
+        """
+        Verify valid string returned from summarize() method
+        """
+        for code in PoolAllocSpaceErrorCode:
+            self._summarize_test(code.summarize())
+
+    def test_pool_maintenance_error_codes(self):
+        """
+        Verify valid strings returned from summarize() method.
         """
 
-        self._summarize_test(PoolDeviceSizeChangeCode.DEVICE_SIZE_INCREASED.summarize())
-        self._summarize_test(PoolDeviceSizeChangeCode.DEVICE_SIZE_DECREASED.summarize())
+        for code in PoolMaintenanceErrorCode:
+            self._summarize_test(code.summarize())
