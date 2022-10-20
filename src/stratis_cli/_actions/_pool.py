@@ -39,6 +39,7 @@ from .._errors import (
     StratisCliInUseSameTierError,
     StratisCliNameConflictError,
     StratisCliNoChangeError,
+    StratisCliNoDeviceSizeChangeError,
     StratisCliOverprovisionChangeError,
     StratisCliPartialChangeError,
     StratisCliResourceNotFoundError,
@@ -588,7 +589,7 @@ class PoolActions:
             )
 
         if namespace.device_uuid == []:
-            expand_modevs = (modev for modev in modevs if expandable(modev))
+            expand_modevs = [modev for modev in modevs if expandable(modev)]
 
         else:
             device_uuids = frozenset(uuid.hex for uuid in namespace.device_uuid)
@@ -611,14 +612,16 @@ class PoolActions:
                 [modev for modev in t_2 if not expandable(modev)],
             )
 
-            if unexpandable_modevs:
+            if unexpandable_modevs != []:  # pragma: no cover
                 raise StratisCliPartialChangeError(
                     "extend-data",
                     frozenset(str(UUID(modev.Uuid())) for modev in expandable_modevs),
                     frozenset(str(UUID(modev.Uuid())) for modev in unexpandable_modevs),
                 )
 
-            expand_modevs = expandable_modevs  # pragma: no cover
+        assert isinstance(expand_modevs, list)
+        if expand_modevs == []:
+            raise StratisCliNoDeviceSizeChangeError()
 
         for modev in expand_modevs:  # pragma: no cover
             (changed, return_code, message) = Pool.Methods.GrowPhysicalDevice(

@@ -23,17 +23,12 @@ from stratis_cli import StratisCliErrorCodes
 from stratis_cli._actions._connection import get_object
 from stratis_cli._actions._constants import TOP_OBJECT
 from stratis_cli._errors import (
+    StratisCliNoDeviceSizeChangeError,
     StratisCliPartialChangeError,
     StratisCliResourceNotFoundError,
 )
 
-from .._misc import (
-    RUNNER,
-    TEST_RUNNER,
-    SimTestCase,
-    device_name_list,
-    get_pool_blockdevs,
-)
+from .._misc import RUNNER, SimTestCase, device_name_list, get_pool_blockdevs
 
 _ERROR = StratisCliErrorCodes.ERROR
 _DEVICE_STRATEGY = device_name_list(1, 1)
@@ -64,7 +59,7 @@ class ExtendDataTestCase(SimTestCase):
         Test trying to extend a pool without specifying a UUID.
         """
         command_line = self._MENU + [self._POOLNAME]
-        TEST_RUNNER(command_line)
+        self.check_error(StratisCliNoDeviceSizeChangeError, command_line, _ERROR)
 
     def test_good_uuid(self):
         """
