@@ -40,9 +40,10 @@ pool create [--key-desc <key_desc>] [--clevis <(nbde|tang|tpm2)> [--tang-url <ta
      Create a pool from one or more block devices, with the given pool name.
 pool stop <pool_name>::
      Stop a pool. Tear down the storage stack but leave all metadata intact.
-pool start <pool_uuid> --unlock-method <(keyring | clevis)>::
-     Start a pool. Use --unlock-method option to specify method of unlocking
-     the pool if it is encrypted.
+pool start <(--uuid <uuid> |--name <name>)> --unlock-method <(keyring | clevis)>::
+     Start a pool, speciying the pool by its UUID or by its name. Use the
+     --unlock-method option to specify method of unlocking the pool if it is
+     encrypted.
 pool list [--stopped] [--uuid <uuid>]::
      List pools. If the --stopped option is used, list only stopped pools.
      Otherwise, list only started pools. If a UUID is specified, print

@@ -22,7 +22,7 @@ from uuid import uuid4
 from stratis_cli import StratisCliErrorCodes
 from stratis_cli._errors import StratisCliEngineError, StratisCliNoChangeError
 
-from .._misc import RUNNER, TEST_RUNNER, SimTestCase, device_name_list, stop_pool
+from .._misc import RUNNER, SimTestCase, device_name_list, stop_pool
 
 _ERROR = StratisCliErrorCodes.ERROR
 _DEVICE_STRATEGY = device_name_list(1, 1)
@@ -47,7 +47,7 @@ class StartTestCase(SimTestCase):
         """
         command_line = ["pool", "stop", self._POOLNAME]
         RUNNER(command_line)
-        command_line = self._MENU + [str(uuid4())]
+        command_line = self._MENU + [f"--uuid={str(uuid4())}"]
         self.check_error(StratisCliEngineError, command_line, _ERROR)
 
     def test_good_uuid(self):
@@ -56,7 +56,27 @@ class StartTestCase(SimTestCase):
         """
         pool_uuid = stop_pool(self._POOLNAME)
 
-        command_line = self._MENU + [str(pool_uuid)]
-        TEST_RUNNER(command_line)
+        command_line = self._MENU + [f"--uuid={str(pool_uuid)}"]
+        RUNNER(command_line)
+
+        self.check_error(StratisCliNoChangeError, command_line, _ERROR)
+
+    def test_bad_name(self):
+        """
+        Test trying to start a pool with non-existent name.
+        """
+        command_line = ["pool", "stop", self._POOLNAME]
+        RUNNER(command_line)
+        command_line = self._MENU + ["--name=bogus"]
+        self.check_error(StratisCliEngineError, command_line, _ERROR)
+
+    def test_good_name(self):
+        """
+        Test trying to start a pool with a good name.
+        """
+        command_line = ["pool", "stop", self._POOLNAME]
+        RUNNER(command_line)
+        command_line = self._MENU + [f"--name={self._POOLNAME}"]
+        RUNNER(command_line)
 
         self.check_error(StratisCliNoChangeError, command_line, _ERROR)

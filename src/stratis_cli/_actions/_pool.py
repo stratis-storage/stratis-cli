@@ -40,7 +40,7 @@ from .._errors import (
     StratisCliPartialChangeError,
     StratisCliResourceNotFoundError,
 )
-from .._stratisd_constants import BlockDevTiers, StratisdErrors
+from .._stratisd_constants import BlockDevTiers, PoolIdType, StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import get_property, get_uuid_formatter
@@ -257,10 +257,17 @@ class PoolActions:
 
         proxy = get_object(TOP_OBJECT)
 
+        (pool_id, id_type) = (
+            (namespace.uuid.hex, PoolIdType.UUID)
+            if getattr(namespace, "name") is None
+            else (namespace.name, PoolIdType.NAME)
+        )
+
         ((started, _), return_code, message) = Manager.Methods.StartPool(
             proxy,
             {
-                "pool_uuid": str(namespace.pool_uuid),
+                "id": pool_id,
+                "id_type": str(id_type),
                 "unlock_method": (False, "")
                 if namespace.unlock_method is None
                 else (True, namespace.unlock_method),
@@ -271,7 +278,7 @@ class PoolActions:
             raise StratisCliEngineError(return_code, message)
 
         if not started:
-            raise StratisCliNoChangeError("start", namespace.pool_uuid)
+            raise StratisCliNoChangeError("start", pool_id)
 
     @staticmethod
     def init_cache(namespace):  # pylint: disable=too-many-locals

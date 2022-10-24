@@ -156,15 +156,26 @@ POOL_SUBCMDS = [
         "start",
         dict(
             help="Start a pool.",
-            args=[
+            mut_ex_args=[
                 (
-                    "pool_uuid",
-                    dict(
-                        action="store",
-                        type=UUID,
-                        help="UUID of the pool to start",
-                    ),
-                ),
+                    True,
+                    [
+                        (
+                            "--uuid",
+                            dict(
+                                action="store",
+                                type=UUID,
+                                help="UUID of the pool to start",
+                            ),
+                        ),
+                        (
+                            "--name",
+                            dict(action="store", help="name of the pool to start"),
+                        ),
+                    ],
+                )
+            ],
+            args=[
                 (
                     "--unlock-method",
                     dict(
