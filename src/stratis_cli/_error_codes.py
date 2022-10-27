@@ -15,7 +15,20 @@
 Error codes
 """
 # isort: STDLIB
-from enum import IntEnum
+from enum import Enum, IntEnum
+
+
+class Level(Enum):
+    """
+    Error levels.
+    """
+
+    ERROR = "E"
+    WARNING = "W"
+    INFO = "I"
+
+    def __str__(self):
+        return self.value
 
 
 class PoolMaintenanceErrorCode(IntEnum):
@@ -27,7 +40,7 @@ class PoolMaintenanceErrorCode(IntEnum):
     NO_POOL_CHANGES = 2
 
     def __str__(self):
-        return f"EM{str(self.value).zfill(3)}"
+        return f"{Level.ERROR}M{str(self.value).zfill(3)}"
 
     @staticmethod
     def from_str(code_str):
@@ -83,7 +96,7 @@ class PoolAllocSpaceErrorCode(IntEnum):
     NO_ALLOC_SPACE = 1
 
     def __str__(self):
-        return f"WS{str(self.value).zfill(3)}"
+        return f"{Level.WARNING}S{str(self.value).zfill(3)}"
 
     def explain(self):
         """
@@ -131,10 +144,10 @@ class PoolDeviceSizeChangeCode(IntEnum):
 
     def __str__(self):
         if self is PoolDeviceSizeChangeCode.DEVICE_SIZE_INCREASED:
-            return f"IDS{str(self.value).zfill(3)}"
+            return f"{Level.INFO}DS{str(self.value).zfill(3)}"
 
         if self is PoolDeviceSizeChangeCode.DEVICE_SIZE_DECREASED:
-            return f"WDS{str(self.value).zfill(3)}"
+            return f"{Level.WARNING}DS{str(self.value).zfill(3)}"
 
         assert False, "impossible error code reached"  # pragma: no cover
 
