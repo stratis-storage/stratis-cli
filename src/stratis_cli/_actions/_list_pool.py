@@ -393,9 +393,19 @@ class List:
             """
             return "unencrypted" if value is None else interp(value)
 
+        def pool_name(maybe_value):
+            """
+            Return formatted string for pool name.
+
+            :param maybe_value: the pool name
+            :type maybe_value: str or NoneType
+            """
+            return "<UNAVAILABLE>" if maybe_value is None else maybe_value
+
         if pool_uuid is None:
             tables = [
                 (
+                    pool_name(info.get("name")),
                     self.uuid_formatter(pool_uuid),
                     str(len(info["devs"])),
                     unencrypted_string(
@@ -407,9 +417,9 @@ class List:
             ]
 
             print_table(
-                ["UUID", "# Devices", "Key Description", "Clevis"],
+                ["Name", "UUID", "# Devices", "Key Description", "Clevis"],
                 sorted(tables, key=lambda entry: entry[0]),
-                ["<", ">", "<", "<"],
+                ["<", "<", ">", "<", "<"],
             )
 
         else:
@@ -421,6 +431,8 @@ class List:
 
             if stopped_pool is None:
                 raise StratisCliResourceNotFoundError("list", this_uuid)
+
+            print(f"Name: {pool_name(stopped_pool.get('name'))}")
 
             print(f"UUID: {self.uuid_formatter(this_uuid)}")
 
