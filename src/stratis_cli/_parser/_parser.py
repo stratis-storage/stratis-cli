@@ -34,7 +34,12 @@ from ._logical import LOGICAL_SUBCMDS
 from ._physical import PHYSICAL_SUBCMDS
 from ._pool import POOL_SUBCMDS
 
-PRINT_HELP = lambda parser: lambda _: parser.error("missing sub-command")
+
+def print_help(parser):
+    """
+    Print help.
+    """
+    return lambda _: parser.error("missing sub-command")
 
 
 def _add_args(parser, args):
@@ -83,7 +88,7 @@ def add_subcommand(subparser, cmd):
 
     def wrap_func(func):
         if func is None:
-            return PRINT_HELP(parser)
+            return print_help(parser)
 
         def wrapped_func(*args):
             check_stratisd_version()
@@ -196,6 +201,6 @@ def gen_parser():
     for subcmd in ROOT_SUBCOMMANDS:
         add_subcommand(subparsers, subcmd)
 
-    parser.set_defaults(func=PRINT_HELP(parser))
+    parser.set_defaults(func=print_help(parser))
 
     return parser
