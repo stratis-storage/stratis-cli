@@ -221,6 +221,19 @@ Alerts::
           Any unusual or urgent information about the pool of which the
           user should be made aware.
 
+FIELDS for stratis pool list --stopped
+
+Name::
+	  The name of the pool.
+UUID::
+	  The UUID of the pool.
+# Devices::
+	  The number of devices used by the pool.
+Key Description::
+	  The kernel key description used by the pool.
+Clevis::
+	  The status of Clevis encryption ("present" or "N/A").
+
 FIELDS for stratis filesystem list
 
 Pool::
