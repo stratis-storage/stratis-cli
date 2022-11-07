@@ -165,9 +165,9 @@ class List3TestCase(SimTestCase):
         """
         TEST_RUNNER(self._MENU)
 
-    def test_list_specific(self):
+    def test_list_specific_uuid(self):
         """
-        Test listing a specific stopped pool.
+        Test listing a specific stopped pool by uuid.
         """
 
         pool_uuid = stop_pool(self._POOLNAME)
@@ -175,11 +175,27 @@ class List3TestCase(SimTestCase):
         command_line = self._MENU + [f"--uuid={pool_uuid}"]
         TEST_RUNNER(command_line)
 
-    def test_list_bogus(self):
+    def test_list_specific_name(self):
         """
-        Test listing a bogus stopped pool.
+        Test listing a specific stopped pool by name.
+        """
+        stop_pool(self._POOLNAME)
+
+        command_line = self._MENU + [f"--name={self._POOLNAME}"]
+        TEST_RUNNER(command_line)
+
+    def test_list_bogus_uuid(self):
+        """
+        Test listing a bogus stopped pool by UUID.
         """
         command_line = self._MENU + [f"--uuid={uuid4()}"]
+        self.check_error(StratisCliResourceNotFoundError, command_line, _ERROR)
+
+    def test_list_unstopped__name(self):
+        """
+        Test listing a stopped pool by name, while not stopped.
+        """
+        command_line = self._MENU + [f"--name={self._POOLNAME}"]
         self.check_error(StratisCliResourceNotFoundError, command_line, _ERROR)
 
 

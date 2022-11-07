@@ -342,16 +342,23 @@ class PoolActions:
         # This method may be invoked as a result of the command line argument
         # "pool", without any options, in which case these attributes have not
         # been set.
-        (stopped, pool_uuid) = (
+        (stopped, pool_uuid, pool_name) = (
             getattr(namespace, "stopped", False),
             getattr(namespace, "uuid", None),
+            getattr(namespace, "name", None),
         )
 
         uuid_formatter = get_uuid_formatter(namespace.unhyphenated_uuids)
 
+        selection = (
+            (None if pool_name is None else (PoolIdType.NAME, pool_name))
+            if pool_uuid is None
+            else (PoolIdType.UUID, pool_uuid)
+        )
+
         if stopped:
-            return List(uuid_formatter).list_stopped_pools(pool_uuid=pool_uuid)
-        return List(uuid_formatter).list_pools_default(pool_uuid=pool_uuid)
+            return List(uuid_formatter, selection=selection).list_stopped_pools()
+        return List(uuid_formatter, selection=selection).list_pools_default()
 
     @staticmethod
     def destroy_pool(namespace):

@@ -218,16 +218,29 @@ POOL_SUBCMDS = [
         dict(
             help="List pools",
             description="List Stratis pools",
-            args=[
+            mut_ex_args=[
                 (
-                    "--uuid",
-                    dict(
-                        action="store",
-                        default=None,
-                        type=UUID,
-                        help="UUID of pool to list",
-                    ),
+                    False,
+                    [
+                        (
+                            "--uuid",
+                            dict(
+                                action="store",
+                                type=UUID,
+                                help="UUID of pool to list",
+                            ),
+                        ),
+                        (
+                            "--name",
+                            dict(
+                                action="store",
+                                help="name of pool to list",
+                            ),
+                        ),
+                    ],
                 ),
+            ],
+            args=[
                 (
                     "--stopped",
                     dict(

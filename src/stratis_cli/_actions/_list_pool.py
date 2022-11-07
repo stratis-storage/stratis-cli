@@ -20,7 +20,7 @@ from justbytes import Range
 
 from .._error_codes import PoolAllocSpaceErrorCode, PoolDeviceSizeChangeCode
 from .._errors import StratisCliResourceNotFoundError
-from .._stratisd_constants import PoolActionAvailability
+from .._stratisd_constants import PoolActionAvailability, PoolIdType
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import (
@@ -52,13 +52,16 @@ class List:
     Handle listing a pool.
     """
 
-    def __init__(self, uuid_formatter):
+    def __init__(self, uuid_formatter, *, selection=None):
         """
         Initialize a List object.
         :param uuid_formatter: function to format a UUID str or UUID
         :param uuid_formatter: str or UUID -> str
+        :param selection: how to select the pool to display
+        :type selection: pair of str * object or NoneType
         """
         self.uuid_formatter = uuid_formatter
+        self.selection = selection
 
     @staticmethod
     def _maybe_inconsistent(value, interp):
@@ -184,7 +187,7 @@ class List:
             return [PoolDeviceSizeChangeCode.DEVICE_SIZE_DECREASED]
         return []
 
-    def _print_detail_view(self, pool_uuid, mopool, size_change_codes):
+    def _print_detail_view(self, mopool, size_change_codes):
         """
         Print the detailed view for a single pool.
 
@@ -195,7 +198,7 @@ class List:
         """
         encrypted = mopool.Encrypted()
 
-        print(f"UUID: {self.uuid_formatter(pool_uuid)}")
+        print(f"UUID: {self.uuid_formatter(mopool.Uuid())}")
         print(f"Name: {mopool.Name()}")
 
         alert_summary = List.alert_summary(List.alert_codes(mopool) + size_change_codes)
@@ -242,7 +245,7 @@ class List:
 
         print(f"    Used: {total_physical_used_str}")
 
-    def list_pools_default(self, *, pool_uuid=None):  # pylint: disable=too-many-locals
+    def list_pools_default(self):  # pylint: disable=too-many-locals
         """
         List all pools that are listed by default. These are all started pools.
         """
@@ -306,7 +309,7 @@ class List:
             return ",".join(gen_string(x, y) for x, y in props_list)
 
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        if pool_uuid is None:
+        if self.selection is None:
             (increased, decreased) = List._pools_with_changed_devs(
                 devs().search(managed_objects)
             )
@@ -343,9 +346,15 @@ class List:
             )
 
         else:
-            this_uuid = pool_uuid.hex
+            (selection_type, selection_value) = self.selection
+            (selection_key, selection_value) = (
+                ("Uuid", selection_value.hex)
+                if selection_type == PoolIdType.UUID
+                else ("Name", selection_value)
+            )
+
             (pool_object_path, mopool) = next(
-                pools(props={"Uuid": this_uuid})
+                pools(props={selection_key: selection_value})
                 .require_unique_match(True)
                 .search(managed_objects)
             )
@@ -358,9 +367,59 @@ class List:
                 pool_object_path, increased, decreased
             )
 
-            self._print_detail_view(pool_uuid, MOPool(mopool), device_change_codes)
+            self._print_detail_view(MOPool(mopool), device_change_codes)
 
-    def list_stopped_pools(self, *, pool_uuid=None):
+    @staticmethod
+    def _pool_name(maybe_value):
+        """
+        Return formatted string for pool name.
+
+        :param maybe_value: the pool name
+        :type maybe_value: str or NoneType
+        """
+        return "<UNAVAILABLE>" if maybe_value is None else maybe_value
+
+    @staticmethod
+    def _unencrypted_string(value, interp):
+        """
+        Get a cell value or "unencrypted" if None. Apply interp
+        function to the value.
+
+        :param value: some value
+        :type value: str or NoneType
+        :param interp_option: function to interpret optional value
+        :type interp_option: object -> str
+        :rtype: str
+        """
+        return "unencrypted" if value is None else interp(value)
+
+    def _print_detail_view_stopped(self, pool_uuid, pool):
+        """
+        Print detailed view of a stopped pool.
+
+        :param str pool_uuid: the pool UUID
+        :param pool: a table of information on this pool
+        :type pool: dict of str * object
+        """
+        print(f"Name: {List._pool_name(pool.get('name'))}")
+
+        print(f"UUID: {self.uuid_formatter(pool_uuid)}")
+
+        key_description_str = List._unencrypted_string(
+            pool.get("key_description"), List._interp_inconsistent_option
+        )
+        print(f"Key Description: {key_description_str}")
+
+        clevis_info_str = List._unencrypted_string(
+            pool.get("clevis_info"), List._interp_inconsistent_option
+        )
+        print(f"Clevis Configuration: {clevis_info_str}")
+
+        print("Devices:")
+        for dev in pool["devs"]:
+            print(f"{self.uuid_formatter(dev['uuid'])}  {dev['devnode']}")
+
+    def list_stopped_pools(self):
         """
         List stopped pools.
         """
@@ -380,38 +439,16 @@ class List:
 
             return List._maybe_inconsistent(value, my_func)
 
-        def unencrypted_string(value, interp):
-            """
-            Get a cell value or "unencrypted" if None. Apply interp
-            function to the value.
-
-            :param value: some value
-            :type value: str or NoneType
-            :param interp_option: function to interpret optional value
-            :type interp_option: object -> str
-            :rtype: str
-            """
-            return "unencrypted" if value is None else interp(value)
-
-        def pool_name(maybe_value):
-            """
-            Return formatted string for pool name.
-
-            :param maybe_value: the pool name
-            :type maybe_value: str or NoneType
-            """
-            return "<UNAVAILABLE>" if maybe_value is None else maybe_value
-
-        if pool_uuid is None:
+        if self.selection is None:
             tables = [
                 (
-                    pool_name(info.get("name")),
+                    List._pool_name(info.get("name")),
                     self.uuid_formatter(pool_uuid),
                     str(len(info["devs"])),
-                    unencrypted_string(
+                    List._unencrypted_string(
                         info.get("key_description"), List._interp_inconsistent_option
                     ),
-                    unencrypted_string(info.get("clevis_info"), interp_clevis),
+                    List._unencrypted_string(info.get("clevis_info"), interp_clevis),
                 )
                 for (pool_uuid, info) in stopped_pools.items()
             ]
@@ -423,29 +460,31 @@ class List:
             )
 
         else:
-            this_uuid = pool_uuid.hex
+            (selection_type, selection_value) = self.selection
+
+            if selection_type == PoolIdType.UUID:
+                selection_value = selection_value.hex
+
+                def selection_func(uuid, _info):
+                    return uuid == selection_value
+
+            else:
+
+                def selection_func(_uuid, info):
+                    return info.get("name") == selection_value
+
             stopped_pool = next(
-                (info for (uuid, info) in stopped_pools.items() if uuid == this_uuid),
+                (
+                    (uuid, info)
+                    for (uuid, info) in stopped_pools.items()
+                    if selection_func(uuid, info)
+                ),
                 None,
             )
 
             if stopped_pool is None:
-                raise StratisCliResourceNotFoundError("list", this_uuid)
+                raise StratisCliResourceNotFoundError("list", selection_value)
 
-            print(f"Name: {pool_name(stopped_pool.get('name'))}")
+            (pool_uuid, pool) = stopped_pool
 
-            print(f"UUID: {self.uuid_formatter(this_uuid)}")
-
-            key_description_str = unencrypted_string(
-                stopped_pool.get("key_description"), List._interp_inconsistent_option
-            )
-            print(f"Key Description: {key_description_str}")
-
-            clevis_info_str = unencrypted_string(
-                stopped_pool.get("clevis_info"), List._interp_inconsistent_option
-            )
-            print(f"Clevis Configuration: {clevis_info_str}")
-
-            print("Devices:")
-            for dev in stopped_pool["devs"]:
-                print(f"{self.uuid_formatter(dev['uuid'])}  {dev['devnode']}")
+            self._print_detail_view_stopped(pool_uuid, pool)
