@@ -15,6 +15,9 @@
 Pool actions.
 """
 
+# isort: STDLIB
+from abc import ABC, abstractmethod
+
 # isort: THIRDPARTY
 from justbytes import Range
 
@@ -47,9 +50,46 @@ def _fetch_stopped_pools_property(proxy):
     return Manager.Properties.StoppedPools.Get(proxy)
 
 
-class List:
+def _maybe_inconsistent(value, interp):
     """
-    Handle listing a pool.
+    Take a value that represents possible inconsistency via result type.
+
+    :param value: a tuple, second item is the value
+    :param interp: a function to intepret the optional value
+    :type value: bool * object
+    :rtype: str
+    """
+    (real, value) = value
+    return interp(value) if real else "inconsistent"
+
+
+def _interp_inconsistent_option(value):
+    """
+    Interpret a result that also may not exist.
+    """
+
+    def my_func(value):
+        (exists, value) = value
+        return str(value) if exists else "N/A"
+
+    return _maybe_inconsistent(value, my_func)
+
+
+def list_pools(uuid_formatter, *, stopped=False, selection=None):
+    """
+    List the specified information about pools.
+    """
+    klass = (
+        Stopped(uuid_formatter, selection=selection)
+        if stopped
+        else Default(uuid_formatter, selection=selection)
+    )
+    klass.list_pools()
+
+
+class List(ABC):  # pylint: disable=too-few-public-methods
+    """
+    Handle listing a pool or pools.
     """
 
     def __init__(self, uuid_formatter, *, selection=None):
@@ -57,36 +97,24 @@ class List:
         Initialize a List object.
         :param uuid_formatter: function to format a UUID str or UUID
         :param uuid_formatter: str or UUID -> str
+        :param bool stopped: whether to list stopped pools
         :param selection: how to select the pool to display
         :type selection: pair of str * object or NoneType
         """
         self.uuid_formatter = uuid_formatter
         self.selection = selection
 
-    @staticmethod
-    def _maybe_inconsistent(value, interp):
+    @abstractmethod
+    def list_pools(self):
         """
-        Take a value that represents possible inconsistency via result type.
-
-        :param value: a tuple, second item is the value
-        :param interp: a function to intepret the optional value
-        :type value: bool * object
-        :rtype: str
-        """
-        (real, value) = value
-        return interp(value) if real else "inconsistent"
-
-    @staticmethod
-    def _interp_inconsistent_option(value):
-        """
-        Interpret a result that also may not exist.
+        List the pools.
         """
 
-        def my_func(value):
-            (exists, value) = value
-            return str(value) if exists else "N/A"
 
-        return List._maybe_inconsistent(value, my_func)
+class Default(List):
+    """
+    Handle listing the pools that are listed by default.
+    """
 
     @staticmethod
     def alert_string(codes):
@@ -201,7 +229,7 @@ class List:
         print(f"UUID: {self.uuid_formatter(mopool.Uuid())}")
         print(f"Name: {mopool.Name()}")
 
-        alert_summary = List.alert_summary(List.alert_codes(mopool) + size_change_codes)
+        alert_summary = self.alert_summary(self.alert_codes(mopool) + size_change_codes)
         print(f"Alerts: {str(len(alert_summary))}")
         for line in alert_summary:  # pragma: no cover
             print(f"     {line}")
@@ -218,14 +246,14 @@ class List:
         )
 
         key_description_str = (
-            List._interp_inconsistent_option(mopool.KeyDescription())
+            _interp_inconsistent_option(mopool.KeyDescription())
             if encrypted
             else "unencrypted"
         )
         print(f"Key Description: {key_description_str}")
 
         clevis_info_str = (
-            List._interp_inconsistent_option(mopool.ClevisInfo())
+            _interp_inconsistent_option(mopool.ClevisInfo())
             if encrypted
             else "unencrypted"
         )
@@ -245,7 +273,7 @@ class List:
 
         print(f"    Used: {total_physical_used_str}")
 
-    def list_pools_default(self):  # pylint: disable=too-many-locals
+    def list_pools(self):  # pylint: disable=too-many-locals
         """
         List all pools that are listed by default. These are all started pools.
         """
@@ -310,7 +338,7 @@ class List:
 
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
         if self.selection is None:
-            (increased, decreased) = List._pools_with_changed_devs(
+            (increased, decreased) = self._pools_with_changed_devs(
                 devs().search(managed_objects)
             )
 
@@ -325,9 +353,9 @@ class List:
                     physical_size_triple(mopool),
                     properties_string(mopool),
                     self.uuid_formatter(mopool.Uuid()),
-                    List.alert_string(
-                        List.alert_codes(mopool)
-                        + List._from_sets(pool_object_path, increased, decreased)
+                    self.alert_string(
+                        self.alert_codes(mopool)
+                        + self._from_sets(pool_object_path, increased, decreased)
                     ),
                 )
                 for (pool_object_path, mopool) in pools_with_props
@@ -359,15 +387,21 @@ class List:
                 .search(managed_objects)
             )
 
-            (increased, decreased) = List._pools_with_changed_devs(
+            (increased, decreased) = self._pools_with_changed_devs(
                 devs(props={"Pool": pool_object_path}).search(managed_objects)
             )
 
-            device_change_codes = List._from_sets(
+            device_change_codes = self._from_sets(
                 pool_object_path, increased, decreased
             )
 
             self._print_detail_view(MOPool(mopool), device_change_codes)
+
+
+class Stopped(List):  # pylint: disable=too-few-public-methods
+    """
+    Support for listing stopped pools.
+    """
 
     @staticmethod
     def _pool_name(maybe_value):
@@ -393,7 +427,7 @@ class List:
         """
         return "unencrypted" if value is None else interp(value)
 
-    def _print_detail_view_stopped(self, pool_uuid, pool):
+    def _print_detail_view(self, pool_uuid, pool):
         """
         Print detailed view of a stopped pool.
 
@@ -401,17 +435,17 @@ class List:
         :param pool: a table of information on this pool
         :type pool: dict of str * object
         """
-        print(f"Name: {List._pool_name(pool.get('name'))}")
+        print(f"Name: {self._pool_name(pool.get('name'))}")
 
         print(f"UUID: {self.uuid_formatter(pool_uuid)}")
 
-        key_description_str = List._unencrypted_string(
-            pool.get("key_description"), List._interp_inconsistent_option
+        key_description_str = self._unencrypted_string(
+            pool.get("key_description"), _interp_inconsistent_option
         )
         print(f"Key Description: {key_description_str}")
 
-        clevis_info_str = List._unencrypted_string(
-            pool.get("clevis_info"), List._interp_inconsistent_option
+        clevis_info_str = self._unencrypted_string(
+            pool.get("clevis_info"), _interp_inconsistent_option
         )
         print(f"Clevis Configuration: {clevis_info_str}")
 
@@ -419,7 +453,7 @@ class List:
         for dev in pool["devs"]:
             print(f"{self.uuid_formatter(dev['uuid'])}  {dev['devnode']}")
 
-    def list_stopped_pools(self):
+    def list_pools(self):
         """
         List stopped pools.
         """
@@ -437,18 +471,18 @@ class List:
                 (exists, value) = value
                 return "present" if exists else "N/A"
 
-            return List._maybe_inconsistent(value, my_func)
+            return _maybe_inconsistent(value, my_func)
 
         if self.selection is None:
             tables = [
                 (
-                    List._pool_name(info.get("name")),
+                    self._pool_name(info.get("name")),
                     self.uuid_formatter(pool_uuid),
                     str(len(info["devs"])),
-                    List._unencrypted_string(
-                        info.get("key_description"), List._interp_inconsistent_option
+                    self._unencrypted_string(
+                        info.get("key_description"), _interp_inconsistent_option
                     ),
-                    List._unencrypted_string(info.get("clevis_info"), interp_clevis),
+                    self._unencrypted_string(info.get("clevis_info"), interp_clevis),
                 )
                 for (pool_uuid, info) in stopped_pools.items()
             ]
@@ -487,4 +521,4 @@ class List:
 
             (pool_uuid, pool) = stopped_pool
 
-            self._print_detail_view_stopped(pool_uuid, pool)
+            self._print_detail_view(pool_uuid, pool)

@@ -44,7 +44,7 @@ from .._stratisd_constants import BlockDevTiers, PoolIdType, StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import get_property, get_uuid_formatter
-from ._list_pool import List
+from ._list_pool import list_pools
 from ._utils import get_clevis_info
 
 
@@ -356,9 +356,7 @@ class PoolActions:
             else (PoolIdType.UUID, pool_uuid)
         )
 
-        if stopped:
-            return List(uuid_formatter, selection=selection).list_stopped_pools()
-        return List(uuid_formatter, selection=selection).list_pools_default()
+        return list_pools(uuid_formatter, stopped=stopped, selection=selection)
 
     @staticmethod
     def destroy_pool(namespace):
