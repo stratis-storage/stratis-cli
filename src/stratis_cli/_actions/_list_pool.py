@@ -19,6 +19,7 @@ Pool actions.
 from abc import ABC, abstractmethod
 
 # isort: THIRDPARTY
+from dbus import Boolean
 from justbytes import Range
 
 from .._error_codes import PoolAllocSpaceErrorCode, PoolDeviceSizeChangeCode
@@ -314,19 +315,18 @@ class Default(List):
                 Generate the display string for a boolean property
 
                 :param has_property: whether the property is true or false
-                :type has_property: bool or NoneType
+                :type has_property: bool or object
                 :param str code: the code to generate the string for
                 :returns: the generated string
                 :rtype: str
                 """
-                if has_property == True:  # pylint: disable=singleton-comparison
-                    prefix = " "
-                elif has_property == False:  # pylint: disable=singleton-comparison
-                    prefix = "~"
-                # This is only going to occur if the engine experiences an
-                # error while calculating a property or if our code has a bug.
-                else:  # pragma: no cover
-                    prefix = "?"
+                # must check membership in dbus.Boolean, because dbus.Boolean is
+                # not a subclass of bool, but of int.
+                prefix = (
+                    "?"
+                    if not isinstance(has_property, Boolean)
+                    else (" " if has_property else "~")
+                )
                 return prefix + code
 
             props_list = [
