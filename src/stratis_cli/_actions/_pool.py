@@ -29,6 +29,7 @@ from .._error_codes import PoolErrorCode
 from .._errors import (
     StratisCliEngineError,
     StratisCliFsLimitChangeError,
+    StratisCliHasCacheChangeError,
     StratisCliIncoherenceError,
     StratisCliInUseOtherTierError,
     StratisCliInUseSameTierError,
@@ -281,16 +282,20 @@ class PoolActions:
         :raises StratisCliIncoherenceError:
         """
         # pylint: disable=import-outside-toplevel
-        from ._data import MODev, ObjectManager, Pool, devs, pools
+        from ._data import MODev, MOPool, ObjectManager, Pool, devs, pools
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
         pool_name = namespace.pool_name
-        (pool_object_path, _) = next(
+        (pool_object_path, pool_info) = next(
             pools(props={"Name": pool_name})
             .require_unique_match(True)
             .search(managed_objects)
         )
+
+        if MOPool(pool_info).HasCache():
+            raise StratisCliHasCacheChangeError()
+
         blockdevs = frozenset([os.path.abspath(p) for p in namespace.blockdevs])
 
         _check_opposite_tier(managed_objects, blockdevs, BlockDevTiers.DATA)
