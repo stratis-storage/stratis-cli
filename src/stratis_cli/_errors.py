@@ -95,6 +95,22 @@ class StratisCliFsLimitChangeError(StratisCliNoPropertyChangeError):
         return f"Pool's filesystem limit is exactly {str(self.value).lower()}"
 
 
+class StratisCliHasCacheChangeError(StratisCliNoPropertyChangeError):
+    """
+    Raised when the user request cache initialzation, but a cache is already
+    present. It is not currently possible to remove a cache.
+    """
+
+    def __init__(self):
+        """
+        Initialization.
+        """
+        super().__init__(True)
+
+    def __str__(self):
+        return "Pool already has an initialized cache."
+
+
 class StratisCliResourceNotFoundError(StratisCliUserError):
     """
     Raised if a request was made to stratisd to update a resource
