@@ -40,11 +40,11 @@ from .._errors import (
     StratisCliPartialChangeError,
     StratisCliResourceNotFoundError,
 )
-from .._stratisd_constants import BlockDevTiers, StratisdErrors
+from .._stratisd_constants import BlockDevTiers, PoolIdType, StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import get_property, get_uuid_formatter
-from ._list_pool import List
+from ._list_pool import list_pools
 from ._utils import get_clevis_info
 
 
@@ -257,10 +257,17 @@ class PoolActions:
 
         proxy = get_object(TOP_OBJECT)
 
+        (pool_id, id_type) = (
+            (namespace.uuid.hex, PoolIdType.UUID)
+            if getattr(namespace, "name") is None
+            else (namespace.name, PoolIdType.NAME)
+        )
+
         ((started, _), return_code, message) = Manager.Methods.StartPool(
             proxy,
             {
-                "pool_uuid": str(namespace.pool_uuid),
+                "id": pool_id,
+                "id_type": str(id_type),
                 "unlock_method": (False, "")
                 if namespace.unlock_method is None
                 else (True, namespace.unlock_method),
@@ -271,7 +278,7 @@ class PoolActions:
             raise StratisCliEngineError(return_code, message)
 
         if not started:
-            raise StratisCliNoChangeError("start", namespace.pool_uuid)
+            raise StratisCliNoChangeError("start", pool_id)
 
     @staticmethod
     def init_cache(namespace):  # pylint: disable=too-many-locals
@@ -335,16 +342,21 @@ class PoolActions:
         # This method may be invoked as a result of the command line argument
         # "pool", without any options, in which case these attributes have not
         # been set.
-        (stopped, pool_uuid) = (
+        (stopped, pool_uuid, pool_name) = (
             getattr(namespace, "stopped", False),
             getattr(namespace, "uuid", None),
+            getattr(namespace, "name", None),
         )
 
         uuid_formatter = get_uuid_formatter(namespace.unhyphenated_uuids)
 
-        if stopped:
-            return List(uuid_formatter).list_stopped_pools(pool_uuid=pool_uuid)
-        return List(uuid_formatter).list_pools_default(pool_uuid=pool_uuid)
+        selection = (
+            (None if pool_name is None else (PoolIdType.NAME, pool_name))
+            if pool_uuid is None
+            else (PoolIdType.UUID, pool_uuid)
+        )
+
+        return list_pools(uuid_formatter, stopped=stopped, selection=selection)
 
     @staticmethod
     def destroy_pool(namespace):
