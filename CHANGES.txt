@@ -1,3 +1,39 @@
+stratis-cli 3.4.0
+=================
+Required stratisd version: 3.4.0
+
+Recommended development environment: Fedora 36
+Lowest supported Python interpreter: 3.9.0
+
+- Require stratisd 3.4.0:
+  https://github.com/stratis-storage/stratis-cli/pull/924
+
+- Support starting pool by name:
+  https://github.com/stratis-storage/stratis-cli/pull/929
+
+- Report error if extend-data command would cause no change:
+  https://github.com/stratis-storage/stratis-cli/issues/915
+  https://github.com/stratis-storage/stratis-cli/pull/925
+
+- Report error if init-cache command is called when a cache is present:
+  https://github.com/stratis-storage/stratis-cli/issues/937
+  https://github.com/stratis-storage/stratis-cli/pull/938
+
+- Add entry for 'stratis pool list --stopped' to man pages:
+  https://github.com/stratis-storage/stratis-cli/issues/934
+  https://github.com/stratis-storage/stratis-cli/pull/935
+
+- Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/939
+  https://github.com/stratis-storage/stratis-cli/pull/933
+  https://github.com/stratis-storage/stratis-cli/pull/931
+  https://github.com/stratis-storage/stratis-cli/pull/930
+  https://github.com/stratis-storage/stratis-cli/pull/928
+  https://github.com/stratis-storage/stratis-cli/pull/927
+  https://github.com/stratis-storage/stratis-cli/pull/926
+  https://github.com/stratis-storage/stratis-cli/pull/923
+
+
 stratis-cli 3.3.0
 =================
 Required stratisd version: 3.3.0
