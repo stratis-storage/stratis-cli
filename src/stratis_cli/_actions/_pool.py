@@ -313,7 +313,7 @@ class PoolActions:
             get_object(pool_object_path), {"devices": blockdevs}
         )
 
-        if return_code != StratisdErrors.OK:
+        if return_code != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(return_code, message)
 
         if not changed or len(devs_added) < len(blockdevs):  # pragma: no cover
