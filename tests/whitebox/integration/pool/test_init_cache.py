@@ -20,7 +20,7 @@ from dbus_client_gen import DbusClientUniqueResultError
 
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
-from stratis_cli._errors import StratisCliEngineError, StratisCliHasCacheChangeError
+from stratis_cli._errors import StratisCliHasCacheChangeError
 
 from .._keyutils import RandomKeyTmpFile
 from .._misc import RUNNER, TEST_RUNNER, SimTestCase, device_name_list
@@ -135,10 +135,10 @@ class InitCacheFail4TestCase(SimTestCase):
 
     def test_init_cache(self):
         """
-        Initializing the cache must fail since the pool is encrypted.
+        Initializing the cache must succeed since encrypted cache is now supported.
         """
         command_line = self._MENU + [self._POOLNAME] + _DEVICE_STRATEGY()
-        self.check_error(StratisCliEngineError, command_line, _ERROR)
+        TEST_RUNNER(command_line)
 
 
 class InitCacheSuccessTestCase(SimTestCase):
