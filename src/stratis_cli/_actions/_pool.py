@@ -185,7 +185,6 @@ class PoolActions:
             proxy,
             {
                 "name": pool_name,
-                "redundancy": (True, 0),
                 "devices": blockdevs,
                 "key_desc": (
                     (True, namespace.key_desc)
