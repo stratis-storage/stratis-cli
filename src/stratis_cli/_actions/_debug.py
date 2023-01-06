@@ -48,7 +48,7 @@ class TopDebugActions:  # pylint: disable=too-few-public-methods
         Issue a synthetic uevent from the CLI.
         """
         try:
-            realdevice = os.path.realpath(namespace.device, strict=True)
+            realdevice = os.path.realpath(namespace.device)
             sysfs_device_uevent = (
                 realdevice.replace("/dev/", "/sys/class/block/") + "/uevent"
             )  # pragma: no cover
