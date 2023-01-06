@@ -1,3 +1,31 @@
+stratis-cli 3.5.0
+=================
+Required stratisd version: 3.5.0
+
+Recommended development environment: Fedora 37
+Lowest supported Python interpreter: 3.9.16
+
+- Require stratisd 3.5.0:
+  https://github.com/stratis-storage/stratis-cli/pull/942
+  https://github.com/stratis-storage/stratis-cli/pull/941
+
+- Adapt tests for new encrypted cache support in stratisd:
+  https://github.com/stratis-storage/stratis-cli/pull/944
+
+- Adapt source to removal of redundancy parameter from CreatePool:
+  https://github.com/stratis-storage/stratis-cli/pull/945
+
+- Remove use of strict parameter in realpath call:
+  https://github.com/stratis-storage/stratis-cli/issues/946
+  https://github.com/stratis-storage/stratis-cli/pull/947
+
+- Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/953
+  https://github.com/stratis-storage/stratis-cli/pull/952
+  https://github.com/stratis-storage/stratis-cli/pull/951
+  https://github.com/stratis-storage/stratis-cli/pull/932
+
+
 stratis-cli 3.4.0
 =================
 Required stratisd version: 3.4.0
