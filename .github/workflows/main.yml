@@ -5,7 +5,7 @@ name: stratis-cli CI
 on:
   push:
     branches:
-      - master
+      - patch-3.4.0
     paths-ignore:
       - 'CHANGES.txt'
       - '**/README.rst'
@@ -14,7 +14,7 @@ on:
       - 'shell-completion/**'
   pull_request:
     branches:
-      - master
+      - patch-3.4.0
     paths-ignore:
       - 'CHANGES.txt'
       - '**/README.rst'
