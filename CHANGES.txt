@@ -1,3 +1,14 @@
+stratis-cli 3.4.1
+=================
+Required stratisd version: 3.4.0
+
+Recommended development environment: Fedora 37
+Lowest supported Python interpreter: 3.9.16
+
+- Setup patch branch:
+  https://github.com/stratis-storage/stratis-cli/pull/949
+
+
 stratis-cli 3.4.0
 =================
 Required stratisd version: 3.4.0
