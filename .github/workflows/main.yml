@@ -92,8 +92,9 @@ jobs:
           dbus-daemon
           dbus-tools
           dbus-devel
-          libblkid-devel
           git
+          glibc-static
+          libblkid-devel
           make
           python3-coverage
           python3-dbus-client-gen
