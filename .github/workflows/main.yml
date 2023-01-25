@@ -80,7 +80,10 @@ jobs:
             rust_log: RUST_LOG=stratisd=debug
             image: fedora:34  # LOWEST DEVELOPMENT ENVIRONMENT
     runs-on: ubuntu-latest
-    container: ${{ matrix.image }}
+    container:
+      image: ${{ matrix.image }}
+      # yamllint disable rule:line-length
+      options: --privileged --userns=host --ipc=host -v /run/dbus/system_bus_socket:/run/dbus/system_bus_socket:ro -v /usr/share/dbus-1:/usr/share/dbus-1
     steps:
       - uses: actions/checkout@v3
       - name: Install dependencies
@@ -89,8 +92,6 @@ jobs:
           asciidoc
           clang
           cryptsetup-devel
-          dbus-daemon
-          dbus-tools
           dbus-devel
           git
           glibc-static
@@ -117,16 +118,9 @@ jobs:
       - name: Install stratisd
         run: PROFILEDIR=debug make install
         working-directory: ./stratisd
-      - name: Set up for D-Bus
-        run: |
-          mkdir -p /var/lib/dbus
-          dbus-uuidgen > /var/lib/dbus/machine-id
-          mkdir -p /var/run/dbus
-      - name: Start D-Bus
-        run: >
-          dbus-daemon
-          --config-file=/usr/share/dbus-1/system.conf
-          --print-address
+      - name: Workaround for D-Bus inotify
+        run: cp stratisd.conf /usr/share/dbus-1/system.d
+        working-directory: ./stratisd
       - name: Run test
         run: >
           ${{ matrix.rust_log }}
