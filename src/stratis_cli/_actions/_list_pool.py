@@ -141,7 +141,7 @@ class Default(List):
         :returns: string with alert summary
         :rtype: str
         """
-        return [f"{str(code)}: {code.summarize()}" for code in codes]
+        return [f"{code}: {code.summarize()}" for code in codes]
 
     @staticmethod
     def alert_codes(mopool):
@@ -231,7 +231,7 @@ class Default(List):
         print(f"Name: {mopool.Name()}")
 
         alert_summary = self.alert_summary(self.alert_codes(mopool) + size_change_codes)
-        print(f"Alerts: {str(len(alert_summary))}")
+        print(f"Alerts: {len(alert_summary)}")
         for line in alert_summary:  # pragma: no cover
             print(f"     {line}")
 
