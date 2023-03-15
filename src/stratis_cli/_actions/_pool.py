@@ -16,6 +16,7 @@ Pool actions.
 """
 
 # isort: STDLIB
+import json
 import os
 from collections import defaultdict
 from itertools import tee
@@ -193,7 +194,7 @@ class PoolActions:
                 ),
                 "clevis_info": (False, ("", ""))
                 if clevis_info is None
-                else (True, clevis_info),
+                else (True, (clevis_info.pin, json.dumps(clevis_info.config))),
             },
         )
 
