@@ -16,9 +16,6 @@
 Miscellaneous functions.
 """
 
-# isort: STDLIB
-import json
-
 from .._errors import (
     StratisCliMissingClevisTangURLError,
     StratisCliMissingClevisThumbprintError,
@@ -32,6 +29,24 @@ from .._stratisd_constants import (
 )
 
 
+class ClevisInfo:
+    """
+    Store a representation of Clevis encryption info
+    """
+
+    # pylint: disable=too-few-public-methods
+
+    def __init__(self, pin, config):
+        """
+        Initialize clevis information.
+
+        :param str pin: the Clevis "pin"
+        :param dict config: the JSON config corresponding to the pin
+        """
+        self.pin = pin
+        self.config = config
+
+
 def get_clevis_info(namespace):
     """
     Get clevis info, if any, from the namespace.
@@ -39,7 +54,7 @@ def get_clevis_info(namespace):
     :param namespace: namespace set up by the parser
 
     :returns: clevis info or None
-    :rtype: pair of str or NoneType
+    :rtype: ClevisInfo or NoneType
     """
     clevis_info = None
     if namespace.clevis is not None:
@@ -57,18 +72,14 @@ def get_clevis_info(namespace):
                 assert namespace.thumbprint is not None
                 clevis_config[CLEVIS_KEY_THP] = namespace.thumbprint
 
-            clevis_info = (CLEVIS_PIN_TANG, clevis_config)
+            clevis_info = ClevisInfo(CLEVIS_PIN_TANG, clevis_config)
 
         elif namespace.clevis == "tpm2":
-            clevis_info = (CLEVIS_PIN_TPM2, {})
+            clevis_info = ClevisInfo(CLEVIS_PIN_TPM2, {})
 
         else:
             raise AssertionError(
                 f"unexpected value {namespace.clevis} for clevis option"
             )  # pragma: no cover
 
-    return (
-        clevis_info
-        if clevis_info is None
-        else (clevis_info[0], json.dumps(clevis_info[1]))
-    )
+    return clevis_info

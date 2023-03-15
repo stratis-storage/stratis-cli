@@ -30,6 +30,7 @@ from .._stratisd_constants import (
 )
 from ._connection import get_object
 from ._constants import TOP_OBJECT
+from ._utils import ClevisInfo
 
 
 class BindActions:
@@ -38,14 +39,13 @@ class BindActions:
     """
 
     @staticmethod
-    def _bind_clevis(namespace, clevis_pin, clevis_config):
+    def _bind_clevis(namespace, clevis_info):
         """
         Generic bind method. For further information about Clevis, and
         discussion of the pin and the configuration, consult Clevis
         documentation.
 
-        :param str clevis_pin: Clevis pin
-        :param dict clevis_config: configuration, may contain Stratis keys
+        :param ClevisInfo clevis_info: Clevis info
         """
         # pylint: disable=import-outside-toplevel
         from ._data import ObjectManager, Pool, pools
@@ -61,8 +61,8 @@ class BindActions:
         (changed, return_code, return_msg) = Pool.Methods.BindClevis(
             get_object(pool_object_path),
             {
-                "pin": clevis_pin,
-                "json": json.dumps(clevis_config),
+                "pin": clevis_info.pin,
+                "json": json.dumps(clevis_info.config),
             },
         )
 
@@ -87,7 +87,7 @@ class BindActions:
             assert namespace.thumbprint is not None
             clevis_config[CLEVIS_KEY_THP] = namespace.thumbprint
 
-        BindActions._bind_clevis(namespace, CLEVIS_PIN_TANG, clevis_config)
+        BindActions._bind_clevis(namespace, ClevisInfo(CLEVIS_PIN_TANG, clevis_config))
 
     @staticmethod
     def bind_tpm(namespace):
@@ -98,7 +98,7 @@ class BindActions:
         :raises StratisCliEngineError:
         """
 
-        BindActions._bind_clevis(namespace, CLEVIS_PIN_TPM2, {})
+        BindActions._bind_clevis(namespace, ClevisInfo(CLEVIS_PIN_TPM2, {}))
 
     @staticmethod
     def bind_keyring(namespace):
