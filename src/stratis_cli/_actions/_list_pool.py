@@ -16,6 +16,7 @@ Pool actions.
 """
 
 # isort: STDLIB
+import json
 from abc import ABC, abstractmethod
 
 # isort: THIRDPARTY
@@ -34,6 +35,7 @@ from ._formatting import (
     print_table,
     size_triple,
 )
+from ._utils import ClevisInfo
 
 
 def _fetch_stopped_pools_property(proxy):
@@ -86,6 +88,17 @@ def list_pools(uuid_formatter, *, stopped=False, selection=None):
         else Default(uuid_formatter, selection=selection)
     )
     klass.list_pools()
+
+
+def clevis_to_str(clevis_dbus_object):  # pragma: no cover
+    """
+    :param dbus.Struct clevis_dbus_object: clevis information
+    :rtype: str
+    """
+    clevis_pin = str(clevis_dbus_object[0])
+    clevis_config = json.loads(clevis_dbus_object[1])
+    clevis_info = ClevisInfo(clevis_pin, clevis_config)
+    return str(clevis_info)
 
 
 class List(ABC):  # pylint: disable=too-few-public-methods
@@ -254,7 +267,9 @@ class Default(List):
         print(f"Key Description: {key_description_str}")
 
         clevis_info_str = (
-            _non_existent_or_inconsistent_to_str(mopool.ClevisInfo())
+            _non_existent_or_inconsistent_to_str(
+                mopool.ClevisInfo(), interp=clevis_to_str
+            )
             if encrypted
             else "unencrypted"
         )
@@ -437,7 +452,7 @@ class Stopped(List):  # pylint: disable=too-few-public-methods
         clevis_info_str = (
             "unencrypted"
             if clevis_info is None
-            else _non_existent_or_inconsistent_to_str(clevis_info)
+            else _non_existent_or_inconsistent_to_str(clevis_info, interp=clevis_to_str)
         )
         print(f"Clevis Configuration: {clevis_info_str}")
 

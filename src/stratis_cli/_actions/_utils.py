@@ -46,6 +46,12 @@ class ClevisInfo:
         self.pin = pin
         self.config = config
 
+    def __str__(self):  # pragma: no cover
+        config_string = " ".join(
+            f"{key}: {value}" for key, value in self.config.items()
+        )
+        return f"{self.pin}   {config_string}"
+
 
 def get_clevis_info(namespace):
     """
