@@ -324,7 +324,7 @@ class StratisCliInUseOtherTierError(StratisCliInUseError):
                 )
             else:
                 msg += (
-                    "; device {list(blockdevs)[0]} would be added to the {target_blockdev_tier} "
+                    f"; device {list(blockdevs)[0]} would be added to the {target_blockdev_tier} "
                     f"tier but is already in use in the {already_blockdev_tier} tier "
                     f"of pool {pool_name}"
                 )
