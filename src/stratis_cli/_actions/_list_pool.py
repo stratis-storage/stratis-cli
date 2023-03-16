@@ -51,29 +51,29 @@ def _fetch_stopped_pools_property(proxy):
     return Manager.Properties.StoppedPools.Get(proxy)
 
 
-def _maybe_inconsistent(value, interp):
+def _non_existent_or_inconsistent_to_str(
+    value, *, inconsistent_str="inconsistent", non_existent_str="N/A", interp=str
+):
     """
-    Take a value that represents possible inconsistency via result type.
+    Process dbus value that encodes both inconsistency and existence of the
+    value.
 
-    :param value: a tuple, second item is the value
-    :param interp: a function to intepret the optional value
-    :type value: bool * object
+    :param value: a dbus value
+    :param str inconsistent_str: value to return if inconsistent
+    :param str non_existent_str: value to return if non-existent
+    :param interp: how to interpret the value if it exists and is consistent
+    :returns: a string to print
     :rtype: str
     """
-    (real, value) = value
-    return interp(value) if real else "inconsistent"
+    (consistent, (exists, value)) = value
 
+    if not consistent:  # pragma: no cover
+        return inconsistent_str
 
-def _interp_inconsistent_option(value):
-    """
-    Interpret a result that also may not exist.
-    """
+    if not exists:
+        return non_existent_str
 
-    def my_func(value):
-        (exists, value) = value
-        return str(value) if exists else "N/A"
-
-    return _maybe_inconsistent(value, my_func)
+    return interp(value)
 
 
 def list_pools(uuid_formatter, *, stopped=False, selection=None):
@@ -247,14 +247,14 @@ class Default(List):
         )
 
         key_description_str = (
-            _interp_inconsistent_option(mopool.KeyDescription())
+            _non_existent_or_inconsistent_to_str(mopool.KeyDescription())
             if encrypted
             else "unencrypted"
         )
         print(f"Key Description: {key_description_str}")
 
         clevis_info_str = (
-            _interp_inconsistent_option(mopool.ClevisInfo())
+            _non_existent_or_inconsistent_to_str(mopool.ClevisInfo())
             if encrypted
             else "unencrypted"
         )
@@ -413,20 +413,6 @@ class Stopped(List):  # pylint: disable=too-few-public-methods
         """
         return "<UNAVAILABLE>" if maybe_value is None else maybe_value
 
-    @staticmethod
-    def _unencrypted_string(value, interp):
-        """
-        Get a cell value or "unencrypted" if None. Apply interp
-        function to the value.
-
-        :param value: some value
-        :type value: str or NoneType
-        :param interp_option: function to interpret optional value
-        :type interp_option: object -> str
-        :rtype: str
-        """
-        return "unencrypted" if value is None else interp(value)
-
     def _print_detail_view(self, pool_uuid, pool):
         """
         Print detailed view of a stopped pool.
@@ -439,13 +425,19 @@ class Stopped(List):  # pylint: disable=too-few-public-methods
 
         print(f"UUID: {self.uuid_formatter(pool_uuid)}")
 
-        key_description_str = self._unencrypted_string(
-            pool.get("key_description"), _interp_inconsistent_option
+        key_description = pool.get("key_description")
+        key_description_str = (
+            "unencrypted"
+            if key_description is None
+            else _non_existent_or_inconsistent_to_str(key_description)
         )
         print(f"Key Description: {key_description_str}")
 
-        clevis_info_str = self._unencrypted_string(
-            pool.get("clevis_info"), _interp_inconsistent_option
+        clevis_info = pool.get("clevis_info")
+        clevis_info_str = (
+            "unencrypted"
+            if clevis_info is None
+            else _non_existent_or_inconsistent_to_str(clevis_info)
         )
         print(f"Clevis Configuration: {clevis_info_str}")
 
@@ -462,16 +454,19 @@ class Stopped(List):  # pylint: disable=too-few-public-methods
 
         stopped_pools = _fetch_stopped_pools_property(proxy)
 
-        def interp_clevis(value):
-            """
-            Intepret Clevis info for table display.
-            """
+        def clevis_str(value):
+            if value is None:
+                return "unencrypted"
 
-            def my_func(value):
-                (exists, value) = value
-                return "present" if exists else "N/A"
+            return _non_existent_or_inconsistent_to_str(
+                value, interp=lambda _: "present"
+            )  # pragma: no cover
 
-            return _maybe_inconsistent(value, my_func)
+        def key_description_str(value):
+            if value is None:
+                return "unencrypted"
+
+            return _non_existent_or_inconsistent_to_str(value)
 
         if self.selection is None:
             tables = [
@@ -479,10 +474,8 @@ class Stopped(List):  # pylint: disable=too-few-public-methods
                     self._pool_name(info.get("name")),
                     self.uuid_formatter(pool_uuid),
                     str(len(info["devs"])),
-                    self._unencrypted_string(
-                        info.get("key_description"), _interp_inconsistent_option
-                    ),
-                    self._unencrypted_string(info.get("clevis_info"), interp_clevis),
+                    key_description_str(info.get("key_description")),
+                    clevis_str(info.get("clevis_info")),
                 )
                 for (pool_uuid, info) in stopped_pools.items()
             ]

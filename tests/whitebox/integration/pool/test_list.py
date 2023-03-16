@@ -201,10 +201,10 @@ class List3TestCase(SimTestCase):
 
 class List4TestCase(SimTestCase):
     """
-    Test listing stopped pools that have been encrypted.
+    Test listing pools that have been encrypted.
     """
 
-    _MENU = ["--propagate", "pool", "list", "--stopped"]
+    _MENU = ["--propagate", "pool", "list"]
     _POOLNAME = "deadpool"
     _KEY_DESC = "keydesc"
 
@@ -235,10 +235,30 @@ class List4TestCase(SimTestCase):
         ] + _DEVICE_STRATEGY()
         RUNNER(command_line)
 
-    def test_list(self):
+    def test_list_stopped(self):
         """
         Test listing all with a stopped pool.
         """
         command_line = ["pool", "stop", self._POOLNAME]
         RUNNER(command_line)
+        TEST_RUNNER(self._MENU + ["--stopped"])
+
+    def test_list_stopped_detail(self):
+        """
+        Test detailed view on a stopped pool.
+        """
+        command_line = ["pool", "stop", self._POOLNAME]
+        RUNNER(command_line)
+        TEST_RUNNER(self._MENU + ["--stopped", f"--name={self._POOLNAME}"])
+
+    def test_list_running(self):
+        """
+        Test list all running pools.
+        """
         TEST_RUNNER(self._MENU)
+
+    def test_list_detail(self):
+        """
+        Test detail view on running pool.
+        """
+        TEST_RUNNER(self._MENU + [f"--name={self._POOLNAME}"])
