@@ -98,9 +98,9 @@ class PhysicalActions:
             in_use_size = Range(modev.TotalPhysicalSize())
             observed_size = get_property(modev.NewPhysicalSize(), Range, in_use_size)
             return (
-                f"{str(in_use_size)}"
+                f"{in_use_size}"
                 if in_use_size == observed_size
-                else f"{str(in_use_size)} ({str(observed_size)})"
+                else f"{in_use_size} ({observed_size})"
             )
 
         tables = [
