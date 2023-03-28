@@ -51,7 +51,7 @@ class ExtendDataTestCase(SimTestCase):
         """
         Test trying to extend a device specifying a non-existent device UUID.
         """
-        command_line = self._MENU + [self._POOLNAME, f"--device-uuid={str(uuid4())}"]
+        command_line = self._MENU + [self._POOLNAME, f"--device-uuid={uuid4()}"]
         self.check_error(StratisCliResourceNotFoundError, command_line, _ERROR)
 
     def test_no_uuid(self):
@@ -68,6 +68,6 @@ class ExtendDataTestCase(SimTestCase):
         _, props = next(get_pool_blockdevs(get_object(TOP_OBJECT), self._POOLNAME))
         command_line = self._MENU + [
             self._POOLNAME,
-            f"--device-uuid={str(UUID(props.Uuid()))}",
+            f"--device-uuid={UUID(props.Uuid())}",
         ]
         self.check_error(StratisCliPartialChangeError, command_line, _ERROR)

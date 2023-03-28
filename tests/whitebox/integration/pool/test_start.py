@@ -47,7 +47,7 @@ class StartTestCase(SimTestCase):
         """
         command_line = ["pool", "stop", self._POOLNAME]
         RUNNER(command_line)
-        command_line = self._MENU + [f"--uuid={str(uuid4())}"]
+        command_line = self._MENU + [f"--uuid={uuid4()}"]
         self.check_error(StratisCliEngineError, command_line, _ERROR)
 
     def test_good_uuid(self):
@@ -56,7 +56,7 @@ class StartTestCase(SimTestCase):
         """
         pool_uuid = stop_pool(self._POOLNAME)
 
-        command_line = self._MENU + [f"--uuid={str(pool_uuid)}"]
+        command_line = self._MENU + [f"--uuid={pool_uuid}"]
         RUNNER(command_line)
 
         self.check_error(StratisCliNoChangeError, command_line, _ERROR)
