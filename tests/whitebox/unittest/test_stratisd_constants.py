@@ -20,7 +20,11 @@ import unittest
 
 # isort: LOCAL
 from stratis_cli._error_codes import PoolMaintenanceErrorCode
-from stratis_cli._stratisd_constants import PoolActionAvailability
+from stratis_cli._stratisd_constants import (
+    BlockDevTiers,
+    PoolActionAvailability,
+    StratisdErrors,
+)
 
 
 class PoolActionAvailabilityTestCase(unittest.TestCase):
@@ -56,3 +60,35 @@ class PoolActionAvailabilityTestCase(unittest.TestCase):
         self.assertEqual(len(result), 2)
         self.assertIn(PoolMaintenanceErrorCode.NO_IPC_REQUESTS, result)
         self.assertIn(PoolMaintenanceErrorCode.NO_POOL_CHANGES, result)
+
+
+class StratisdErrorsTestCase(unittest.TestCase):
+    """
+    Test StratisdErrors
+    """
+
+    def test_from_int(self):
+        """
+        Test from_int() raises a StopIteraton exception on unknown error.
+        """
+        with self.assertRaises(StopIteration):
+            StratisdErrors.from_int(32)
+
+    def test_str(self):
+        """
+        An OK EngineError is never constructed during stratis-cli operation.
+        """
+        self.assertEqual(str(StratisdErrors.OK), "OK")
+
+
+class BlockDevTiersTestCase(unittest.TestCase):
+    """
+    Test BlockDevTiers
+    """
+
+    def test_from_int(self):
+        """
+        Test from_int() raises a StopIteraton exception on unknown error.
+        """
+        with self.assertRaises(StopIteration):
+            BlockDevTiers.from_int(32)

@@ -18,10 +18,15 @@ Miscellaneous physical actions.
 # isort: THIRDPARTY
 from justbytes import Range
 
-from .._stratisd_constants import BLOCK_DEV_TIER_TO_NAME
+from .._stratisd_constants import BlockDevTiers
 from ._connection import get_object
 from ._constants import TOP_OBJECT
-from ._formatting import get_property, get_uuid_formatter, print_table
+from ._formatting import (
+    TABLE_UNKNOWN_STRING,
+    get_property,
+    get_uuid_formatter,
+    print_table,
+)
 
 
 class PhysicalActions:
@@ -32,7 +37,7 @@ class PhysicalActions:
     # pylint: disable=too-few-public-methods
 
     @staticmethod
-    def list_devices(namespace):
+    def list_devices(namespace):  # pylint: disable=too-many-locals
         """
         List devices. If a pool is specified in the namespace, list devices
         for that pool. Otherwise, list all devices for all pools.
@@ -103,6 +108,15 @@ class PhysicalActions:
                 else f"{in_use_size} ({observed_size})"
             )
 
+        def tier_str(value):
+            """
+            String representation of a tier.
+            """
+            try:
+                return str(BlockDevTiers.from_int(value))
+            except StopIteration:  # pragma: no cover
+                return TABLE_UNKNOWN_STRING
+
         format_uuid = get_uuid_formatter(namespace.unhyphenated_uuids)
 
         tables = [
@@ -110,7 +124,7 @@ class PhysicalActions:
                 path_to_name[modev.Pool()],
                 paths(modev),
                 size(modev),
-                BLOCK_DEV_TIER_TO_NAME(modev.Tier(), True),
+                tier_str(modev.Tier()),
                 format_uuid(modev.Uuid()),
             ]
             for modev in modevs

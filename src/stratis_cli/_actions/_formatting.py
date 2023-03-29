@@ -26,6 +26,10 @@ from wcwidth import wcswidth
 # when the value should be supported.
 TABLE_FAILURE_STRING = "FAILURE"
 
+# placeholder for tables where a desired value is returned on the D-Bus but
+# stratis-cli is unable to interpret the value.
+TABLE_UNKNOWN_STRING = "???"
+
 TOTAL_USED_FREE = "Total / Used / Free"
 
 
