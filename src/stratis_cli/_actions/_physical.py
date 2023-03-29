@@ -21,7 +21,7 @@ from justbytes import Range
 from .._stratisd_constants import BLOCK_DEV_TIER_TO_NAME
 from ._connection import get_object
 from ._constants import TOP_OBJECT
-from ._formatting import get_property, print_table
+from ._formatting import get_property, get_uuid_formatter, print_table
 
 
 class PhysicalActions:
@@ -103,17 +103,20 @@ class PhysicalActions:
                 else f"{in_use_size} ({observed_size})"
             )
 
+        format_uuid = get_uuid_formatter(namespace.unhyphenated_uuids)
+
         tables = [
             [
                 path_to_name[modev.Pool()],
                 paths(modev),
                 size(modev),
                 BLOCK_DEV_TIER_TO_NAME(modev.Tier(), True),
+                format_uuid(modev.Uuid()),
             ]
             for modev in modevs
         ]
         print_table(
-            ["Pool Name", "Device Node", "Physical Size", "Tier"],
+            ["Pool Name", "Device Node", "Physical Size", "Tier", "UUID"],
             sorted(tables, key=lambda entry: (entry[0], entry[1])),
-            ["<", "<", ">", ">"],
+            ["<", "<", ">", ">", "<"],
         )
