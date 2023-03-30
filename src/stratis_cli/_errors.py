@@ -15,11 +15,7 @@
 Error heirarchy for stratis cli.
 """
 
-from ._stratisd_constants import (
-    BLOCK_DEV_TIER_TO_NAME,
-    STRATISD_ERROR_TO_NAME,
-    BlockDevTiers,
-)
+from ._stratisd_constants import BlockDevTiers, StratisdErrors
 
 
 class StratisCliError(Exception):
@@ -302,8 +298,8 @@ class StratisCliInUseOtherTierError(StratisCliInUseError):
 
     def __str__(self):
         (target_blockdev_tier, already_blockdev_tier) = (
-            BLOCK_DEV_TIER_TO_NAME(self.added_as),
-            BLOCK_DEV_TIER_TO_NAME(
+            str(self.added_as),
+            str(
                 BlockDevTiers.DATA
                 if self.added_as == BlockDevTiers.CACHE
                 else BlockDevTiers.CACHE
@@ -355,7 +351,7 @@ class StratisCliInUseSameTierError(StratisCliInUseError):
         self.added_as = added_as
 
     def __str__(self):
-        blockdev_tier = BLOCK_DEV_TIER_TO_NAME(self.added_as)
+        blockdev_tier = str(self.added_as)
 
         msg = (
             f"At least one of the provided devices is already owned by an "
@@ -427,11 +423,16 @@ class StratisCliEngineError(StratisCliRuntimeError):
         :param str message: whatever message accompanied the error code
         """
         # pylint: disable=super-init-not-called
-        self.error_code = rc
+        try:
+            self.error_code = StratisdErrors.from_int(rc)
+        except StopIteration:
+            self.error_code = None
+
         self.message = message
 
     def __str__(self):
-        return f"{STRATISD_ERROR_TO_NAME(self.error_code)}: {self.message}"
+        error_code_str = "???" if self.error_code is None else str(self.error_code)
+        return f"{error_code_str}: {self.message}"
 
 
 class StratisCliActionError(StratisCliRuntimeError):

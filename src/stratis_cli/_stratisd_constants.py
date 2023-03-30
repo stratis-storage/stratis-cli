@@ -21,44 +21,6 @@ from enum import Enum, IntEnum
 from ._error_codes import PoolMaintenanceErrorCode
 
 
-def value_to_name(klass):
-    """
-    Generate a function to convert an IntEnum value to its name.
-
-    :param type klass: the class defining the IntEnum
-    :returns: a function to convert a single number to a name
-    :rtype: int -> str
-    """
-
-    def the_func(num, terse_unknown=False):
-        """
-        Convert the enum value to a string which is just its name.
-        Replace underscores in the name with spaces.
-
-        If there is no name for the value, return a special string.
-
-        :param int num: the number to convert
-        :param bool terse_unknown: terse format for unknown name, default false
-        :returns: the name for the number or an error string
-        :rtype: str
-        """
-        try:
-            the_str = str(klass(num)).rsplit(".", maxsplit=1)[-1].replace("_", " ")
-
-        # This branch is taken only if the constants defined here do not
-        # match those defined in stratisd. We should remedy such a situation
-        # very rapidly.
-        except ValueError:  # pragma: no cover
-            the_str = (
-                "???"
-                if terse_unknown
-                else f"Unknown value ({num}) for {klass.__name__} constant"
-            )
-        return the_str
-
-    return the_func
-
-
 class StratisdErrors(IntEnum):
     """
     Stratisd Errors
@@ -67,8 +29,23 @@ class StratisdErrors(IntEnum):
     OK = 0
     ERROR = 1
 
+    @staticmethod
+    def from_int(code):
+        """
+        From an integer code, return the value.
 
-STRATISD_ERROR_TO_NAME = value_to_name(StratisdErrors)
+        :param int code: the code
+        :rtype: StratisdErrors
+        :raises: StopIteration
+        """
+        return next(item for item in StratisdErrors if code == int(item))
+
+    def __str__(self):
+        if self is StratisdErrors.OK:
+            return "OK"
+        if self is StratisdErrors.ERROR:
+            return "ERROR"
+        assert False, "impossible value reached"  # pragma: no cover
 
 
 class BlockDevTiers(IntEnum):
@@ -79,8 +56,23 @@ class BlockDevTiers(IntEnum):
     DATA = 0
     CACHE = 1
 
+    @staticmethod
+    def from_int(code):
+        """
+        From an integer code, return the value.
 
-BLOCK_DEV_TIER_TO_NAME = value_to_name(BlockDevTiers)
+        :param int code: the code
+        :rtype: StratisdErrors
+        :raises: StopIteration
+        """
+        return next(item for item in BlockDevTiers if code == int(item))
+
+    def __str__(self):
+        if self is BlockDevTiers.DATA:
+            return "DATA"
+        if self is BlockDevTiers.CACHE:
+            return "CACHE"
+        assert False, "impossible value reached"  # pragma: no cover
 
 
 class EncryptionMethod(Enum):
