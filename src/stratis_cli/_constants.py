@@ -42,4 +42,4 @@ class YesOrNo(Enum):
         :rtype: YesOrNo
         :raises: StopIteration
         """
-        return next(item for item in list(YesOrNo) if code_str == str(item))
+        return next(item for item in YesOrNo if code_str == str(item))
