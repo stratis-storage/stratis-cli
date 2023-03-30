@@ -175,7 +175,7 @@ GEN_ARGS = [
     ("--propagate", dict(action="store_true", help="Allow exceptions to propagate")),
     (
         "--unhyphenated-uuids",
-        dict(action="store_true", help=("Display UUIDs in unhyphenated format")),
+        dict(action="store_true", help="Display UUIDs in unhyphenated format"),
     ),
 ]
 
