@@ -102,80 +102,81 @@ def add_subcommand(subparser, cmd):
 DAEMON_SUBCMDS = [
     (
         "version",
-        dict(
-            help="version of stratisd daemon", func=StratisActions.list_stratisd_version
-        ),
+        {
+            "help": "version of stratisd daemon",
+            "func": StratisActions.list_stratisd_version,
+        },
     ),
 ]
 
 ROOT_SUBCOMMANDS = [
     (
         "pool",
-        dict(
-            help="Perform General Pool Actions",
-            subcmds=POOL_SUBCMDS,
-            func=PoolActions.list_pools,
-        ),
+        {
+            "help": "Perform General Pool Actions",
+            "subcmds": POOL_SUBCMDS,
+            "func": PoolActions.list_pools,
+        },
     ),
     (
         "blockdev",
-        dict(
-            help="Commands related to block devices that make up the pool",
-            subcmds=PHYSICAL_SUBCMDS,
-            func=PhysicalActions.list_devices,
-        ),
+        {
+            "help": "Commands related to block devices that make up the pool",
+            "subcmds": PHYSICAL_SUBCMDS,
+            "func": PhysicalActions.list_devices,
+        },
     ),
     (
         "filesystem",
-        dict(
-            aliases=["fs"],
-            help="Commands related to filesystems allocated from a pool",
-            subcmds=LOGICAL_SUBCMDS,
-            func=LogicalActions.list_volumes,
-        ),
+        {
+            "aliases": ["fs"],
+            "help": "Commands related to filesystems allocated from a pool",
+            "subcmds": LOGICAL_SUBCMDS,
+            "func": LogicalActions.list_volumes,
+        },
     ),
     (
         "report",
-        dict(
-            help="Commands related to reports of the daemon state",
-            func=TopActions.get_report,
-            args=[
+        {
+            "help": "Commands related to reports of the daemon state",
+            "func": TopActions.get_report,
+            "args": [
                 (
                     "report_name",
-                    dict(
-                        default="engine_state_report",
-                        type=str,
-                        help=("Name of the report to display"),
-                        nargs="?",
-                        choices=[str(x) for x in list(ReportKey)],
-                    ),
+                    {
+                        "default": "engine_state_report",
+                        "type": str,
+                        "help": ("Name of the report to display"),
+                        "nargs": "?",
+                        "choices": [str(x) for x in list(ReportKey)],
+                    },
                 )
             ],
-        ),
+        },
     ),
     (
         "key",
-        dict(
-            help="Commands related to key operations for encrypted pools",
-            subcmds=KEY_SUBCMDS,
-            func=TopActions.list_keys,
-        ),
+        {
+            "help": "Commands related to key operations for encrypted pools",
+            "subcmds": KEY_SUBCMDS,
+            "func": TopActions.list_keys,
+        },
     ),
     (
         "debug",
-        dict(
-            help="Commands for debugging operations.",
-            subcmds=TOP_DEBUG_SUBCMDS,
-        ),
+        {
+            "help": "Commands for debugging operations.",
+            "subcmds": TOP_DEBUG_SUBCMDS,
+        },
     ),
-    ("daemon", dict(help="Stratis daemon information", subcmds=DAEMON_SUBCMDS)),
+    ("daemon", {"help": "Stratis daemon information", "subcmds": DAEMON_SUBCMDS}),
 ]
 
 GEN_ARGS = [
-    ("--propagate", dict(action="store_true", help="Allow exceptions to propagate")),
+    ("--propagate", {"action": "store_true", "help": "Allow exceptions to propagate"}),
     (
         "--unhyphenated-uuids",
-        dict(action="store_true", help="Display UUIDs in unhyphenated format"),
+        {"action": "store_true", "help": "Display UUIDs in unhyphenated format"},
     ),
 ]
 

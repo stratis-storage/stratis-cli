@@ -20,88 +20,88 @@ from .._actions import TopActions
 KEY_SUBCMDS = [
     (
         "set",
-        dict(
-            help="Set a key in the kernel keyring",
-            args=[("keydesc", dict(action="store", help="key description"))],
-            mut_ex_args=[
+        {
+            "help": "Set a key in the kernel keyring",
+            "args": [("keydesc", {"action": "store", "help": "key description"})],
+            "mut_ex_args": [
                 (
                     True,
                     [
                         (
                             "--keyfile-path",
-                            dict(
-                                action="store",
-                                help=(
+                            {
+                                "action": "store",
+                                "help": (
                                     "Path to the key file containing a key to set "
                                     "in the keyring"
                                 ),
-                                dest="keyfile_path",
-                            ),
+                                "dest": "keyfile_path",
+                            },
                         ),
                         (
                             "--capture-key",
-                            dict(
-                                action="store_true",
-                                help=(
+                            {
+                                "action": "store_true",
+                                "help": (
                                     "Read key from stdin with no terminal echo or "
                                     "userspace buffer storage"
                                 ),
-                                dest="capture_key",
-                            ),
+                                "dest": "capture_key",
+                            },
                         ),
                     ],
                 )
             ],
-            func=TopActions.set_key,
-        ),
+            "func": TopActions.set_key,
+        },
     ),
     (
         "reset",
-        dict(
-            help="Reset an existing key in the kernel keyring",
-            args=[("keydesc", dict(action="store", help="key description"))],
-            mut_ex_args=[
+        {
+            "help": "Reset an existing key in the kernel keyring",
+            "args": [("keydesc", {"action": "store", "help": "key description"})],
+            "mut_ex_args": [
                 (
                     True,
                     [
                         (
                             "--keyfile-path",
-                            dict(
-                                action="store",
-                                help=(
+                            {
+                                "action": "store",
+                                "help": (
                                     "Path to the key file containing a key to reset "
                                     "in the keyring"
                                 ),
-                                dest="keyfile_path",
-                            ),
+                                "dest": "keyfile_path",
+                            },
                         ),
                         (
                             "--capture-key",
-                            dict(
-                                action="store_true",
-                                help=(
+                            {
+                                "action": "store_true",
+                                "help": (
                                     "Read key from stdin with no terminal echo or "
                                     "userspace buffer storage"
                                 ),
-                                dest="capture_key",
-                            ),
+                                "dest": "capture_key",
+                            },
                         ),
                     ],
                 )
             ],
-            func=TopActions.reset_key,
-        ),
+            "func": TopActions.reset_key,
+        },
     ),
     (
         "unset",
-        dict(
-            help="Unset a key in the kernel keyring",
-            args=[("keydesc", dict(action="store", help="key description"))],
-            func=TopActions.unset_key,
-        ),
+        {
+            "help": "Unset a key in the kernel keyring",
+            "args": [("keydesc", {"action": "store", "help": "key description"})],
+            "func": TopActions.unset_key,
+        },
     ),
     (
         "list",
-        dict(help="List Stratis keys in kernel keyring", func=TopActions.list_keys),
+        {"help": "List Stratis keys in kernel keyring", "func": TopActions.list_keys},
     ),
 ]

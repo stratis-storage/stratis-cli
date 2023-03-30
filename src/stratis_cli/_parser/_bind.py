@@ -20,88 +20,88 @@ from .._actions import BindActions, RebindActions
 BIND_SUBCMDS = [
     (
         "nbde",
-        dict(
-            help="Bind using NBDE via a tang server",
-            args=[
-                ("pool_name", dict(action="store", help="Pool name")),
-                ("url", dict(action="store", help="URL of tang server")),
+        {
+            "help": "Bind using NBDE via a tang server",
+            "args": [
+                ("pool_name", {"action": "store", "help": "Pool name"}),
+                ("url", {"action": "store", "help": "URL of tang server"}),
             ],
-            mut_ex_args=[
+            "mut_ex_args": [
                 (
                     True,
                     [
                         (
                             "--trust-url",
-                            dict(
-                                action="store_true",
-                                help="Omit verification of tang server credentials",
-                                dest="trust_url",
-                            ),
+                            {
+                                "action": "store_true",
+                                "help": "Omit verification of tang server credentials",
+                                "dest": "trust_url",
+                            },
                         ),
                         (
                             "--thumbprint",
-                            dict(
-                                action="store",
-                                help="Thumbprint of tang server at specified URL",
-                                dest="thumbprint",
-                            ),
+                            {
+                                "action": "store",
+                                "help": "Thumbprint of tang server at specified URL",
+                                "dest": "thumbprint",
+                            },
                         ),
                     ],
                 )
             ],
-            aliases=["tang"],
-            func=BindActions.bind_tang,
-        ),
+            "aliases": ["tang"],
+            "func": BindActions.bind_tang,
+        },
     ),
     (
         "tpm2",
-        dict(
-            help="Bind using TPM2",
-            args=[
-                ("pool_name", dict(action="store", help="Pool name")),
+        {
+            "help": "Bind using TPM2",
+            "args": [
+                ("pool_name", {"action": "store", "help": "Pool name"}),
             ],
-            func=BindActions.bind_tpm,
-        ),
+            "func": BindActions.bind_tpm,
+        },
     ),
     (
         "keyring",
-        dict(
-            help="Bind using the kernel keyring",
-            args=[
-                ("pool_name", dict(action="store", help="Pool name")),
-                ("keydesc", dict(action="store", help="key description")),
+        {
+            "help": "Bind using the kernel keyring",
+            "args": [
+                ("pool_name", {"action": "store", "help": "Pool name"}),
+                ("keydesc", {"action": "store", "help": "key description"}),
             ],
-            func=BindActions.bind_keyring,
-        ),
+            "func": BindActions.bind_keyring,
+        },
     ),
 ]
 
 REBIND_SUBCMDS = [
     (
         "clevis",
-        dict(
-            help=(
+        {
+            "help": (
                 "Rebind the devices in the specified pool using their current "
                 "Clevis configuration"
             ),
-            args=[
-                ("pool_name", dict(action="store", help="Pool name")),
+            "args": [
+                ("pool_name", {"action": "store", "help": "Pool name"}),
             ],
-            func=RebindActions.rebind_clevis,
-        ),
+            "func": RebindActions.rebind_clevis,
+        },
     ),
     (
         "keyring",
-        dict(
-            help=(
+        {
+            "help": (
                 "Rebind the devices in the specified pool using the specified "
                 "key in the kernel keyring"
             ),
-            args=[
-                ("pool_name", dict(action="store", help="Pool name")),
-                ("keydesc", dict(action="store", help="key description")),
+            "args": [
+                ("pool_name", {"action": "store", "help": "Pool name"}),
+                ("keydesc", {"action": "store", "help": "key description"}),
             ],
-            func=RebindActions.rebind_keyring,
-        ),
+            "func": RebindActions.rebind_keyring,
+        },
     ),
 ]
