@@ -1,3 +1,40 @@
+stratis-cli 3.5.1
+=================
+Required stratisd version: 3.5.0
+
+Recommended development environment: Fedora 37
+Lowest supported Python interpreter: 3.9.16
+
+- Add UUID column for blockdev list:
+  https://github.com/stratis-storage/stratis-cli/issues/962
+  https://github.com/stratis-storage/stratis-cli/pull/972
+
+- Display stratisd error codes and blockdev tier values in human-readable form:
+  https://github.com/stratis-storage/stratis-cli/issues/967
+  https://github.com/stratis-storage/stratis-cli/pull/974
+
+- Display Clevis configuration in human-readable form:
+  https://github.com/stratis-storage/stratis-cli/issues/958
+  https://github.com/stratis-storage/stratis-cli/pull/968
+  https://github.com/stratis-storage/stratis-cli/pull/965
+  https://github.com/stratis-storage/stratis-cli/pull/963
+
+- Fix expansion of an error message:
+  https://github.com/stratis-storage/stratis-cli/pull/966
+
+- Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/976
+  https://github.com/stratis-storage/stratis-cli/pull/975
+  https://github.com/stratis-storage/stratis-cli/pull/973
+  https://github.com/stratis-storage/stratis-cli/pull/971
+  https://github.com/stratis-storage/stratis-cli/pull/970
+  https://github.com/stratis-storage/stratis-cli/pull/964
+  https://github.com/stratis-storage/stratis-cli/pull/960
+  https://github.com/stratis-storage/stratis-cli/pull/959
+  https://github.com/stratis-storage/stratis-cli/pull/956
+  https://github.com/stratis-storage/stratis-cli/pull/955
+
+
 stratis-cli 3.5.0
 =================
 Required stratisd version: 3.5.0
