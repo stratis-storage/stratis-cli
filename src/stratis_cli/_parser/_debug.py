@@ -28,111 +28,111 @@ from .._actions import (
 TOP_DEBUG_SUBCMDS = [
     (
         "refresh",
-        dict(
-            help="Refresh all un-stopped pools.",
-            func=TopDebugActions.refresh_state,
-        ),
+        {
+            "help": "Refresh all un-stopped pools.",
+            "func": TopDebugActions.refresh_state,
+        },
     ),
     (
         "uevent",
-        dict(
-            help="Generate a synthetic uevent.",
-            args=[("device", dict(action="store", help="Path to device"))],
-            func=TopDebugActions.send_uevent,
-        ),
+        {
+            "help": "Generate a synthetic uevent.",
+            "args": [("device", {"action": "store", "help": "Path to device"})],
+            "func": TopDebugActions.send_uevent,
+        },
     ),
 ]
 
 POOL_DEBUG_SUBCMDS = [
     (
         "get-object-path",
-        dict(
-            help="Get the object path for a pool name or UUID",
-            mut_ex_args=[
+        {
+            "help": "Get the object path for a pool name or UUID",
+            "mut_ex_args": [
                 (
                     True,
                     [
                         (
                             "--name",
-                            dict(
-                                action="store",
-                                help="Name of pool",
-                                dest="name",
-                            ),
+                            {
+                                "action": "store",
+                                "help": "Name of pool",
+                                "dest": "name",
+                            },
                         ),
                         (
                             "--uuid",
-                            dict(
-                                action="store",
-                                help="UUID of pool",
-                                dest="uuid",
-                                type=UUID,
-                            ),
+                            {
+                                "action": "store",
+                                "help": "UUID of pool",
+                                "dest": "uuid",
+                                "type": UUID,
+                            },
                         ),
                     ],
                 )
             ],
-            func=PoolDebugActions.get_object_path,
-        ),
+            "func": PoolDebugActions.get_object_path,
+        },
     ),
 ]
 
 FILESYSTEM_DEBUG_SUBCMDS = [
     (
         "get-object-path",
-        dict(
-            help="Get the object path for a filesystem name or UUID",
-            mut_ex_args=[
+        {
+            "help": "Get the object path for a filesystem name or UUID",
+            "mut_ex_args": [
                 (
                     True,
                     [
                         (
                             "--name",
-                            dict(
-                                action="store",
-                                help="Name of filesystem",
-                                dest="name",
-                            ),
+                            {
+                                "action": "store",
+                                "help": "Name of filesystem",
+                                "dest": "name",
+                            },
                         ),
                         (
                             "--uuid",
-                            dict(
-                                action="store",
-                                help="UUID of filesystem",
-                                dest="uuid",
-                                type=UUID,
-                            ),
+                            {
+                                "action": "store",
+                                "help": "UUID of filesystem",
+                                "dest": "uuid",
+                                "type": UUID,
+                            },
                         ),
                     ],
                 )
             ],
-            func=FilesystemDebugActions.get_object_path,
-        ),
+            "func": FilesystemDebugActions.get_object_path,
+        },
     ),
 ]
 
 BLOCKDEV_DEBUG_SUBCMDS = [
     (
         "get-object-path",
-        dict(
-            help="Get the object path for a blockdev UUID",
-            mut_ex_args=[
+        {
+            "help": "Get the object path for a blockdev UUID",
+            "mut_ex_args": [
                 (
                     True,
                     [
                         (
                             "--uuid",
-                            dict(
-                                action="store",
-                                help="UUID of filesystem",
-                                dest="uuid",
-                                type=UUID,
-                            ),
+                            {
+                                "action": "store",
+                                "help": "UUID of filesystem",
+                                "dest": "uuid",
+                                "type": UUID,
+                            },
                         ),
                     ],
                 )
             ],
-            func=BlockdevDebugActions.get_object_path,
-        ),
+            "func": BlockdevDebugActions.get_object_path,
+        },
     ),
 ]

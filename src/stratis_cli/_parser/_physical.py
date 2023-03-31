@@ -21,22 +21,27 @@ from ._debug import BLOCKDEV_DEBUG_SUBCMDS
 PHYSICAL_SUBCMDS = [
     (
         "list",
-        dict(
-            help="List information about blockdevs in the pool",
-            args=[
+        {
+            "help": "List information about blockdevs in the pool",
+            "args": [
                 (
                     "pool_name",
-                    dict(action="store", default=None, nargs="?", help="Pool name"),
+                    {
+                        "action": "store",
+                        "default": None,
+                        "nargs": "?",
+                        "help": "Pool name",
+                    },
                 )
             ],
-            func=PhysicalActions.list_devices,
-        ),
+            "func": PhysicalActions.list_devices,
+        },
     ),
     (
         "debug",
-        dict(
-            help=("Miscellaneous blockdev-level debug commands"),
-            subcmds=BLOCKDEV_DEBUG_SUBCMDS,
-        ),
+        {
+            "help": ("Miscellaneous blockdev-level debug commands"),
+            "subcmds": BLOCKDEV_DEBUG_SUBCMDS,
+        },
     ),
 ]

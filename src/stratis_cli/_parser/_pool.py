@@ -44,390 +44,392 @@ def _ensure_nat(arg):
 POOL_SUBCMDS = [
     (
         "create",
-        dict(
-            help="Create a pool",
-            args=[
-                ("pool_name", dict(action="store", help="Name of new pool")),
+        {
+            "help": "Create a pool",
+            "args": [
+                ("pool_name", {"action": "store", "help": "Name of new pool"}),
                 (
                     "blockdevs",
-                    dict(help="Create the pool using these block devs", nargs="+"),
+                    {"help": "Create the pool using these block devs", "nargs": "+"},
                 ),
                 (
                     "--key-desc",
-                    dict(
-                        default=None,
-                        type=str,
-                        help=(
+                    {
+                        "default": None,
+                        "type": str,
+                        "help": (
                             "Key description of key in kernel keyring to use "
                             "for encryption"
                         ),
-                        dest="key_desc",
-                    ),
+                        "dest": "key_desc",
+                    },
                 ),
                 (
                     "--clevis",
-                    dict(
-                        default=None,
-                        type=str,
-                        help=("Specification for binding with Clevis."),
-                        dest="clevis",
-                        choices=["nbde", "tang", "tpm2"],
-                    ),
+                    {
+                        "default": None,
+                        "type": str,
+                        "help": ("Specification for binding with Clevis."),
+                        "dest": "clevis",
+                        "choices": ["nbde", "tang", "tpm2"],
+                    },
                 ),
                 (
                     "--tang-url",
-                    dict(
-                        default=None,
-                        type=str,
-                        help=(
+                    {
+                        "default": None,
+                        "type": str,
+                        "help": (
                             "URL of Clevis tang server (ignored if "
                             "--clevis=[tang|nbde] not set)"
                         ),
-                        dest="tang_url",
-                    ),
+                        "dest": "tang_url",
+                    },
                 ),
                 (
                     "--no-overprovision",
-                    dict(
-                        action="store_true",
-                        help=(
+                    {
+                        "action": "store_true",
+                        "help": (
                             "Do not allow the sum of the logical size of the "
                             "pool's filesystems to exceed the size of the "
                             "pool's data area."
                         ),
-                        dest="no_overprovision",
-                    ),
+                        "dest": "no_overprovision",
+                    },
                 ),
             ],
-            mut_ex_args=[
+            "mut_ex_args": [
                 (
                     False,
                     [
                         (
                             "--trust-url",
-                            dict(
-                                action="store_true",
-                                help=(
+                            {
+                                "action": "store_true",
+                                "help": (
                                     "Omit verification of tang server "
                                     "credentials (ignored if "
                                     "--clevis=[tang|nbde] not set)"
                                 ),
-                                dest="trust_url",
-                            ),
+                                "dest": "trust_url",
+                            },
                         ),
                         (
                             "--thumbprint",
-                            dict(
-                                action="store",
-                                help=(
+                            {
+                                "action": "store",
+                                "help": (
                                     "Thumbprint of tang server at specified "
                                     "URL (ignored if --clevis=[tang|nbde] not "
                                     "set)"
                                 ),
-                                dest="thumbprint",
-                            ),
+                                "dest": "thumbprint",
+                            },
                         ),
                     ],
                 )
             ],
-            func=PoolActions.create_pool,
-        ),
+            "func": PoolActions.create_pool,
+        },
     ),
     (
         "stop",
-        dict(
-            help=(
+        {
+            "help": (
                 "Stop a pool. Tear down the pool's storage stack "
                 "but do not erase any metadata."
             ),
-            args=[
+            "args": [
                 (
                     "pool_name",
-                    dict(
-                        action="store",
-                        help="Name of the pool to stop",
-                    ),
+                    {
+                        "action": "store",
+                        "help": "Name of the pool to stop",
+                    },
                 )
             ],
-            func=PoolActions.stop_pool,
-        ),
+            "func": PoolActions.stop_pool,
+        },
     ),
     (
         "start",
-        dict(
-            help="Start a pool.",
-            mut_ex_args=[
+        {
+            "help": "Start a pool.",
+            "mut_ex_args": [
                 (
                     True,
                     [
                         (
                             "--uuid",
-                            dict(
-                                action="store",
-                                type=UUID,
-                                help="UUID of the pool to start",
-                            ),
+                            {
+                                "action": "store",
+                                "type": UUID,
+                                "help": "UUID of the pool to start",
+                            },
                         ),
                         (
                             "--name",
-                            dict(action="store", help="name of the pool to start"),
+                            {"action": "store", "help": "name of the pool to start"},
                         ),
                     ],
                 )
             ],
-            args=[
+            "args": [
                 (
                     "--unlock-method",
-                    dict(
-                        default=None,
-                        dest="unlock_method",
-                        action="store",
-                        choices=[str(x) for x in list(EncryptionMethod)],
-                        help="Method to use to unlock the pool if encrypted.",
-                    ),
+                    {
+                        "default": None,
+                        "dest": "unlock_method",
+                        "action": "store",
+                        "choices": [str(x) for x in list(EncryptionMethod)],
+                        "help": "Method to use to unlock the pool if encrypted.",
+                    },
                 ),
             ],
-            func=PoolActions.start_pool,
-        ),
+            "func": PoolActions.start_pool,
+        },
     ),
     (
         "init-cache",
-        dict(
-            help="Initialize the cache with block devices",
-            args=[
+        {
+            "help": "Initialize the cache with block devices",
+            "args": [
                 (
                     "pool_name",
-                    dict(
-                        action="store",
-                        help=("Name of the pool for which to initialize the cache"),
-                    ),
+                    {
+                        "action": "store",
+                        "help": ("Name of the pool for which to initialize the cache"),
+                    },
                 ),
                 (
                     "blockdevs",
-                    dict(
-                        help="Initialize the pool cache using these block devs",
-                        nargs="+",
-                    ),
+                    {
+                        "help": "Initialize the pool cache using these block devs",
+                        "nargs": "+",
+                    },
                 ),
             ],
-            func=PoolActions.init_cache,
-        ),
+            "func": PoolActions.init_cache,
+        },
     ),
     (
         "list",
-        dict(
-            help="List pools",
-            description="List Stratis pools",
-            mut_ex_args=[
+        {
+            "help": "List pools",
+            "description": "List Stratis pools",
+            "mut_ex_args": [
                 (
                     False,
                     [
                         (
                             "--uuid",
-                            dict(
-                                action="store",
-                                type=UUID,
-                                help="UUID of pool to list",
-                            ),
+                            {
+                                "action": "store",
+                                "type": UUID,
+                                "help": "UUID of pool to list",
+                            },
                         ),
                         (
                             "--name",
-                            dict(
-                                action="store",
-                                help="name of pool to list",
-                            ),
+                            {
+                                "action": "store",
+                                "help": "name of pool to list",
+                            },
                         ),
                     ],
                 ),
             ],
-            args=[
+            "args": [
                 (
                     "--stopped",
-                    dict(
-                        action="store_true",
-                        help="Display information about stopped pools only.",
-                    ),
+                    {
+                        "action": "store_true",
+                        "help": "Display information about stopped pools only.",
+                    },
                 ),
             ],
-            func=PoolActions.list_pools,
-        ),
+            "func": PoolActions.list_pools,
+        },
     ),
     (
         "destroy",
-        dict(
-            help="Destroy a pool",
-            args=[("pool_name", dict(action="store", help="pool name"))],
-            func=PoolActions.destroy_pool,
-        ),
+        {
+            "help": "Destroy a pool",
+            "args": [("pool_name", {"action": "store", "help": "pool name"})],
+            "func": PoolActions.destroy_pool,
+        },
     ),
     (
         "rename",
-        dict(
-            help="Rename a pool",
-            args=[
-                ("current", dict(action="store", help="Current pool name")),
-                ("new", dict(action="store", help="New pool name")),
+        {
+            "help": "Rename a pool",
+            "args": [
+                ("current", {"action": "store", "help": "Current pool name"}),
+                ("new", {"action": "store", "help": "New pool name"}),
             ],
-            func=PoolActions.rename_pool,
-        ),
+            "func": PoolActions.rename_pool,
+        },
     ),
     (
         "add-data",
-        dict(
-            help="Add one or more blockdevs to an existing pool for use as data storage",
-            args=[
-                ("pool_name", dict(action="store", help="Pool name")),
+        {
+            "help": "Add one or more blockdevs to an existing pool for use as data storage",
+            "args": [
+                ("pool_name", {"action": "store", "help": "Pool name"}),
                 (
                     "blockdevs",
-                    dict(
-                        help="Block devices to add to the pool",
-                        metavar="blockdev",
-                        nargs="+",
-                    ),
+                    {
+                        "help": "Block devices to add to the pool",
+                        "metavar": "blockdev",
+                        "nargs": "+",
+                    },
                 ),
             ],
-            func=PoolActions.add_data_devices,
-        ),
+            "func": PoolActions.add_data_devices,
+        },
     ),
     (
         "add-cache",
-        dict(
-            help="Add one or more blockdevs to an existing pool for use as cache",
-            args=[
-                ("pool_name", dict(action="store", help="Pool name")),
+        {
+            "help": "Add one or more blockdevs to an existing pool for use as cache",
+            "args": [
+                ("pool_name", {"action": "store", "help": "Pool name"}),
                 (
                     "blockdevs",
-                    dict(
-                        help="Block devices to add to the pool as cache",
-                        metavar="blockdev",
-                        nargs="+",
-                    ),
+                    {
+                        "help": "Block devices to add to the pool as cache",
+                        "metavar": "blockdev",
+                        "nargs": "+",
+                    },
                 ),
             ],
-            func=PoolActions.add_cache_devices,
-        ),
+            "func": PoolActions.add_cache_devices,
+        },
     ),
     (
         "extend-data",
-        dict(
-            help=(
+        {
+            "help": (
                 "Extend the pool's data capacity with additional storage "
                 "space offered by its component data devices through, e.g., "
                 "expansion of a component RAID device."
             ),
-            args=[
-                ("pool_name", dict(action="store", help="Pool name")),
+            "args": [
+                ("pool_name", {"action": "store", "help": "Pool name"}),
                 (
                     "--device-uuid",
-                    dict(
-                        action="extend",
-                        dest="device_uuid",
-                        nargs="*",
-                        type=UUID,
-                        default=[],
-                        help=(
+                    {
+                        "action": "extend",
+                        "dest": "device_uuid",
+                        "nargs": "*",
+                        "type": UUID,
+                        "default": [],
+                        "help": (
                             "UUID of device to use; may be specified multiple "
                             "times. If no devices are specified then all "
                             "devices belonging to the pool that appear to have "
                             "increased in size will be used."
                         ),
-                    ),
+                    },
                 ),
             ],
-            func=PoolActions.extend_data,
-        ),
+            "func": PoolActions.extend_data,
+        },
     ),
     (
         "bind",
-        dict(
-            help="Bind the given pool with an additional encryption facility",
-            subcmds=BIND_SUBCMDS,
-        ),
+        {
+            "help": "Bind the given pool with an additional encryption facility",
+            "subcmds": BIND_SUBCMDS,
+        },
     ),
     (
         "rebind",
-        dict(
-            help=(
+        {
+            "help": (
                 "Rebind the given pool with a currently in use encryption "
                 "facility but new credentials"
             ),
-            subcmds=REBIND_SUBCMDS,
-        ),
+            "subcmds": REBIND_SUBCMDS,
+        },
     ),
     (
         "unbind",
-        dict(
-            help="Unbind the given pool, removing support for encryption with Clevis",
-            args=[
+        {
+            "help": "Unbind the given pool, removing support for encryption with Clevis",
+            "args": [
                 (
                     "method",
-                    dict(
-                        action="store",
-                        choices=[str(x) for x in list(EncryptionMethod)],
-                        help="Encryption method to unbind",
-                    ),
+                    {
+                        "action": "store",
+                        "choices": [str(x) for x in list(EncryptionMethod)],
+                        "help": "Encryption method to unbind",
+                    },
                 ),
-                ("pool_name", dict(action="store", help="Pool name")),
+                ("pool_name", {"action": "store", "help": "Pool name"}),
             ],
-            func=BindActions.unbind,
-        ),
+            "func": BindActions.unbind,
+        },
     ),
     (
         "set-fs-limit",
-        dict(
-            help="Set the maximum number of filesystems the pool can support.",
-            args=[
-                ("pool_name", dict(action="store", help="Pool name")),
+        {
+            "help": "Set the maximum number of filesystems the pool can support.",
+            "args": [
+                ("pool_name", {"action": "store", "help": "Pool name"}),
                 (
                     "amount",
-                    dict(
-                        action="store", type=_ensure_nat, help="Number of filesystems."
-                    ),
+                    {
+                        "action": "store",
+                        "type": _ensure_nat,
+                        "help": "Number of filesystems.",
+                    },
                 ),
             ],
-            func=PoolActions.set_fs_limit,
-        ),
+            "func": PoolActions.set_fs_limit,
+        },
     ),
     (
         "overprovision",
-        dict(
-            help="Specify whether or not to allow overprovisioning for the pool.",
-            args=[
-                ("pool_name", dict(action="store", help="Pool name")),
+        {
+            "help": "Specify whether or not to allow overprovisioning for the pool.",
+            "args": [
+                ("pool_name", {"action": "store", "help": "Pool name"}),
                 (
                     "decision",
-                    dict(
-                        action="store",
-                        help="yes to allow overprovisioning, otherwise no",
-                        choices=[str(x) for x in list(YesOrNo)],
-                    ),
+                    {
+                        "action": "store",
+                        "help": "yes to allow overprovisioning, otherwise no",
+                        "choices": [str(x) for x in list(YesOrNo)],
+                    },
                 ),
             ],
-            func=PoolActions.set_overprovisioning_mode,
-        ),
+            "func": PoolActions.set_overprovisioning_mode,
+        },
     ),
     (
         "explain",
-        dict(
-            help="Explain pool alert codes",
-            args=[
+        {
+            "help": "Explain pool alert codes",
+            "args": [
                 (
                     "code",
-                    dict(
-                        action="store",
-                        choices=[str(x) for x in PoolErrorCode.codes()],
-                        help="Error code to explain",
-                    ),
+                    {
+                        "action": "store",
+                        "choices": [str(x) for x in PoolErrorCode.codes()],
+                        "help": "Error code to explain",
+                    },
                 )
             ],
-            func=PoolActions.explain_code,
-        ),
+            "func": PoolActions.explain_code,
+        },
     ),
     (
         "debug",
-        dict(
-            help=("Miscellaneous pool-level debug commands"),
-            subcmds=POOL_DEBUG_SUBCMDS,
-        ),
+        {
+            "help": ("Miscellaneous pool-level debug commands"),
+            "subcmds": POOL_DEBUG_SUBCMDS,
+        },
     ),
 ]

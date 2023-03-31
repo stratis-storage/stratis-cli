@@ -22,97 +22,105 @@ from ._range import RangeAction
 LOGICAL_SUBCMDS = [
     (
         "create",
-        dict(
-            help="Create filesystems in a pool",
-            args=[
-                ("pool_name", dict(action="store", help="pool name")),
+        {
+            "help": "Create filesystems in a pool",
+            "args": [
+                ("pool_name", {"action": "store", "help": "pool name"}),
                 (
                     "fs_name",
-                    dict(
-                        help="Create filesystems in this pool using the given names",
-                        nargs="+",
-                    ),
+                    {
+                        "help": "Create filesystems in this pool using the given names",
+                        "nargs": "+",
+                    },
                 ),
                 (
                     "--size",
-                    dict(
-                        action=RangeAction,
-                        dest="size",
-                        help='The size of the filesystems to be created, e.g., "32GiB"',
-                    ),
+                    {
+                        "action": RangeAction,
+                        "dest": "size",
+                        "help": 'The size of the filesystems to be created, e.g., "32GiB"',
+                    },
                 ),
             ],
-            func=LogicalActions.create_volumes,
-        ),
+            "func": LogicalActions.create_volumes,
+        },
     ),
     (
         "snapshot",
-        dict(
-            help="Snapshot the named filesystem in a pool",
-            args=[
-                ("pool_name", dict(action="store", help="pool name")),
-                ("origin_name", dict(action="store", help="origin name")),
-                ("snapshot_name", dict(action="store", help="snapshot name")),
+        {
+            "help": "Snapshot the named filesystem in a pool",
+            "args": [
+                ("pool_name", {"action": "store", "help": "pool name"}),
+                ("origin_name", {"action": "store", "help": "origin name"}),
+                ("snapshot_name", {"action": "store", "help": "snapshot name"}),
             ],
-            func=LogicalActions.snapshot_filesystem,
-        ),
+            "func": LogicalActions.snapshot_filesystem,
+        },
     ),
     (
         "list",
-        dict(
-            help="List filesystems",
-            args=[
+        {
+            "help": "List filesystems",
+            "args": [
                 (
                     "pool_name",
-                    dict(action="store", default=None, nargs="?", help="Pool name"),
+                    {
+                        "action": "store",
+                        "default": None,
+                        "nargs": "?",
+                        "help": "Pool name",
+                    },
                 )
             ],
-            func=LogicalActions.list_volumes,
-        ),
+            "func": LogicalActions.list_volumes,
+        },
     ),
     (
         "destroy",
-        dict(
-            help="Destroy filesystems in a pool",
-            args=[
-                ("pool_name", dict(action="store", help="pool name")),
+        {
+            "help": "Destroy filesystems in a pool",
+            "args": [
+                ("pool_name", {"action": "store", "help": "pool name"}),
                 (
                     "fs_name",
-                    dict(help="Destroy the named filesystems in this pool", nargs="+"),
+                    {
+                        "help": "Destroy the named filesystems in this pool",
+                        "nargs": "+",
+                    },
                 ),
             ],
-            func=LogicalActions.destroy_volumes,
-        ),
+            "func": LogicalActions.destroy_volumes,
+        },
     ),
     (
         "rename",
-        dict(
-            help="Rename a filesystem",
-            args=[
+        {
+            "help": "Rename a filesystem",
+            "args": [
                 (
                     "pool_name",
-                    dict(
-                        action="store",
-                        help="Name of the pool the filesystem is part of",
-                    ),
+                    {
+                        "action": "store",
+                        "help": "Name of the pool the filesystem is part of",
+                    },
                 ),
                 (
                     "fs_name",
-                    dict(action="store", help="Name of the filesystem to change"),
+                    {"action": "store", "help": "Name of the filesystem to change"},
                 ),
                 (
                     "new_name",
-                    dict(action="store", help="New name to give that filesystem"),
+                    {"action": "store", "help": "New name to give that filesystem"},
                 ),
             ],
-            func=LogicalActions.rename_fs,
-        ),
+            "func": LogicalActions.rename_fs,
+        },
     ),
     (
         "debug",
-        dict(
-            help=("Miscellaneous filesystem-level debug commands"),
-            subcmds=FILESYSTEM_DEBUG_SUBCMDS,
-        ),
+        {
+            "help": ("Miscellaneous filesystem-level debug commands"),
+            "subcmds": FILESYSTEM_DEBUG_SUBCMDS,
+        },
     ),
 ]
