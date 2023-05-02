@@ -140,13 +140,23 @@ POOL_SUBCMDS = [
                 "Stop a pool. Tear down the pool's storage stack "
                 "but do not erase any metadata."
             ),
-            "args": [
+            "mut_ex_args": [
                 (
-                    "pool_name",
-                    {
-                        "action": "store",
-                        "help": "Name of the pool to stop",
-                    },
+                    True,
+                    [
+                        (
+                            "--uuid",
+                            {
+                                "action": "store",
+                                "type": UUID,
+                                "help": "UUID of the pool to stop",
+                            },
+                        ),
+                        (
+                            "--name",
+                            {"action": "store", "help": "name of the pool to stop"},
+                        ),
+                    ],
                 )
             ],
             "func": PoolActions.stop_pool,
