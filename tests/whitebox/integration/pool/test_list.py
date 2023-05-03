@@ -155,7 +155,7 @@ class List3TestCase(SimTestCase):
         """
         Test listing all with a stopped pool.
         """
-        command_line = ["pool", "stop", self._POOLNAME]
+        command_line = ["pool", "stop", f"--name={self._POOLNAME}"]
         RUNNER(command_line)
         TEST_RUNNER(self._MENU)
 
@@ -239,7 +239,7 @@ class List4TestCase(SimTestCase):
         """
         Test listing all with a stopped pool.
         """
-        command_line = ["pool", "stop", self._POOLNAME]
+        command_line = ["pool", "stop", f"--name={self._POOLNAME}"]
         RUNNER(command_line)
         TEST_RUNNER(self._MENU + ["--stopped"])
 
@@ -247,7 +247,7 @@ class List4TestCase(SimTestCase):
         """
         Test detailed view on a stopped pool.
         """
-        command_line = ["pool", "stop", self._POOLNAME]
+        command_line = ["pool", "stop", f"--name={self._POOLNAME}"]
         RUNNER(command_line)
         TEST_RUNNER(self._MENU + ["--stopped", f"--name={self._POOLNAME}"])
 

@@ -337,10 +337,8 @@ def stop_pool(pool_name):
 
     proxy = get_object(TOP_OBJECT)
 
-    (pool_object_path, _) = get_pool(proxy, pool_name)
-
     ((stopped, pool_uuid), return_code, message) = Manager.Methods.StopPool(
-        proxy, {"pool": pool_object_path}
+        proxy, {"id_type": "name", "id": pool_name}
     )
 
     if not return_code == _OK:

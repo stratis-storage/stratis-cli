@@ -221,28 +221,29 @@ class PoolActions:
         :raises StratisCliEngineError:
         """
         # pylint: disable=import-outside-toplevel
-        from ._data import Manager, ObjectManager, pools
+        from ._data import Manager
 
         proxy = get_object(TOP_OBJECT)
-        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        pool_name = namespace.pool_name
-        (pool_object_path, _) = next(
-            pools(props={"Name": pool_name})
-            .require_unique_match(True)
-            .search(managed_objects)
+
+        (pool_id, id_type) = (
+            (namespace.uuid.hex, PoolIdType.UUID)
+            if getattr(namespace, "name") is None
+            else (namespace.name, PoolIdType.NAME)
         )
 
         ((stopped, _), return_code, message) = Manager.Methods.StopPool(
-            proxy, {"pool": pool_object_path}
+            proxy,
+            {
+                "id": pool_id,
+                "id_type": str(id_type),
+            },
         )
 
         if return_code != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(return_code, message)
 
-        if not stopped:  # pragma: no cover
-            raise StratisCliIncoherenceError(
-                f"Expected to stop pool with name {pool_name} but it was already stopped."
-            )
+        if not stopped:
+            raise StratisCliNoChangeError("stop", pool_id)
 
     @staticmethod
     def start_pool(namespace):

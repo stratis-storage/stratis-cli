@@ -45,7 +45,7 @@ class StartTestCase(SimTestCase):
         """
         Test trying to start a pool with non-existent UUID.
         """
-        command_line = ["pool", "stop", self._POOLNAME]
+        command_line = ["pool", "stop", f"--name={self._POOLNAME}"]
         RUNNER(command_line)
         command_line = self._MENU + [f"--uuid={uuid4()}"]
         self.check_error(StratisCliEngineError, command_line, _ERROR)
@@ -65,7 +65,7 @@ class StartTestCase(SimTestCase):
         """
         Test trying to start a pool with non-existent name.
         """
-        command_line = ["pool", "stop", self._POOLNAME]
+        command_line = ["pool", "stop", f"--name={self._POOLNAME}"]
         RUNNER(command_line)
         command_line = self._MENU + ["--name=bogus"]
         self.check_error(StratisCliEngineError, command_line, _ERROR)
@@ -74,7 +74,7 @@ class StartTestCase(SimTestCase):
         """
         Test trying to start a pool with a good name.
         """
-        command_line = ["pool", "stop", self._POOLNAME]
+        command_line = ["pool", "stop", f"--name={self._POOLNAME}"]
         RUNNER(command_line)
         command_line = self._MENU + [f"--name={self._POOLNAME}"]
         RUNNER(command_line)

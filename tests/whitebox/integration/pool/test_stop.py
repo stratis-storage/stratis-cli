@@ -17,6 +17,7 @@ Test 'stop'.
 
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
+from stratis_cli._errors import StratisCliNoChangeError
 
 from .._misc import RUNNER, TEST_RUNNER, SimTestCase, device_name_list
 
@@ -42,6 +43,16 @@ class StopTestCase(SimTestCase):
         Stopping with known name should always succeed.
         """
         command_line = self._MENU + [
-            self._POOLNAME,
+            f"--name={self._POOLNAME}",
         ]
         TEST_RUNNER(command_line)
+
+    def test_stop_stopped(self):
+        """
+        Stopping a stoppped pool should raise exception.
+        """
+        command_line = self._MENU + [
+            f"--name={self._POOLNAME}",
+        ]
+        RUNNER(command_line)
+        self.check_error(StratisCliNoChangeError, command_line, _ERROR)
