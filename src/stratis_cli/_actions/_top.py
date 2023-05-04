@@ -27,6 +27,7 @@ from .._errors import (
     StratisCliKeyfileNotFoundError,
     StratisCliNameConflictError,
     StratisCliNoChangeError,
+    StratisCliPassphraseMismatchError,
     StratisCliResourceNotFoundError,
 )
 from .._stratisd_constants import ReportKey, StratisdErrors
@@ -72,6 +73,10 @@ def _add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
 
     if capture_key:
         password = getpass(prompt="Enter key data followed by the return key: ")
+        verify = getpass(prompt="Verify key data entered: ")
+
+        if password != verify:
+            raise StratisCliPassphraseMismatchError()
 
         (read, write) = os.pipe()
         os.write(write, password.encode("utf-8"))
