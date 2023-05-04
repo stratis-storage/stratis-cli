@@ -27,6 +27,7 @@ from .._errors import (
     StratisCliKeyfileNotFoundError,
     StratisCliNameConflictError,
     StratisCliNoChangeError,
+    StratisCliPassphraseMismatchError,
     StratisCliResourceNotFoundError,
 )
 from .._stratisd_constants import ReportKey, StratisdErrors
@@ -72,6 +73,10 @@ def _add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
 
     if capture_key:  # pragma: no cover
         password = getpass(prompt="Enter key data followed by the return key: ")
+        verify = getpass(prompt="Verify key data entered: ")
+
+        if password != verify:
+            raise StratisCliPassphraseMismatchError()
 
         (read, write) = os.pipe()
         os.write(write, password.encode("utf-8"))
@@ -114,7 +119,6 @@ class TopActions:
 
         # pylint: disable=import-outside-toplevel
         if namespace.report_name == str(ReportKey.MANAGED_OBJECTS):
-
             from ._data import ObjectManager
 
             json_report = ObjectManager.Methods.GetManagedObjects(
@@ -122,9 +126,7 @@ class TopActions:
             )
 
         else:
-
             if namespace.report_name == str(ReportKey.ENGINE_STATE):
-
                 from ._data import Manager
 
                 (report, return_code, message) = Manager.Methods.EngineStateReport(
@@ -132,7 +134,6 @@ class TopActions:
                 )
 
             else:
-
                 from ._data import Report
 
                 (report, return_code, message) = Report.Methods.GetReport(

@@ -500,3 +500,13 @@ class StratisCliStratisdVersionError(StratisCliRuntimeError):
             self.minimum_version,
             self.maximum_version,
         )
+
+
+class StratisCliPassphraseMismatchError(StratisCliUserError):
+    """
+    Raised if the user specified passphrase did not match
+    the verified passphrase.
+    """
+
+    def __str__(self):
+        return "Passphrases do not match"
