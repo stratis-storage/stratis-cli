@@ -5,10 +5,10 @@ name: stratis-cli dummy CI
 on:
   push:
     branches:
-      - master
+      - patch-3.5.1
   pull_request:
     branches:
-      - master
+      - patch-3.5.1
 
   workflow_dispatch:
 
