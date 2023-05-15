@@ -30,7 +30,7 @@ setuptools.setup(
     description="Stratis CLI",
     long_description=long_description,
     platforms=["Linux"],
-    license="Apache 2.0",
+    license="Apache-2.0",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Environment :: Console",
