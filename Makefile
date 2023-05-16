@@ -84,3 +84,8 @@ all-tests: unittest-tests sim-tests
 .PHONY: yamllint
 yamllint:
 	yamllint --strict .github/workflows/*.yml
+
+.PHONY: legacy-package
+legacy-package:
+	python3 setup.py build
+	python3 setup.py install
