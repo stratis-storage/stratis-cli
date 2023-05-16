@@ -128,3 +128,31 @@ jobs:
           STRATISD=/usr/libexec/stratisd
           PYTHONPATH=./src
           ${{ matrix.task }}
+
+  lowest-environment-checks:
+    strategy:
+      matrix:
+        include:
+          - dependencies: >
+              python-setuptools
+              python3-dbus-client-gen
+              python3-dbus-python-client-gen
+              python3-justbytes
+              python3-dateutil
+              python3-packaging
+              python3-psutil
+              python3-wcwidth
+            task: make -f Makefile legacy-package
+    runs-on: ubuntu-latest
+    container: fedora:34  # LOWEST DEVELOPMENT ENVIRONMENT
+    steps:
+      - name: Display Python version
+        run: python3 --version
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: >
+          dnf install -y
+          make
+          ${{ matrix.dependencies }}
+      - name: ${{ matrix.task }}
+        run: ${{ matrix.task }}
