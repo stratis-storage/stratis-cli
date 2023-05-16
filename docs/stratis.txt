@@ -271,6 +271,8 @@ Physical Size::
           pool and has since been expanded.
 Tier::
 	  The data tier type ("Data" or "Cache")
+UUID::
+	  The UUID of the block device.
 
 FIELDS for stratis key list
 
