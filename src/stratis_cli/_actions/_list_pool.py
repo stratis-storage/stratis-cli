@@ -67,10 +67,12 @@ def _non_existent_or_inconsistent_to_str(
     :returns: a string to print
     :rtype: str
     """
-    (consistent, (exists, value)) = value
+    (consistent, tuple_or_err_str) = value
 
     if not consistent:  # pragma: no cover
         return inconsistent_str
+
+    (exists, value) = tuple_or_err_str
 
     if not exists:
         return non_existent_str
