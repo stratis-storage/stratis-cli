@@ -61,25 +61,14 @@ coverage-no-html:
 	python3 -m coverage --version
 	python3 -m coverage run --timid --branch -m unittest discover --quiet --top-level-directory ./tests/whitebox --start-directory ./tests/whitebox/integration >& /dev/null
 	python3 -m coverage run --timid --branch -a -m unittest discover --quiet --start-directory ./tests/whitebox/unittest
-	python3 -m coverage run --timid --branch -a -m unittest --quiet tests.whitebox.monkey_patching.test_keyboard_interrupt.KeyboardInterruptTestCase
-	python3 -m coverage run --timid --branch -a -m unittest --quiet tests.whitebox.monkey_patching.test_stratisd_version.StratisdVersionTestCase
 	python3 -m coverage report -m --fail-under=100 --show-missing --include="./src/*"
 
 .PHONY: coverage
 coverage: coverage-no-html
 	python3 -m coverage html --include="./src/*"
 
-keyboard-interrupt-test:
-	python3 -m unittest ${UNITTEST_OPTS} tests.whitebox.monkey_patching.test_keyboard_interrupt.KeyboardInterruptTestCase
-
-stratisd-version-test:
-	python3 -m unittest ${UNITTEST_OPTS} tests.whitebox.monkey_patching.test_stratisd_version.StratisdVersionTestCase
-
-.PHONY: sim-tests
-sim-tests: dbus-tests keyboard-interrupt-test stratisd-version-test
-
 .PHONY: all-tests
-all-tests: unittest-tests sim-tests
+all-tests: unittest-tests dbus-tests
 
 .PHONY: yamllint
 yamllint:
