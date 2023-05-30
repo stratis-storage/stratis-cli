@@ -15,8 +15,12 @@
 Test 'set'.
 """
 
+# isort: STDLIB
+from unittest.mock import patch
+
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
+from stratis_cli._actions import _top
 from stratis_cli._errors import (
     StratisCliEngineError,
     StratisCliKeyfileNotFoundError,
@@ -77,3 +81,11 @@ class TestKeySet(SimTestCase):
         command_line = self._MENU + [self._KEYNAME, "--capture-key"]
         with patch.object(_top, "getpass", side_effect=["totally_secret", "different"]):
             self.check_error(StratisCliPassphraseMismatchError, command_line, _ERROR)
+
+    def test_set_key_capture_key(self):
+        """
+        Test specifying a key via the --capture-key option.
+        """
+        command_line = self._MENU + [self._KEYNAME, "--capture-key"]
+        with patch.object(_top, "getpass", return_value="totally_secret"):
+            TEST_RUNNER(command_line)
