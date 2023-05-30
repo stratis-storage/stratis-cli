@@ -70,7 +70,7 @@ def _add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
     # pylint: disable=import-outside-toplevel
     from ._data import Manager
 
-    if capture_key:  # pragma: no cover
+    if capture_key:
         password = getpass(prompt="Enter key data followed by the return key: ")
 
         (read, write) = os.pipe()
@@ -91,7 +91,7 @@ def _add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
         {"key_desc": key_desc, "key_fd": file_desc},
     )
 
-    if fd_is_pipe:  # pragma: no cover
+    if fd_is_pipe:
         os.close(write)
     else:
         os.close(file_desc)
