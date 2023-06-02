@@ -74,14 +74,6 @@ class TestKeySet(SimTestCase):
         command_line = self._MENU + [self._KEYNAME, "--keyfile-path", "/bogus"]
         self.check_error(StratisCliKeyfileNotFoundError, command_line, _ERROR)
 
-    def test_set_key_capture_key_fail_verify(self):
-        """
-        Test capture key fails if passphrase do not match
-        """
-        command_line = self._MENU + [self._KEYNAME, "--capture-key"]
-        with patch.object(_top, "getpass", side_effect=["totally_secret", "different"]):
-            self.check_error(StratisCliPassphraseMismatchError, command_line, _ERROR)
-
     def test_set_key_capture_key(self):
         """
         Test specifying a key via the --capture-key option.
@@ -89,3 +81,11 @@ class TestKeySet(SimTestCase):
         command_line = self._MENU + [self._KEYNAME, "--capture-key"]
         with patch.object(_top, "getpass", return_value="totally_secret"):
             TEST_RUNNER(command_line)
+
+    def test_set_key_capture_key_fail_verify(self):
+        """
+        Test capture key fails if passphrase do not match
+        """
+        command_line = self._MENU + [self._KEYNAME, "--capture-key"]
+        with patch.object(_top, "getpass", side_effect=["totally_secret", "different"]):
+            self.check_error(StratisCliPassphraseMismatchError, command_line, _ERROR)
