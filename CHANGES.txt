@@ -1,3 +1,19 @@
+stratis-cli 3.5.3
+=================
+Required stratisd version: 3.5.0
+
+Recommended development environment: Fedora 38
+Lowest supported Python interpreter: 3.9.16
+
+- Cherry-picked commits:
+  * Allow for error string if encryption info inconsistent
+  * Mock getpass for better coverage
+  * Use unittest.mock for monkey patching tests
+
+- Tidies and Maintenance:
+  * Add list of cherry-picked commits to changelog for version 3.5.2
+
+
 stratis-cli 3.5.2
 =================
 Required stratisd version: 3.5.0
