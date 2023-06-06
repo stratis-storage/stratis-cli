@@ -5,6 +5,13 @@ Required stratisd version: 3.5.0
 Recommended development environment: Fedora 38
 Lowest supported Python interpreter: 3.9.16
 
+- Cherry-picked commits:
+  * Add man page field for blockdev UUID
+  * Advance current development environment to Fedora 38
+  * Use SPDX license format
+  * Add legacy package testing
+  * Use setup configuration file
+
 - Set up patch branch:
   https://github.com/stratis-storage/stratis-cli/pull/985
 
