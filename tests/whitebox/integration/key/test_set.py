@@ -25,6 +25,7 @@ from stratis_cli._errors import (
     StratisCliEngineError,
     StratisCliKeyfileNotFoundError,
     StratisCliNameConflictError,
+    StratisCliPassphraseMismatchError,
 )
 
 from .._keyutils import RandomKeyTmpFile
@@ -81,3 +82,11 @@ class TestKeySet(SimTestCase):
         command_line = self._MENU + [self._KEYNAME, "--capture-key"]
         with patch.object(_top, "getpass", return_value="totally_secret"):
             TEST_RUNNER(command_line)
+
+    def test_set_key_capture_key_fail_verify(self):
+        """
+        Test capture key fails if passphrase do not match
+        """
+        command_line = self._MENU + [self._KEYNAME, "--capture-key"]
+        with patch.object(_top, "getpass", side_effect=["totally_secret", "different"]):
+            self.check_error(StratisCliPassphraseMismatchError, command_line, _ERROR)
