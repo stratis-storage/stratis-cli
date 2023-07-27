@@ -580,6 +580,30 @@ class PoolActions:
                 else new_size > Range(modev.TotalPhysicalSize())
             )
 
+        def expand(modev, pool_object_path):  # pragma: no cover
+            """
+            Expand a pool by extending exactly one expandable device in the
+            pool.
+
+            :param MoDev modev: represents D-Bus informaton on a single device
+            :param ...:
+            """
+            (changed, return_code, message) = Pool.Methods.GrowPhysicalDevice(
+                get_object(pool_object_path), {"dev": modev.Uuid()}
+            )
+
+            if return_code != StratisdErrors.OK:
+                raise StratisCliEngineError(return_code, message)
+
+            if not changed:
+                raise StratisCliIncoherenceError(
+                    (
+                        f"Actual size of device with UUID {UUID(modev.Uuid())} "
+                        "appeared to be different from in-use size but no "
+                        "action was taken on the device."
+                    )
+                )
+
         if namespace.device_uuid == []:
             expand_modevs = [modev for modev in modevs if expandable(modev)]
 
@@ -616,21 +640,7 @@ class PoolActions:
             raise StratisCliNoDeviceSizeChangeError()
 
         for modev in expand_modevs:  # pragma: no cover
-            (changed, return_code, message) = Pool.Methods.GrowPhysicalDevice(
-                get_object(pool_object_path), {"dev": modev.Uuid()}
-            )
-
-            if return_code != StratisdErrors.OK:
-                raise StratisCliEngineError(return_code, message)
-
-            if not changed:
-                raise StratisCliIncoherenceError(
-                    (
-                        f"Actual size of device with UUID {UUID(modev.Uuid())} "
-                        "appeared to be different from in-use size but no "
-                        "action was taken on the device."
-                    )
-                )
+            expand(modev, pool_object_path)
 
     @staticmethod
     def set_fs_limit(namespace):
