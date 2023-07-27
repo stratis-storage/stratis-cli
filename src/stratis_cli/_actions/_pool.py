@@ -580,16 +580,16 @@ class PoolActions:
                 else new_size > Range(modev.TotalPhysicalSize())
             )
 
-        def expand(modev, pool_object_path):  # pragma: no cover
+        def expand(pool_proxy, modev):  # pragma: no cover
             """
             Expand a pool by extending exactly one expandable device in the
             pool.
 
+            :param pool_proxy: dbus proxy object for the pool
             :param MoDev modev: represents D-Bus informaton on a single device
-            :param ...:
             """
             (changed, return_code, message) = Pool.Methods.GrowPhysicalDevice(
-                get_object(pool_object_path), {"dev": modev.Uuid()}
+                pool_proxy, {"dev": modev.Uuid()}
             )
 
             if return_code != StratisdErrors.OK:
@@ -656,8 +656,9 @@ class PoolActions:
         if expand_modevs == []:
             raise StratisCliNoDeviceSizeChangeError()
 
+        pool_proxy = get_object(pool_object_path)  # pragma: no cover
         for modev in expand_modevs:  # pragma: no cover
-            expand(modev, pool_object_path)
+            expand(pool_proxy, modev)
 
     @staticmethod
     def set_fs_limit(namespace):
