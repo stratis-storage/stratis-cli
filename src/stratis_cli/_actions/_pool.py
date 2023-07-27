@@ -604,36 +604,53 @@ class PoolActions:
                     )
                 )
 
-        if namespace.device_uuid == []:
-            expand_modevs = [modev for modev in modevs if expandable(modev)]
+        def get_devices_to_expand(device_uuids, modevs):
+            """
+            Calculate devices to expand
+            :param device_uuids: a list of device uuids, if empty expand all
+            :type device_uuids: list of UUID
+            :param modevs: MODev objects representing all devices in the pool
+            :type modevs: list of MODev
+            :return: list of MODev objects representing devices to expand
+            """
+            if device_uuids == []:
+                expand_modevs = [modev for modev in modevs if expandable(modev)]
+            else:
+                device_uuids = frozenset(uuid.hex for uuid in device_uuids)
+                expand_modevs = [
+                    modev for modev in modevs if modev.Uuid() in device_uuids
+                ]
+                if len(expand_modevs) < len(device_uuids):
+                    missing_uuids = device_uuids.difference(
+                        frozenset(UUID(modev.Uuid()) for modev in expand_modevs)
+                    )
 
-        else:
-            device_uuids = frozenset(uuid.hex for uuid in namespace.device_uuid)
-            expand_modevs = [modev for modev in modevs if modev.Uuid() in device_uuids]
+                    missing_uuids = ", ".join(str(UUID(uuid)) for uuid in missing_uuids)
 
-            if len(expand_modevs) < len(device_uuids):
-                missing_uuids = device_uuids.difference(
-                    frozenset(UUID(modev.Uuid()) for modev in expand_modevs)
+                    raise StratisCliResourceNotFoundError(
+                        "extend-data", f"devices with UUIDs {missing_uuids}"
+                    )
+
+                t_1, t_2 = tee(expand_modevs)
+                expandable_modevs, unexpandable_modevs = (
+                    [modev for modev in t_1 if expandable(modev)],
+                    [modev for modev in t_2 if not expandable(modev)],
                 )
 
-                missing_uuids = ", ".join(str(UUID(uuid)) for uuid in missing_uuids)
+                if unexpandable_modevs != []:  # pragma: no cover
+                    raise StratisCliPartialChangeError(
+                        "extend-data",
+                        frozenset(
+                            str(UUID(modev.Uuid())) for modev in expandable_modevs
+                        ),
+                        frozenset(
+                            str(UUID(modev.Uuid())) for modev in unexpandable_modevs
+                        ),
+                    )
 
-                raise StratisCliResourceNotFoundError(
-                    "extend-data", f"devices with UUIDs {missing_uuids}"
-                )
+            return expand_modevs
 
-            t_1, t_2 = tee(expand_modevs)
-            expandable_modevs, unexpandable_modevs = (
-                [modev for modev in t_1 if expandable(modev)],
-                [modev for modev in t_2 if not expandable(modev)],
-            )
-
-            if unexpandable_modevs != []:  # pragma: no cover
-                raise StratisCliPartialChangeError(
-                    "extend-data",
-                    frozenset(str(UUID(modev.Uuid())) for modev in expandable_modevs),
-                    frozenset(str(UUID(modev.Uuid())) for modev in unexpandable_modevs),
-                )
+        expand_modevs = get_devices_to_expand(namespace.device_uuid, modevs)
 
         assert isinstance(expand_modevs, list)
         if expand_modevs == []:
