@@ -110,7 +110,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@master
         with:
           components: cargo
-          toolchain: 1.69.0  # LOWEST SUPPORTED RUST TOOLCHAIN
+          toolchain: 1.71.0  # LOWEST SUPPORTED RUST TOOLCHAIN
       - name: Check out stratisd
         run: git clone https://github.com/stratis-storage/stratisd.git
       - name: Build stratisd
