@@ -441,4 +441,43 @@ POOL_SUBCMDS = [
             "subcmds": POOL_DEBUG_SUBCMDS,
         },
     ),
+    (
+        "report",
+        {
+            "help": "Report information about pools",
+            "description": "Generate report for pools",
+            "mut_ex_args": [
+                (
+                    True,
+                    [
+                        (
+                            "--uuid",
+                            {
+                                "action": "store",
+                                "type": UUID,
+                                "help": "UUID of pool",
+                            },
+                        ),
+                        (
+                            "--name",
+                            {
+                                "action": "store",
+                                "help": "name of pool",
+                            },
+                        ),
+                    ],
+                ),
+            ],
+            "args": [
+                (
+                    "--stopped",
+                    {
+                        "action": "store_true",
+                        "help": "Display information about stopped pools only.",
+                    },
+                ),
+            ],
+            "func": PoolActions.report_pool,
+        },
+    ),
 ]

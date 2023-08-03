@@ -46,6 +46,7 @@ from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import get_property, get_uuid_formatter
 from ._list_pool import list_pools
+from ._report_pool import report_pool
 from ._utils import ClevisInfo, PoolSelector
 
 
@@ -710,3 +711,18 @@ class PoolActions:
         Print an explanation of pool error code.
         """
         print(PoolErrorCode.explain(namespace.code))
+
+    @staticmethod
+    def report_pool(namespace):
+        """
+        Report information about a pool.
+        """
+        uuid_formatter = get_uuid_formatter(namespace.unhyphenated_uuids)
+
+        selection = (
+            (PoolIdType.NAME, namespace.name)
+            if namespace.uuid is None
+            else (PoolIdType.UUID, namespace.uuid)
+        )
+
+        return report_pool(uuid_formatter, selection, stopped=namespace.stopped)
