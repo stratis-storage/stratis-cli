@@ -580,44 +580,16 @@ class PoolActions:
                 else new_size > Range(modev.TotalPhysicalSize())
             )
 
-        if namespace.device_uuid == []:
-            expand_modevs = [modev for modev in modevs if expandable(modev)]
+        def expand(pool_proxy, modev):  # pragma: no cover
+            """
+            Expand a pool by extending exactly one expandable device in the
+            pool.
 
-        else:
-            device_uuids = frozenset(uuid.hex for uuid in namespace.device_uuid)
-            expand_modevs = [modev for modev in modevs if modev.Uuid() in device_uuids]
-
-            if len(expand_modevs) < len(device_uuids):
-                missing_uuids = device_uuids.difference(
-                    frozenset(UUID(modev.Uuid()) for modev in expand_modevs)
-                )
-
-                missing_uuids = ", ".join(str(UUID(uuid)) for uuid in missing_uuids)
-
-                raise StratisCliResourceNotFoundError(
-                    "extend-data", f"devices with UUIDs {missing_uuids}"
-                )
-
-            t_1, t_2 = tee(expand_modevs)
-            expandable_modevs, unexpandable_modevs = (
-                [modev for modev in t_1 if expandable(modev)],
-                [modev for modev in t_2 if not expandable(modev)],
-            )
-
-            if unexpandable_modevs != []:  # pragma: no cover
-                raise StratisCliPartialChangeError(
-                    "extend-data",
-                    frozenset(str(UUID(modev.Uuid())) for modev in expandable_modevs),
-                    frozenset(str(UUID(modev.Uuid())) for modev in unexpandable_modevs),
-                )
-
-        assert isinstance(expand_modevs, list)
-        if expand_modevs == []:
-            raise StratisCliNoDeviceSizeChangeError()
-
-        for modev in expand_modevs:  # pragma: no cover
+            :param pool_proxy: dbus proxy object for the pool
+            :param MoDev modev: represents D-Bus informaton on a single device
+            """
             (changed, return_code, message) = Pool.Methods.GrowPhysicalDevice(
-                get_object(pool_object_path), {"dev": modev.Uuid()}
+                pool_proxy, {"dev": modev.Uuid()}
             )
 
             if return_code != StratisdErrors.OK:
@@ -631,6 +603,62 @@ class PoolActions:
                         "action was taken on the device."
                     )
                 )
+
+        def get_devices_to_expand(device_uuids, modevs):
+            """
+            Calculate devices to expand
+            :param device_uuids: a list of device uuids, if empty expand all
+            :type device_uuids: list of UUID
+            :param modevs: MODev objects representing all devices in the pool
+            :type modevs: list of MODev
+            :return: list of MODev objects representing devices to expand
+            """
+            if device_uuids == []:
+                expand_modevs = [modev for modev in modevs if expandable(modev)]
+            else:
+                device_uuids = frozenset(uuid.hex for uuid in device_uuids)
+                expand_modevs = [
+                    modev for modev in modevs if modev.Uuid() in device_uuids
+                ]
+                if len(expand_modevs) < len(device_uuids):
+                    missing_uuids = device_uuids.difference(
+                        frozenset(UUID(modev.Uuid()) for modev in expand_modevs)
+                    )
+
+                    missing_uuids = ", ".join(str(UUID(uuid)) for uuid in missing_uuids)
+
+                    raise StratisCliResourceNotFoundError(
+                        "extend-data", f"devices with UUIDs {missing_uuids}"
+                    )
+
+                t_1, t_2 = tee(expand_modevs)
+                expandable_modevs, unexpandable_modevs = (
+                    [modev for modev in t_1 if expandable(modev)],
+                    [modev for modev in t_2 if not expandable(modev)],
+                )
+
+                if unexpandable_modevs != []:  # pragma: no cover
+                    raise StratisCliPartialChangeError(
+                        "extend-data",
+                        frozenset(
+                            str(UUID(modev.Uuid())) for modev in expandable_modevs
+                        ),
+                        frozenset(
+                            str(UUID(modev.Uuid())) for modev in unexpandable_modevs
+                        ),
+                    )
+
+            return expand_modevs
+
+        expand_modevs = get_devices_to_expand(namespace.device_uuid, modevs)
+
+        assert isinstance(expand_modevs, list)
+        if expand_modevs == []:
+            raise StratisCliNoDeviceSizeChangeError()
+
+        pool_proxy = get_object(pool_object_path)  # pragma: no cover
+        for modev in expand_modevs:  # pragma: no cover
+            expand(pool_proxy, modev)
 
     @staticmethod
     def set_fs_limit(namespace):
