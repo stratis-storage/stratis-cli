@@ -1,4 +1,9 @@
 UNITTEST_OPTS = --verbose
+#
+# Ignore bandit B404 errors. Any import of the subprocess module causes this
+# error. We know what we are doing when we import that module and do not
+# need to be warned.
+BANDIT_SKIP = --skip B404
 
 .PHONY: lint
 lint:
@@ -6,13 +11,13 @@ lint:
 	pylint bin/stratis
 	pylint src/stratis_cli --disable=duplicate-code --ignore=_introspect.py
 	pylint tests/whitebox --disable=duplicate-code
-	bandit setup.py
-	bandit bin/stratis
+	bandit setup.py ${BANDIT_SKIP}
+	bandit bin/stratis ${BANDIT_SKIP}
 	# Ignore B101 errors. We do not distribute optimized code, i.e., .pyo
 	# files in Fedora, so we do not need to have concerns that assertions
 	# are removed by optimization.
-	bandit --recursive ./src --skip B101
-	bandit --recursive ./tests
+	bandit --recursive ./src ${BANDIT_SKIP} --skip B101
+	bandit --recursive ./tests ${BANDIT_SKIP}
 
 .PHONY: fmt
 fmt:
