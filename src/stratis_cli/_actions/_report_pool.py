@@ -16,6 +16,7 @@ Pool report.
 """
 
 # isort: STDLIB
+import subprocess
 from abc import ABC, abstractmethod
 
 from .._errors import StratisCliResourceNotFoundError
@@ -103,8 +104,8 @@ class Default(Report):  # pylint: disable=too-few-public-methods
         )
 
         # replace the lines below with the correct call to lsblk
-        for modev in modevs:
-            print(modev.Devnode())
+        blkdevs = [dev.Devnode() for dev in modevs]
+        subprocess.run(["lsblk", "-i"] + blkdevs, check=True)
 
 
 class Stopped(Report):  # pylint: disable=too-few-public-methods
@@ -137,3 +138,4 @@ class Stopped(Report):  # pylint: disable=too-few-public-methods
         # Substitute lsblk call here
         for dev in stopped_pool.devs:
             print(dev)
+            subprocess.run(["lsblk", "-i", str(dev)], check=True)
