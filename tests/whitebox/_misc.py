@@ -20,7 +20,7 @@ import os
 import random
 import signal
 import string
-import subprocess  # nosec B404
+import subprocess
 import sys
 import time
 import unittest
