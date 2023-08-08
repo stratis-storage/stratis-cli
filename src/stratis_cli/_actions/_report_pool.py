@@ -103,9 +103,10 @@ class Default(Report):  # pylint: disable=too-few-public-methods
             )
         )
 
-        # replace the lines below with the correct call to lsblk
         blkdevs = [dev.Devnode() for dev in modevs]
-        subprocess.run(["/usr/bin/lsblk", "-i"] + blkdevs, check=True)
+        # Ignore bandit B603 errors.  Input comes from D-Bus and has
+        # been processed.
+        subprocess.run(["/usr/bin/lsblk", "-i"] + blkdevs, check=True)  # nosec B603
 
 
 class Stopped(Report):  # pylint: disable=too-few-public-methods
@@ -135,7 +136,10 @@ class Stopped(Report):  # pylint: disable=too-few-public-methods
         if stopped_pool is None:
             raise StratisCliResourceNotFoundError("report", str(self.selection))
 
-        # Substitute lsblk call here
+        # Ignore bandit B603 errors.  Input comes from D-Bus and has
+        # been processed.
         for dev in stopped_pool.devs:
             print(dev)
-            subprocess.run(["/usr/bin/lsblk", "-i", str(dev.devnode)], check=True)
+            subprocess.run(
+                ["/usr/bin/lsblk", "-i", str(dev.devnode)], check=True
+            )  # nosec B603
