@@ -19,6 +19,9 @@ Pool report.
 import subprocess
 from abc import ABC, abstractmethod
 
+# isort: THIRDPARTY
+import dbus
+
 from .._errors import StratisCliResourceNotFoundError
 from .._stratisd_constants import PoolIdType
 from ._connection import get_object
@@ -158,5 +161,7 @@ class Stopped(Report):  # pylint: disable=too-few-public-methods
         # Ignore bandit B603 errors.  Input comes from D-Bus and has
         # been processed.
         for dev in stopped_pool["devs"]:
-            print(dev)
-            subprocess.run(["/usr/bin/lsblk", "-i", str(dev)], check=True)  # nosec B603
+            print(dev[dbus.String("devnode")])
+            subprocess.run(
+                ["/usr/bin/lsblk", "-i", dev[dbus.String("devnode")]], check=True
+            )  # nosec B603
