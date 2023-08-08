@@ -16,7 +16,7 @@ lint:
 	# Ignore B101 errors. We do not distribute optimized code, i.e., .pyo
 	# files in Fedora, so we do not need to have concerns that assertions
 	# are removed by optimization.
-	bandit --recursive ./src ${BANDIT_SKIP} --skip B101
+	bandit --recursive ./src ${BANDIT_SKIP},B101
 	bandit --recursive ./tests ${BANDIT_SKIP}
 
 .PHONY: fmt
