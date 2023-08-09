@@ -138,8 +138,7 @@ class Stopped(Report):  # pylint: disable=too-few-public-methods
 
         # Ignore bandit B603 errors.  Input comes from D-Bus and has
         # been processed.
+        blkdevs = [dev.devnode for dev in stopped_pool.devs]
         for dev in stopped_pool.devs:
             print(dev.devnode)
-            subprocess.run(
-                ["/usr/bin/lsblk", "-i", dev.devnode], check=True
-            )  # nosec B603
+            subprocess.run(["/usr/bin/lsblk", "-i"] + blkdevs, check=True)  # nosec B603
