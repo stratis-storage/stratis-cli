@@ -46,7 +46,7 @@ from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import get_property, get_uuid_formatter
 from ._list_pool import list_pools
-from ._utils import get_clevis_info
+from ._utils import ClevisInfo
 
 
 def _generate_pools_to_blockdevs(managed_objects, to_be_added, tier):
@@ -176,7 +176,7 @@ class PoolActions:
 
         _check_same_tier(pool_name, managed_objects, blockdevs, BlockDevTiers.DATA)
 
-        clevis_info = get_clevis_info(namespace)
+        clevis_info = ClevisInfo.get_info_from_namespace(namespace)
 
         (
             (changed, (pool_object_path, _)),

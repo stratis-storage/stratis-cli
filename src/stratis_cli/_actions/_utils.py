@@ -52,40 +52,40 @@ class ClevisInfo:
         )
         return f"{self.pin}   {config_string}"
 
+    @staticmethod
+    def get_info_from_namespace(namespace):
+        """
+        Get clevis info, if any, from the namespace.
 
-def get_clevis_info(namespace):
-    """
-    Get clevis info, if any, from the namespace.
+        :param namespace: namespace set up by the parser
 
-    :param namespace: namespace set up by the parser
+        :returns: clevis info or None
+        :rtype: ClevisInfo or NoneType
+        """
+        clevis_info = None
+        if namespace.clevis is not None:
+            if namespace.clevis in ("nbde", "tang"):
+                if namespace.tang_url is None:
+                    raise StratisCliMissingClevisTangURLError()
 
-    :returns: clevis info or None
-    :rtype: ClevisInfo or NoneType
-    """
-    clevis_info = None
-    if namespace.clevis is not None:
-        if namespace.clevis in ("nbde", "tang"):
-            if namespace.tang_url is None:
-                raise StratisCliMissingClevisTangURLError()
+                if not namespace.trust_url and namespace.thumbprint is None:
+                    raise StratisCliMissingClevisThumbprintError()
 
-            if not namespace.trust_url and namespace.thumbprint is None:
-                raise StratisCliMissingClevisThumbprintError()
+                clevis_config = {CLEVIS_KEY_URL: namespace.tang_url}
+                if namespace.trust_url:
+                    clevis_config[CLEVIS_KEY_TANG_TRUST_URL] = True
+                else:
+                    assert namespace.thumbprint is not None
+                    clevis_config[CLEVIS_KEY_THP] = namespace.thumbprint
 
-            clevis_config = {CLEVIS_KEY_URL: namespace.tang_url}
-            if namespace.trust_url:
-                clevis_config[CLEVIS_KEY_TANG_TRUST_URL] = True
+                clevis_info = ClevisInfo(CLEVIS_PIN_TANG, clevis_config)
+
+            elif namespace.clevis == "tpm2":
+                clevis_info = ClevisInfo(CLEVIS_PIN_TPM2, {})
+
             else:
-                assert namespace.thumbprint is not None
-                clevis_config[CLEVIS_KEY_THP] = namespace.thumbprint
+                raise AssertionError(
+                    f"unexpected value {namespace.clevis} for clevis option"
+                )  # pragma: no cover
 
-            clevis_info = ClevisInfo(CLEVIS_PIN_TANG, clevis_config)
-
-        elif namespace.clevis == "tpm2":
-            clevis_info = ClevisInfo(CLEVIS_PIN_TPM2, {})
-
-        else:
-            raise AssertionError(
-                f"unexpected value {namespace.clevis} for clevis option"
-            )  # pragma: no cover
-
-    return clevis_info
+        return clevis_info
