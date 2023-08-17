@@ -16,7 +16,6 @@ Pool actions.
 """
 
 # isort: STDLIB
-import json
 from abc import ABC, abstractmethod
 
 # isort: THIRDPARTY
@@ -35,7 +34,7 @@ from ._formatting import (
     print_table,
     size_triple,
 )
-from ._utils import ClevisInfo
+from ._utils import EncryptionInfoClevis, EncryptionInfoKeyDescription, StoppedPool
 
 
 def _fetch_stopped_pools_property(proxy):
@@ -57,24 +56,22 @@ def _non_existent_or_inconsistent_to_str(
     value, *, inconsistent_str="inconsistent", non_existent_str="N/A", interp=str
 ):
     """
-    Process dbus value that encodes both inconsistency and existence of the
+    Process dbus result that encodes both inconsistency and existence of the
     value.
 
-    :param value: a dbus value
+    :param EncryptionInfo value: a dbus result
     :param str inconsistent_str: value to return if inconsistent
     :param str non_existent_str: value to return if non-existent
     :param interp: how to interpret the value if it exists and is consistent
     :returns: a string to print
     :rtype: str
     """
-    (consistent, tuple_or_err_str) = value
-
-    if not consistent:  # pragma: no cover
+    if not value.consistent():  # pragma: no cover
         return inconsistent_str
 
-    (exists, value) = tuple_or_err_str
+    value = value.value
 
-    if not exists:
+    if value is None:
         return non_existent_str
 
     return interp(value)
@@ -92,15 +89,17 @@ def list_pools(uuid_formatter, *, stopped=False, selection=None):
     klass.list_pools()
 
 
-def clevis_to_str(clevis_dbus_object):  # pragma: no cover
+def _clevis_to_str(clevis_info):  # pragma: no cover
     """
-    :param dbus.Struct clevis_dbus_object: clevis information
+    :param ClevisInfo clevis_info: the Clevis info to stringify
+    :return: a string that represents the clevis info
     :rtype: str
     """
-    clevis_pin = str(clevis_dbus_object[0])
-    clevis_config = json.loads(clevis_dbus_object[1])
-    clevis_info = ClevisInfo(clevis_pin, clevis_config)
-    return str(clevis_info)
+
+    config_string = " ".join(
+        f"{key}: {value}" for key, value in clevis_info.config.items()
+    )
+    return f"{clevis_info.pin}   {config_string}"
 
 
 class List(ABC):  # pylint: disable=too-few-public-methods
@@ -262,7 +261,9 @@ class Default(List):
         )
 
         key_description_str = (
-            _non_existent_or_inconsistent_to_str(mopool.KeyDescription())
+            _non_existent_or_inconsistent_to_str(
+                EncryptionInfoKeyDescription(mopool.KeyDescription())
+            )
             if encrypted
             else "unencrypted"
         )
@@ -270,7 +271,7 @@ class Default(List):
 
         clevis_info_str = (
             _non_existent_or_inconsistent_to_str(
-                mopool.ClevisInfo(), interp=clevis_to_str
+                EncryptionInfoClevis(mopool.ClevisInfo()), interp=_clevis_to_str
             )
             if encrypted
             else "unencrypted"
@@ -435,14 +436,14 @@ class Stopped(List):  # pylint: disable=too-few-public-methods
         Print detailed view of a stopped pool.
 
         :param str pool_uuid: the pool UUID
-        :param pool: a table of information on this pool
+        :param StoppedPool pool: information about a single pool
         :type pool: dict of str * object
         """
-        print(f"Name: {self._pool_name(pool.get('name'))}")
+        print(f"Name: {self._pool_name(pool.name)}")
 
         print(f"UUID: {self.uuid_formatter(pool_uuid)}")
 
-        key_description = pool.get("key_description")
+        key_description = pool.key_description
         key_description_str = (
             "unencrypted"
             if key_description is None
@@ -450,17 +451,19 @@ class Stopped(List):  # pylint: disable=too-few-public-methods
         )
         print(f"Key Description: {key_description_str}")
 
-        clevis_info = pool.get("clevis_info")
+        clevis_info = pool.clevis_info
         clevis_info_str = (
             "unencrypted"
             if clevis_info is None
-            else _non_existent_or_inconsistent_to_str(clevis_info, interp=clevis_to_str)
+            else _non_existent_or_inconsistent_to_str(
+                clevis_info, interp=_clevis_to_str
+            )
         )
         print(f"Clevis Configuration: {clevis_info_str}")
 
         print("Devices:")
-        for dev in pool["devs"]:
-            print(f"{self.uuid_formatter(dev['uuid'])}  {dev['devnode']}")
+        for dev in pool.devs:
+            print(f"{self.uuid_formatter(dev.uuid)}  {dev.devnode}")
 
     def list_pools(self):
         """
@@ -488,13 +491,16 @@ class Stopped(List):  # pylint: disable=too-few-public-methods
         if self.selection is None:
             tables = [
                 (
-                    self._pool_name(info.get("name")),
+                    self._pool_name(sp.name),
                     self.uuid_formatter(pool_uuid),
-                    str(len(info["devs"])),
-                    key_description_str(info.get("key_description")),
-                    clevis_str(info.get("clevis_info")),
+                    str(len(sp.devs)),
+                    key_description_str(sp.key_description),
+                    clevis_str(sp.clevis_info),
                 )
-                for (pool_uuid, info) in stopped_pools.items()
+                for pool_uuid, sp in (
+                    (pool_uuid, StoppedPool(info))
+                    for pool_uuid, info in stopped_pools.items()
+                )
             ]
 
             print_table(
@@ -531,4 +537,4 @@ class Stopped(List):  # pylint: disable=too-few-public-methods
 
             (pool_uuid, pool) = stopped_pool
 
-            self._print_detail_view(pool_uuid, pool)
+            self._print_detail_view(pool_uuid, StoppedPool(pool))
