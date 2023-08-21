@@ -268,7 +268,6 @@ def _interpret_errors_2(errors):
     if len(errors) > 1:
         next_error = errors[1]
         if isinstance(next_error, dbus.exceptions.DBusException):
-
             # We do not test this error, as the only known way to cause it is
             # manipulation of selinux configuration, which is too laborious to
             # bother with at this time.
