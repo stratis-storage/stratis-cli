@@ -62,7 +62,7 @@ def _add_mut_ex_args(parser, args):
                  arguments to be added
     :type args: list of bool * (list of dict)
     """
-    for (one_is_required, arg_list) in args:
+    for one_is_required, arg_list in args:
         group = parser.add_mutually_exclusive_group(required=one_is_required)
         for name, arg in arg_list:
             group.add_argument(name, **arg)

@@ -194,7 +194,7 @@ class Default(List):
         from ._data import MODev
 
         (increased, decreased) = (set(), set())
-        for (_, info) in devs_to_search:
+        for _, info in devs_to_search:
             modev = MODev(info)
             size = Range(modev.TotalPhysicalSize())
             observed_size = get_property(modev.NewPhysicalSize(), Range, size)
