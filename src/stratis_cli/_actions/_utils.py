@@ -16,6 +16,10 @@
 Miscellaneous functions.
 """
 
+# isort: STDLIB
+import json
+from uuid import UUID
+
 from .._errors import (
     StratisCliMissingClevisTangURLError,
     StratisCliMissingClevisThumbprintError,
@@ -46,46 +50,138 @@ class ClevisInfo:
         self.pin = pin
         self.config = config
 
-    def __str__(self):  # pragma: no cover
-        config_string = " ".join(
-            f"{key}: {value}" for key, value in self.config.items()
-        )
-        return f"{self.pin}   {config_string}"
+    @staticmethod
+    def get_info_from_namespace(namespace):
+        """
+        Get clevis info, if any, from the namespace.
 
+        :param namespace: namespace set up by the parser
 
-def get_clevis_info(namespace):
-    """
-    Get clevis info, if any, from the namespace.
+        :returns: clevis info or None
+        :rtype: ClevisInfo or NoneType
+        """
+        clevis_info = None
+        if namespace.clevis is not None:
+            if namespace.clevis in ("nbde", "tang"):
+                if namespace.tang_url is None:
+                    raise StratisCliMissingClevisTangURLError()
 
-    :param namespace: namespace set up by the parser
+                if not namespace.trust_url and namespace.thumbprint is None:
+                    raise StratisCliMissingClevisThumbprintError()
 
-    :returns: clevis info or None
-    :rtype: ClevisInfo or NoneType
-    """
-    clevis_info = None
-    if namespace.clevis is not None:
-        if namespace.clevis in ("nbde", "tang"):
-            if namespace.tang_url is None:
-                raise StratisCliMissingClevisTangURLError()
+                clevis_config = {CLEVIS_KEY_URL: namespace.tang_url}
+                if namespace.trust_url:
+                    clevis_config[CLEVIS_KEY_TANG_TRUST_URL] = True
+                else:
+                    assert namespace.thumbprint is not None
+                    clevis_config[CLEVIS_KEY_THP] = namespace.thumbprint
 
-            if not namespace.trust_url and namespace.thumbprint is None:
-                raise StratisCliMissingClevisThumbprintError()
+                clevis_info = ClevisInfo(CLEVIS_PIN_TANG, clevis_config)
 
-            clevis_config = {CLEVIS_KEY_URL: namespace.tang_url}
-            if namespace.trust_url:
-                clevis_config[CLEVIS_KEY_TANG_TRUST_URL] = True
+            elif namespace.clevis == "tpm2":
+                clevis_info = ClevisInfo(CLEVIS_PIN_TPM2, {})
+
             else:
-                assert namespace.thumbprint is not None
-                clevis_config[CLEVIS_KEY_THP] = namespace.thumbprint
+                raise AssertionError(
+                    f"unexpected value {namespace.clevis} for clevis option"
+                )  # pragma: no cover
 
-            clevis_info = ClevisInfo(CLEVIS_PIN_TANG, clevis_config)
+        return clevis_info
 
-        elif namespace.clevis == "tpm2":
-            clevis_info = ClevisInfo(CLEVIS_PIN_TPM2, {})
 
+class EncryptionInfo:  # pylint: disable=too-few-public-methods
+    """
+    Generic information about a single encryption method.
+    """
+
+    def __init__(self, info):
+        """
+        Initializer.
+        :param info: info about an encryption method, as a dbus-python type
+        """
+        (consistent, info) = info
+        if consistent:
+            (encrypted, value) = info
+            self.value = value if encrypted else None
         else:
-            raise AssertionError(
-                f"unexpected value {namespace.clevis} for clevis option"
-            )  # pragma: no cover
+            # No tests that generate inconsistent encryption information
+            self.error = str(info)  # pragma: no cover
 
-    return clevis_info
+    def consistent(self):
+        """
+        True if consistent, otherwise False.
+        """
+        return not hasattr(self, "error")
+
+
+class EncryptionInfoClevis(EncryptionInfo):  # pylint: disable=too-few-public-methods
+    """
+    Encryption info for Clevis
+    """
+
+    def __init__(self, info):
+        super().__init__(info)
+
+        # We don't test with Clevis for coverage
+        if hasattr(self, "value"):  # pragma: no cover
+            value = self.value
+            if value is not None:
+                (pin, config) = value
+                self.value = ClevisInfo(str(pin), json.loads(str(config)))
+
+
+class EncryptionInfoKeyDescription(
+    EncryptionInfo
+):  # pylint: disable=too-few-public-methods
+    """
+    Encryption info for kernel keyring
+    """
+
+    def __init__(self, info):
+        super().__init__(info)
+
+        # Our listing code excludes creating an object of this class without
+        # it being consistent and set.
+        if hasattr(self, "value"):  # pragma: no cover
+            value = self.value
+            if value is not None:
+                self.value = str(value)
+
+
+class Device:  # pylint: disable=too-few-public-methods
+    """
+    A representation of a device in a stopped pool.
+    """
+
+    def __init__(self, mapping):
+        self.uuid = UUID(mapping["uuid"])
+        self.devnode = str(mapping["devnode"])
+
+
+class StoppedPool:  # pylint: disable=too-few-public-methods
+    """
+    A representation of a single stopped pool.
+    """
+
+    def __init__(self, pool_info):
+        """
+        Initializer.
+        :param pool_info: a D-Bus structure
+        """
+
+        self.devs = [Device(info) for info in pool_info["devs"]]
+
+        clevis_info = pool_info.get("clevis_info")
+        self.clevis_info = (
+            None if clevis_info is None else EncryptionInfoClevis(clevis_info)
+        )
+
+        key_description = pool_info.get("key_description")
+        self.key_description = (
+            None
+            if key_description is None
+            else EncryptionInfoKeyDescription(key_description)
+        )
+
+        name = pool_info.get("name")
+        self.name = None if name is None else str(name)
