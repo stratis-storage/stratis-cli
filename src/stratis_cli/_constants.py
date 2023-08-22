@@ -52,3 +52,15 @@ class PoolIdType(Enum):
 
     UUID = 0
     NAME = 1
+
+
+class EncryptionMethod(Enum):
+    """
+    Encryption method.
+    """
+
+    KEYRING = "keyring"
+    CLEVIS = "clevis"
+
+    def __str__(self):
+        return self.value

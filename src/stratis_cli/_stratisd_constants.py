@@ -75,18 +75,6 @@ class BlockDevTiers(IntEnum):
         assert False, "impossible value reached"  # pragma: no cover
 
 
-class EncryptionMethod(Enum):
-    """
-    Encryption method, used as argument to unlock.
-    """
-
-    KEYRING = "keyring"
-    CLEVIS = "clevis"
-
-    def __str__(self):
-        return self.value
-
-
 CLEVIS_KEY_TANG_TRUST_URL = "stratis:tang:trust_url"
 CLEVIS_PIN_TANG = "tang"
 CLEVIS_PIN_TPM2 = "tpm2"

@@ -20,9 +20,8 @@ from argparse import ArgumentTypeError
 from uuid import UUID
 
 from .._actions import BindActions, PoolActions
-from .._constants import YesOrNo
+from .._constants import EncryptionMethod, YesOrNo
 from .._error_codes import PoolErrorCode
-from .._stratisd_constants import EncryptionMethod
 from ._bind import BIND_SUBCMDS, REBIND_SUBCMDS
 from ._debug import POOL_DEBUG_SUBCMDS
 
