@@ -43,5 +43,6 @@ jobs:
 # https://packit.dev/docs/configuration/#supported-jobs
   - job: copr_build
     trigger: pull_request
+    manual_trigger: true
     targets:
       - fedora-stable
