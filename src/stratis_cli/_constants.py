@@ -43,3 +43,15 @@ class YesOrNo(Enum):
         :raises: StopIteration
         """
         return next(item for item in YesOrNo if code_str == str(item))
+
+
+class PoolIdType(Enum):
+    """
+    Whether the pool identifier is a UUID or a name.
+    """
+
+    UUID = "uuid"
+    NAME = "name"
+
+    def __str__(self):
+        return self.value

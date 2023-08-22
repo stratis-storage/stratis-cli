@@ -20,6 +20,7 @@ Miscellaneous functions.
 import json
 from uuid import UUID
 
+from .._constants import PoolIdType
 from .._errors import (
     StratisCliMissingClevisTangURLError,
     StratisCliMissingClevisThumbprintError,
@@ -30,7 +31,6 @@ from .._stratisd_constants import (
     CLEVIS_KEY_URL,
     CLEVIS_PIN_TANG,
     CLEVIS_PIN_TPM2,
-    PoolIdType,
 )
 
 

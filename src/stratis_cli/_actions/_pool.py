@@ -25,7 +25,7 @@ from uuid import UUID
 # isort: THIRDPARTY
 from justbytes import Range
 
-from .._constants import YesOrNo
+from .._constants import PoolIdType, YesOrNo
 from .._error_codes import PoolErrorCode
 from .._errors import (
     StratisCliEngineError,
@@ -41,7 +41,7 @@ from .._errors import (
     StratisCliPartialChangeError,
     StratisCliResourceNotFoundError,
 )
-from .._stratisd_constants import BlockDevTiers, PoolIdType, StratisdErrors
+from .._stratisd_constants import BlockDevTiers, StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import get_property, get_uuid_formatter
