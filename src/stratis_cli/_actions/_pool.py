@@ -46,7 +46,7 @@ from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import get_property, get_uuid_formatter
 from ._list_pool import list_pools
-from ._utils import ClevisInfo
+from ._utils import ClevisInfo, PoolSelector
 
 
 def _generate_pools_to_blockdevs(managed_objects, to_be_added, tier):
@@ -352,9 +352,9 @@ class PoolActions:
         uuid_formatter = get_uuid_formatter(namespace.unhyphenated_uuids)
 
         selection = (
-            (None if pool_name is None else (PoolIdType.NAME, pool_name))
+            (None if pool_name is None else PoolSelector(PoolIdType.NAME, pool_name))
             if pool_uuid is None
-            else (PoolIdType.UUID, pool_uuid)
+            else PoolSelector(PoolIdType.UUID, pool_uuid)
         )
 
         return list_pools(uuid_formatter, stopped=stopped, selection=selection)
