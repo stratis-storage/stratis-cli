@@ -113,8 +113,8 @@ class PhysicalActions:
             String representation of a tier.
             """
             try:
-                return str(BlockDevTiers.from_int(value))
-            except StopIteration:  # pragma: no cover
+                return str(BlockDevTiers(value))
+            except ValueError:  # pragma: no cover
                 return TABLE_UNKNOWN_STRING
 
         format_uuid = get_uuid_formatter(namespace.unhyphenated_uuids)
