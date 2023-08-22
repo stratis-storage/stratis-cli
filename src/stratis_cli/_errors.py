@@ -424,8 +424,8 @@ class StratisCliEngineError(StratisCliRuntimeError):
         """
         # pylint: disable=super-init-not-called
         try:
-            self.error_code = StratisdErrors.from_int(rc)
-        except StopIteration:
+            self.error_code = StratisdErrors(rc)
+        except ValueError:
             self.error_code = None
 
         self.message = message

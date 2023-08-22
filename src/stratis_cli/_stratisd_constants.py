@@ -29,17 +29,6 @@ class StratisdErrors(IntEnum):
     OK = 0
     ERROR = 1
 
-    @staticmethod
-    def from_int(code):
-        """
-        From an integer code, return the value.
-
-        :param int code: the code
-        :rtype: StratisdErrors
-        :raises: StopIteration
-        """
-        return next(item for item in StratisdErrors if code == int(item))
-
     def __str__(self):
         return self.name
 

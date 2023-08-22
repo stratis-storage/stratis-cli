@@ -67,13 +67,6 @@ class StratisdErrorsTestCase(unittest.TestCase):
     Test StratisdErrors
     """
 
-    def test_from_int(self):
-        """
-        Test from_int() raises a StopIteraton exception on unknown error.
-        """
-        with self.assertRaises(StopIteration):
-            StratisdErrors.from_int(32)
-
     def test_str(self):
         """
         An OK EngineError is never constructed during stratis-cli operation.
