@@ -191,7 +191,7 @@ POOL_SUBCMDS = [
                         "default": None,
                         "dest": "unlock_method",
                         "action": "store",
-                        "choices": [str(x) for x in list(EncryptionMethod)],
+                        "choices": [x.value for x in list(EncryptionMethod)],
                         "help": "Method to use to unlock the pool if encrypted.",
                     },
                 ),
@@ -372,7 +372,7 @@ POOL_SUBCMDS = [
                     "method",
                     {
                         "action": "store",
-                        "choices": [str(x) for x in list(EncryptionMethod)],
+                        "choices": [x.value for x in list(EncryptionMethod)],
                         "help": "Encryption method to unbind",
                     },
                 ),

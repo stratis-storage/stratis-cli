@@ -151,7 +151,7 @@ class BindActions:
 
         unbind_method = (
             Pool.Methods.UnbindClevis
-            if namespace.method == str(EncryptionMethod.CLEVIS)
+            if namespace.method == EncryptionMethod.CLEVIS.value
             else Pool.Methods.UnbindKeyring
         )
 

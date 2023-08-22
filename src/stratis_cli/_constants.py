@@ -61,6 +61,3 @@ class EncryptionMethod(Enum):
 
     KEYRING = "keyring"
     CLEVIS = "clevis"
-
-    def __str__(self):
-        return self.value
