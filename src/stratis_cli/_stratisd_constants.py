@@ -41,11 +41,7 @@ class StratisdErrors(IntEnum):
         return next(item for item in StratisdErrors if code == int(item))
 
     def __str__(self):
-        if self is StratisdErrors.OK:
-            return "OK"
-        if self is StratisdErrors.ERROR:
-            return "ERROR"
-        assert False, "impossible value reached"  # pragma: no cover
+        return self.name
 
 
 class BlockDevTiers(IntEnum):
@@ -68,11 +64,7 @@ class BlockDevTiers(IntEnum):
         return next(item for item in BlockDevTiers if code == int(item))
 
     def __str__(self):
-        if self is BlockDevTiers.DATA:
-            return "DATA"
-        if self is BlockDevTiers.CACHE:
-            return "CACHE"
-        assert False, "impossible value reached"  # pragma: no cover
+        return self.name
 
 
 CLEVIS_KEY_TANG_TRUST_URL = "stratis:tang:trust_url"
@@ -109,14 +101,7 @@ class PoolActionAvailability(IntEnum):
     NO_POOL_CHANGES = 2
 
     def __str__(self):
-        if self is PoolActionAvailability.FULLY_OPERATIONAL:
-            return "fully_operational"
-        if self is PoolActionAvailability.NO_IPC_REQUESTS:
-            return "no_ipc_requests"
-        if self is PoolActionAvailability.NO_POOL_CHANGES:  # pragma: no cover
-            return "no_pool_changes"
-
-        assert False, "impossible value reached"  # pragma: no cover
+        return self.name.lower()
 
     @staticmethod
     def from_str(code_str):
