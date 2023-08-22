@@ -52,6 +52,3 @@ class PoolIdType(Enum):
 
     UUID = "uuid"
     NAME = "name"
-
-    def __str__(self):
-        return self.value

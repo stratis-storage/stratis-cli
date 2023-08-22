@@ -226,16 +226,16 @@ class PoolActions:
         proxy = get_object(TOP_OBJECT)
 
         (pool_id, id_type) = (
-            (namespace.uuid.hex, PoolIdType.UUID)
+            (namespace.uuid.hex, "uuid")
             if getattr(namespace, "name") is None
-            else (namespace.name, PoolIdType.NAME)
+            else (namespace.name, "name")
         )
 
         ((stopped, _), return_code, message) = Manager.Methods.StopPool(
             proxy,
             {
                 "id": pool_id,
-                "id_type": str(id_type),
+                "id_type": id_type,
             },
         )
 
@@ -259,16 +259,16 @@ class PoolActions:
         proxy = get_object(TOP_OBJECT)
 
         (pool_id, id_type) = (
-            (namespace.uuid.hex, PoolIdType.UUID)
+            (namespace.uuid.hex, "uuid")
             if getattr(namespace, "name") is None
-            else (namespace.name, PoolIdType.NAME)
+            else (namespace.name, "name")
         )
 
         ((started, _), return_code, message) = Manager.Methods.StartPool(
             proxy,
             {
                 "id": pool_id,
-                "id_type": str(id_type),
+                "id_type": id_type,
                 "unlock_method": (False, "")
                 if namespace.unlock_method is None
                 else (True, namespace.unlock_method),
