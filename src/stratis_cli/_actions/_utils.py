@@ -30,6 +30,7 @@ from .._stratisd_constants import (
     CLEVIS_KEY_URL,
     CLEVIS_PIN_TANG,
     CLEVIS_PIN_TPM2,
+    PoolIdType,
 )
 
 
@@ -185,3 +186,57 @@ class StoppedPool:  # pylint: disable=too-few-public-methods
 
         name = pool_info.get("name")
         self.name = None if name is None else str(name)
+
+
+class PoolSelector:
+    """
+    Methods to help locate a pool by one of its identifiers.
+    """
+
+    def __init__(self, pool_id_type, value):
+        """
+        Initializer.
+
+        :param PoolIdType pool_id_type: the id type
+        :param object value: the value, determined by the type
+        """
+        self.pool_id_type = pool_id_type
+        self.value = value
+
+    def managed_objects_key(self):
+        """
+        Get the key for searching GetManagedObjects result.
+        :rtype: dict of str * object
+        :returns: a dict containing a correct configuration for pools() method
+        """
+        return (
+            {"Uuid": self.value.hex}
+            if self.pool_id_type is PoolIdType.UUID
+            else {"Name": self.value}
+        )
+
+    def stopped_pools_func(self):
+        """
+        Get a function appropriate for searching StoppedPools D-Bus property.
+        :returns: a function for selecting from StoppedPools items
+        :rtype: (str * (dict of (str * object))) -> bool
+        """
+        if self.pool_id_type is PoolIdType.UUID:
+            selection_value = self.value.hex
+
+            def selection_func(uuid, _info):
+                return uuid == selection_value
+
+        else:
+            selection_value = self.value
+
+            def selection_func(_uuid, info):
+                return info.get("name") == selection_value
+
+        return selection_func
+
+    def __str__(self):
+        pool_id_type_str = (
+            "UUID" if self.pool_id_type is PoolIdType.UUID else str(self.pool_id_type)
+        )
+        return f"pool with {pool_id_type_str} {self.value}"

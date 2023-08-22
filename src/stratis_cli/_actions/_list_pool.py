@@ -24,7 +24,7 @@ from justbytes import Range
 
 from .._error_codes import PoolAllocSpaceErrorCode, PoolDeviceSizeChangeCode
 from .._errors import StratisCliResourceNotFoundError
-from .._stratisd_constants import PoolActionAvailability, PoolIdType
+from .._stratisd_constants import PoolActionAvailability
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import (
@@ -392,15 +392,8 @@ class Default(List):
             )
 
         else:
-            (selection_type, selection_value) = self.selection
-            (selection_key, selection_value) = (
-                ("Uuid", selection_value.hex)
-                if selection_type == PoolIdType.UUID
-                else ("Name", selection_value)
-            )
-
             (pool_object_path, mopool) = next(
-                pools(props={selection_key: selection_value})
+                pools(props=self.selection.managed_objects_key())
                 .require_unique_match(True)
                 .search(managed_objects)
             )
@@ -510,18 +503,7 @@ class Stopped(List):  # pylint: disable=too-few-public-methods
             )
 
         else:
-            (selection_type, selection_value) = self.selection
-
-            if selection_type == PoolIdType.UUID:
-                selection_value = selection_value.hex
-
-                def selection_func(uuid, _info):
-                    return uuid == selection_value
-
-            else:
-
-                def selection_func(_uuid, info):
-                    return info.get("name") == selection_value
+            selection_func = self.selection.stopped_pools_func()
 
             stopped_pool = next(
                 (
@@ -533,7 +515,7 @@ class Stopped(List):  # pylint: disable=too-few-public-methods
             )
 
             if stopped_pool is None:
-                raise StratisCliResourceNotFoundError("list", selection_value)
+                raise StratisCliResourceNotFoundError("list", str(self.selection))
 
             (pool_uuid, pool) = stopped_pool
 
