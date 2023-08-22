@@ -50,5 +50,5 @@ class PoolIdType(Enum):
     Whether the pool identifier is a UUID or a name.
     """
 
-    UUID = "uuid"
-    NAME = "name"
+    UUID = 0
+    NAME = 1
