@@ -71,9 +71,9 @@ class PoolActionAvailability(IntEnum):
     What category of interactions a pool is enabled for.
     """
 
-    FULLY_OPERATIONAL = 0
-    NO_IPC_REQUESTS = 1
-    NO_POOL_CHANGES = 2
+    fully_operational = 0  # pylint: disable=invalid-name
+    no_ipc_requests = 1  # pylint: disable=invalid-name
+    no_pool_changes = 2  # pylint: disable=invalid-name
 
     def pool_maintenance_error_codes(self):
         """
@@ -82,10 +82,10 @@ class PoolActionAvailability(IntEnum):
         :rtype: list of PoolMaintenanceErrorCode
         """
         codes = []
-        if self >= PoolActionAvailability.NO_IPC_REQUESTS:
+        if self >= PoolActionAvailability.no_ipc_requests:
             codes.append(PoolMaintenanceErrorCode.NO_IPC_REQUESTS)
 
-        if self >= PoolActionAvailability.NO_POOL_CHANGES:
+        if self >= PoolActionAvailability.no_pool_changes:
             codes.append(PoolMaintenanceErrorCode.NO_POOL_CHANGES)
 
         return codes

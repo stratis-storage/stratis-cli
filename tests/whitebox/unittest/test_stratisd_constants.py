@@ -33,13 +33,13 @@ class PoolActionAvailabilityTestCase(unittest.TestCase):
         Test conversion from D-Bus value to pool maintenance error codes.
         """
         self.assertEqual(
-            PoolActionAvailability.FULLY_OPERATIONAL.pool_maintenance_error_codes(), []
+            PoolActionAvailability.fully_operational.pool_maintenance_error_codes(), []
         )
 
-        result = PoolActionAvailability.NO_IPC_REQUESTS.pool_maintenance_error_codes()
+        result = PoolActionAvailability.no_ipc_requests.pool_maintenance_error_codes()
         self.assertEqual(result, [PoolMaintenanceErrorCode.NO_IPC_REQUESTS])
 
-        result = PoolActionAvailability.NO_POOL_CHANGES.pool_maintenance_error_codes()
+        result = PoolActionAvailability.no_pool_changes.pool_maintenance_error_codes()
         self.assertEqual(len(result), 2)
         self.assertIn(PoolMaintenanceErrorCode.NO_IPC_REQUESTS, result)
         self.assertIn(PoolMaintenanceErrorCode.NO_POOL_CHANGES, result)
