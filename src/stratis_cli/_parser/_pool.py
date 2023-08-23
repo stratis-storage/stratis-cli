@@ -410,7 +410,7 @@ POOL_SUBCMDS = [
                     {
                         "action": "store",
                         "help": "yes to allow overprovisioning, otherwise no",
-                        "choices": [str(x) for x in list(YesOrNo)],
+                        "choices": [x.value for x in list(YesOrNo)],
                     },
                 ),
             ],

@@ -689,7 +689,7 @@ class PoolActions:
         # pylint: disable=import-outside-toplevel
         from ._data import MOPool, ObjectManager, Pool, pools
 
-        decision = bool(YesOrNo.from_str(namespace.decision))
+        decision = bool(YesOrNo(namespace.decision))
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})

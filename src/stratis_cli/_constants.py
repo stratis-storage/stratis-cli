@@ -26,23 +26,8 @@ class YesOrNo(Enum):
     YES = "yes"
     NO = "no"
 
-    def __str__(self):
-        return self.value
-
     def __bool__(self):
         return self is YesOrNo.YES
-
-    @staticmethod
-    def from_str(code_str):
-        """
-        From a string code, return the YesOrNo value.
-
-        :param str code_str: the string code
-        :returns: the YesOrNo value
-        :rtype: YesOrNo
-        :raises: StopIteration
-        """
-        return next(item for item in YesOrNo if code_str == str(item))
 
 
 class PoolIdType(Enum):
