@@ -18,6 +18,7 @@ Miscellaneous pool-binding actions.
 # isort: STDLIB
 import json
 
+from .._constants import EncryptionMethod
 from .._errors import StratisCliEngineError, StratisCliNoChangeError
 from .._stratisd_constants import (
     CLEVIS_KEY_TANG_TRUST_URL,
@@ -25,7 +26,6 @@ from .._stratisd_constants import (
     CLEVIS_KEY_URL,
     CLEVIS_PIN_TANG,
     CLEVIS_PIN_TPM2,
-    EncryptionMethod,
     StratisdErrors,
 )
 from ._connection import get_object
@@ -151,7 +151,7 @@ class BindActions:
 
         unbind_method = (
             Pool.Methods.UnbindClevis
-            if namespace.method == str(EncryptionMethod.CLEVIS)
+            if namespace.method == EncryptionMethod.CLEVIS.value
             else Pool.Methods.UnbindKeyring
         )
 

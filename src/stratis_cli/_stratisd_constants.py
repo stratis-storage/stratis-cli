@@ -29,23 +29,8 @@ class StratisdErrors(IntEnum):
     OK = 0
     ERROR = 1
 
-    @staticmethod
-    def from_int(code):
-        """
-        From an integer code, return the value.
-
-        :param int code: the code
-        :rtype: StratisdErrors
-        :raises: StopIteration
-        """
-        return next(item for item in StratisdErrors if code == int(item))
-
     def __str__(self):
-        if self is StratisdErrors.OK:
-            return "OK"
-        if self is StratisdErrors.ERROR:
-            return "ERROR"
-        assert False, "impossible value reached"  # pragma: no cover
+        return self.name
 
 
 class BlockDevTiers(IntEnum):
@@ -56,35 +41,8 @@ class BlockDevTiers(IntEnum):
     DATA = 0
     CACHE = 1
 
-    @staticmethod
-    def from_int(code):
-        """
-        From an integer code, return the value.
-
-        :param int code: the code
-        :rtype: StratisdErrors
-        :raises: StopIteration
-        """
-        return next(item for item in BlockDevTiers if code == int(item))
-
     def __str__(self):
-        if self is BlockDevTiers.DATA:
-            return "DATA"
-        if self is BlockDevTiers.CACHE:
-            return "CACHE"
-        assert False, "impossible value reached"  # pragma: no cover
-
-
-class EncryptionMethod(Enum):
-    """
-    Encryption method, used as argument to unlock.
-    """
-
-    KEYRING = "keyring"
-    CLEVIS = "clevis"
-
-    def __str__(self):
-        return self.value
+        return self.name
 
 
 CLEVIS_KEY_TANG_TRUST_URL = "stratis:tang:trust_url"
@@ -107,40 +65,15 @@ class ReportKey(Enum):
     MANAGED_OBJECTS = "managed_objects_report"
     STOPPED_POOLS = "stopped_pools"
 
-    def __str__(self):
-        return self.value
-
 
 class PoolActionAvailability(IntEnum):
     """
     What category of interactions a pool is enabled for.
     """
 
-    FULLY_OPERATIONAL = 0
-    NO_IPC_REQUESTS = 1
-    NO_POOL_CHANGES = 2
-
-    def __str__(self):
-        if self is PoolActionAvailability.FULLY_OPERATIONAL:
-            return "fully_operational"
-        if self is PoolActionAvailability.NO_IPC_REQUESTS:
-            return "no_ipc_requests"
-        if self is PoolActionAvailability.NO_POOL_CHANGES:  # pragma: no cover
-            return "no_pool_changes"
-
-        assert False, "impossible value reached"  # pragma: no cover
-
-    @staticmethod
-    def from_str(code_str):
-        """
-        Get ActionAvailability object from a string.
-        :param str code_str: a code string
-        :rtype: str or NoneType
-        """
-        for item in list(PoolActionAvailability):
-            if code_str == str(item):
-                return item
-        return None
+    fully_operational = 0  # pylint: disable=invalid-name
+    no_ipc_requests = 1  # pylint: disable=invalid-name
+    no_pool_changes = 2  # pylint: disable=invalid-name
 
     def pool_maintenance_error_codes(self):
         """
@@ -149,22 +82,10 @@ class PoolActionAvailability(IntEnum):
         :rtype: list of PoolMaintenanceErrorCode
         """
         codes = []
-        if self >= PoolActionAvailability.NO_IPC_REQUESTS:
+        if self >= PoolActionAvailability.no_ipc_requests:
             codes.append(PoolMaintenanceErrorCode.NO_IPC_REQUESTS)
 
-        if self >= PoolActionAvailability.NO_POOL_CHANGES:
+        if self >= PoolActionAvailability.no_pool_changes:
             codes.append(PoolMaintenanceErrorCode.NO_POOL_CHANGES)
 
         return codes
-
-
-class PoolIdType(Enum):
-    """
-    Whether the pool identifier is a UUID or a name.
-    """
-
-    UUID = "uuid"
-    NAME = "name"
-
-    def __str__(self):
-        return self.value

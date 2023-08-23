@@ -25,7 +25,7 @@ from uuid import UUID
 # isort: THIRDPARTY
 from justbytes import Range
 
-from .._constants import YesOrNo
+from .._constants import PoolIdType, YesOrNo
 from .._error_codes import PoolErrorCode
 from .._errors import (
     StratisCliEngineError,
@@ -41,7 +41,7 @@ from .._errors import (
     StratisCliPartialChangeError,
     StratisCliResourceNotFoundError,
 )
-from .._stratisd_constants import BlockDevTiers, PoolIdType, StratisdErrors
+from .._stratisd_constants import BlockDevTiers, StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import get_property, get_uuid_formatter
@@ -226,16 +226,16 @@ class PoolActions:
         proxy = get_object(TOP_OBJECT)
 
         (pool_id, id_type) = (
-            (namespace.uuid.hex, PoolIdType.UUID)
+            (namespace.uuid.hex, "uuid")
             if getattr(namespace, "name") is None
-            else (namespace.name, PoolIdType.NAME)
+            else (namespace.name, "name")
         )
 
         ((stopped, _), return_code, message) = Manager.Methods.StopPool(
             proxy,
             {
                 "id": pool_id,
-                "id_type": str(id_type),
+                "id_type": id_type,
             },
         )
 
@@ -259,16 +259,16 @@ class PoolActions:
         proxy = get_object(TOP_OBJECT)
 
         (pool_id, id_type) = (
-            (namespace.uuid.hex, PoolIdType.UUID)
+            (namespace.uuid.hex, "uuid")
             if getattr(namespace, "name") is None
-            else (namespace.name, PoolIdType.NAME)
+            else (namespace.name, "name")
         )
 
         ((started, _), return_code, message) = Manager.Methods.StartPool(
             proxy,
             {
                 "id": pool_id,
-                "id_type": str(id_type),
+                "id_type": id_type,
                 "unlock_method": (False, "")
                 if namespace.unlock_method is None
                 else (True, namespace.unlock_method),
@@ -689,7 +689,7 @@ class PoolActions:
         # pylint: disable=import-outside-toplevel
         from ._data import MOPool, ObjectManager, Pool, pools
 
-        decision = bool(YesOrNo.from_str(namespace.decision))
+        decision = bool(YesOrNo(namespace.decision))
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})

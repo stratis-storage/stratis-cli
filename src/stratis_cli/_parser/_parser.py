@@ -148,7 +148,7 @@ ROOT_SUBCOMMANDS = [
                         "type": str,
                         "help": ("Name of the report to display"),
                         "nargs": "?",
-                        "choices": [str(x) for x in list(ReportKey)],
+                        "choices": [x.value for x in list(ReportKey)],
                     },
                 )
             ],

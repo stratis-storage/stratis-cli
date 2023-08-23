@@ -166,7 +166,7 @@ class Default(List):
 
         :returns: list of PoolErrorCode
         """
-        action_availability = PoolActionAvailability.from_str(mopool.AvailableActions())
+        action_availability = PoolActionAvailability[str(mopool.AvailableActions())]
         availability_error_codes = action_availability.pool_maintenance_error_codes()
 
         no_alloc_space_error_codes = (
@@ -251,7 +251,7 @@ class Default(List):
 
         print(
             f"Actions Allowed: "
-            f"{PoolActionAvailability.from_str(mopool.AvailableActions())}"
+            f"{PoolActionAvailability[str(mopool.AvailableActions())].name}"
         )
         print(f"Cache: {'Yes' if mopool.HasCache() else 'No'}")
         print(f"Filesystem Limit: {mopool.FsLimit()}")

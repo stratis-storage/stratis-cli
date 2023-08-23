@@ -20,11 +20,7 @@ import unittest
 
 # isort: LOCAL
 from stratis_cli._error_codes import PoolMaintenanceErrorCode
-from stratis_cli._stratisd_constants import (
-    BlockDevTiers,
-    PoolActionAvailability,
-    StratisdErrors,
-)
+from stratis_cli._stratisd_constants import PoolActionAvailability
 
 
 class PoolActionAvailabilityTestCase(unittest.TestCase):
@@ -32,63 +28,18 @@ class PoolActionAvailabilityTestCase(unittest.TestCase):
     Test properties of PoolActionAvailability implementation
     """
 
-    def test_parsing_str(self):
-        """
-        Parsing a known string returns the correct value.
-        """
-        for item in list(PoolActionAvailability):
-            self.assertEqual(PoolActionAvailability.from_str(str(item)), item)
-
-    def test_parsing_bogus_str(self):
-        """
-        Parsing a string that does not correspond to any value returns None.
-        """
-        self.assertIsNone(PoolActionAvailability.from_str("totally super"))
-
     def test_conversion(self):
         """
         Test conversion from D-Bus value to pool maintenance error codes.
         """
         self.assertEqual(
-            PoolActionAvailability.FULLY_OPERATIONAL.pool_maintenance_error_codes(), []
+            PoolActionAvailability.fully_operational.pool_maintenance_error_codes(), []
         )
 
-        result = PoolActionAvailability.NO_IPC_REQUESTS.pool_maintenance_error_codes()
+        result = PoolActionAvailability.no_ipc_requests.pool_maintenance_error_codes()
         self.assertEqual(result, [PoolMaintenanceErrorCode.NO_IPC_REQUESTS])
 
-        result = PoolActionAvailability.NO_POOL_CHANGES.pool_maintenance_error_codes()
+        result = PoolActionAvailability.no_pool_changes.pool_maintenance_error_codes()
         self.assertEqual(len(result), 2)
         self.assertIn(PoolMaintenanceErrorCode.NO_IPC_REQUESTS, result)
         self.assertIn(PoolMaintenanceErrorCode.NO_POOL_CHANGES, result)
-
-
-class StratisdErrorsTestCase(unittest.TestCase):
-    """
-    Test StratisdErrors
-    """
-
-    def test_from_int(self):
-        """
-        Test from_int() raises a StopIteraton exception on unknown error.
-        """
-        with self.assertRaises(StopIteration):
-            StratisdErrors.from_int(32)
-
-    def test_str(self):
-        """
-        An OK EngineError is never constructed during stratis-cli operation.
-        """
-        self.assertEqual(str(StratisdErrors.OK), "OK")
-
-
-class BlockDevTiersTestCase(unittest.TestCase):
-    """
-    Test BlockDevTiers
-    """
-
-    def test_from_int(self):
-        """
-        Test from_int() raises a StopIteraton exception on unknown error.
-        """
-        with self.assertRaises(StopIteration):
-            BlockDevTiers.from_int(32)

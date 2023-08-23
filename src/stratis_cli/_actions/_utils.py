@@ -20,6 +20,7 @@ Miscellaneous functions.
 import json
 from uuid import UUID
 
+from .._constants import PoolIdType
 from .._errors import (
     StratisCliMissingClevisTangURLError,
     StratisCliMissingClevisThumbprintError,
@@ -30,7 +31,6 @@ from .._stratisd_constants import (
     CLEVIS_KEY_URL,
     CLEVIS_PIN_TANG,
     CLEVIS_PIN_TPM2,
-    PoolIdType,
 )
 
 
@@ -236,7 +236,5 @@ class PoolSelector:
         return selection_func
 
     def __str__(self):
-        pool_id_type_str = (
-            "UUID" if self.pool_id_type is PoolIdType.UUID else str(self.pool_id_type)
-        )
+        pool_id_type_str = "UUID" if self.pool_id_type is PoolIdType.UUID else "name"
         return f"pool with {pool_id_type_str} {self.value}"

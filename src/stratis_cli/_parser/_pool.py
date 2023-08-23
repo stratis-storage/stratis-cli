@@ -20,9 +20,8 @@ from argparse import ArgumentTypeError
 from uuid import UUID
 
 from .._actions import BindActions, PoolActions
-from .._constants import YesOrNo
+from .._constants import EncryptionMethod, YesOrNo
 from .._error_codes import PoolErrorCode
-from .._stratisd_constants import EncryptionMethod
 from ._bind import BIND_SUBCMDS, REBIND_SUBCMDS
 from ._debug import POOL_DEBUG_SUBCMDS
 
@@ -192,7 +191,7 @@ POOL_SUBCMDS = [
                         "default": None,
                         "dest": "unlock_method",
                         "action": "store",
-                        "choices": [str(x) for x in list(EncryptionMethod)],
+                        "choices": [x.value for x in list(EncryptionMethod)],
                         "help": "Method to use to unlock the pool if encrypted.",
                     },
                 ),
@@ -373,7 +372,7 @@ POOL_SUBCMDS = [
                     "method",
                     {
                         "action": "store",
-                        "choices": [str(x) for x in list(EncryptionMethod)],
+                        "choices": [x.value for x in list(EncryptionMethod)],
                         "help": "Encryption method to unbind",
                     },
                 ),
@@ -411,7 +410,7 @@ POOL_SUBCMDS = [
                     {
                         "action": "store",
                         "help": "yes to allow overprovisioning, otherwise no",
-                        "choices": [str(x) for x in list(YesOrNo)],
+                        "choices": [x.value for x in list(YesOrNo)],
                     },
                 ),
             ],
