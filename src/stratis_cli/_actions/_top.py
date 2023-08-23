@@ -118,7 +118,7 @@ class TopActions:
         """
 
         # pylint: disable=import-outside-toplevel
-        if namespace.report_name == str(ReportKey.MANAGED_OBJECTS):
+        if namespace.report_name == ReportKey.MANAGED_OBJECTS.value:
             from ._data import ObjectManager
 
             json_report = ObjectManager.Methods.GetManagedObjects(
@@ -126,7 +126,7 @@ class TopActions:
             )
 
         else:
-            if namespace.report_name == str(ReportKey.ENGINE_STATE):
+            if namespace.report_name == ReportKey.ENGINE_STATE.value:
                 from ._data import Manager
 
                 (report, return_code, message) = Manager.Methods.EngineStateReport(

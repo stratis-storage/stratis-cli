@@ -45,7 +45,7 @@ class ReportTestCase(SimTestCase):
         """
         Test getting stopped pool report.
         """
-        TEST_RUNNER(self._MENU + [str(ReportKey.STOPPED_POOLS)])
+        TEST_RUNNER(self._MENU + [ReportKey.STOPPED_POOLS.value])
 
     def test_report_no_name(self):
         """
@@ -57,10 +57,10 @@ class ReportTestCase(SimTestCase):
         """
         Test getting engine state report.
         """
-        TEST_RUNNER(self._MENU + [str(ReportKey.ENGINE_STATE)])
+        TEST_RUNNER(self._MENU + [ReportKey.ENGINE_STATE.value])
 
     def test_managed_objects_report(self):
         """
         Test getting managed_objects report.
         """
-        TEST_RUNNER(self._MENU + [str(ReportKey.MANAGED_OBJECTS)])
+        TEST_RUNNER(self._MENU + [ReportKey.MANAGED_OBJECTS.value])
