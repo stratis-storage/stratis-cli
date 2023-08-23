@@ -20,7 +20,7 @@ import unittest
 
 # isort: LOCAL
 from stratis_cli._error_codes import PoolMaintenanceErrorCode
-from stratis_cli._stratisd_constants import PoolActionAvailability, StratisdErrors
+from stratis_cli._stratisd_constants import PoolActionAvailability
 
 
 class PoolActionAvailabilityTestCase(unittest.TestCase):
@@ -43,15 +43,3 @@ class PoolActionAvailabilityTestCase(unittest.TestCase):
         self.assertEqual(len(result), 2)
         self.assertIn(PoolMaintenanceErrorCode.NO_IPC_REQUESTS, result)
         self.assertIn(PoolMaintenanceErrorCode.NO_POOL_CHANGES, result)
-
-
-class StratisdErrorsTestCase(unittest.TestCase):
-    """
-    Test StratisdErrors
-    """
-
-    def test_str(self):
-        """
-        An OK EngineError is never constructed during stratis-cli operation.
-        """
-        self.assertEqual(str(StratisdErrors.OK), "OK")
