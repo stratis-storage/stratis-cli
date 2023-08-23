@@ -28,19 +28,6 @@ class PoolActionAvailabilityTestCase(unittest.TestCase):
     Test properties of PoolActionAvailability implementation
     """
 
-    def test_parsing_str(self):
-        """
-        Parsing a known string returns the correct value.
-        """
-        for item in list(PoolActionAvailability):
-            self.assertEqual(PoolActionAvailability.from_str(str(item)), item)
-
-    def test_parsing_bogus_str(self):
-        """
-        Parsing a string that does not correspond to any value returns None.
-        """
-        self.assertIsNone(PoolActionAvailability.from_str("totally super"))
-
     def test_conversion(self):
         """
         Test conversion from D-Bus value to pool maintenance error codes.

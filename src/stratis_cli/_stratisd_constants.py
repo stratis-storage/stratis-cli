@@ -75,21 +75,6 @@ class PoolActionAvailability(IntEnum):
     NO_IPC_REQUESTS = 1
     NO_POOL_CHANGES = 2
 
-    def __str__(self):
-        return self.name.lower()
-
-    @staticmethod
-    def from_str(code_str):
-        """
-        Get ActionAvailability object from a string.
-        :param str code_str: a code string
-        :rtype: str or NoneType
-        """
-        for item in list(PoolActionAvailability):
-            if code_str == str(item):
-                return item
-        return None
-
     def pool_maintenance_error_codes(self):
         """
         Return the list of PoolMaintenanceErrorCodes for this availability.
