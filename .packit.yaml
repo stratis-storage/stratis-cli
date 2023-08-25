@@ -4,7 +4,6 @@ files_to_sync:
     - ./distro/stratis-cli.spec
     - .packit.yaml
 
-upstream_package_name: stratis-cli
 downstream_package_name: stratis-cli
 
 actions:
