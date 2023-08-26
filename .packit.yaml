@@ -1,17 +1,17 @@
-specfile_path: ./distro/stratis-cli.spec
+specfile_path: ../distro/stratis-cli.spec
 
 downstream_package_name: stratis-cli
 
 actions:
   post-upstream-clone:
-    - "mkdir distro"
-    - "wget https://raw.githubusercontent.com/stratis-storage/ci/master/mockbuild_test/stratis-cli.spec -O distro/stratis-cli.spec"
-    - "wget https://raw.githubusercontent.com/stratis-storage/ci/master/release_management/create_artifacts.py -O distro/create_artifacts.py"
-    - "wget https://raw.githubusercontent.com/stratis-storage/ci/master/release_management/_utils.py -O distro/_utils.py"
-    - "sed 's/\\\"python\\\",\\ \\\"setup.py\\\"/\\\"python3\\\",\\ \\\"setup.py\\\"/g' ./distro/_utils.py -i"
+    - "mkdir ../distro"
+    - "wget https://raw.githubusercontent.com/stratis-storage/ci/master/mockbuild_test/stratis-cli.spec -O ../distro/stratis-cli.spec"
+    - "wget https://raw.githubusercontent.com/stratis-storage/ci/master/release_management/create_artifacts.py -O ../distro/create_artifacts.py"
+    - "wget https://raw.githubusercontent.com/stratis-storage/ci/master/release_management/_utils.py -O ../distro/_utils.py"
+    - "sed 's/\\\"python\\\",\\ \\\"setup.py\\\"/\\\"python3\\\",\\ \\\"setup.py\\\"/g' ../distro/_utils.py -i"
   create-archive:
-    - "sh -c 'python3 ./distro/create_artifacts.py ./distro/ stratis-cli $(rpmspec -q --srpm --qf %{Version} ./distro/stratis-cli.spec)'"
-    - "sh -c 'echo distro/stratis-cli-$(rpmspec -q --srpm --qf %{Version} ./distro/stratis-cli.spec).tar.gz'"
+    - "sh -c 'python3 ../distro/create_artifacts.py ../distro/ stratis-cli $(rpmspec -q --srpm --qf %{Version} ../distro/stratis-cli.spec)'"
+    - "sh -c 'echo ../distro/stratis-cli-$(rpmspec -q --srpm --qf %{Version} ../distro/stratis-cli.spec).tar.gz'"
   get-current-version:
     - "python3 setup.py --version"
 
