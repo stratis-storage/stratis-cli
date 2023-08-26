@@ -1,9 +1,5 @@
 specfile_path: ./distro/stratis-cli.spec
 
-files_to_sync:
-    - ./distro/stratis-cli.spec
-    - .packit.yaml
-
 downstream_package_name: stratis-cli
 
 actions:
