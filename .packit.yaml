@@ -1,4 +1,5 @@
 specfile_path: ../distro/stratis-cli.spec
+merge_pr_in_ci: false
 
 downstream_package_name: stratis-cli
 
