@@ -1,3 +1,6 @@
+---
+
+# yamllint disable rule:line-length
 specfile_path: ../distro/stratis-cli.spec
 merge_pr_in_ci: false
 
@@ -17,7 +20,7 @@ actions:
     - "python3 setup.py --version"
 
 srpm_build_deps:
-  - python3-pip # "python3 setup.py --version" needs it
+  - python3-pip
   - wget
 
 jobs:
