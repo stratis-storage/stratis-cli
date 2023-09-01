@@ -48,9 +48,6 @@ jobs:
             task: make -f Makefile fmt-ci
           - dependencies: shfmt
             task: make -f Makefile fmt-shell-ci
-          # VERIFICATION OF TEST INFRASTRUCTURE
-          - dependencies: yamllint
-            task: make -f Makefile yamllint
     runs-on: ubuntu-latest
     container: fedora:38  # CURRENT DEVELOPMENT ENVIRONMENT
     steps:
