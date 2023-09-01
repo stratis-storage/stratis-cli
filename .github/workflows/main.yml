@@ -11,7 +11,6 @@ on:
       - '**/README.rst'
       - 'LICENSE'
       - 'docs/**'
-      - 'shell-completion/**'
       - '.packit.yaml'
   pull_request:
     branches:
@@ -21,7 +20,6 @@ on:
       - '**/README.rst'
       - 'LICENSE'
       - 'docs/**'
-      - 'shell-completion/**'
       - '.packit.yaml'
 
   # Allows you to run this workflow manually from the Actions tab
@@ -48,9 +46,6 @@ jobs:
             task: make -f Makefile fmt-ci
           - dependencies: shfmt
             task: make -f Makefile fmt-shell-ci
-          # VERIFICATION OF TEST INFRASTRUCTURE
-          - dependencies: yamllint
-            task: make -f Makefile yamllint
     runs-on: ubuntu-latest
     container: fedora:38  # CURRENT DEVELOPMENT ENVIRONMENT
     steps:

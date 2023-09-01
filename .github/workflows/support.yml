@@ -1,0 +1,45 @@
+---
+name: stratis-cli CI for support code
+
+# yamllint disable-line rule:truthy
+on:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - 'CHANGES.txt'
+      - '**/README.rst'
+      - 'LICENSE'
+      - 'docs/**'
+      - 'shell-completion/**'
+  pull_request:
+    branches:
+      - master
+    paths-ignore:
+      - 'CHANGES.txt'
+      - '**/README.rst'
+      - 'LICENSE'
+      - 'docs/**'
+      - 'shell-completion/**'
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  python-checks:
+    strategy:
+      matrix:
+        include:
+          - dependencies: yamllint
+            task: make -f Makefile yamllint
+    runs-on: ubuntu-latest
+    container: fedora:38  # CURRENT DEVELOPMENT ENVIRONMENT
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: >
+          dnf install -y
+          make
+          ${{ matrix.dependencies }}
+      - name: Run test
+        run: ${{ matrix.task }}

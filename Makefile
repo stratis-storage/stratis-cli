@@ -77,7 +77,7 @@ all-tests: unittest-tests dbus-tests
 
 .PHONY: yamllint
 yamllint:
-	yamllint --strict .github/workflows/*.yml
+	yamllint --strict .github/workflows/*.yml .packit.yaml
 
 .PHONY: legacy-package
 legacy-package:
