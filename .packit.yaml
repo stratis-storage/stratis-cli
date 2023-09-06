@@ -14,6 +14,8 @@ actions:
   create-archive:
     - "sed -i '/Requires.*stratisd/d' ../distro/stratis-cli.spec"
     - "sh -c 'python3 ../distro/release_management/create_artifacts.py ../distro/ --pre-release --specfile-path=../distro/stratis-cli.spec stratis-cli $(rpmspec -q --srpm --qf %{Version} ../distro/stratis-cli.spec)'"
+  fix-spec-file:
+    - "echo 'skipping automatic fix-spec-file actions'"
   get-current-version:
     - "python3 setup.py --version"
 
