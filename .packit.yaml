@@ -12,6 +12,7 @@ actions:
     - "git clone https://github.com/stratis-storage/ci --depth=1 ../distro"
     - "mv ../distro/mockbuild_test/stratis-cli.spec ../distro/stratis-cli.spec"
   create-archive:
+    - "sed -i '/Requires.*stratisd/d' ../distro/stratis-cli.spec"
     - "sh -c 'python3 ../distro/release_management/create_artifacts.py ../distro/ stratis-cli $(rpmspec -q --srpm --qf %{Version} ../distro/stratis-cli.spec)'"
     - "sh -c 'echo ../distro/stratis-cli-$(rpmspec -q --srpm --qf %{Version} ../distro/stratis-cli.spec).tar.gz'"
   get-current-version:
