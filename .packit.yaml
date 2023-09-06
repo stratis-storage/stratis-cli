@@ -13,8 +13,7 @@ actions:
     - "mv ../distro/mockbuild_test/stratis-cli.spec ../distro/stratis-cli.spec"
   create-archive:
     - "sed -i '/Requires.*stratisd/d' ../distro/stratis-cli.spec"
-    - "sh -c 'python3 ../distro/release_management/create_artifacts.py ../distro/ stratis-cli $(rpmspec -q --srpm --qf %{Version} ../distro/stratis-cli.spec)'"
-    - "sh -c 'echo ../distro/stratis-cli-$(rpmspec -q --srpm --qf %{Version} ../distro/stratis-cli.spec).tar.gz'"
+    - "sh -c 'python3 ../distro/release_management/create_artifacts.py ../distro/ --pre-release --specfile-path=../distro/stratis-cli.spec stratis-cli $(rpmspec -q --srpm --qf %{Version} ../distro/stratis-cli.spec)'"
   get-current-version:
     - "python3 setup.py --version"
 
