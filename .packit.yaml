@@ -3,6 +3,7 @@
 # yamllint disable rule:line-length
 specfile_path: ../distro/stratis-cli.spec
 merge_pr_in_ci: false
+update_release: false
 
 downstream_package_name: stratis-cli
 
