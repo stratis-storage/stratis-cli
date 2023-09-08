@@ -3,24 +3,25 @@
 # yamllint disable rule:line-length
 specfile_path: ../distro/stratis-cli.spec
 merge_pr_in_ci: false
+update_release: false
 
 downstream_package_name: stratis-cli
 
 actions:
   post-upstream-clone:
-    - "mkdir ../distro"
-    - "wget https://raw.githubusercontent.com/stratis-storage/ci/master/mockbuild_test/stratis-cli.spec -O ../distro/stratis-cli.spec"
-    - "wget https://raw.githubusercontent.com/stratis-storage/ci/master/release_management/create_artifacts.py -O ../distro/create_artifacts.py"
-    - "wget https://raw.githubusercontent.com/stratis-storage/ci/master/release_management/_utils.py -O ../distro/_utils.py"
+    - "git clone https://github.com/stratis-storage/ci --depth=1 ../distro"
+    - "mv ../distro/mockbuild_test/stratis-cli.spec ../distro/stratis-cli.spec"
   create-archive:
-    - "sh -c 'python3 ../distro/create_artifacts.py ../distro/ stratis-cli $(rpmspec -q --srpm --qf %{Version} ../distro/stratis-cli.spec)'"
-    - "sh -c 'echo ../distro/stratis-cli-$(rpmspec -q --srpm --qf %{Version} ../distro/stratis-cli.spec).tar.gz'"
+    - "sed -i '/Requires.*stratisd/d' ../distro/stratis-cli.spec"
+    - "sh -c 'python3 ../distro/release_management/create_artifacts.py ../distro/ --pre-release --specfile-path=../distro/stratis-cli.spec stratis-cli $(rpmspec -q --srpm --qf %{Version} ../distro/stratis-cli.spec)'"
+  fix-spec-file:
+    - "echo 'skipping automatic fix-spec-file actions'"
   get-current-version:
     - "python3 setup.py --version"
 
 srpm_build_deps:
   - python3-pip
-  - wget
+  - git
 
 jobs:
   - job: copr_build
