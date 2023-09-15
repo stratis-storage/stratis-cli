@@ -228,6 +228,9 @@ SPECS = {
     <property name="FsLimit" type="t" access="readwrite" />
     <property name="HasCache" type="b" access="read" />
     <property name="KeyDescription" type="(b(bs))" access="read" />
+    <property name="MetadataVersion" type="t" access="read">
+      <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const" />
+    </property>
     <property name="Name" type="s" access="read" />
     <property name="NoAllocSpace" type="b" access="read" />
     <property name="Overprovisioning" type="b" access="readwrite" />
