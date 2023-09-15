@@ -22,6 +22,7 @@ import json
 import os
 import sys
 import termios
+from enum import Enum
 from uuid import UUID
 
 from .._constants import Clevis
@@ -156,6 +157,20 @@ class Device:  # pylint: disable=too-few-public-methods
         self.devnode = str(mapping["devnode"])
 
 
+class PoolFeature(Enum):
+    """
+    Elements of a pool feature set that may be exposed in the StoppedPools
+    property.
+    """
+
+    ENCRYPTION = "encryption"
+    INTEGRITY = "integrity"
+    RAID = "raid"
+
+    def __str__(self):  # pragma: no cover
+        return self.value
+
+
 class StoppedPool:  # pylint: disable=too-few-public-methods
     """
     A representation of a single stopped pool.
@@ -183,6 +198,16 @@ class StoppedPool:  # pylint: disable=too-few-public-methods
 
         name = pool_info.get("name")
         self.name = None if name is None else str(name)
+
+        metadata_version_valid, metadata_version = pool_info["metadata_version"]
+        self.metadata_version = (
+            int(metadata_version) if metadata_version_valid else None
+        )
+
+        features_valid, features = pool_info["features"]
+        self.features = (
+            frozenset(PoolFeature(f) for f in features) if features_valid else None
+        )
 
 
 class PoolSelector:

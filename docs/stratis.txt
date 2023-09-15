@@ -232,9 +232,9 @@ Properties::
           property, a '~', for negation, is prepended to the property code.
           If the engine experienced an error when obtaining the property, a
           "?", representing "unknown", is prepended to the property code.
-          The property codes are: Ca - indicates the pool has a cache,
-          Cr - indicates the pool is encrypted, Op - indicates the pool allows
-          overprovisioning.
+          The property codes are: Le - indicates that the pool is a legacy pool,
+          Ca - indicates the pool has a cache, Cr - indicates the pool is
+          encrypted, Op - indicates the pool allows overprovisioning.
 UUID::
           The UUID of the pool.
 Alerts::
@@ -265,6 +265,9 @@ Name::
 Alerts::
 	A list of all alerts on the pool, as a text summary.
 
+Metadata Version::
+	The metadata version that the pool is using.
+
 Actions Allowed::
 	What actions may be taken on the pool. Generally the pool will be
 	listed as fully operational.
@@ -278,12 +281,16 @@ Filesystem Limit::
 Allows Overprovisioning::
 	Whether or not the pool allows overprovisioning.
 
-Key Description::
-	The key description, if the pool is encrypted using a key in the
-	kernel keyring.
+Encryption Enabled:
+	Whether or not encryption is enabled for this pool.
 
-Clevis Configuration::
-	The Clevis configuration, if the pool is encrypted via Clevis.
+Encryption Enabled: Key Description::
+	The key description, if the pool is encrypted using a key in the
+	kernel keyring. Only displayed if encryption is enabled.
+
+Encryption Enabled: Clevis Configuration::
+	The Clevis configuration, if the pool is encrypted via Clevis. Only
+        displayed if encryption is enabled.
 
 Space Usage: Fully Allocated::
 	Whether or not all the space on a pool's devices has been allocated
@@ -301,6 +308,29 @@ Space Usage: Allocated::
 Space Usage: Used::
 	The space on the devices that is in use. Used space can be reclaimed.
 	For example, destroying a Stratis filesystem will reduce this value.
+
+FIELDS for stratis pool list [(--uuid <uuid> |--name <name>)] --stopped
+
+UUID::
+	The UUID of the pool.
+
+Name::
+	The name of the pool.
+
+Metadata Version::
+	The metadata version that the pool is using.
+
+Encryption Enabled::
+	Whether or not encryption is enabled.
+
+Encryption Enabled: Key Description::
+	The key description, if the pool is encrypted using a key in the
+	kernel keyring. Only displayed if metadata version is 1 and encryption
+        is enabled.
+
+Encryption Enabled: Clevis Configuration::
+	The Clevis configuration, if the pool is encrypted via Clevis. Only
+        displayed if metadata version is 1 and encryption is enabled.
 
 
 FIELDS for stratis filesystem list
