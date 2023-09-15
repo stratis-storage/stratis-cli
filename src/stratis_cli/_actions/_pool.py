@@ -280,6 +280,7 @@ class PoolActions:
                     if namespace.unlock_method is None
                     else (True, str(namespace.unlock_method))
                 ),
+                "key_fd": (False, 0),
             },
         )
 
