@@ -22,8 +22,8 @@ from abc import ABC, abstractmethod
 # isort: THIRDPARTY
 import dbus
 
-from .._errors import StratisCliResourceNotFoundError
 from .._constants import PoolIdType
+from .._errors import StratisCliResourceNotFoundError
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 
