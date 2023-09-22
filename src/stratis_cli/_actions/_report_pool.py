@@ -23,7 +23,7 @@ from abc import ABC, abstractmethod
 import dbus
 
 from .._errors import StratisCliResourceNotFoundError
-from .._stratisd_constants import PoolIdType
+from .._constants import PoolIdType
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 
