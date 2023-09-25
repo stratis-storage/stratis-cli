@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """
-Error heirarchy for stratis cli.
+Error hierarchy for stratis cli.
 """
 
 from ._stratisd_constants import BlockDevTiers, StratisdErrors
@@ -83,7 +83,7 @@ class StratisCliOverprovisionChangeError(StratisCliNoPropertyChangeError):
 
 class StratisCliFsLimitChangeError(StratisCliNoPropertyChangeError):
     """
-    Raised when the user requests the same FsLimti value that the pool already
+    Raised when the user requests the same FsLimit value that the pool already
     has.
     """
 
@@ -93,7 +93,7 @@ class StratisCliFsLimitChangeError(StratisCliNoPropertyChangeError):
 
 class StratisCliHasCacheChangeError(StratisCliNoPropertyChangeError):
     """
-    Raised when the user request cache initialzation, but a cache is already
+    Raised when the user request cache initialization, but a cache is already
     present. It is not currently possible to remove a cache.
     """
 

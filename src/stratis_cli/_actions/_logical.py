@@ -146,7 +146,7 @@ class LogicalActions:
 
         def filesystem_size_triple(dbus_props):
             """
-            Calcuate the triple to display for filesystem size.
+            Calculate the triple to display for filesystem size.
 
             :param dbus_props: filesystem D-Bus properties
             :type dbus_props: MOFilesystem

@@ -55,7 +55,7 @@ def _add_args(parser, args):
 
 def _add_mut_ex_args(parser, args):
     """
-    Add mututally exlusive arguments for a subcommand.
+    Add mutually exclusive arguments for a subcommand.
 
     :param parser: the parser being build
     :param args: a data structure representing sets of mututally exclusive
