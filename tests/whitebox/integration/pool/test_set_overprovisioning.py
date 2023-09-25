@@ -27,7 +27,7 @@ _ERROR = StratisCliErrorCodes.ERROR
 
 class SetOverprovisionModeTestCase(SimTestCase):
     """
-    Test setting overprovision mode when setup in defaut fashion.
+    Test setting overprovision mode when setup in default fashion.
     """
 
     _MENU = ["--propagate", "pool", "overprovision"]

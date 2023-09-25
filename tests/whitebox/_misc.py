@@ -209,7 +209,7 @@ class RunTestCase(unittest.TestCase):
 
 class SimTestCase(RunTestCase):
     """
-    A SimTestCase must always start and stop stratisd (simulator vesion).
+    A SimTestCase must always start and stop stratisd (simulator version).
     """
 
     @classmethod
