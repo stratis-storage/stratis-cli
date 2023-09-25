@@ -28,74 +28,74 @@ class TimeoutTestCase(unittest.TestCase):
     Test various timeout inputs.
     """
 
-    def test_timout_too_large(self):
+    def test_timeout_too_large(self):
         """
         Should fail because the timeout value is too large.
         """
         with self.assertRaises(StratisCliEnvironmentError):
             get_timeout("1073741824")
 
-    def test_timout_too_large_int(self):
+    def test_timeout_too_large_int(self):
         """
         Should fail because the timeout value is too large.
         """
         with self.assertRaises(StratisCliEnvironmentError):
             get_timeout(1073741824)
 
-    def test_timout_too_small_str(self):
+    def test_timeout_too_small_str(self):
         """
         Should fail because the timeout value is too small.
         """
         with self.assertRaises(StratisCliEnvironmentError):
             get_timeout("-2")
 
-    def test_timout_too_small_int(self):
+    def test_timeout_too_small_int(self):
         """
         Should fail because the timeout value is too small.
         """
         with self.assertRaises(StratisCliEnvironmentError):
             get_timeout(-2)
 
-    def test_timout_float_str(self):
+    def test_timeout_float_str(self):
         """
         Should fail because the timeout value is a float.
         """
         with self.assertRaises(StratisCliEnvironmentError):
             get_timeout("2.0")
 
-    def test_timout_float_float(self):
+    def test_timeout_float_float(self):
         """
         Should fail because the timeout value is a float.
         """
         with self.assertRaises(StratisCliEnvironmentError):
             get_timeout(2.0)
 
-    def test_timout_not_int(self):
+    def test_timeout_not_int(self):
         """
         Should fail because the timeout value is not an integer.
         """
         with self.assertRaises(StratisCliEnvironmentError):
             get_timeout("hello")
 
-    def test_timout_correct_return_value_str_1000(self):
+    def test_timeout_correct_return_value_str_1000(self):
         """
         An input value of "1000" should return 1.0.
         """
         self.assertEqual(get_timeout("1000"), 1.0)
 
-    def test_timout_correct_return_value_int_1000(self):
+    def test_timeout_correct_return_value_int_1000(self):
         """
         An input value of 1000 should return 1.0.
         """
         self.assertEqual(get_timeout(1000), 1.0)
 
-    def test_timout_correct_return_value_str_0(self):
+    def test_timeout_correct_return_value_str_0(self):
         """
         An input value of "0" should return 0.
         """
         self.assertEqual(get_timeout("0"), 0)
 
-    def test_timout_correct_return_value_int_0(self):
+    def test_timeout_correct_return_value_int_0(self):
         """
         An input value of 0 should return 0.
         """
