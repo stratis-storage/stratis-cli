@@ -1,0 +1,3 @@
+[files]
+# typos tries to correct the spelling of D-Bus signatures
+extend-exclude = ["_introspect.py"]

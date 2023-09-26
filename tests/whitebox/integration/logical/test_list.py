@@ -34,7 +34,7 @@ _DEVICE_STRATEGY = device_name_list(1)
 
 class ListTestCase(SimTestCase):
     """
-    Test listing a volume for a non-existant pool.
+    Test listing a volume for a non-existent pool.
     """
 
     _MENU = ["--propagate", "filesystem", "list"]

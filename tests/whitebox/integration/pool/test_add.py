@@ -36,7 +36,7 @@ _ERROR = StratisCliErrorCodes.ERROR
 
 class AddDataTestCase(SimTestCase):
     """
-    Test adding devices to a non-existant pool.
+    Test adding devices to a non-existent pool.
     """
 
     _MENU = ["--propagate", "pool", "add-data"]

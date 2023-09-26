@@ -28,7 +28,7 @@ _DEVICE_STRATEGY = device_name_list(1)
 
 class ListTestCase(SimTestCase):
     """
-    Test listing devices for a non-existant pool.
+    Test listing devices for a non-existent pool.
     """
 
     _MENU = ["--propagate", "blockdev", "list"]

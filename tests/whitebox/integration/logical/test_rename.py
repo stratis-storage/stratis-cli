@@ -52,7 +52,7 @@ class RenameTestCase(SimTestCase):
     def test_rename(self):
         """
         Renaming the filesystem should succeed,
-        because origin the pool and filesytem are available.
+        because origin the pool and filesystem are available.
         """
         command_line = self._MENU + [self._POOLNAME, self._FSNAME, self._RENAMEFSNAME]
         TEST_RUNNER(command_line)

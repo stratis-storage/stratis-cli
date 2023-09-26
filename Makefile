@@ -37,6 +37,10 @@ fmt-shell:
 fmt-shell-ci:
 	shfmt -d shell-completion/bash/stratis
 
+.PHONY: check-typos
+check-typos:
+	typos
+
 PYREVERSE_OPTS = --output=pdf
 .PHONY: view
 view:

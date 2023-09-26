@@ -49,7 +49,7 @@ class StopTestCase(SimTestCase):
 
     def test_stop_stopped(self):
         """
-        Stopping a stoppped pool should raise exception.
+        Stopping a stopped pool should raise exception.
         """
         command_line = self._MENU + [
             f"--name={self._POOLNAME}",

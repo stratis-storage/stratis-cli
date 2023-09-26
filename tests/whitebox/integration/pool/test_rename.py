@@ -30,7 +30,7 @@ _ERROR = StratisCliErrorCodes.ERROR
 
 class Rename1TestCase(SimTestCase):
     """
-    Test 'rename' when pool is non-existant.
+    Test 'rename' when pool is non-existent.
     """
 
     _MENU = ["--propagate", "pool", "rename"]

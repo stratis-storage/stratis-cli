@@ -586,7 +586,7 @@ class PoolActions:
             pool.
 
             :param pool_proxy: dbus proxy object for the pool
-            :param MoDev modev: represents D-Bus informaton on a single device
+            :param MoDev modev: represents D-Bus information on a single device
             """
             (changed, return_code, message) = Pool.Methods.GrowPhysicalDevice(
                 pool_proxy, {"dev": modev.Uuid()}

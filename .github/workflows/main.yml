@@ -61,6 +61,27 @@ jobs:
       - name: Run test
         run: ${{ matrix.task }}
 
+  check-typos:
+    runs-on: ubuntu-latest
+    container: fedora:38  # CURRENT DEVELOPMENT ENVIRONMENT
+    steps:
+      - name: Install dependencies
+        run: >
+          dnf install -y
+          clang
+          glibc-static
+          make
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          components: cargo
+          toolchain: 1.72.0  # CURRENT DEVELOPMENT RUST TOOLCHAIN
+      - uses: baptiste0928/cargo-install@v2
+        with:
+          crate: typos-cli
+      - name: Run test
+        run: make -f Makefile check-typos
+
   test-runs:
     strategy:
       matrix:

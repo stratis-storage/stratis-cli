@@ -94,7 +94,7 @@ class InitCacheFail2TestCase(SimTestCase):
 
 class InitCacheFail3TestCase(SimTestCase):
     """
-    Test 'init-cache' for a non-existant pool.
+    Test 'init-cache' for a non-existent pool.
     """
 
     _MENU = ["--propagate", "pool", "init-cache"]
@@ -102,7 +102,7 @@ class InitCacheFail3TestCase(SimTestCase):
 
     def test_init_cache(self):
         """
-        Intializing the cache must fail since the pool does not exist.
+        Initializing the cache must fail since the pool does not exist.
         """
         command_line = self._MENU + [self._POOLNAME] + _DEVICE_STRATEGY()
         self.check_error(DbusClientUniqueResultError, command_line, _ERROR)
