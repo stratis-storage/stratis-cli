@@ -28,4 +28,4 @@ jobs:
     trigger: pull_request
     manual_trigger: true
     targets:
-      - fedora-stable
+      - fedora-all
