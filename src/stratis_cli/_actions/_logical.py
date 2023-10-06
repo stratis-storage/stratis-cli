@@ -153,7 +153,7 @@ class LogicalActions:
             ).search(managed_objects)
         )
 
-        def filesystem_size_triple(dbus_props):
+        def filesystem_size_quartet(dbus_props):
             """
             Calculate the triple to display for filesystem size.
 
@@ -165,7 +165,8 @@ class LogicalActions:
             """
             total = Range(dbus_props.Size())
             used = get_property(dbus_props.Used(), Range, None)
-            return size_triple(total, used)
+            limit = get_property(dbus_props.SizeLimit(), Range, None)
+            return f'{size_triple(total, used)} / {"None" if limit is None else limit}'
 
         format_uuid = get_uuid_formatter(namespace.unhyphenated_uuids)
 
@@ -173,7 +174,7 @@ class LogicalActions:
             (
                 path_to_name[mofilesystem.Pool()],
                 mofilesystem.Name(),
-                filesystem_size_triple(mofilesystem),
+                filesystem_size_quartet(mofilesystem),
                 date_parser.parse(mofilesystem.Created())
                 .astimezone()
                 .strftime("%b %d %Y %H:%M"),
@@ -187,7 +188,7 @@ class LogicalActions:
             [
                 "Pool",
                 "Filesystem",
-                TOTAL_USED_FREE,
+                f"{TOTAL_USED_FREE} / Limit",
                 "Created",
                 "Device",
                 "UUID",
