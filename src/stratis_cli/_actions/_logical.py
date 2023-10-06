@@ -84,7 +84,16 @@ class LogicalActions:
             if namespace.size is None
             else (True, str(namespace.size.magnitude))
         )
-        requested_specs = [(n, requested_size_arg) for n in requested_names]
+
+        requested_size_limit_arg = (
+            (False, "")
+            if namespace.size_limit is None
+            else (True, str(namespace.size_limit.magnitude))
+        )
+
+        requested_specs = [
+            (n, requested_size_arg, requested_size_limit_arg) for n in requested_names
+        ]
 
         (
             (created, list_created),

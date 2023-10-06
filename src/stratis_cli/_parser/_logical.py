@@ -41,6 +41,14 @@ LOGICAL_SUBCMDS = [
                         "help": 'The size of the filesystems to be created, e.g., "32GiB"',
                     },
                 ),
+                (
+                    "--size-limit",
+                    {
+                        "action": RangeAction,
+                        "dest": "size_limit",
+                        "help": 'An upper limit on the size of filesystems, e.g., "2TiB"',
+                    },
+                ),
             ],
             "func": LogicalActions.create_volumes,
         },
