@@ -174,6 +174,28 @@ class TestFilesystemSizeParsing(RunTestCase):
             self.check_system_exit(prefix + command_line, _PARSE_ERROR)
 
 
+class TestFilesystemSizeLimitParsing(RunTestCase):
+    """
+    Test that parser errors are properly returned on selected badly formatted
+    size limits.
+    """
+
+    def test_size_limit_string(self):
+        """
+        Verify that a parse error occurs if the size limit is a string that is
+        not "current".
+        """
+        command_line = [
+            "filesystem",
+            "set-size-limit",
+            "pn",
+            "fn",
+            "buckle",
+        ]
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
+
 class TestBadlyFormattedUuid(RunTestCase):
     """
     Test that parser errors are properly returned on badly formatted UUIDs.

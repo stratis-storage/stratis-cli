@@ -91,6 +91,18 @@ class StratisCliFsLimitChangeError(StratisCliNoPropertyChangeError):
         return f"Pool's filesystem limit is exactly {str(self.value).lower()}"
 
 
+class StratisCliFsSizeLimitChangeError(StratisCliNoPropertyChangeError):
+    """
+    Raised when the user requests the same filesystems SizeLimit value that the
+    filesystem already has.
+    """
+
+    def __str__(self):
+        if self.value is None:
+            return "Filesystem's size limit is not set"
+        return f"Filesystem's size limit is exactly {self.value}"
+
+
 class StratisCliHasCacheChangeError(StratisCliNoPropertyChangeError):
     """
     Raised when the user request cache initialization, but a cache is already

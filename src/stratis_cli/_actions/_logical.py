@@ -21,6 +21,7 @@ from justbytes import Range
 
 from .._errors import (
     StratisCliEngineError,
+    StratisCliFsSizeLimitChangeError,
     StratisCliIncoherenceError,
     StratisCliNoChangeError,
     StratisCliPartialChangeError,
@@ -331,3 +332,68 @@ class LogicalActions:
 
         if not changed:
             raise StratisCliNoChangeError("rename", namespace.new_name)
+
+    @staticmethod
+    def set_size_limit(namespace):  # pylint: disable=too-many-locals
+        """
+        Set an upper limit on the size of the filesystem.
+        """
+        # pylint: disable=import-outside-toplevel
+        from ._data import Filesystem, MOFilesystem, ObjectManager, filesystems, pools
+
+        proxy = get_object(TOP_OBJECT)
+        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
+        (pool_object_path, _) = next(
+            pools(props={"Name": namespace.pool_name})
+            .require_unique_match(True)
+            .search(managed_objects)
+        )
+        (fs_object_path, fs_info) = next(
+            filesystems(props={"Name": namespace.fs_name, "Pool": pool_object_path})
+            .require_unique_match(True)
+            .search(managed_objects)
+        )
+
+        limit = namespace.limit
+        mofs = MOFilesystem(fs_info)
+
+        new_limit = str(mofs.Size() if limit == "current" else limit[0].magnitude)
+
+        valid, maybe_size_limit = mofs.SizeLimit()
+
+        if valid and new_limit == maybe_size_limit:
+            raise StratisCliFsSizeLimitChangeError(
+                Range(new_limit) if limit == "current" else limit[1]
+            )
+
+        Filesystem.Properties.SizeLimit.Set(
+            get_object(fs_object_path), (True, new_limit)
+        )
+
+    @staticmethod
+    def unset_size_limit(namespace):
+        """
+        Unset upper limit on the size of the filesystem.
+        """
+        # pylint: disable=import-outside-toplevel
+        from ._data import Filesystem, MOFilesystem, ObjectManager, filesystems, pools
+
+        proxy = get_object(TOP_OBJECT)
+        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
+        (pool_object_path, _) = next(
+            pools(props={"Name": namespace.pool_name})
+            .require_unique_match(True)
+            .search(managed_objects)
+        )
+        (fs_object_path, fs_info) = next(
+            filesystems(props={"Name": namespace.fs_name, "Pool": pool_object_path})
+            .require_unique_match(True)
+            .search(managed_objects)
+        )
+
+        valid, _ = MOFilesystem(fs_info).SizeLimit()
+
+        if not valid:
+            raise StratisCliFsSizeLimitChangeError(None)
+
+        Filesystem.Properties.SizeLimit.Set(get_object(fs_object_path), (False, ""))
