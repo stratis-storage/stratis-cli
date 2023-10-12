@@ -154,25 +154,23 @@ class Create6TestCase(SimTestCase):
         """
         Create with 31MiB specified size.
         """
-        command_line = (
-            self._MENU + [self._POOLNAME] + self._VOLNAMES[0:4] + ["--size=31MiB"]
-        )
+        command_line = self._MENU + [self._POOLNAME, self._VOLNAMES[0], "--size=31MiB"]
         self.check_error(StratisCliEngineError, command_line, _ERROR)
 
     def test_create_with_default_size(self):
         """
         Explicitly using stratisd default should succeed.
         """
-        command_line = (
-            self._MENU + [self._POOLNAME] + self._VOLNAMES[0:4] + ["--size=1TiB"]
-        )
+        command_line = self._MENU + [self._POOLNAME, self._VOLNAMES[0], "--size=1TiB"]
         TEST_RUNNER(command_line)
 
     def test_create_with_size_too_much(self):
         """
         Test creating with a truly enormous size.
         """
-        command_line = (
-            self._MENU + [self._POOLNAME] + self._VOLNAMES[0:4] + ["--size=1048576PiB"]
-        )
+        command_line = self._MENU + [
+            self._POOLNAME,
+            self._VOLNAMES[0],
+            "--size=1048576PiB",
+        ]
         self.check_error(StratisCliEngineError, command_line, _ERROR)
