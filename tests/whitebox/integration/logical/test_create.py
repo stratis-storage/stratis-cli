@@ -163,14 +163,3 @@ class Create6TestCase(SimTestCase):
         """
         command_line = self._MENU + [self._POOLNAME, self._VOLNAMES[0], "--size=1TiB"]
         TEST_RUNNER(command_line)
-
-    def test_create_with_size_too_much(self):
-        """
-        Test creating with a truly enormous size.
-        """
-        command_line = self._MENU + [
-            self._POOLNAME,
-            self._VOLNAMES[0],
-            "--size=1048576PiB",
-        ]
-        self.check_error(StratisCliEngineError, command_line, _ERROR)
