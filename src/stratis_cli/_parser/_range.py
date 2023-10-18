@@ -25,7 +25,7 @@ from justbytes import B, GiB, KiB, MiB, PiB, Range, TiB
 _RANGE_RE = re.compile(r"^(?P<magnitude>[0-9]+)(?P<units>([KMGTP]i)?B)$")
 
 _SIZE_SPECIFICATION = (
-    "Size must be speified using the format <magnitude><units> where "
+    "Size must be specified using the format <magnitude><units> where "
     "<magnitude> is a decimal integer value and <units> is any binary "
     'unit specifier in the set "B", "KiB", "MiB", "GiB", "TiB", '
     'and "PiB".'
