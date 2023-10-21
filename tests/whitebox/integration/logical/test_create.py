@@ -164,13 +164,44 @@ class Create6TestCase(SimTestCase):
         command_line = self._MENU + [self._POOLNAME, self._VOLNAMES[0], "--size=1TiB"]
         TEST_RUNNER(command_line)
 
-    def test_create_with_size_too_much(self):
+
+class Create7TestCase(SimTestCase):
+    """
+    Test creating a filesystem, specifying a size limit.
+    """
+
+    _MENU = ["--propagate", "filesystem", "create"]
+    _POOLNAME = "deadpool"
+    _VOLNAMES = ["oubliette"]
+
+    def setUp(self):
         """
-        Test creating with a truly enormous size.
+        Start the stratisd daemon with the simulator.
+        """
+        super().setUp()
+        command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
+        RUNNER(command_line)
+
+    def test_create_with_size_limit_too_low(self):
+        """
+        Create with 512 GiB size limit, which is smaller than size.
         """
         command_line = self._MENU + [
             self._POOLNAME,
             self._VOLNAMES[0],
-            "--size=1048576PiB",
+            "--size-limit=512GiB",
+            "--size=1TiB",
         ]
         self.check_error(StratisCliEngineError, command_line, _ERROR)
+
+    def test_create_with_size_and_limit_equal(self):
+        """
+        Test create with size limit exactly the same as size.
+        """
+        command_line = self._MENU + [
+            self._POOLNAME,
+            self._VOLNAMES[0],
+            "--size-limit=1TiB",
+            "--size=1TiB",
+        ]
+        TEST_RUNNER(command_line)

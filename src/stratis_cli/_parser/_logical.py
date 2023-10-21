@@ -17,7 +17,7 @@ Definition of filesystem actions to display in the CLI.
 
 from .._actions import LogicalActions
 from ._debug import FILESYSTEM_DEBUG_SUBCMDS
-from ._range import RangeAction
+from ._range import RangeAction, RangeActionOrCurrent
 
 LOGICAL_SUBCMDS = [
     (
@@ -39,6 +39,14 @@ LOGICAL_SUBCMDS = [
                         "action": RangeAction,
                         "dest": "size",
                         "help": 'The size of the filesystems to be created, e.g., "32GiB"',
+                    },
+                ),
+                (
+                    "--size-limit",
+                    {
+                        "action": RangeAction,
+                        "dest": "size_limit",
+                        "help": 'An upper limit on the size of filesystems, e.g., "2TiB"',
                     },
                 ),
             ],
@@ -114,6 +122,57 @@ LOGICAL_SUBCMDS = [
                 ),
             ],
             "func": LogicalActions.rename_fs,
+        },
+    ),
+    (
+        "set-size-limit",
+        {
+            "help": "set limit for this filesystem",
+            "args": [
+                (
+                    "pool_name",
+                    {
+                        "action": "store",
+                        "help": "Name of the pool the filesystem is part of",
+                    },
+                ),
+                (
+                    "fs_name",
+                    {"action": "store", "help": "Name of the filesystem to change"},
+                ),
+                (
+                    "limit",
+                    {
+                        "action": RangeActionOrCurrent,
+                        "help": (
+                            "Upper limit on size of filesystem. Use the "
+                            'keyword "current" to specify the current size of '
+                            "the filesystem."
+                        ),
+                    },
+                ),
+            ],
+            "func": LogicalActions.set_size_limit,
+        },
+    ),
+    (
+        "unset-size-limit",
+        {
+            "help": "unset size limit for this filesystem",
+            "args": [
+                (
+                    "pool_name",
+                    {
+                        "action": "store",
+                        "help": "Name of the pool the filesystem is part of",
+                    },
+                ),
+                (
+                    "fs_name",
+                    {"action": "store", "help": "Name of the filesystem to change"},
+                ),
+            ],
+            "func": LogicalActions.unset_size_limit,
         },
     ),
     (

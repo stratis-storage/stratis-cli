@@ -86,3 +86,24 @@ class RangeAction(argparse.Action):
         size = Range(magnitude, units)
 
         setattr(namespace, self.dest, size)
+
+
+class RangeActionOrCurrent(RangeAction):
+    """
+    Allow specifying a Range or the value "current". Include the original
+    value specified by the user as well as the Range result if the user
+    specified a valid range. This is purely useful for error messages,
+    so that an error message will contain what the user specified if there
+    needs to be reported an idempotency error.
+    """
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        """
+        Allow "current" as well as range specifications.
+        """
+
+        if values == "current":
+            setattr(namespace, self.dest, "current")
+        else:
+            super().__call__(parser, namespace, values, option_string=option_string)
+            setattr(namespace, self.dest, (getattr(namespace, self.dest), values))

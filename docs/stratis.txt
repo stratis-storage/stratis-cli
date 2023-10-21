@@ -103,10 +103,14 @@ pool explain <code> ::
      "warning", or an "E" for "error".
 pool debug get-object-path <(--uuid <uuid> |--name <name>)> ::
      Look up the D-Bus object path for a pool given the UUID or name.
-filesystem create <pool_name> <fs_name> [<fs_name>..] [--size <size>]::
+filesystem create <pool_name> <fs_name> [<fs_name>..] [--size <size>] [--size-limit <size_limit>]::
 	   Create one or more filesystems from the specified pool.
-           If '--size' option is specified, make each filesystem the specified
-           size. Otherwise, accept the stratisd default.
+           If the '--size' option is specified, make each filesystem the
+           specified size. Otherwise, accept the stratisd default.
+           if the '--size-limit' option is specified, set the filesystem's size
+           limit on creation. If the size limit is not set, the filesystem will
+           be grown, as needed, up to the maximum possible size. The filesystem
+           size limit  must be at least as large as the filesystem size.
            NOTE: There is a temporary restriction on the number of filesystems
            that can be specified with this command. Specifying more than one
            filesystem will result in an error.
@@ -119,6 +123,12 @@ filesystem destroy <pool_name> <fs_name> [<fs_name>..]::
 	   Destroy one or more filesystems that exist in the specified pool.
 filesystem rename <pool_name> <fs_name> <new_name>::
      Rename a filesystem.
+filesystem set-size-limit <pool_name> <fs_name> <size_limit>::
+           Set the filesystem size limit. Must be at least as large as the
+           filesystem's current size. To set the size limit to the same value
+           as the filesystem's current size, use the keyword "current".
+filesystem unset-size-limit <pool_name> <fs_name>::
+           Remove a filesystem size limit previously set.
 filesystem debug get-object-path <(--uuid <uuid> |--name <name>)> ::
      Look up the D-Bus object path for a filesystem given the UUID or name.
 blockdev list [pool_name]::

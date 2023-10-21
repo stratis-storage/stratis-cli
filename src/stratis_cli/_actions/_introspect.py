@@ -128,6 +128,7 @@ SPECS = {
       <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const" />
     </property>
     <property name="Size" type="s" access="read" />
+    <property name="SizeLimit" type="(bs)" access="readwrite" />
     <property name="Used" type="(bs)" access="read" />
     <property name="Uuid" type="s" access="read">
       <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const" />
@@ -162,7 +163,7 @@ SPECS = {
       <arg name="return_string" type="s" direction="out" />
     </method>
     <method name="CreateFilesystems">
-      <arg name="specs" type="a(s(bs))" direction="in" />
+      <arg name="specs" type="a(s(bs)(bs))" direction="in" />
       <arg name="results" type="(ba(os))" direction="out" />
       <arg name="return_code" type="q" direction="out" />
       <arg name="return_string" type="s" direction="out" />
