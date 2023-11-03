@@ -12,7 +12,6 @@ actions:
     - "git clone https://github.com/stratis-storage/ci --depth=1 ../distro"
     - "mv ../distro/mockbuild_test/stratis-cli.spec ../distro/stratis-cli.spec"
   create-archive:
-    - "sed -i '/Requires.*stratisd/d' ../distro/stratis-cli.spec"
     - "sh -c 'python3 ../distro/release_management/create_artifacts.py ../distro/ --pre-release --specfile-path=../distro/stratis-cli.spec stratis-cli'"
   fix-spec-file:
     - "echo 'skipping automatic fix-spec-file actions'"
