@@ -138,4 +138,4 @@ class Stopped(Report):  # pylint: disable=too-few-public-methods
         # Substitute lsblk call here
         for dev in stopped_pool.devs:
             print(dev)
-            subprocess.run(["lsblk", "-i", str(dev)], check=True)
+            subprocess.run(["lsblk", "-i", str(dev.devnode)], check=True)
