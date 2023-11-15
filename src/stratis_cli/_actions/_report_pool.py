@@ -19,7 +19,6 @@ Pool report.
 from abc import ABC, abstractmethod
 
 from .._errors import StratisCliResourceNotFoundError
-from .._stratisd_constants import PoolIdType
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 
@@ -44,9 +43,9 @@ def report_pool(uuid_formatter, selection, *, stopped=False):
     List the specified information about pools.
     """
     klass = (
-        Stopped(uuid_formatter, selection)
+        Stopped(uuid_formatter, selection=selection)
         if stopped
-        else Default(uuid_formatter, selection)
+        else Default(uuid_formatter, selection=selection)
     )
     klass.report_pool()
 
@@ -70,7 +69,7 @@ class Report(ABC):  # pylint: disable=too-few-public-methods
     @abstractmethod
     def report_pool(self):
         """
-        List the pools.
+        Report the pools.
         """
 
 
@@ -90,15 +89,8 @@ class Default(Report):  # pylint: disable=too-few-public-methods
 
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
-        (selection_type, selection_value) = self.selection
-        (selection_key, selection_value) = (
-            ("Uuid", selection_value.hex)
-            if selection_type == PoolIdType.UUID
-            else ("Name", selection_value)
-        )
-
         (pool_object_path, _) = next(
-            pools(props={selection_key: selection_value})
+            pools(props=self.selection.managed_objects_key())
             .require_unique_match(True)
             .search(managed_objects)
         )
@@ -128,18 +120,7 @@ class Stopped(Report):  # pylint: disable=too-few-public-methods
 
         stopped_pools = _fetch_stopped_pools_property(proxy)
 
-        (selection_type, selection_value) = self.selection
-
-        if selection_type == PoolIdType.UUID:
-            selection_value = selection_value.hex
-
-            def selection_func(uuid, _info):
-                return uuid == selection_value
-
-        else:
-
-            def selection_func(_uuid, info):
-                return info.get("name") == selection_value
+        selection_func = self.selection.stopped_pools_func()
 
         stopped_pool = next(
             (
@@ -151,8 +132,8 @@ class Stopped(Report):  # pylint: disable=too-few-public-methods
         )
 
         if stopped_pool is None:
-            raise StratisCliResourceNotFoundError("list", selection_value)
+            raise StratisCliResourceNotFoundError("report", str(self.selection))
 
         # Substitute lsblk call here
-        for dev in stopped_pool["devs"]:
+        for dev in stopped_pool.devs:
             print(dev)

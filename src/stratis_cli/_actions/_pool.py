@@ -720,9 +720,9 @@ class PoolActions:
         uuid_formatter = get_uuid_formatter(namespace.unhyphenated_uuids)
 
         selection = (
-            (PoolIdType.NAME, namespace.name)
+            PoolSelector(PoolIdType.NAME, namespace.name)
             if namespace.uuid is None
-            else (PoolIdType.UUID, namespace.uuid)
+            else PoolSelector(PoolIdType.UUID, namespace.uuid)
         )
 
         return report_pool(uuid_formatter, selection, stopped=namespace.stopped)
