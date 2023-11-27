@@ -34,14 +34,27 @@ TIMEOUT = get_timeout(
 )
 
 
+class ClassInfo:  # pylint: disable=too-few-public-methods
+    """
+    Information used to construct the dynamically generated class.
+    """
+
+    def __init__(self, name, interface_name):
+        """
+        Initializer.
+        """
+        self.name = name
+        self.interface_name = interface_name
+
+
 class ClassKey(Enum):
     """
     Keys for dynamically generated classes.
     """
 
-    MANAGER = ("Manager", MANAGER_INTERFACE)
-    OBJECT_MANAGER = ("ObjectManager", "org.freedesktop.DBus.ObjectManager")
-    REPORT = ("Report", REPORT_INTERFACE)
+    MANAGER = ClassInfo("Manager", MANAGER_INTERFACE)
+    OBJECT_MANAGER = ClassInfo("ObjectManager", "org.freedesktop.DBus.ObjectManager")
+    REPORT = ClassInfo("Report", REPORT_INTERFACE)
 
 
 def make_dyn_class(key):
@@ -52,11 +65,12 @@ def make_dyn_class(key):
     """
     try:
         return make_class(
-            key.value[0],
-            ET.fromstring(SPECS[key.value[1]]),  # nosec B314
+            key.value.name,
+            ET.fromstring(SPECS[key.value.interface_name]),  # nosec B314
             TIMEOUT,
         )
     except DPClientGenerationError as err:  # pragma: no cover
         raise StratisCliGenerationError(
-            "Failed to generate some class needed for invoking dbus-python methods"
+            f"Failed to generate class {key.value.name} needed for invoking "
+            "dbus-python methods"
         ) from err
