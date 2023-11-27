@@ -47,6 +47,8 @@ class ClassKey(Enum):
 def make_dyn_class(key):
     """
     Dynamically generate a class from introspection specification.
+
+    :param ClassKey key: key that identifies the class to make
     """
     try:
         return make_class(
