@@ -47,7 +47,7 @@ jobs:
           - dependencies: shfmt
             task: make -f Makefile fmt-shell-ci
     runs-on: ubuntu-latest
-    container: fedora:38  # CURRENT DEVELOPMENT ENVIRONMENT
+    container: fedora:39  # CURRENT DEVELOPMENT ENVIRONMENT
     steps:
       - uses: actions/checkout@v3
       - name: Install dependencies
@@ -63,7 +63,7 @@ jobs:
 
   check-typos:
     runs-on: ubuntu-latest
-    container: fedora:38  # CURRENT DEVELOPMENT ENVIRONMENT
+    container: fedora:39  # CURRENT DEVELOPMENT ENVIRONMENT
     steps:
       - name: Install dependencies
         run: >
@@ -89,10 +89,10 @@ jobs:
           # MANDATORY CHECKS USING CURRENT DEVELOPMENT ENVIRONMENT
           - task: make -f Makefile all-tests
             rust_log: RUST_LOG=stratisd=debug
-            image: fedora:38  # CURRENT DEVELOPMENT ENVIRONMENT
+            image: fedora:39  # CURRENT DEVELOPMENT ENVIRONMENT
           - task: make -f Makefile coverage-no-html
             rust_log:
-            image: fedora:38  # CURRENT DEVELOPMENT ENVIRONMENT
+            image: fedora:39  # CURRENT DEVELOPMENT ENVIRONMENT
           # MANDATORY CHECKS USING LOWEST SUPPORTED ENVIRONMENT PROXY
           - task: make -f Makefile all-tests
             rust_log: RUST_LOG=stratisd=debug
