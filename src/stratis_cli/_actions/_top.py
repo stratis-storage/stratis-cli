@@ -32,8 +32,9 @@ from .._errors import (
 )
 from .._stratisd_constants import ReportKey, StratisdErrors
 from ._connection import get_object
-from ._constants import TOP_OBJECT
+from ._constants import MANAGER_INTERFACE, TOP_OBJECT
 from ._formatting import print_table
+from ._utils import make_dyn_class
 
 
 def _fetch_keylist(proxy):
@@ -44,8 +45,7 @@ def _fetch_keylist(proxy):
     :rtype: list of str
     :raises StratisCliEngineError:
     """
-    # pylint: disable=import-outside-toplevel
-    from ._data import Manager
+    Manager = make_dyn_class("Manager", MANAGER_INTERFACE)
 
     (keys, return_code, message) = Manager.Methods.ListKeys(proxy, {})
     if return_code != StratisdErrors.OK:  # pragma: no cover
@@ -68,8 +68,7 @@ def _add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
     """
     assert capture_key == (keyfile_path is None)
 
-    # pylint: disable=import-outside-toplevel
-    from ._data import Manager
+    Manager = make_dyn_class("Manager", MANAGER_INTERFACE)
 
     if capture_key:
         password = getpass(prompt="Enter key data followed by the return key: ")
@@ -127,7 +126,7 @@ class TopActions:
 
         else:
             if namespace.report_name == ReportKey.ENGINE_STATE.value:
-                from ._data import Manager
+                Manager = make_dyn_class("Manager", MANAGER_INTERFACE)
 
                 (report, return_code, message) = Manager.Methods.EngineStateReport(
                     get_object(TOP_OBJECT), {}
@@ -242,8 +241,7 @@ class TopActions:
         :raises StratisCliNoChangeError:
         :raises StratisCliIncoherenceError:
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import Manager
+        Manager = make_dyn_class("Manager", MANAGER_INTERFACE)
 
         proxy = get_object(TOP_OBJECT)
 

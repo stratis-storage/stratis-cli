@@ -18,10 +18,16 @@ Miscellaneous functions.
 
 # isort: STDLIB
 import json
+import os
+import xml.etree.ElementTree as ET  # nosec B405
 from uuid import UUID
+
+# isort: FIRSTPARTY
+from dbus_python_client_gen import DPClientGenerationError, make_class
 
 from .._constants import PoolIdType
 from .._errors import (
+    StratisCliGenerationError,
     StratisCliMissingClevisTangURLError,
     StratisCliMissingClevisThumbprintError,
 )
@@ -32,6 +38,27 @@ from .._stratisd_constants import (
     CLEVIS_PIN_TANG,
     CLEVIS_PIN_TPM2,
 )
+from ._environment import get_timeout
+from ._introspect import SPECS
+
+DBUS_TIMEOUT_SECONDS = 120
+
+
+def make_dyn_class(name, interface_key):
+    """
+    Dynamically generate a class from introspection specification.
+    """
+    timeout = get_timeout(
+        os.environ.get("STRATIS_DBUS_TIMEOUT", DBUS_TIMEOUT_SECONDS * 1000)
+    )
+    try:
+        return make_class(
+            name, ET.fromstring(SPECS[interface_key]), timeout  # nosec B314
+        )
+    except DPClientGenerationError as err:  # pragma: no cover
+        raise StratisCliGenerationError(
+            "Failed to generate some class needed for invoking dbus-python methods"
+        ) from err
 
 
 class ClevisInfo:
