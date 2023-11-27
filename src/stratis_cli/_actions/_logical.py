@@ -135,15 +135,17 @@ class LogicalActions:
         filesystems_with_props = [
             MOFilesystem(info)
             for objpath, info in filesystems(
-                props=None
-                if pool_name is None
-                else {
-                    "Pool": next(
-                        pools(props={"Name": pool_name})
-                        .require_unique_match(True)
-                        .search(managed_objects)
-                    )[0]
-                }
+                props=(
+                    None
+                    if pool_name is None
+                    else {
+                        "Pool": next(
+                            pools(props={"Name": pool_name})
+                            .require_unique_match(True)
+                            .search(managed_objects)
+                        )[0]
+                    }
+                )
             ).search(managed_objects)
         ]
 
