@@ -118,7 +118,7 @@ def make_dyn_class(key, purpose):
             try:
                 if key == ClassKey.MANAGER:
                     _add_abs_path_assertion(klass, "CreatePool", "devices")
-                if key == ClassKey.POOL:
+                if key == ClassKey.POOL:  # pragma: no cover
                     _add_abs_path_assertion(klass, "InitCache", "devices")
                     _add_abs_path_assertion(klass, "AddCacheDevs", "devices")
                     _add_abs_path_assertion(klass, "AddDataDevs", "devices")
