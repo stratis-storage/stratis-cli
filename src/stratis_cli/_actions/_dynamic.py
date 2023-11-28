@@ -23,7 +23,12 @@ from enum import Enum
 from dbus_python_client_gen import DPClientGenerationError, make_class
 
 from .._errors import StratisCliGenerationError
-from ._constants import MANAGER_INTERFACE, REPORT_INTERFACE
+from ._constants import (
+    FILESYSTEM_INTERFACE,
+    MANAGER_INTERFACE,
+    POOL_INTERFACE,
+    REPORT_INTERFACE,
+)
 from ._environment import get_timeout
 from ._introspect import SPECS
 
@@ -39,12 +44,12 @@ class ClassInfo:  # pylint: disable=too-few-public-methods
     Information used to construct the dynamically generated class.
     """
 
-    def __init__(self, name, interface_name):
+    def __init__(self, interface_name, *, invoke_name=None):
         """
         Initializer.
         """
-        self.name = name
         self.interface_name = interface_name
+        self.invoke_name = invoke_name
 
 
 class ClassKey(Enum):
@@ -52,9 +57,23 @@ class ClassKey(Enum):
     Keys for dynamically generated classes.
     """
 
-    MANAGER = ClassInfo("Manager", MANAGER_INTERFACE)
-    OBJECT_MANAGER = ClassInfo("ObjectManager", "org.freedesktop.DBus.ObjectManager")
-    REPORT = ClassInfo("Report", REPORT_INTERFACE)
+    FILESYSTEM = ClassInfo(FILESYSTEM_INTERFACE, invoke_name="Filesystem")
+    MANAGER = ClassInfo(MANAGER_INTERFACE, invoke_name="Manager")
+    OBJECT_MANAGER = ClassInfo(
+        "org.freedesktop.DBus.ObjectManager", invoke_name="ObjectManager"
+    )
+    POOL = ClassInfo(POOL_INTERFACE, invoke_name="Pool")
+    REPORT = ClassInfo(REPORT_INTERFACE, invoke_name="Report")
+
+
+class PurposeKey(Enum):
+    """
+    Purpose of class to be created.
+    """
+
+    INVOKE = 0  # invoke D-Bus methods
+    OBJECT = 1  # represent object in GetManagedObjects result
+    SEARCH = 2  # search for object in GEtManagedObjects result
 
 
 def _add_abs_path_assertion(klass, method_name, key):
@@ -90,7 +109,7 @@ def make_dyn_class(key):
     """
     try:
         klass = make_class(
-            key.value.name,
+            key.value.invoke_name,
             ET.fromstring(SPECS[key.value.interface_name]),  # nosec B314
             TIMEOUT,
         )
@@ -98,6 +117,10 @@ def make_dyn_class(key):
         try:
             if key == ClassKey.MANAGER:
                 _add_abs_path_assertion(klass, "CreatePool", "devices")
+            if key == ClassKey.POOL:
+                _add_abs_path_assertion(klass, "InitCache", "devices")
+                _add_abs_path_assertion(klass, "AddCacheDevs", "devices")
+                _add_abs_path_assertion(klass, "AddDataDevs", "devices")
         except AttributeError as err:  # pragma: no cover
             # This can only happen if the expected method is missing from
             # the XML spec or code generation has a bug, we will never
@@ -111,6 +134,6 @@ def make_dyn_class(key):
 
     except DPClientGenerationError as err:  # pragma: no cover
         raise StratisCliGenerationError(
-            f"Failed to generate class {key.value.name} needed for invoking "
+            f"Failed to generate class {key.value.invoke_name} needed for invoking "
             "dbus-python methods"
         ) from err
