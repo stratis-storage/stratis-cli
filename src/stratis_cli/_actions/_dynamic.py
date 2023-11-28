@@ -66,7 +66,7 @@ class ClassKey(Enum):
     REPORT = ClassInfo(REPORT_INTERFACE, invoke_name="Report")
 
 
-class PurposeKey(Enum):
+class Purpose(Enum):
     """
     Purpose of class to be created.
     """
@@ -101,39 +101,42 @@ def _add_abs_path_assertion(klass, method_name, key):
     setattr(method_class, method_name, new_method)
 
 
-def make_dyn_class(key):
+def make_dyn_class(key, purpose):
     """
     Dynamically generate a class from introspection specification.
 
     :param ClassKey key: key that identifies the class to make
     """
-    try:
-        klass = make_class(
-            key.value.invoke_name,
-            ET.fromstring(SPECS[key.value.interface_name]),  # nosec B314
-            TIMEOUT,
-        )
-
+    if purpose is Purpose.INVOKE:
         try:
-            if key == ClassKey.MANAGER:
-                _add_abs_path_assertion(klass, "CreatePool", "devices")
-            if key == ClassKey.POOL:
-                _add_abs_path_assertion(klass, "InitCache", "devices")
-                _add_abs_path_assertion(klass, "AddCacheDevs", "devices")
-                _add_abs_path_assertion(klass, "AddDataDevs", "devices")
-        except AttributeError as err:  # pragma: no cover
-            # This can only happen if the expected method is missing from
-            # the XML spec or code generation has a bug, we will never
-            # test for these conditions.
+            klass = make_class(
+                key.value.invoke_name,
+                ET.fromstring(SPECS[key.value.interface_name]),  # nosec B314
+                TIMEOUT,
+            )
+
+            try:
+                if key == ClassKey.MANAGER:
+                    _add_abs_path_assertion(klass, "CreatePool", "devices")
+                if key == ClassKey.POOL:
+                    _add_abs_path_assertion(klass, "InitCache", "devices")
+                    _add_abs_path_assertion(klass, "AddCacheDevs", "devices")
+                    _add_abs_path_assertion(klass, "AddDataDevs", "devices")
+            except AttributeError as err:  # pragma: no cover
+                # This can only happen if the expected method is missing from
+                # the XML spec or code generation has a bug, we will never
+                # test for these conditions.
+                raise StratisCliGenerationError(
+                    "Malformed class definition; could not access a class or "
+                    "method in the generated class definition"
+                ) from err
+
+            return klass
+
+        except DPClientGenerationError as err:  # pragma: no cover
             raise StratisCliGenerationError(
-                "Malformed class definition; could not access a class or "
-                "method in the generated class definition"
+                f"Failed to generate class {key.value.invoke_name} needed for invoking "
+                "dbus-python methods"
             ) from err
 
-        return klass
-
-    except DPClientGenerationError as err:  # pragma: no cover
-        raise StratisCliGenerationError(
-            f"Failed to generate class {key.value.invoke_name} needed for invoking "
-            "dbus-python methods"
-        ) from err
+    assert False  # pragma: no cover
