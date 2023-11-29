@@ -23,12 +23,7 @@ from enum import Enum
 from dbus_python_client_gen import DPClientGenerationError, make_class
 
 from .._errors import StratisCliGenerationError
-from ._constants import (
-    FILESYSTEM_INTERFACE,
-    MANAGER_INTERFACE,
-    POOL_INTERFACE,
-    REPORT_INTERFACE,
-)
+from ._constants import MANAGER_INTERFACE, REPORT_INTERFACE
 from ._environment import get_timeout
 from ._introspect import SPECS
 
@@ -39,33 +34,6 @@ TIMEOUT = get_timeout(
 )
 
 
-class ClassInfo:  # pylint: disable=too-few-public-methods
-    """
-    Information used to construct the dynamically generated class.
-    """
-
-    def __init__(self, interface_name, *, invoke_name=None):
-        """
-        Initializer.
-        """
-        self.interface_name = interface_name
-        self.invoke_name = invoke_name
-
-
-class ClassKey(Enum):
-    """
-    Keys for dynamically generated classes.
-    """
-
-    FILESYSTEM = ClassInfo(FILESYSTEM_INTERFACE, invoke_name="Filesystem")
-    MANAGER = ClassInfo(MANAGER_INTERFACE, invoke_name="Manager")
-    OBJECT_MANAGER = ClassInfo(
-        "org.freedesktop.DBus.ObjectManager", invoke_name="ObjectManager"
-    )
-    POOL = ClassInfo(POOL_INTERFACE, invoke_name="Pool")
-    REPORT = ClassInfo(REPORT_INTERFACE, invoke_name="Report")
-
-
 class Purpose(Enum):
     """
     Purpose of class to be created.
@@ -74,6 +42,13 @@ class Purpose(Enum):
     INVOKE = 0  # invoke D-Bus methods
     OBJECT = 1  # represent object in GetManagedObjects result
     SEARCH = 2  # search for object in GEtManagedObjects result
+
+
+_LOOKUP = {
+    "Manager": (Purpose.INVOKE, MANAGER_INTERFACE),
+    "ObjectManager": (Purpose.INVOKE, "org.freedesktop.DBus.ObjectManager"),
+    "Report": (Purpose.INVOKE, REPORT_INTERFACE),
+}
 
 
 def _add_abs_path_assertion(klass, method_name, key):
@@ -101,24 +76,26 @@ def _add_abs_path_assertion(klass, method_name, key):
     setattr(method_class, method_name, new_method)
 
 
-def make_dyn_class(key, purpose):
+def make_dyn_class(name):
     """
     Dynamically generate a class from introspection specification.
 
-    :param ClassKey key: key that identifies the class to make
+    :param str name: name of class to make
     """
+    (purpose, interface_name) = _LOOKUP[name]
+
     if purpose is Purpose.INVOKE:
         try:
             klass = make_class(
-                key.value.invoke_name,
-                ET.fromstring(SPECS[key.value.interface_name]),  # nosec B314
+                name,
+                ET.fromstring(SPECS[interface_name]),  # nosec B314
                 TIMEOUT,
             )
 
             try:
-                if key == ClassKey.MANAGER:
+                if name == "Manager":
                     _add_abs_path_assertion(klass, "CreatePool", "devices")
-                if key == ClassKey.POOL:  # pragma: no cover
+                if name == "Pool":  # pragma: no cover
                     _add_abs_path_assertion(klass, "InitCache", "devices")
                     _add_abs_path_assertion(klass, "AddCacheDevs", "devices")
                     _add_abs_path_assertion(klass, "AddDataDevs", "devices")
@@ -135,7 +112,7 @@ def make_dyn_class(key, purpose):
 
         except DPClientGenerationError as err:  # pragma: no cover
             raise StratisCliGenerationError(
-                f"Failed to generate class {key.value.invoke_name} needed for invoking "
+                f"Failed to generate class {name} needed for invoking "
                 "dbus-python methods"
             ) from err
 

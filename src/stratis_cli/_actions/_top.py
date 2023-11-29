@@ -33,7 +33,7 @@ from .._errors import (
 from .._stratisd_constants import ReportKey, StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
-from ._dynamic import ClassKey, Purpose, make_dyn_class
+from ._dynamic import make_dyn_class
 from ._formatting import print_table
 
 
@@ -45,7 +45,7 @@ def _fetch_keylist(proxy):
     :rtype: list of str
     :raises StratisCliEngineError:
     """
-    Manager = make_dyn_class(ClassKey.MANAGER, Purpose.INVOKE)
+    Manager = make_dyn_class("Manager")
 
     (keys, return_code, message) = Manager.Methods.ListKeys(proxy, {})
     if return_code != StratisdErrors.OK:  # pragma: no cover
@@ -68,7 +68,7 @@ def _add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
     """
     assert capture_key == (keyfile_path is None)
 
-    Manager = make_dyn_class(ClassKey.MANAGER, Purpose.INVOKE)
+    Manager = make_dyn_class("Manager")
 
     if capture_key:
         password = getpass(prompt="Enter key data followed by the return key: ")
@@ -117,7 +117,7 @@ class TopActions:
         """
 
         if namespace.report_name == ReportKey.MANAGED_OBJECTS.value:
-            ObjectManager = make_dyn_class(ClassKey.OBJECT_MANAGER, Purpose.INVOKE)
+            ObjectManager = make_dyn_class("ObjectManager")
 
             json_report = ObjectManager.Methods.GetManagedObjects(
                 get_object(TOP_OBJECT), {}
@@ -125,14 +125,14 @@ class TopActions:
 
         else:
             if namespace.report_name == ReportKey.ENGINE_STATE.value:
-                Manager = make_dyn_class(ClassKey.MANAGER, Purpose.INVOKE)
+                Manager = make_dyn_class("Manager")
 
                 (report, return_code, message) = Manager.Methods.EngineStateReport(
                     get_object(TOP_OBJECT), {}
                 )
 
             else:
-                Report = make_dyn_class(ClassKey.REPORT, Purpose.INVOKE)
+                Report = make_dyn_class("Report")
 
                 (report, return_code, message) = Report.Methods.GetReport(
                     get_object(TOP_OBJECT), {"name": namespace.report_name}
@@ -240,7 +240,7 @@ class TopActions:
         :raises StratisCliNoChangeError:
         :raises StratisCliIncoherenceError:
         """
-        Manager = make_dyn_class(ClassKey.MANAGER, Purpose.INVOKE)
+        Manager = make_dyn_class("Manager")
 
         proxy = get_object(TOP_OBJECT)
 
