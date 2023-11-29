@@ -87,7 +87,7 @@ def make_dyn_class(name):
     if klass is not None:
         return klass
 
-    if purpose is Purpose.INVOKE:
+    if purpose is Purpose.INVOKE:  # pragma: no cover
         try:
             klass = make_class(
                 name,
