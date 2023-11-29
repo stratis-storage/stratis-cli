@@ -45,9 +45,9 @@ class Purpose(Enum):
 
 
 _LOOKUP = {
-    "Manager": (Purpose.INVOKE, MANAGER_INTERFACE),
-    "ObjectManager": (Purpose.INVOKE, "org.freedesktop.DBus.ObjectManager"),
-    "Report": (Purpose.INVOKE, REPORT_INTERFACE),
+    "Manager": (Purpose.INVOKE, MANAGER_INTERFACE, None),
+    "ObjectManager": (Purpose.INVOKE, "org.freedesktop.DBus.ObjectManager", None),
+    "Report": (Purpose.INVOKE, REPORT_INTERFACE, None),
 }
 
 
@@ -82,7 +82,10 @@ def make_dyn_class(name):
 
     :param str name: name of class to make
     """
-    (purpose, interface_name) = _LOOKUP[name]
+    (purpose, interface_name, klass) = _LOOKUP[name]
+
+    if klass is not None:
+        return klass
 
     if purpose is Purpose.INVOKE:
         try:
@@ -108,12 +111,12 @@ def make_dyn_class(name):
                     "method in the generated class definition"
                 ) from err
 
-            return klass
-
         except DPClientGenerationError as err:  # pragma: no cover
             raise StratisCliGenerationError(
                 f"Failed to generate class {name} needed for invoking "
                 "dbus-python methods"
             ) from err
 
-    assert False  # pragma: no cover
+    _LOOKUP[name] = (purpose, interface_name, klass)
+
+    return klass
