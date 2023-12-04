@@ -125,6 +125,7 @@ jobs:
           python3-psutil
           python3-wcwidth
           systemd-devel
+          util-linux
       - uses: dtolnay/rust-toolchain@master
         with:
           components: cargo
