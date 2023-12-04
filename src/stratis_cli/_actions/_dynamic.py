@@ -45,9 +45,23 @@ class Purpose(Enum):
 
 
 _LOOKUP = {
-    "Manager": (Purpose.INVOKE, MANAGER_INTERFACE, None),
-    "ObjectManager": (Purpose.INVOKE, "org.freedesktop.DBus.ObjectManager", None),
-    "Report": (Purpose.INVOKE, REPORT_INTERFACE, None),
+    "Manager": (
+        Purpose.INVOKE,
+        lambda: ET.fromstring(SPECS[MANAGER_INTERFACE]),  # nosec B314
+        None,
+    ),
+    "ObjectManager": (
+        Purpose.INVOKE,
+        lambda: ET.fromstring(
+            SPECS["org.freedesktop.DBus.ObjectManager"]
+        ),  # nosec B314
+        None,
+    ),
+    "Report": (
+        Purpose.INVOKE,
+        lambda: ET.fromstring(SPECS[REPORT_INTERFACE]),  # nosec B314
+        None,
+    ),
 }
 
 
@@ -82,16 +96,18 @@ def make_dyn_class(name):
 
     :param str name: name of class to make
     """
-    (purpose, interface_name, klass) = _LOOKUP[name]
+    (purpose, interface_func, klass) = _LOOKUP[name]
 
     if klass is not None:
         return klass
+
+    assert interface_func is not None
 
     if purpose is Purpose.INVOKE:  # pragma: no cover
         try:
             klass = make_class(
                 name,
-                ET.fromstring(SPECS[interface_name]),  # nosec B314
+                interface_func(),
                 TIMEOUT,
             )
 
@@ -117,6 +133,7 @@ def make_dyn_class(name):
                 "dbus-python methods"
             ) from err
 
-    _LOOKUP[name] = (purpose, interface_name, klass)
+    # set the function to None since the class has been obtained
+    _LOOKUP[name] = (purpose, None, klass)
 
     return klass
