@@ -3,4 +3,4 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [tool.pylint]
-good-names="Manager,ObjectManager,Report"
+good-names="Manager0,Manager,ObjectManager,Report"

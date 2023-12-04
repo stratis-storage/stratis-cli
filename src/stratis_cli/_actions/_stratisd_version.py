@@ -21,6 +21,7 @@ from packaging.specifiers import SpecifierSet, Version
 from .._errors import StratisCliStratisdVersionError
 from ._connection import get_object
 from ._constants import MAXIMUM_STRATISD_VERSION, MINIMUM_STRATISD_VERSION, TOP_OBJECT
+from ._dynamic import make_dyn_class
 
 
 def check_stratisd_version():
@@ -30,8 +31,7 @@ def check_stratisd_version():
 
     :raises StratisCliStratisdVersionError
     """
-    # pylint: disable=import-outside-toplevel
-    from ._data import Manager0
+    Manager0 = make_dyn_class("Manager0")
 
     version_spec = SpecifierSet(f">={MINIMUM_STRATISD_VERSION}") & SpecifierSet(
         f"<{MAXIMUM_STRATISD_VERSION}"
