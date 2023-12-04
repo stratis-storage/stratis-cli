@@ -33,6 +33,14 @@ TIMEOUT = get_timeout(
     os.environ.get("STRATIS_DBUS_TIMEOUT", DBUS_TIMEOUT_SECONDS * 1000)
 )
 
+MANAGER_SPEC = """
+<interface name="org.storage.stratis3.Manager.r0">
+    <property access="read" name="Version" type="s">
+        <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const" />
+    </property>
+</interface>
+"""
+
 
 class Purpose(Enum):
     """
@@ -48,6 +56,11 @@ _LOOKUP = {
     "Manager": (
         Purpose.INVOKE,
         lambda: ET.fromstring(SPECS[MANAGER_INTERFACE]),  # nosec B314
+        None,
+    ),
+    "Manager0": (
+        Purpose.INVOKE,
+        lambda: ET.fromstring(MANAGER_SPEC),  # nosec B314
         None,
     ),
     "ObjectManager": (
