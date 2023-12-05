@@ -22,6 +22,7 @@ from dbus_client_gen import DbusClientUniqueResultError
 
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
+from stratis_cli._errors import StratisCliResourceNotFoundError
 
 from .._misc import RUNNER, SimTestCase, device_name_list
 
@@ -49,6 +50,13 @@ class ReportTestCase(SimTestCase):
         command_line = self._MENU + ["--uuid", str(uuid4())]
         self.check_error(DbusClientUniqueResultError, command_line, _ERROR)
 
+    def test_call_bad_uuid_stopped(self):
+        """
+        Test bad uuid for stopped pools.
+        """
+        command_line = self._MENU + ["--stopped", "--uuid", str(uuid4())]
+        self.check_error(StratisCliResourceNotFoundError, command_line, _ERROR)
+
     def test_report_bad_name(self):
         """
         Test bad name.
@@ -58,3 +66,14 @@ class ReportTestCase(SimTestCase):
             "noone",
         ]
         self.check_error(DbusClientUniqueResultError, command_line, _ERROR)
+
+    def test_report_bad_name_stopped(self):
+        """
+        Test bad name for stopped pools.
+        """
+        command_line = self._MENU + [
+            "--stopped",
+            "--name",
+            "noone",
+        ]
+        self.check_error(StratisCliResourceNotFoundError, command_line, _ERROR)
