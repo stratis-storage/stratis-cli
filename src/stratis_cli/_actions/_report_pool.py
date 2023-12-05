@@ -96,17 +96,21 @@ class Default(Report):  # pylint: disable=too-few-public-methods
             .search(managed_objects)
         )
 
+        # For sim engine tests, actually running report commands will go wrong.
+        # Therefore, all tests exit at the previous line.
         modevs = (
             MODev(info)
             for objpath, info in devs(props={"Pool": pool_object_path}).search(
                 managed_objects
             )
-        )
+        )  # pragma: no cover
 
-        blkdevs = [dev.Devnode() for dev in modevs]
+        blkdevs = [dev.Devnode() for dev in modevs]  # pragma: no cover
         # Ignore bandit B603 errors.  Input comes from D-Bus and has
         # been processed.
-        subprocess.run(["/usr/bin/lsblk", "-i"] + blkdevs, check=True)  # nosec B603
+        subprocess.run(
+            ["/usr/bin/lsblk", "-i"] + blkdevs, check=True
+        )  # nosec B603 # pragma: no cover
 
 
 class Stopped(Report):  # pylint: disable=too-few-public-methods
@@ -136,7 +140,11 @@ class Stopped(Report):  # pylint: disable=too-few-public-methods
         if stopped_pool is None:
             raise StratisCliResourceNotFoundError("report", str(self.selection))
 
+        # For sim engine tests, actually running report commands will go wrong.
+        # Therefore, all tests exit at the previous line.
         # Ignore bandit B603 errors.  Input comes from D-Bus and has
         # been processed.
-        blkdevs = [dev.devnode for dev in stopped_pool.devs]
-        subprocess.run(["/usr/bin/lsblk", "-i"] + blkdevs, check=True)  # nosec B603
+        blkdevs = [dev.devnode for dev in stopped_pool.devs]  # pragma: no cover
+        subprocess.run(
+            ["/usr/bin/lsblk", "-i"] + blkdevs, check=True
+        )  # nosec B603 # pragma: no cover
