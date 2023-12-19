@@ -1,11 +1,11 @@
-stratis-cli 3.6.1 (UNRELEASED)
+stratis-cli 3.7.0 (UNRELEASED)
 ==============================
 Required stratisd version: 3.6.0
 
 Recommended development environment: Fedora 39
 Lowest supported Python interpreter: 3.9.16
 
-- Update for r6 D-Bus revision:
+- Update for r7 D-Bus revision:
   https://github.com/stratis-storage/stratis-cli/pull/1035
 
 - Tidies and Maintenance:
