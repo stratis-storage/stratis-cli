@@ -150,7 +150,15 @@ ROOT_SUBCOMMANDS = [
                         "nargs": "?",
                         "choices": [x.value for x in list(ReportKey)],
                     },
-                )
+                ),
+                (
+                    "--no-sort-keys",
+                    {
+                        "action": "store_true",
+                        "help": "Turn off sorting keys when printing result.",
+                        "dest": "no_sort_keys",
+                    },
+                ),
             ],
         },
     ),
