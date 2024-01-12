@@ -18,7 +18,7 @@ Miscellaneous logical actions.
 # isort: THIRDPARTY
 from justbytes import Range
 
-from .._constants import IdType
+from .._constants import Id, IdType
 from .._errors import (
     StratisCliEngineError,
     StratisCliFsSizeLimitChangeError,
@@ -124,7 +124,9 @@ class LogicalActions:
 
         uuid_formatter = get_uuid_formatter(namespace.unhyphenated_uuids)
 
-        selection = None if pool_name is None else PoolSelector(IdType.NAME, pool_name)
+        selection = (
+            None if pool_name is None else PoolSelector(Id(IdType.NAME, pool_name))
+        )
 
         return list_filesystems(uuid_formatter, selection=selection)
 
