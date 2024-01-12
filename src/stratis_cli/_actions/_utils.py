@@ -20,7 +20,7 @@ Miscellaneous functions.
 import json
 from uuid import UUID
 
-from .._constants import PoolIdType
+from .._constants import IdType
 from .._stratisd_constants import (
     CLEVIS_KEY_TANG_TRUST_URL,
     CLEVIS_KEY_THP,
@@ -191,7 +191,7 @@ class PoolSelector:
         """
         Initializer.
 
-        :param PoolIdType pool_id_type: the id type
+        :param IdType pool_id_type: the id type
         :param object value: the value, determined by the type
         """
         self.pool_id_type = pool_id_type
@@ -205,7 +205,7 @@ class PoolSelector:
         """
         return (
             {"Uuid": self.value.hex}
-            if self.pool_id_type is PoolIdType.UUID
+            if self.pool_id_type is IdType.UUID
             else {"Name": self.value}
         )
 
@@ -215,7 +215,7 @@ class PoolSelector:
         :returns: a function for selecting from StoppedPools items
         :rtype: (str * (dict of (str * object))) -> bool
         """
-        if self.pool_id_type is PoolIdType.UUID:
+        if self.pool_id_type is IdType.UUID:
             selection_value = self.value.hex
 
             def selection_func(uuid, _info):
@@ -230,5 +230,5 @@ class PoolSelector:
         return selection_func
 
     def __str__(self):
-        pool_id_type_str = "UUID" if self.pool_id_type is PoolIdType.UUID else "name"
+        pool_id_type_str = "UUID" if self.pool_id_type is IdType.UUID else "name"
         return f"pool with {pool_id_type_str} {self.value}"
