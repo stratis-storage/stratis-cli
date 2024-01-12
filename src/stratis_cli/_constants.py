@@ -30,7 +30,7 @@ class YesOrNo(Enum):
         return self is YesOrNo.YES
 
 
-class PoolIdType(Enum):
+class IdType(Enum):
     """
     Whether the pool identifier is a UUID or a name.
     """
