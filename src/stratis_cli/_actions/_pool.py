@@ -25,7 +25,7 @@ from uuid import UUID
 # isort: THIRDPARTY
 from justbytes import Range
 
-from .._constants import IdType, YesOrNo
+from .._constants import Id, IdType, YesOrNo
 from .._error_codes import PoolErrorCode
 from .._errors import (
     StratisCliEngineError,
@@ -352,9 +352,9 @@ class PoolActions:
         uuid_formatter = get_uuid_formatter(namespace.unhyphenated_uuids)
 
         selection = (
-            (None if pool_name is None else PoolSelector(IdType.NAME, pool_name))
+            (None if pool_name is None else PoolSelector(Id(IdType.NAME, pool_name)))
             if pool_uuid is None
-            else PoolSelector(IdType.UUID, pool_uuid)
+            else PoolSelector(Id(IdType.UUID, pool_uuid))
         )
 
         return list_pools(uuid_formatter, stopped=stopped, selection=selection)
