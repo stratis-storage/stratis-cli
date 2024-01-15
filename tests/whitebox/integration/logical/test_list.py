@@ -175,3 +175,19 @@ class List5TestCase(SimTestCase):
 
         command_line = ["--propagate", "fs"]
         TEST_RUNNER(command_line)
+
+    def test_list_fs_name(self):
+        """
+        Test list with pool and filesystem name.
+        """
+        command_line = self._MENU + [self._POOLNAMES[0], f"--name={self._VOLUMES[0]}"]
+        TEST_RUNNER(command_line)
+
+    def test_list_fs_name_pool_name_not_match(self):
+        """
+        Test list with pool and filesystem name not coinciding.
+        """
+        command_line = self._MENU + [self._POOLNAMES[1], f"--name={self._VOLUMES[0]}"]
+        self.check_error(
+            DbusClientUniqueResultError, command_line, StratisCliErrorCodes.ERROR
+        )

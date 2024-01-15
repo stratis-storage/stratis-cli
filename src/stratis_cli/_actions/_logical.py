@@ -31,7 +31,6 @@ from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import get_uuid_formatter
 from ._list_filesystem import list_filesystems
-from ._utils import PoolSelector
 
 
 class LogicalActions:
@@ -120,15 +119,23 @@ class LogicalActions:
         """
         # This method is invoked as the default for "stratis filesystem";
         # these namespace fields may not have been set.
-        pool_name = getattr(namespace, "pool_name", None)
+        (pool_name, fs_uuid, fs_name) = (
+            getattr(namespace, "pool_name", None),
+            getattr(namespace, "uuid", None),
+            getattr(namespace, "name", None),
+        )
+
+        assert (fs_name is None and fs_uuid is None) or pool_name is not None
 
         uuid_formatter = get_uuid_formatter(namespace.unhyphenated_uuids)
 
-        selection = (
-            None if pool_name is None else PoolSelector(Id(IdType.NAME, pool_name))
+        fs_id = (
+            (None if fs_name is None else Id(IdType.NAME, fs_name))
+            if fs_uuid is None
+            else Id(IdType.UUID, fs_uuid)
         )
 
-        return list_filesystems(uuid_formatter, selection=selection)
+        return list_filesystems(uuid_formatter, pool_name=pool_name, fs_id=fs_id)
 
     @staticmethod
     def destroy_volumes(namespace):
