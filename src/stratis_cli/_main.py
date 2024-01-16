@@ -91,6 +91,22 @@ def run():
                     "tang URL. Use --tang-url to specify URL.",
                 )
 
+        if (  # pylint: disable=too-many-boolean-expressions
+            ("filesystem" in command_line_args or "fs" in command_line_args)
+            and "list" in command_line_args
+            and hasattr(result, "pool_name")
+            and hasattr(result, "uuid")
+            and hasattr(result, "name")
+        ):
+            if result.pool_name is None and (
+                result.uuid is not None or result.name is not None
+            ):
+                exit_(
+                    StratisCliErrorCodes.PARSE_ERROR,
+                    "If filesystem UUID or name is specified then pool name "
+                    "must also be specified.",
+                )
+
         try:
             try:
                 result.func(result)

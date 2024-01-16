@@ -205,6 +205,15 @@ class ParserTestCase(RunTestCase):
         for prefix in [[], ["--propagate"]]:
             self.check_system_exit(prefix + command_line, _PARSE_ERROR)
 
+    def test_stratis_list_filesystem_with_name_no_pool(self):
+        """
+        We want to get a parse error if filesystem UUID is specified but no
+        name.
+        """
+        command_line = ["fs", "list", "--name=bogus"]
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
 
 class TestFilesystemSizeParsing(RunTestCase):
     """
