@@ -8,7 +8,14 @@ Lowest supported Python interpreter: 3.9.16
 - Update for r7 D-Bus revision:
   https://github.com/stratis-storage/stratis-cli/pull/1035
 
+- Sort JSON output from report by default:
+  https://github.com/stratis-storage/stratis-cli/pull/1048
+
+- Extend filesystem listing with a detail view:
+  https://github.com/stratis-storage/stratis-cli/pull/1050
+
 - Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/1049
   https://github.com/stratis-storage/stratis-cli/pull/1046
   https://github.com/stratis-storage/stratis-cli/pull/1043
   https://github.com/stratis-storage/stratis-cli/pull/1040
