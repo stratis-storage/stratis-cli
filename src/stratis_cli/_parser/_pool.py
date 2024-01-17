@@ -45,6 +45,69 @@ POOL_SUBCMDS = [
         "create",
         {
             "help": "Create a pool",
+            "groups": [
+                (
+                    "clevis",
+                    {
+                        "description": "Arguments controlling creation with Clevis encryption",
+                        "args": [
+                            (
+                                "--clevis",
+                                {
+                                    "default": None,
+                                    "type": str,
+                                    "help": ("Specification for binding with Clevis."),
+                                    "dest": "clevis",
+                                    "choices": ["nbde", "tang", "tpm2"],
+                                },
+                            ),
+                            (
+                                "--tang-url",
+                                {
+                                    "default": None,
+                                    "type": str,
+                                    "help": (
+                                        "URL of Clevis tang server (ignored if "
+                                        "--clevis=[tang|nbde] not set)"
+                                    ),
+                                    "dest": "tang_url",
+                                },
+                            ),
+                        ],
+                        "mut_ex_args": [
+                            (
+                                False,
+                                [
+                                    (
+                                        "--trust-url",
+                                        {
+                                            "action": "store_true",
+                                            "help": (
+                                                "Omit verification of tang server "
+                                                "credentials (ignored if "
+                                                "--clevis=[tang|nbde] not set)"
+                                            ),
+                                            "dest": "trust_url",
+                                        },
+                                    ),
+                                    (
+                                        "--thumbprint",
+                                        {
+                                            "action": "store",
+                                            "help": (
+                                                "Thumbprint of tang server at specified "
+                                                "URL (ignored if --clevis=[tang|nbde] not "
+                                                "set)"
+                                            ),
+                                            "dest": "thumbprint",
+                                        },
+                                    ),
+                                ],
+                            )
+                        ],
+                    },
+                )
+            ],
             "args": [
                 ("pool_name", {"action": "store", "help": "Name of new pool"}),
                 (
@@ -64,28 +127,6 @@ POOL_SUBCMDS = [
                     },
                 ),
                 (
-                    "--clevis",
-                    {
-                        "default": None,
-                        "type": str,
-                        "help": ("Specification for binding with Clevis."),
-                        "dest": "clevis",
-                        "choices": ["nbde", "tang", "tpm2"],
-                    },
-                ),
-                (
-                    "--tang-url",
-                    {
-                        "default": None,
-                        "type": str,
-                        "help": (
-                            "URL of Clevis tang server (ignored if "
-                            "--clevis=[tang|nbde] not set)"
-                        ),
-                        "dest": "tang_url",
-                    },
-                ),
-                (
                     "--no-overprovision",
                     {
                         "action": "store_true",
@@ -97,37 +138,6 @@ POOL_SUBCMDS = [
                         "dest": "no_overprovision",
                     },
                 ),
-            ],
-            "mut_ex_args": [
-                (
-                    False,
-                    [
-                        (
-                            "--trust-url",
-                            {
-                                "action": "store_true",
-                                "help": (
-                                    "Omit verification of tang server "
-                                    "credentials (ignored if "
-                                    "--clevis=[tang|nbde] not set)"
-                                ),
-                                "dest": "trust_url",
-                            },
-                        ),
-                        (
-                            "--thumbprint",
-                            {
-                                "action": "store",
-                                "help": (
-                                    "Thumbprint of tang server at specified "
-                                    "URL (ignored if --clevis=[tang|nbde] not "
-                                    "set)"
-                                ),
-                                "dest": "thumbprint",
-                            },
-                        ),
-                    ],
-                )
             ],
             "func": PoolActions.create_pool,
         },
