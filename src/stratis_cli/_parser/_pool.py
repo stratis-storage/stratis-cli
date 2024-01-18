@@ -67,8 +67,8 @@ POOL_SUBCMDS = [
                                     "default": None,
                                     "type": str,
                                     "help": (
-                                        "URL of Clevis tang server (ignored if "
-                                        "--clevis=[tang|nbde] not set)"
+                                        "URL of Clevis tang server "
+                                        "(--clevis=[tang|nbde] must be set)"
                                     ),
                                     "dest": "tang_url",
                                 },
@@ -83,9 +83,10 @@ POOL_SUBCMDS = [
                                         {
                                             "action": "store_true",
                                             "help": (
-                                                "Omit verification of tang server "
-                                                "credentials (ignored if "
-                                                "--clevis=[tang|nbde] not set)"
+                                                "Omit verification of tang "
+                                                "server credentials "
+                                                "(--tang-url option must be "
+                                                "set)"
                                             ),
                                             "dest": "trust_url",
                                         },
@@ -95,8 +96,8 @@ POOL_SUBCMDS = [
                                         {
                                             "action": "store",
                                             "help": (
-                                                "Thumbprint of tang server at specified "
-                                                "URL (ignored if --clevis=[tang|nbde] not "
+                                                "Thumbprint of tang server "
+                                                "(--tang-url option must be "
                                                 "set)"
                                             ),
                                             "dest": "thumbprint",
