@@ -38,7 +38,6 @@ from ._errors import (
     StratisCliActionError,
     StratisCliEngineError,
     StratisCliIncoherenceError,
-    StratisCliParserError,
     StratisCliStratisdVersionError,
     StratisCliSynthUeventError,
     StratisCliUnknownInterfaceError,
@@ -198,9 +197,6 @@ def _interpret_errors_1(
             f"requested. It returned the following information via "
             f"the D-Bus: {error}."
         )
-
-    if isinstance(error, StratisCliParserError):
-        return f"You entered an invalid command: {error}"
 
     if isinstance(error, StratisCliUserError):
         return f"It appears that you issued an unintended command: {error}"
