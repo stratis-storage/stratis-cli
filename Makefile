@@ -10,7 +10,7 @@ lint:
 	pylint setup.py
 	pylint bin/stratis
 	pylint src/stratis_cli --disable=duplicate-code --ignore=_introspect.py
-	pylint tests/whitebox --disable=duplicate-code
+	pylint tests/whitebox --disable=duplicate-code --disable=fixme
 	bandit setup.py ${BANDIT_SKIP}
 	bandit bin/stratis ${BANDIT_SKIP}
 	# Ignore B101 errors. We do not distribute optimized code, i.e., .pyo
