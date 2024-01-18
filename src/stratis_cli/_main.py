@@ -44,6 +44,8 @@ def run():
         # is needed. FIXME: This code should be reviewed if any change is
         # made to how the "pool create" subcommand's options are parsed in
         # case it is made unnecessary by that change.
+        # I filed an argparse issue that might address this:
+        # https://github.com/python/cpython/issues/114411.
         if (  # pylint: disable=too-many-boolean-expressions
             hasattr(result, "clevis")
             and hasattr(result, "trust_url")
@@ -52,21 +54,42 @@ def run():
             and "create" in command_line_args
             and "pool" in command_line_args
         ):
-            if result.clevis in ("nbde", "tang"):
-                if result.tang_url is None:
-                    exit_(
-                        StratisCliErrorCodes.PARSE_ERROR,
-                        "Specified binding with Clevis Tang server, but "
-                        "URL was not specified. Use --tang-url option to "
-                        "specify tang URL.",
-                    )
-                if not result.trust_url and result.thumbprint is None:
-                    exit_(
-                        StratisCliErrorCodes.PARSE_ERROR,
-                        "Specified binding with Clevis Tang server, but "
-                        "neither --thumbprint nor --trust-url option was "
-                        "specified.",
-                    )
+            if result.clevis in ("nbde", "tang") and result.tang_url is None:
+                exit_(
+                    StratisCliErrorCodes.PARSE_ERROR,
+                    "Specified binding with Clevis Tang server, but "
+                    "URL was not specified. Use --tang-url option to "
+                    "specify tang URL.",
+                )
+
+            if result.tang_url is not None and (
+                not result.trust_url and result.thumbprint is None
+            ):
+                exit_(
+                    StratisCliErrorCodes.PARSE_ERROR,
+                    "Specified binding with Clevis Tang server, but "
+                    "neither --thumbprint nor --trust-url option was "
+                    "specified.",
+                )
+
+            if result.tang_url is not None and (
+                result.clevis is None or result.clevis not in ("nbde", "tang")
+            ):
+                exit_(
+                    StratisCliErrorCodes.PARSE_ERROR,
+                    "Specified --tang-url without specifying Clevis "
+                    "encryption method. Use --clevis=tang to choose Clevis "
+                    "encryption.",
+                )
+
+            if (
+                result.trust_url or result.thumbprint is not None
+            ) and result.tang_url is None:
+                exit_(
+                    StratisCliErrorCodes.PARSE_ERROR,
+                    "Specified --trust-url or --thumbprint without specifying "
+                    "tang URL. Use --tang-url to specify URL.",
+                )
 
         try:
             try:

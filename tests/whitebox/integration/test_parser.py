@@ -144,6 +144,67 @@ class ParserTestCase(RunTestCase):
         for prefix in [[], ["--propagate"]]:
             self.check_system_exit(prefix + command_line, _PARSE_ERROR)
 
+    def test_create_with_url_no_modifier(self):
+        """
+        Parser should exit if created with --tang-url specified but not
+        modifiers as that will result in a pool without encryption being
+        created.
+        """
+        command_line = [
+            "pool",
+            "create",
+            "pn",
+            "/dev/n",
+            "--tang-url=url",
+        ]
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
+    def test_create_with_thumbprint_no_url(self):
+        """
+        Parser should exit if --thumbprint option is set and no URL specified.
+        """
+        command_line = [
+            "pool",
+            "create",
+            "pn",
+            "/dev/n",
+            "--thumbprint=xyz",
+        ]
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
+    def test_create_with_trust_no_url(self):
+        """
+        Parser should exit if --trust-url option is set and no URL specified.
+        """
+        command_line = [
+            "pool",
+            "create",
+            "pn",
+            "/dev/n",
+            "--trust-url",
+        ]
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
+    def test_create_with_url_no_clevis(self):
+        """
+        Parser should exit if created with --tang-url specified but not
+        --clevis=tang as that will result in a pool without encryption being
+        created.
+        """
+        command_line = [
+            "pool",
+            "create",
+            "pn",
+            "/dev/n",
+            "--tang-url=url",
+            "--trust-url",
+        ]
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
 
 class TestFilesystemSizeParsing(RunTestCase):
     """
