@@ -26,7 +26,6 @@ from wcwidth import wcswidth
 from stratis_cli._actions._formatting import print_table
 
 
-# pylint: disable=fixme
 # TODO: Use Hypothesis library to create numerous test inputs.
 class FormattingTestCase1(unittest.TestCase):
     """
