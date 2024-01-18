@@ -20,6 +20,7 @@ import justbytes as jb
 
 from ._error_reporting import handle_error
 from ._errors import StratisCliActionError, StratisCliEnvironmentError
+from ._exit import StratisCliErrorCodes, exit_
 from ._parser import gen_parser
 
 
@@ -38,6 +39,35 @@ def run():
         Run according to the arguments passed.
         """
         result = parser.parse_args(command_line_args)
+
+        # Use a very specific condition to determine if namespace verification
+        # is needed. FIXME: This code should be reviewed if any change is
+        # made to how the "pool create" subcommand's options are parsed in
+        # case it is made unnecessary by that change.
+        if (  # pylint: disable=too-many-boolean-expressions
+            hasattr(result, "clevis")
+            and hasattr(result, "trust_url")
+            and hasattr(result, "thumbprint")
+            and hasattr(result, "tang_url")
+            and "create" in command_line_args
+            and "pool" in command_line_args
+        ):
+            if result.clevis in ("nbde", "tang"):
+                if result.tang_url is None:
+                    exit_(
+                        StratisCliErrorCodes.PARSE_ERROR,
+                        "Specified binding with Clevis Tang server, but "
+                        "URL was not specified. Use --tang-url option to "
+                        "specify tang URL.",
+                    )
+                if not result.trust_url and result.thumbprint is None:
+                    exit_(
+                        StratisCliErrorCodes.PARSE_ERROR,
+                        "Specified binding with Clevis Tang server, but "
+                        "neither --thumbprint nor --trust-url option was "
+                        "specified.",
+                    )
+
         try:
             try:
                 result.func(result)
