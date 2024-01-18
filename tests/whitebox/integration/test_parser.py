@@ -17,10 +17,6 @@ Test command-line argument parsing.
 
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
-from stratis_cli._errors import (
-    StratisCliMissingClevisTangURLError,
-    StratisCliMissingClevisThumbprintError,
-)
 
 from ._misc import RUNNER, RunTestCase, SimTestCase
 
@@ -68,24 +64,6 @@ class ParserTestCase(RunTestCase):
         for prefix in [[], ["--propagate"]]:
             self.check_system_exit(prefix + command_line, _PARSE_ERROR)
 
-    def test_create_with_clevis_1(self):
-        """
-        Test parsing when creating a pool w/ clevis tang, a URL, but both
-        thumbprint and --trust-url set.
-        """
-        command_line = [
-            "pool",
-            "create",
-            "--clevis=tang",
-            "--tang-url=url",
-            "--thumbprint=jkj",
-            "--trust-url",
-            "pn",
-            "/dev/n",
-        ]
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
-
     def test_negative_filesystem_limit(self):
         """
         Verify that a negative integer filesystem limit is rejected.
@@ -115,6 +93,55 @@ class ParserTestCase(RunTestCase):
         Verify parser error on bogus pool code.
         """
         command_line = ["pool", "explain", "bogus"]
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
+    def test_create_with_clevis_1(self):
+        """
+        Test parsing when creating a pool w/ clevis tang but no URL.
+        """
+        command_line = [
+            "--propagate",
+            "pool",
+            "create",
+            "--clevis=tang",
+            "pn",
+            "/dev/n",
+        ]
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
+    def test_create_with_clevis_2(self):
+        """
+        Test parsing when creating a pool w/ clevis tang, a URL, but no
+        thumbprint or trust-url.
+        """
+        command_line = [
+            "pool",
+            "create",
+            "--clevis=tang",
+            "--tang-url=url",
+            "pn",
+            "/dev/n",
+        ]
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
+    def test_create_with_clevis_3(self):
+        """
+        Test parsing when creating a pool w/ clevis tang, a URL, but both
+        thumbprint and --trust-url set.
+        """
+        command_line = [
+            "pool",
+            "create",
+            "--clevis=tang",
+            "--tang-url=url",
+            "--thumbprint=jkj",
+            "--trust-url",
+            "pn",
+            "/dev/n",
+        ]
         for prefix in [[], ["--propagate"]]:
             self.check_system_exit(prefix + command_line, _PARSE_ERROR)
 
@@ -250,33 +277,3 @@ class ParserSimTestCase(SimTestCase):
         for subcommand in [["pool"], ["filesystem"], ["blockdev"]]:
             for prefix in [[], ["--propagate"]]:
                 self.assertEqual(RUNNER(prefix + subcommand), 0)
-
-    def test_create_with_clevis_1(self):
-        """
-        Test parsing when creating a pool w/ clevis tang but no URL.
-        """
-        command_line = [
-            "--propagate",
-            "pool",
-            "create",
-            "--clevis=tang",
-            "pn",
-            "/dev/n",
-        ]
-        self.check_error(StratisCliMissingClevisTangURLError, command_line, 1)
-
-    def test_create_with_clevis_2(self):
-        """
-        Test parsing when creating a pool w/ clevis tang, a URL, but no
-        thumbprint or trust-url.
-        """
-        command_line = [
-            "--propagate",
-            "pool",
-            "create",
-            "--clevis=tang",
-            "--tang-url=url",
-            "pn",
-            "/dev/n",
-        ]
-        self.check_error(StratisCliMissingClevisThumbprintError, command_line, 1)
