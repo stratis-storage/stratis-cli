@@ -21,10 +21,6 @@ import json
 from uuid import UUID
 
 from .._constants import PoolIdType
-from .._errors import (
-    StratisCliMissingClevisTangURLError,
-    StratisCliMissingClevisThumbprintError,
-)
 from .._stratisd_constants import (
     CLEVIS_KEY_TANG_TRUST_URL,
     CLEVIS_KEY_THP,
@@ -64,11 +60,9 @@ class ClevisInfo:
         clevis_info = None
         if namespace.clevis is not None:
             if namespace.clevis in ("nbde", "tang"):
-                if namespace.tang_url is None:
-                    raise StratisCliMissingClevisTangURLError()
+                assert namespace.tang_url is not None
 
-                if not namespace.trust_url and namespace.thumbprint is None:
-                    raise StratisCliMissingClevisThumbprintError()
+                assert namespace.trust_url or namespace.thumbprint is not None
 
                 clevis_config = {CLEVIS_KEY_URL: namespace.tang_url}
                 if namespace.trust_url:
