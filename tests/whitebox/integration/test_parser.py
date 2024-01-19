@@ -101,12 +101,11 @@ class ParserTestCase(RunTestCase):
         Test parsing when creating a pool w/ clevis tang but no URL.
         """
         command_line = [
-            "--propagate",
             "pool",
             "create",
-            "--clevis=tang",
             "pn",
             "/dev/n",
+            "--clevis=tang",
         ]
         for prefix in [[], ["--propagate"]]:
             self.check_system_exit(prefix + command_line, _PARSE_ERROR)
@@ -119,10 +118,10 @@ class ParserTestCase(RunTestCase):
         command_line = [
             "pool",
             "create",
-            "--clevis=tang",
-            "--tang-url=url",
             "pn",
             "/dev/n",
+            "--clevis=tang",
+            "--tang-url=url",
         ]
         for prefix in [[], ["--propagate"]]:
             self.check_system_exit(prefix + command_line, _PARSE_ERROR)
@@ -135,12 +134,12 @@ class ParserTestCase(RunTestCase):
         command_line = [
             "pool",
             "create",
+            "pn",
+            "/dev/n",
             "--clevis=tang",
             "--tang-url=url",
             "--thumbprint=jkj",
             "--trust-url",
-            "pn",
-            "/dev/n",
         ]
         for prefix in [[], ["--propagate"]]:
             self.check_system_exit(prefix + command_line, _PARSE_ERROR)
