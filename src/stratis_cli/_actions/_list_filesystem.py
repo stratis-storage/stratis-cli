@@ -15,6 +15,9 @@
 Filesystem listing.
 """
 
+# isort: STDLIB
+from abc import ABC, abstractmethod
+
 # isort: THIRDPARTY
 from dateutil import parser as date_parser
 from justbytes import Range
@@ -24,34 +27,94 @@ from ._constants import TOP_OBJECT
 from ._formatting import TOTAL_USED_FREE, get_property, print_table, size_triple
 
 
-def list_filesystems(uuid_formatter, *, selection=None):
+def list_filesystems(
+    uuid_formatter, *, pool_name=None, fs_id=None
+):  # pylint: disable=too-many-locals
     """
     List the specified information about filesystems.
     """
-    klass = List(uuid_formatter, selection=selection)
-    klass.list_filesystems()
+    assert fs_id is None or pool_name is not None
+
+    # pylint: disable=import-outside-toplevel
+    from ._data import MOFilesystem, MOPool, ObjectManager, filesystems, pools
+
+    proxy = get_object(TOP_OBJECT)
+    managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
+
+    if pool_name is None:
+        props = None
+        pool_object_path = None
+        fs_props = None
+        requires_unique = False
+    else:
+        props = {"Name": pool_name}
+        pool_object_path = next(
+            pools(props=props).require_unique_match(True).search(managed_objects)
+        )[0]
+        fs_props = {"Pool": pool_object_path} | (
+            {} if fs_id is None else fs_id.managed_objects_key()
+        )
+        requires_unique = fs_id is not None
+
+    path_to_name = dict(
+        (path, MOPool(info).Name())
+        for path, info in pools(props=props).search(managed_objects)
+    )
+
+    filesystems_with_props = [
+        MOFilesystem(info)
+        for objpath, info in filesystems(props=fs_props)
+        .require_unique_match(requires_unique)
+        .search(managed_objects)
+    ]
+
+    if fs_id is None:
+        klass = Table(
+            uuid_formatter,
+            filesystems_with_props,
+            path_to_name,
+        )
+    else:
+        klass = Detail(
+            uuid_formatter,
+            filesystems_with_props,
+            path_to_name,
+        )
+
+    klass.display()
 
 
-class List:  # pylint: disable=too-few-public-methods
+class List(ABC):  # pylint: disable=too-few-public-methods
     """
     Handle listing a filesystem or filesystems.
     """
 
-    def __init__(self, uuid_formatter, *, selection=None):
+    def __init__(self, uuid_formatter, filesystems_with_props, path_to_name):
         """
         Initialize a List object.
         :param uuid_formatter: function to format a UUID str or UUID
         :param uuid_formatter: str or UUID -> str
         :param bool stopped: whether to list stopped pools
-        :param selection: how to select the pool to display
-        :type selection: pair of str * object or NoneType
         """
         self.uuid_formatter = uuid_formatter
-        self.selection = selection
+        self.filesystems_with_props = filesystems_with_props
+        self.path_to_name = path_to_name
 
-    def list_filesystems(self):
+    @abstractmethod
+    def display(self):
         """
-        List the pools.
+        List filesystems.
+        """
+
+
+class Table(List):  # pylint: disable=too-few-public-methods
+    """
+    List filesystems using table format.
+    """
+
+    def display(self):
+        """
+        List the filesystems.
         """
 
         def filesystem_size_quartet(dbus_props):
@@ -69,46 +132,15 @@ class List:  # pylint: disable=too-few-public-methods
             limit = get_property(dbus_props.SizeLimit(), Range, None)
             return f'{size_triple(total, used)} / {"None" if limit is None else limit}'
 
-        # pylint: disable=import-outside-toplevel
-        from ._data import MOFilesystem, MOPool, ObjectManager, filesystems, pools
-
-        proxy = get_object(TOP_OBJECT)
-        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-
-        props = None if self.selection is None else self.selection.managed_objects_key()
-
-        filesystems_with_props = [
-            MOFilesystem(info)
-            for objpath, info in filesystems(
-                props=None
-                if props is None
-                else {
-                    "Pool": next(
-                        pools(props=props)
-                        .require_unique_match(True)
-                        .search(managed_objects)
-                    )[0]
-                }
-            ).search(managed_objects)
-        ]
-
-        path_to_name = dict(
-            (path, MOPool(info).Name())
-            for path, info in pools(props=props).search(managed_objects)
-        )
-
         tables = [
             (
-                path_to_name[mofilesystem.Pool()],
+                self.path_to_name[mofilesystem.Pool()],
                 mofilesystem.Name(),
                 filesystem_size_quartet(mofilesystem),
-                date_parser.parse(mofilesystem.Created())
-                .astimezone()
-                .strftime("%b %d %Y %H:%M"),
                 mofilesystem.Devnode(),
                 self.uuid_formatter(mofilesystem.Uuid()),
             )
-            for mofilesystem in filesystems_with_props
+            for mofilesystem in self.filesystems_with_props
         ]
 
         print_table(
@@ -116,10 +148,45 @@ class List:  # pylint: disable=too-few-public-methods
                 "Pool",
                 "Filesystem",
                 f"{TOTAL_USED_FREE} / Limit",
-                "Created",
                 "Device",
                 "UUID",
             ],
             sorted(tables, key=lambda entry: (entry[0], entry[1])),
-            ["<", "<", "<", "<", "<", "<"],
+            ["<", "<", "<", "<", "<"],
         )
+
+
+class Detail(List):  # pylint: disable=too-few-public-methods
+    """
+    Do a detailed listing of filesystems.
+    """
+
+    def display(self):
+        """
+        List the filesystems.
+        """
+        assert len(self.filesystems_with_props) == 1
+
+        fs = self.filesystems_with_props[0]
+
+        total = Range(fs.Size())
+        used = get_property(fs.Used(), Range, None)
+        limit = get_property(fs.SizeLimit(), Range, None)
+        created = (
+            date_parser.parse(fs.Created()).astimezone().strftime("%b %d %Y %H:%M")
+        )
+
+        print(f"UUID: {self.uuid_formatter(fs.Uuid())}")
+        print(f"Name: {fs.Name()}")
+        print(f"Pool: {self.path_to_name[fs.Pool()]}")
+        print()
+        print(f"Device: {fs.Devnode()}")
+        print()
+        print(f"Created: {created}")
+        print()
+        print("Sizes:")
+        print(f"  Logical size of thin device: {total}")
+        print(f"  Total used (including XFS metadata): {used}")
+        print(f"  Free: {total - used}")
+        print()
+        print(f"  Size Limit: {'None' if limit is None else limit}")

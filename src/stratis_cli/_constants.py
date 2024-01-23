@@ -30,13 +30,51 @@ class YesOrNo(Enum):
         return self is YesOrNo.YES
 
 
-class PoolIdType(Enum):
+class IdType(Enum):
     """
     Whether the pool identifier is a UUID or a name.
     """
 
     UUID = 0
     NAME = 1
+
+
+class Id:
+    """
+    Generic management of ids when either a UUID or name can be used.
+    """
+
+    def __init__(self, id_type, id_value):
+        """
+        Initialize the object.
+        """
+        self.id_type = id_type
+        self.id_value = id_value
+
+    def managed_objects_key(self):
+        """
+        Return key for managed objects.
+
+        Precondition: the D-Bus property that identifies the Name or the
+        Uuid will always be the same.
+        """
+        return {"Uuid" if self.id_type is IdType.UUID else "Name": self.dbus_value()}
+
+    def is_uuid(self):
+        """
+        True if the id is a UUID, otherwise false.
+        """
+        return self.id_type == IdType.UUID
+
+    def dbus_value(self):
+        """
+        Returns a string value for matching D-Bus things.
+        """
+        return self.id_value.hex if self.id_type is IdType.UUID else self.id_value
+
+    def __str__(self):
+        pool_id_type_str = "UUID" if self.id_type is IdType.UUID else "name"
+        return f"{pool_id_type_str} {self.id_value}"
 
 
 class EncryptionMethod(Enum):

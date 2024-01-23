@@ -15,6 +15,9 @@
 Definition of filesystem actions to display in the CLI.
 """
 
+# isort: STDLIB
+from uuid import UUID
+
 from .._actions import LogicalActions
 from ._debug import FILESYSTEM_DEBUG_SUBCMDS
 from ._range import RangeAction, RangeActionOrCurrent
@@ -69,6 +72,28 @@ LOGICAL_SUBCMDS = [
         "list",
         {
             "help": "List filesystems",
+            "mut_ex_args": [
+                (
+                    False,
+                    [
+                        (
+                            "--uuid",
+                            {
+                                "action": "store",
+                                "type": UUID,
+                                "help": "UUID of filesystem to list",
+                            },
+                        ),
+                        (
+                            "--name",
+                            {
+                                "action": "store",
+                                "help": "name of filesystem to list",
+                            },
+                        ),
+                    ],
+                ),
+            ],
             "args": [
                 (
                     "pool_name",

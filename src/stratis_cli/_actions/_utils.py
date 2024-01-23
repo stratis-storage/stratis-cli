@@ -20,7 +20,6 @@ Miscellaneous functions.
 import json
 from uuid import UUID
 
-from .._constants import PoolIdType
 from .._stratisd_constants import (
     CLEVIS_KEY_TANG_TRUST_URL,
     CLEVIS_KEY_THP,
@@ -187,15 +186,13 @@ class PoolSelector:
     Methods to help locate a pool by one of its identifiers.
     """
 
-    def __init__(self, pool_id_type, value):
+    def __init__(self, pool_id):
         """
         Initializer.
 
-        :param PoolIdType pool_id_type: the id type
-        :param object value: the value, determined by the type
+        :param Id pool_id: the id
         """
-        self.pool_id_type = pool_id_type
-        self.value = value
+        self.pool_id = pool_id
 
     def managed_objects_key(self):
         """
@@ -203,11 +200,7 @@ class PoolSelector:
         :rtype: dict of str * object
         :returns: a dict containing a correct configuration for pools() method
         """
-        return (
-            {"Uuid": self.value.hex}
-            if self.pool_id_type is PoolIdType.UUID
-            else {"Name": self.value}
-        )
+        return self.pool_id.managed_objects_key()
 
     def stopped_pools_func(self):
         """
@@ -215,14 +208,14 @@ class PoolSelector:
         :returns: a function for selecting from StoppedPools items
         :rtype: (str * (dict of (str * object))) -> bool
         """
-        if self.pool_id_type is PoolIdType.UUID:
-            selection_value = self.value.hex
+        selection_value = self.pool_id.dbus_value()
+
+        if self.pool_id.is_uuid():
 
             def selection_func(uuid, _info):
                 return uuid == selection_value
 
         else:
-            selection_value = self.value
 
             def selection_func(_uuid, info):
                 return info.get("name") == selection_value
@@ -230,5 +223,4 @@ class PoolSelector:
         return selection_func
 
     def __str__(self):
-        pool_id_type_str = "UUID" if self.pool_id_type is PoolIdType.UUID else "name"
-        return f"pool with {pool_id_type_str} {self.value}"
+        return f"pool with {self.pool_id}"
