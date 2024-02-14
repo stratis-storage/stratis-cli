@@ -155,11 +155,11 @@ ROOT_SUBCOMMANDS = [
                 (
                     "report_name",
                     {
-                        "default": "engine_state_report",
-                        "type": str,
+                        "default": ReportKey.ENGINE_STATE,
+                        "type": ReportKey,
                         "help": ("Name of the report to display"),
                         "nargs": "?",
-                        "choices": [x.value for x in list(ReportKey)],
+                        "choices": list(ReportKey),
                     },
                 )
             ],

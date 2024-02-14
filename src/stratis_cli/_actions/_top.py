@@ -118,7 +118,7 @@ class TopActions:
         """
 
         # pylint: disable=import-outside-toplevel
-        if namespace.report_name == ReportKey.MANAGED_OBJECTS.value:
+        if namespace.report_name is ReportKey.MANAGED_OBJECTS:
             from ._data import ObjectManager
 
             json_report = ObjectManager.Methods.GetManagedObjects(
@@ -126,7 +126,7 @@ class TopActions:
             )
 
         else:
-            if namespace.report_name == ReportKey.ENGINE_STATE.value:
+            if namespace.report_name is ReportKey.ENGINE_STATE:
                 from ._data import Manager
 
                 (report, return_code, message) = Manager.Methods.EngineStateReport(
@@ -137,7 +137,7 @@ class TopActions:
                 from ._data import Report
 
                 (report, return_code, message) = Report.Methods.GetReport(
-                    get_object(TOP_OBJECT), {"name": namespace.report_name}
+                    get_object(TOP_OBJECT), {"name": str(namespace.report_name)}
                 )
 
             # The only reason that stratisd has for returning an error code is
