@@ -29,6 +29,9 @@ class YesOrNo(Enum):
     def __bool__(self):
         return self is YesOrNo.YES
 
+    def __str__(self):
+        return self.value
+
 
 class IdType(Enum):
     """
@@ -84,3 +87,6 @@ class EncryptionMethod(Enum):
 
     KEYRING = "keyring"
     CLEVIS = "clevis"
+
+    def __str__(self):
+        return self.value

@@ -65,6 +65,9 @@ class ReportKey(Enum):
     MANAGED_OBJECTS = "managed_objects_report"
     STOPPED_POOLS = "stopped_pools"
 
+    def __str__(self):
+        return self.value
+
 
 class PoolActionAvailability(IntEnum):
     """
