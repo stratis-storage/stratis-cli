@@ -52,3 +52,16 @@ class EncryptionMethod(Enum):
 
     def __str__(self):
         return self.value
+
+
+class Clevis(Enum):
+    """
+    Clevis encryption methods.
+    """
+
+    NBDE = "nbde"
+    TANG = "tang"
+    TPM2 = "tpm2"
+
+    def __str__(self):
+        return self.value

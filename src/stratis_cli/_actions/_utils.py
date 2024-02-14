@@ -20,7 +20,7 @@ Miscellaneous functions.
 import json
 from uuid import UUID
 
-from .._constants import PoolIdType
+from .._constants import Clevis, PoolIdType
 from .._stratisd_constants import (
     CLEVIS_KEY_TANG_TRUST_URL,
     CLEVIS_KEY_THP,
@@ -59,7 +59,7 @@ class ClevisInfo:
         """
         clevis_info = None
         if namespace.clevis is not None:
-            if namespace.clevis in ("nbde", "tang"):
+            if namespace.clevis in (Clevis.NBDE, Clevis.TANG):
                 assert namespace.tang_url is not None
 
                 assert namespace.trust_url or namespace.thumbprint is not None
@@ -73,7 +73,7 @@ class ClevisInfo:
 
                 clevis_info = ClevisInfo(CLEVIS_PIN_TANG, clevis_config)
 
-            elif namespace.clevis == "tpm2":
+            elif namespace.clevis is Clevis.TPM2:
                 clevis_info = ClevisInfo(CLEVIS_PIN_TPM2, {})
 
             else:

@@ -18,6 +18,7 @@ Highest level runner.
 # isort: THIRDPARTY
 import justbytes as jb
 
+from ._constants import Clevis
 from ._error_reporting import handle_error
 from ._errors import StratisCliActionError, StratisCliEnvironmentError
 from ._exit import StratisCliErrorCodes, exit_
@@ -54,7 +55,7 @@ def run():
             and "create" in command_line_args
             and "pool" in command_line_args
         ):
-            if result.clevis in ("nbde", "tang") and result.tang_url is None:
+            if result.clevis in (Clevis.NBDE, Clevis.TANG) and result.tang_url is None:
                 exit_(
                     StratisCliErrorCodes.PARSE_ERROR,
                     "Specified binding with Clevis Tang server, but "
@@ -73,7 +74,7 @@ def run():
                 )
 
             if result.tang_url is not None and (
-                result.clevis is None or result.clevis not in ("nbde", "tang")
+                result.clevis not in (Clevis.NBDE, Clevis.TANG)
             ):
                 exit_(
                     StratisCliErrorCodes.PARSE_ERROR,
