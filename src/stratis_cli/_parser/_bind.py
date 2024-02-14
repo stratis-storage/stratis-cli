@@ -16,10 +16,11 @@ Bind/Rebind command parser for Stratis CLI.
 """
 
 from .._actions import BindActions, RebindActions
+from .._constants import Clevis
 
 BIND_SUBCMDS = [
     (
-        "nbde",
+        str(Clevis.NBDE),
         {
             "help": "Bind using NBDE via a tang server",
             "args": [
@@ -48,12 +49,12 @@ BIND_SUBCMDS = [
                     ],
                 )
             ],
-            "aliases": ["tang"],
+            "aliases": [str(Clevis.TANG)],
             "func": BindActions.bind_tang,
         },
     ),
     (
-        "tpm2",
+        str(Clevis.TPM2),
         {
             "help": "Bind using TPM2",
             "args": [
