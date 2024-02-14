@@ -194,8 +194,9 @@ POOL_SUBCMDS = [
                     "--unlock-method",
                     {
                         "dest": "unlock_method",
-                        "choices": [x.value for x in list(EncryptionMethod)],
+                        "choices": list(EncryptionMethod),
                         "help": "Method to use to unlock the pool if encrypted.",
+                        "type": EncryptionMethod,
                     },
                 ),
             ],
@@ -371,8 +372,9 @@ POOL_SUBCMDS = [
                 (
                     "method",
                     {
-                        "choices": [x.value for x in list(EncryptionMethod)],
+                        "choices": list(EncryptionMethod),
                         "help": "Encryption method to unbind",
+                        "type": EncryptionMethod,
                     },
                 ),
                 ("pool_name", {"help": "Pool name"}),
@@ -407,7 +409,8 @@ POOL_SUBCMDS = [
                     "decision",
                     {
                         "help": "yes to allow overprovisioning, otherwise no",
-                        "choices": [x.value for x in list(YesOrNo)],
+                        "choices": list(YesOrNo),
+                        "type": YesOrNo,
                     },
                 ),
             ],
