@@ -20,7 +20,7 @@ from argparse import ArgumentTypeError
 from uuid import UUID
 
 from .._actions import BindActions, PoolActions
-from .._constants import EncryptionMethod, YesOrNo
+from .._constants import Clevis, EncryptionMethod, YesOrNo
 from .._error_codes import PoolErrorCode
 from ._bind import BIND_SUBCMDS, REBIND_SUBCMDS
 from ._debug import POOL_DEBUG_SUBCMDS
@@ -54,10 +54,10 @@ POOL_SUBCMDS = [
                             (
                                 "--clevis",
                                 {
-                                    "type": str,
+                                    "type": Clevis,
                                     "help": ("Specification for binding with Clevis."),
                                     "dest": "clevis",
-                                    "choices": ["nbde", "tang", "tpm2"],
+                                    "choices": list(Clevis),
                                 },
                             ),
                             (
@@ -194,8 +194,9 @@ POOL_SUBCMDS = [
                     "--unlock-method",
                     {
                         "dest": "unlock_method",
-                        "choices": [x.value for x in list(EncryptionMethod)],
+                        "choices": list(EncryptionMethod),
                         "help": "Method to use to unlock the pool if encrypted.",
+                        "type": EncryptionMethod,
                     },
                 ),
             ],
@@ -371,8 +372,9 @@ POOL_SUBCMDS = [
                 (
                     "method",
                     {
-                        "choices": [x.value for x in list(EncryptionMethod)],
+                        "choices": list(EncryptionMethod),
                         "help": "Encryption method to unbind",
+                        "type": EncryptionMethod,
                     },
                 ),
                 ("pool_name", {"help": "Pool name"}),
@@ -407,7 +409,8 @@ POOL_SUBCMDS = [
                     "decision",
                     {
                         "help": "yes to allow overprovisioning, otherwise no",
-                        "choices": [x.value for x in list(YesOrNo)],
+                        "choices": list(YesOrNo),
+                        "type": YesOrNo,
                     },
                 ),
             ],
