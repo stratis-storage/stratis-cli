@@ -54,7 +54,6 @@ POOL_SUBCMDS = [
                             (
                                 "--clevis",
                                 {
-                                    "default": None,
                                     "type": str,
                                     "help": ("Specification for binding with Clevis."),
                                     "dest": "clevis",
@@ -64,7 +63,6 @@ POOL_SUBCMDS = [
                             (
                                 "--tang-url",
                                 {
-                                    "default": None,
                                     "type": str,
                                     "help": (
                                         "URL of Clevis tang server "
@@ -94,7 +92,6 @@ POOL_SUBCMDS = [
                                     (
                                         "--thumbprint",
                                         {
-                                            "action": "store",
                                             "help": (
                                                 "Thumbprint of tang server "
                                                 "(--tang-url option must be "
@@ -110,7 +107,7 @@ POOL_SUBCMDS = [
                 )
             ],
             "args": [
-                ("pool_name", {"action": "store", "help": "Name of new pool"}),
+                ("pool_name", {"help": "Name of new pool"}),
                 (
                     "blockdevs",
                     {"help": "Create the pool using these block devs", "nargs": "+"},
@@ -118,7 +115,6 @@ POOL_SUBCMDS = [
                 (
                     "--key-desc",
                     {
-                        "default": None,
                         "type": str,
                         "help": (
                             "Key description of key in kernel keyring to use "
@@ -157,14 +153,13 @@ POOL_SUBCMDS = [
                         (
                             "--uuid",
                             {
-                                "action": "store",
                                 "type": UUID,
                                 "help": "UUID of the pool to stop",
                             },
                         ),
                         (
                             "--name",
-                            {"action": "store", "help": "name of the pool to stop"},
+                            {"help": "name of the pool to stop"},
                         ),
                     ],
                 )
@@ -183,14 +178,13 @@ POOL_SUBCMDS = [
                         (
                             "--uuid",
                             {
-                                "action": "store",
                                 "type": UUID,
                                 "help": "UUID of the pool to start",
                             },
                         ),
                         (
                             "--name",
-                            {"action": "store", "help": "name of the pool to start"},
+                            {"help": "name of the pool to start"},
                         ),
                     ],
                 )
@@ -199,9 +193,7 @@ POOL_SUBCMDS = [
                 (
                     "--unlock-method",
                     {
-                        "default": None,
                         "dest": "unlock_method",
-                        "action": "store",
                         "choices": [x.value for x in list(EncryptionMethod)],
                         "help": "Method to use to unlock the pool if encrypted.",
                     },
@@ -218,7 +210,6 @@ POOL_SUBCMDS = [
                 (
                     "pool_name",
                     {
-                        "action": "store",
                         "help": ("Name of the pool for which to initialize the cache"),
                     },
                 ),
@@ -245,7 +236,6 @@ POOL_SUBCMDS = [
                         (
                             "--uuid",
                             {
-                                "action": "store",
                                 "type": UUID,
                                 "help": "UUID of pool to list",
                             },
@@ -253,7 +243,6 @@ POOL_SUBCMDS = [
                         (
                             "--name",
                             {
-                                "action": "store",
                                 "help": "name of pool to list",
                             },
                         ),
@@ -276,7 +265,7 @@ POOL_SUBCMDS = [
         "destroy",
         {
             "help": "Destroy a pool",
-            "args": [("pool_name", {"action": "store", "help": "pool name"})],
+            "args": [("pool_name", {"help": "pool name"})],
             "func": PoolActions.destroy_pool,
         },
     ),
@@ -285,8 +274,8 @@ POOL_SUBCMDS = [
         {
             "help": "Rename a pool",
             "args": [
-                ("current", {"action": "store", "help": "Current pool name"}),
-                ("new", {"action": "store", "help": "New pool name"}),
+                ("current", {"help": "Current pool name"}),
+                ("new", {"help": "New pool name"}),
             ],
             "func": PoolActions.rename_pool,
         },
@@ -296,7 +285,7 @@ POOL_SUBCMDS = [
         {
             "help": "Add one or more blockdevs to an existing pool for use as data storage",
             "args": [
-                ("pool_name", {"action": "store", "help": "Pool name"}),
+                ("pool_name", {"help": "Pool name"}),
                 (
                     "blockdevs",
                     {
@@ -314,7 +303,7 @@ POOL_SUBCMDS = [
         {
             "help": "Add one or more blockdevs to an existing pool for use as cache",
             "args": [
-                ("pool_name", {"action": "store", "help": "Pool name"}),
+                ("pool_name", {"help": "Pool name"}),
                 (
                     "blockdevs",
                     {
@@ -336,7 +325,7 @@ POOL_SUBCMDS = [
                 "expansion of a component RAID device."
             ),
             "args": [
-                ("pool_name", {"action": "store", "help": "Pool name"}),
+                ("pool_name", {"help": "Pool name"}),
                 (
                     "--device-uuid",
                     {
@@ -382,12 +371,11 @@ POOL_SUBCMDS = [
                 (
                     "method",
                     {
-                        "action": "store",
                         "choices": [x.value for x in list(EncryptionMethod)],
                         "help": "Encryption method to unbind",
                     },
                 ),
-                ("pool_name", {"action": "store", "help": "Pool name"}),
+                ("pool_name", {"help": "Pool name"}),
             ],
             "func": BindActions.unbind,
         },
@@ -397,11 +385,10 @@ POOL_SUBCMDS = [
         {
             "help": "Set the maximum number of filesystems the pool can support.",
             "args": [
-                ("pool_name", {"action": "store", "help": "Pool name"}),
+                ("pool_name", {"help": "Pool name"}),
                 (
                     "amount",
                     {
-                        "action": "store",
                         "type": _ensure_nat,
                         "help": "Number of filesystems.",
                     },
@@ -415,11 +402,10 @@ POOL_SUBCMDS = [
         {
             "help": "Specify whether or not to allow overprovisioning for the pool.",
             "args": [
-                ("pool_name", {"action": "store", "help": "Pool name"}),
+                ("pool_name", {"help": "Pool name"}),
                 (
                     "decision",
                     {
-                        "action": "store",
                         "help": "yes to allow overprovisioning, otherwise no",
                         "choices": [x.value for x in list(YesOrNo)],
                     },
@@ -436,7 +422,6 @@ POOL_SUBCMDS = [
                 (
                     "code",
                     {
-                        "action": "store",
                         "choices": [str(x) for x in PoolErrorCode.codes()],
                         "help": "Error code to explain",
                     },

@@ -27,8 +27,6 @@ PHYSICAL_SUBCMDS = [
                 (
                     "pool_name",
                     {
-                        "action": "store",
-                        "default": None,
                         "nargs": "?",
                         "help": "Pool name",
                     },

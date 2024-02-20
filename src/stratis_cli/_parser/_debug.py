@@ -37,7 +37,7 @@ TOP_DEBUG_SUBCMDS = [
         "uevent",
         {
             "help": "Generate a synthetic uevent.",
-            "args": [("device", {"action": "store", "help": "Path to device"})],
+            "args": [("device", {"help": "Path to device"})],
             "func": TopDebugActions.send_uevent,
         },
     ),
@@ -55,7 +55,6 @@ POOL_DEBUG_SUBCMDS = [
                         (
                             "--name",
                             {
-                                "action": "store",
                                 "help": "Name of pool",
                                 "dest": "name",
                             },
@@ -63,7 +62,6 @@ POOL_DEBUG_SUBCMDS = [
                         (
                             "--uuid",
                             {
-                                "action": "store",
                                 "help": "UUID of pool",
                                 "dest": "uuid",
                                 "type": UUID,
@@ -89,7 +87,6 @@ FILESYSTEM_DEBUG_SUBCMDS = [
                         (
                             "--name",
                             {
-                                "action": "store",
                                 "help": "Name of filesystem",
                                 "dest": "name",
                             },
@@ -97,7 +94,6 @@ FILESYSTEM_DEBUG_SUBCMDS = [
                         (
                             "--uuid",
                             {
-                                "action": "store",
                                 "help": "UUID of filesystem",
                                 "dest": "uuid",
                                 "type": UUID,
@@ -123,7 +119,6 @@ BLOCKDEV_DEBUG_SUBCMDS = [
                         (
                             "--uuid",
                             {
-                                "action": "store",
                                 "help": "UUID of filesystem",
                                 "dest": "uuid",
                                 "type": UUID,
