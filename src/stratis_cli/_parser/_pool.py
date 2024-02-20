@@ -54,7 +54,6 @@ POOL_SUBCMDS = [
                             (
                                 "--clevis",
                                 {
-                                    "default": None,
                                     "type": str,
                                     "help": ("Specification for binding with Clevis."),
                                     "dest": "clevis",
@@ -64,7 +63,6 @@ POOL_SUBCMDS = [
                             (
                                 "--tang-url",
                                 {
-                                    "default": None,
                                     "type": str,
                                     "help": (
                                         "URL of Clevis tang server "
@@ -117,7 +115,6 @@ POOL_SUBCMDS = [
                 (
                     "--key-desc",
                     {
-                        "default": None,
                         "type": str,
                         "help": (
                             "Key description of key in kernel keyring to use "
@@ -196,7 +193,6 @@ POOL_SUBCMDS = [
                 (
                     "--unlock-method",
                     {
-                        "default": None,
                         "dest": "unlock_method",
                         "choices": [x.value for x in list(EncryptionMethod)],
                         "help": "Method to use to unlock the pool if encrypted.",
