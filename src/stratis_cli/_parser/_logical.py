@@ -28,7 +28,7 @@ LOGICAL_SUBCMDS = [
         {
             "help": "Create filesystems in a pool",
             "args": [
-                ("pool_name", {"action": "store", "help": "pool name"}),
+                ("pool_name", {"help": "pool name"}),
                 (
                     "fs_name",
                     {
@@ -61,9 +61,9 @@ LOGICAL_SUBCMDS = [
         {
             "help": "Snapshot the named filesystem in a pool",
             "args": [
-                ("pool_name", {"action": "store", "help": "pool name"}),
-                ("origin_name", {"action": "store", "help": "origin name"}),
-                ("snapshot_name", {"action": "store", "help": "snapshot name"}),
+                ("pool_name", {"help": "pool name"}),
+                ("origin_name", {"help": "origin name"}),
+                ("snapshot_name", {"help": "snapshot name"}),
             ],
             "func": LogicalActions.snapshot_filesystem,
         },
@@ -79,7 +79,6 @@ LOGICAL_SUBCMDS = [
                         (
                             "--uuid",
                             {
-                                "action": "store",
                                 "type": UUID,
                                 "help": "UUID of filesystem to list",
                             },
@@ -87,7 +86,6 @@ LOGICAL_SUBCMDS = [
                         (
                             "--name",
                             {
-                                "action": "store",
                                 "help": "name of filesystem to list",
                             },
                         ),
@@ -98,7 +96,6 @@ LOGICAL_SUBCMDS = [
                 (
                     "pool_name",
                     {
-                        "action": "store",
                         "default": None,
                         "nargs": "?",
                         "help": "Pool name",
@@ -113,7 +110,7 @@ LOGICAL_SUBCMDS = [
         {
             "help": "Destroy filesystems in a pool",
             "args": [
-                ("pool_name", {"action": "store", "help": "pool name"}),
+                ("pool_name", {"help": "pool name"}),
                 (
                     "fs_name",
                     {
@@ -133,17 +130,16 @@ LOGICAL_SUBCMDS = [
                 (
                     "pool_name",
                     {
-                        "action": "store",
                         "help": "Name of the pool the filesystem is part of",
                     },
                 ),
                 (
                     "fs_name",
-                    {"action": "store", "help": "Name of the filesystem to change"},
+                    {"help": "Name of the filesystem to change"},
                 ),
                 (
                     "new_name",
-                    {"action": "store", "help": "New name to give that filesystem"},
+                    {"help": "New name to give that filesystem"},
                 ),
             ],
             "func": LogicalActions.rename_fs,
@@ -157,13 +153,12 @@ LOGICAL_SUBCMDS = [
                 (
                     "pool_name",
                     {
-                        "action": "store",
                         "help": "Name of the pool the filesystem is part of",
                     },
                 ),
                 (
                     "fs_name",
-                    {"action": "store", "help": "Name of the filesystem to change"},
+                    {"help": "Name of the filesystem to change"},
                 ),
                 (
                     "limit",
@@ -188,13 +183,12 @@ LOGICAL_SUBCMDS = [
                 (
                     "pool_name",
                     {
-                        "action": "store",
                         "help": "Name of the pool the filesystem is part of",
                     },
                 ),
                 (
                     "fs_name",
-                    {"action": "store", "help": "Name of the filesystem to change"},
+                    {"help": "Name of the filesystem to change"},
                 ),
             ],
             "func": LogicalActions.unset_size_limit,
