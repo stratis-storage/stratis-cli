@@ -176,6 +176,8 @@ class Detail(List):  # pylint: disable=too-few-public-methods
             date_parser.parse(fs.Created()).astimezone().strftime("%b %d %Y %H:%M")
         )
 
+        origin = get_property(fs.Origin(), self.uuid_formatter, "None")
+
         print(f"UUID: {self.uuid_formatter(fs.Uuid())}")
         print(f"Name: {fs.Name()}")
         print(f"Pool: {self.path_to_name[fs.Pool()]}")
@@ -183,6 +185,8 @@ class Detail(List):  # pylint: disable=too-few-public-methods
         print(f"Device: {fs.Devnode()}")
         print()
         print(f"Created: {created}")
+        print()
+        print(f"Snapshot origin: {origin}")
         print()
         print("Sizes:")
         print(f"  Logical size of thin device: {total}")
