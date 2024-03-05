@@ -19,7 +19,6 @@ Pool actions.
 from abc import ABC, abstractmethod
 
 # isort: THIRDPARTY
-from dbus import Boolean
 from justbytes import Range
 
 from .._error_codes import PoolAllocSpaceErrorCode, PoolDeviceSizeChangeCode
@@ -385,25 +384,18 @@ class DefaultTable(Default):
                 """
                 Generate the display string for a boolean property
 
-                :param has_property: whether the property is true or false
-                :type has_property: bool or object
+                :param bool has_property: whether the property is true or false
                 :param str code: the code to generate the string for
                 :returns: the generated string
                 :rtype: str
                 """
-                # must check membership in dbus.Boolean, because dbus.Boolean is
-                # not a subclass of bool, but of int.
-                prefix = (
-                    "?"
-                    if not isinstance(has_property, Boolean)
-                    else (" " if has_property else "~")
-                )
-                return prefix + code
+                return (" " if has_property else "~") + code
 
             props_list = [
-                (mopool.HasCache(), "Ca"),
-                (mopool.Encrypted(), "Cr"),
-                (mopool.Overprovisioning(), "Op"),
+                (int(mopool.MetadataVersion()) == 1, "Le"),
+                (bool(mopool.HasCache()), "Ca"),
+                (bool(mopool.Encrypted()), "Cr"),
+                (bool(mopool.Overprovisioning()), "Op"),
             ]
             return ",".join(gen_string(x, y) for x, y in props_list)
 

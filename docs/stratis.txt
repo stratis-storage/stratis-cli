@@ -227,9 +227,9 @@ Properties::
           property, a '~', for negation, is prepended to the property code.
           If the engine experienced an error when obtaining the property, a
           "?", representing "unknown", is prepended to the property code.
-          The property codes are: Ca - indicates the pool has a cache,
-          Cr - indicates the pool is encrypted, Op - indicates the pool allows
-          overprovisioning.
+          The property codes are: Le - indicates that the pool is a legacy pool,
+          Ca - indicates the pool has a cache, Cr - indicates the pool is
+          encrypted, Op - indicates the pool allows overprovisioning.
 UUID::
           The UUID of the pool.
 Alerts::
