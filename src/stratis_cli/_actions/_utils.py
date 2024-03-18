@@ -90,6 +90,27 @@ class ClevisInfo:
         (pin, config) = value
         return ClevisInfo(ClevisPin(str(pin)), json.loads(str(config)))
 
+    @staticmethod
+    def get_info_from_tang_bind(namespace):
+        """
+        Get info from a namespace on the bind tang command.
+        """
+        clevis_config = {CLEVIS_KEY_URL: namespace.url}
+        if namespace.trust_url:
+            clevis_config[CLEVIS_KEY_TANG_TRUST_URL] = True
+        else:
+            assert namespace.thumbprint is not None
+            clevis_config[CLEVIS_KEY_THP] = namespace.thumbprint
+
+        return ClevisInfo(ClevisPin.TANG, clevis_config)
+
+    @staticmethod
+    def get_info_from_tpm2_bind(_namespace):
+        """
+        Get info from namespace on the bind tpm2 command.
+        """
+        return ClevisInfo(ClevisPin.TPM2, {})
+
 
 class EncryptionInfo:  # pylint: disable=too-few-public-methods
     """
