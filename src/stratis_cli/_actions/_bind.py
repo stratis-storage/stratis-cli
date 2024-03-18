@@ -24,8 +24,7 @@ from .._stratisd_constants import (
     CLEVIS_KEY_TANG_TRUST_URL,
     CLEVIS_KEY_THP,
     CLEVIS_KEY_URL,
-    CLEVIS_PIN_TANG,
-    CLEVIS_PIN_TPM2,
+    ClevisPin,
     StratisdErrors,
 )
 from ._connection import get_object
@@ -87,7 +86,9 @@ class BindActions:
             assert namespace.thumbprint is not None
             clevis_config[CLEVIS_KEY_THP] = namespace.thumbprint
 
-        BindActions._bind_clevis(namespace, ClevisInfo(CLEVIS_PIN_TANG, clevis_config))
+        BindActions._bind_clevis(
+            namespace, ClevisInfo(str(ClevisPin.TANG), clevis_config)
+        )
 
     @staticmethod
     def bind_tpm(namespace):
@@ -98,7 +99,7 @@ class BindActions:
         :raises StratisCliEngineError:
         """
 
-        BindActions._bind_clevis(namespace, ClevisInfo(CLEVIS_PIN_TPM2, {}))
+        BindActions._bind_clevis(namespace, ClevisInfo(str(ClevisPin.TPM2), {}))
 
     @staticmethod
     def bind_keyring(namespace):
