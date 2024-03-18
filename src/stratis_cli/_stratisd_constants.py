@@ -45,9 +45,19 @@ class BlockDevTiers(IntEnum):
         return self.name
 
 
+class ClevisPin(Enum):
+    """
+    Clevis pin designation.
+    """
+
+    TANG = "tang"
+    TPM2 = "tpm2"
+
+    def __str__(self):
+        return self.value
+
+
 CLEVIS_KEY_TANG_TRUST_URL = "stratis:tang:trust_url"
-CLEVIS_PIN_TANG = "tang"
-CLEVIS_PIN_TPM2 = "tpm2"
 CLEVIS_KEY_THP = "thp"
 CLEVIS_KEY_URL = "url"
 
