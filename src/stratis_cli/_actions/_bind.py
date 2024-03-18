@@ -60,7 +60,7 @@ class BindActions:
         (changed, return_code, return_msg) = Pool.Methods.BindClevis(
             get_object(pool_object_path),
             {
-                "pin": clevis_info.pin,
+                "pin": str(clevis_info.pin),
                 "json": json.dumps(clevis_info.config),
             },
         )
@@ -86,9 +86,7 @@ class BindActions:
             assert namespace.thumbprint is not None
             clevis_config[CLEVIS_KEY_THP] = namespace.thumbprint
 
-        BindActions._bind_clevis(
-            namespace, ClevisInfo(str(ClevisPin.TANG), clevis_config)
-        )
+        BindActions._bind_clevis(namespace, ClevisInfo(ClevisPin.TANG, clevis_config))
 
     @staticmethod
     def bind_tpm(namespace):
@@ -99,7 +97,7 @@ class BindActions:
         :raises StratisCliEngineError:
         """
 
-        BindActions._bind_clevis(namespace, ClevisInfo(str(ClevisPin.TPM2), {}))
+        BindActions._bind_clevis(namespace, ClevisInfo(ClevisPin.TPM2, {}))
 
     @staticmethod
     def bind_keyring(namespace):

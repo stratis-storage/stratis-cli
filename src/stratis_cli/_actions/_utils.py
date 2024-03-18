@@ -40,7 +40,7 @@ class ClevisInfo:
         """
         Initialize clevis information.
 
-        :param str pin: the Clevis "pin"
+        :param Clevis pin: the Clevis "pin"
         :param dict config: the JSON config corresponding to the pin
         """
         self.pin = pin
@@ -68,10 +68,10 @@ class ClevisInfo:
                 assert options.thumbprint is not None
                 clevis_config[CLEVIS_KEY_THP] = options.thumbprint
 
-            clevis_info = ClevisInfo(str(ClevisPin.TANG), clevis_config)
+            clevis_info = ClevisInfo(ClevisPin.TANG, clevis_config)
 
         elif options.clevis is Clevis.TPM2:
-            clevis_info = ClevisInfo(str(ClevisPin.TPM2), {})
+            clevis_info = ClevisInfo(ClevisPin.TPM2, {})
 
         else:
             raise AssertionError(
@@ -119,7 +119,7 @@ class EncryptionInfoClevis(EncryptionInfo):  # pylint: disable=too-few-public-me
             value = self.value
             if value is not None:
                 (pin, config) = value  # pyright: ignore [ reportGeneralTypeIssues ]
-                self.value = ClevisInfo(str(pin), json.loads(str(config)))
+                self.value = ClevisInfo(ClevisPin(str(pin)), json.loads(str(config)))
 
 
 class EncryptionInfoKeyDescription(

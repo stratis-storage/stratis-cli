@@ -199,7 +199,7 @@ class PoolActions:
                 "clevis_info": (
                     (False, ("", ""))
                     if clevis_info is None
-                    else (True, (clevis_info.pin, json.dumps(clevis_info.config)))
+                    else (True, (str(clevis_info.pin), json.dumps(clevis_info.config)))
                 ),
             },
         )
