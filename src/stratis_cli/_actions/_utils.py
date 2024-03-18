@@ -111,6 +111,18 @@ class ClevisInfo:
         """
         return ClevisInfo(ClevisPin.TPM2, {})
 
+    def as_str_tuple(self):
+        """
+        Return a tuple of str, for putting on the D-Bus.
+        """
+        return (str(self.pin), json.dumps(self.config))
+
+    def as_str_table(self):
+        """
+        Return a table.
+        """
+        return {"pin": str(self.pin), "json": json.dumps(self.config)}
+
 
 class EncryptionInfo:  # pylint: disable=too-few-public-methods
     """
