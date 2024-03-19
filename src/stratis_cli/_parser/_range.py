@@ -56,6 +56,20 @@ def _unit_map(unit_specifier):
     assert False, f'Unknown unit specifier "{unit_specifier}"'
 
 
+def _parse_range(self, values):
+    match = _RANGE_RE.search(values)
+    if match is None:
+        raise argparse.ArgumentError(
+            self, f"Ill-formed size specification: {_SIZE_SPECIFICATION}"
+        )
+
+    (magnitude, unit) = (match.group("magnitude"), match.group("units"))
+
+    units = _unit_map(unit)
+
+    return Range(int(magnitude), units)
+
+
 class RangeAction(argparse.Action):
     """
     Parse a justbytes Range from a str
@@ -73,22 +87,10 @@ class RangeAction(argparse.Action):
         """
         Set dest namespace attribute to Range value parsed from values.
         """
-        match = _RANGE_RE.search(values)
-        if match is None:
-            raise argparse.ArgumentError(
-                self, f"Ill-formed size specification: {_SIZE_SPECIFICATION}"
-            )
-
-        (magnitude, unit) = (match.group("magnitude"), match.group("units"))
-
-        units = _unit_map(unit)
-
-        size = Range(magnitude, units)
-
-        setattr(namespace, self.dest, size)
+        setattr(namespace, self.dest, _parse_range(self, values))
 
 
-class RangeActionOrCurrent(RangeAction):
+class RangeActionOrCurrent(argparse.Action):
     """
     Allow specifying a Range or the value "current". Include the original
     value specified by the user as well as the Range result if the user
@@ -101,9 +103,8 @@ class RangeActionOrCurrent(RangeAction):
         """
         Allow "current" as well as range specifications.
         """
-
-        if values == "current":
-            setattr(namespace, self.dest, "current")
-        else:
-            super().__call__(parser, namespace, values, option_string=option_string)
-            setattr(namespace, self.dest, (getattr(namespace, self.dest), values))
+        setattr(
+            namespace,
+            self.dest,
+            (None if values == "current" else _parse_range(self, values), values),
+        )

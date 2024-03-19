@@ -121,7 +121,7 @@ class EncryptionInfoClevis(EncryptionInfo):  # pylint: disable=too-few-public-me
         if hasattr(self, "value"):  # pragma: no cover
             value = self.value
             if value is not None:
-                (pin, config) = value
+                (pin, config) = value  # pyright: ignore [ reportGeneralTypeIssues ]
                 self.value = ClevisInfo(str(pin), json.loads(str(config)))
 
 
@@ -211,17 +211,11 @@ class PoolSelector:
         """
         selection_value = self.pool_id.dbus_value()
 
-        if self.pool_id.is_uuid():
-
-            def selection_func(uuid, _info):
-                return uuid == selection_value
-
-        else:
-
-            def selection_func(_uuid, info):
-                return info.get("name") == selection_value
-
-        return selection_func
+        return (
+            (lambda uuid, info: uuid == selection_value)
+            if self.pool_id.is_uuid()
+            else (lambda uuid, info: info.get("name") == selection_value)
+        )
 
     def __str__(self):
         return f"pool with {self.pool_id}"
