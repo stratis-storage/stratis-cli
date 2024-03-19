@@ -97,7 +97,7 @@ def _add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
     )
 
     if fd_is_pipe:
-        os.close(write)
+        os.close(write)  # pyright: ignore [ reportPossiblyUnboundVariable]
     else:
         os.close(file_desc)
 
