@@ -271,7 +271,8 @@ class Default(List):
 
         clevis_info_str = (
             _non_existent_or_inconsistent_to_str(
-                EncryptionInfoClevis(mopool.ClevisInfo()), interp=_clevis_to_str
+                EncryptionInfoClevis(mopool.ClevisInfo()),
+                interp=_clevis_to_str,  # pyright: ignore [ reportArgumentType ]
             )
             if encrypted
             else "unencrypted"
@@ -449,7 +450,8 @@ class Stopped(List):  # pylint: disable=too-few-public-methods
             "unencrypted"
             if clevis_info is None
             else _non_existent_or_inconsistent_to_str(
-                clevis_info, interp=_clevis_to_str
+                clevis_info,
+                interp=_clevis_to_str,  # pyright: ignore [ reportArgumentType ]
             )
         )
         print(f"Clevis Configuration: {clevis_info_str}")
@@ -472,7 +474,8 @@ class Stopped(List):  # pylint: disable=too-few-public-methods
                 return "unencrypted"
 
             return _non_existent_or_inconsistent_to_str(
-                value, interp=lambda _: "present"
+                value,
+                interp=lambda _: "present",  # pyright: ignore [ reportArgumentType ]
             )  # pragma: no cover
 
         def key_description_str(value):

@@ -20,12 +20,12 @@ from .._errors import StratisCliEnvironmentError
 
 def get_timeout(value):
     """
-    Turn an input str or int into a float timeout value.
+    Turn an input str or int (milliseconds) into an int timeout value (secs).
 
     :param value: the input str or int
     :type value: str or int
     :raises StratisCliEnvironmentError:
-    :returns: float
+    :returns: int
     """
 
     maximum_dbus_timeout_ms = 1073741823
@@ -58,4 +58,4 @@ def get_timeout(value):
         )
 
     # Convert from milliseconds to seconds
-    return timeout_int / 1000
+    return timeout_int // 1000

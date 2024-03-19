@@ -41,7 +41,9 @@ jobs:
               python3-packaging
               python3-psutil
               python3-wcwidth
-            task: PYTHONPATH=./src make -f Makefile lint
+            task: >
+              PATH=${PATH}:/github/home/.local/bin PYTHONPATH=./src
+              make -f Makefile lint
           - dependencies: black python3-isort
             task: make -f Makefile fmt-ci
           - dependencies: shfmt
@@ -54,10 +56,13 @@ jobs:
         run: >
           dnf install -y
           make
+          pip
           python-unversioned-command
           ${{ matrix.dependencies }}
       - name: Display Python version
         run: python --version
+      - name: Install pyright
+        run: pip install --user pyright
       - name: Run test
         run: ${{ matrix.task }}
 

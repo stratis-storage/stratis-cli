@@ -65,7 +65,7 @@ class StratisCliNoPropertyChangeError(StratisCliUserError):
         """
         Initializer.
 
-        :param bool value: overprovision value
+        :param object value: property value that was not changed
         """
         # pylint: disable=super-init-not-called
         self.value = value
