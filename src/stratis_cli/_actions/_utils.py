@@ -91,25 +91,27 @@ class ClevisInfo:
         return ClevisInfo(ClevisPin(str(pin)), json.loads(str(config)))
 
     @staticmethod
-    def get_info_from_tang_bind(namespace):
+    def get_info_from_namespace_bind(namespace, clevis):
         """
         Get info from a namespace on the bind tang command.
+        :param Clevis clevis: clevis method to use
         """
-        clevis_config = {CLEVIS_KEY_URL: namespace.url}
-        if namespace.trust_url:
-            clevis_config[CLEVIS_KEY_TANG_TRUST_URL] = True
-        else:
-            assert namespace.thumbprint is not None
-            clevis_config[CLEVIS_KEY_THP] = namespace.thumbprint
+        if clevis in (Clevis.TANG, Clevis.NBDE):
+            clevis_config = {CLEVIS_KEY_URL: namespace.url}
+            if namespace.trust_url:
+                clevis_config[CLEVIS_KEY_TANG_TRUST_URL] = True
+            else:
+                assert namespace.thumbprint is not None
+                clevis_config[CLEVIS_KEY_THP] = namespace.thumbprint
 
-        return ClevisInfo(ClevisPin.TANG, clevis_config)
+            return ClevisInfo(ClevisPin.TANG, clevis_config)
 
-    @staticmethod
-    def get_info_from_tpm2_bind(_namespace):
-        """
-        Get info from namespace on the bind tpm2 command.
-        """
-        return ClevisInfo(ClevisPin.TPM2, {})
+        if clevis is Clevis.TPM2:
+            return ClevisInfo(ClevisPin.TPM2, {})
+
+        raise AssertionError(
+            f"unexpected value {namespace.clevis} for clevis option"
+        )  # pragma: no cover
 
     def as_str_tuple(self):
         """

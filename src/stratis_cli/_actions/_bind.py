@@ -15,7 +15,7 @@
 Miscellaneous pool-binding actions.
 """
 
-from .._constants import EncryptionMethod
+from .._constants import Clevis, EncryptionMethod
 from .._errors import StratisCliEngineError, StratisCliNoChangeError
 from .._stratisd_constants import StratisdErrors
 from ._connection import get_object
@@ -67,7 +67,7 @@ class BindActions:
         :raises StratisCliEngineError:
         """
         BindActions._bind_clevis(
-            namespace, ClevisInfo.get_info_from_tang_bind(namespace)
+            namespace, ClevisInfo.get_info_from_namespace_bind(namespace, Clevis.TANG)
         )
 
     @staticmethod
@@ -80,7 +80,7 @@ class BindActions:
         """
 
         BindActions._bind_clevis(
-            namespace, ClevisInfo.get_info_from_tpm2_bind(namespace)
+            namespace, ClevisInfo.get_info_from_namespace_bind(namespace, Clevis.TPM2)
         )
 
     @staticmethod
