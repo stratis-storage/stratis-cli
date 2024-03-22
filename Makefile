@@ -20,6 +20,7 @@ lint:
 	# are removed by optimization.
 	bandit --recursive ./src ${BANDIT_SKIP},B101
 	bandit --recursive ./tests ${BANDIT_SKIP}
+	pyright
 
 .PHONY: fmt
 fmt:
