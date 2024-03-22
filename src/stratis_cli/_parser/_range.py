@@ -56,11 +56,16 @@ def _unit_map(unit_specifier):
     assert False, f'Unknown unit specifier "{unit_specifier}"'
 
 
-def _parse_range(self, values):
+def parse_range(values):
+    """
+    Parse a range value.
+
+    :param str values: string to parse
+    """
     match = _RANGE_RE.search(values)
     if match is None:
-        raise argparse.ArgumentError(
-            self, f"Ill-formed size specification: {_SIZE_SPECIFICATION}"
+        raise argparse.ArgumentTypeError(
+            f"Ill-formed size specification: {_SIZE_SPECIFICATION}"
         )
 
     (magnitude, unit) = (match.group("magnitude"), match.group("units"))
@@ -68,43 +73,3 @@ def _parse_range(self, values):
     units = _unit_map(unit)
 
     return Range(int(magnitude), units)
-
-
-class RangeAction(argparse.Action):
-    """
-    Parse a justbytes Range from a str
-
-    Round down to the nearest byte
-    """
-
-    def __init__(self, option_strings, dest, **kwargs):
-        """
-        Initialize the object
-        """
-        super().__init__(option_strings, dest, **kwargs)
-
-    def __call__(self, parser, namespace, values, option_string=None):
-        """
-        Set dest namespace attribute to Range value parsed from values.
-        """
-        setattr(namespace, self.dest, _parse_range(self, values))
-
-
-class RangeActionOrCurrent(argparse.Action):
-    """
-    Allow specifying a Range or the value "current". Include the original
-    value specified by the user as well as the Range result if the user
-    specified a valid range. This is purely useful for error messages,
-    so that an error message will contain what the user specified if there
-    needs to be reported an idempotency error.
-    """
-
-    def __call__(self, parser, namespace, values, option_string=None):
-        """
-        Allow "current" as well as range specifications.
-        """
-        setattr(
-            namespace,
-            self.dest,
-            (None if values == "current" else _parse_range(self, values), values),
-        )
