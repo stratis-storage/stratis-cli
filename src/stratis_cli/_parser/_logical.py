@@ -17,7 +17,19 @@ Definition of filesystem actions to display in the CLI.
 
 from .._actions import LogicalActions
 from ._debug import FILESYSTEM_DEBUG_SUBCMDS
-from ._range import RangeAction, RangeActionOrCurrent
+from ._range import parse_range
+
+
+def parse_range_or_current(values):
+    """
+    Allow specifying a Range or the value "current". Include the original
+    value specified by the user as well as the Range result if the user
+    specified a valid range. This is purely useful for error messages,
+    so that an error message will contain what the user specified if there
+    needs to be reported an idempotency error.
+    """
+    return (None if values == "current" else parse_range(values), values)
+
 
 LOGICAL_SUBCMDS = [
     (
@@ -36,17 +48,17 @@ LOGICAL_SUBCMDS = [
                 (
                     "--size",
                     {
-                        "action": RangeAction,
                         "dest": "size",
                         "help": 'The size of the filesystems to be created, e.g., "32GiB"',
+                        "type": parse_range,
                     },
                 ),
                 (
                     "--size-limit",
                     {
-                        "action": RangeAction,
                         "dest": "size_limit",
                         "help": 'An upper limit on the size of filesystems, e.g., "2TiB"',
+                        "type": parse_range,
                     },
                 ),
             ],
@@ -139,12 +151,12 @@ LOGICAL_SUBCMDS = [
                 (
                     "limit",
                     {
-                        "action": RangeActionOrCurrent,
                         "help": (
                             "Upper limit on size of filesystem. Use the "
                             'keyword "current" to specify the current size of '
                             "the filesystem."
                         ),
+                        "type": parse_range_or_current,
                     },
                 ),
             ],
