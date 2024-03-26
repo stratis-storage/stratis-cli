@@ -26,6 +26,8 @@ Lowest supported Python interpreter: 3.9.16
   https://github.com/stratis-storage/stratis-cli/pull/1053
 
 - Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/1064
+  https://github.com/stratis-storage/stratis-cli/pull/1063
   https://github.com/stratis-storage/stratis-cli/pull/1061
   https://github.com/stratis-storage/stratis-cli/pull/1059
   https://github.com/stratis-storage/stratis-cli/pull/1058
