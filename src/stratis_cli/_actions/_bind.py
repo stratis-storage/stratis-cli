@@ -15,19 +15,9 @@
 Miscellaneous pool-binding actions.
 """
 
-# isort: STDLIB
-import json
-
-from .._constants import EncryptionMethod
+from .._constants import Clevis, EncryptionMethod
 from .._errors import StratisCliEngineError, StratisCliNoChangeError
-from .._stratisd_constants import (
-    CLEVIS_KEY_TANG_TRUST_URL,
-    CLEVIS_KEY_THP,
-    CLEVIS_KEY_URL,
-    CLEVIS_PIN_TANG,
-    CLEVIS_PIN_TPM2,
-    StratisdErrors,
-)
+from .._stratisd_constants import StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._utils import ClevisInfo
@@ -59,11 +49,7 @@ class BindActions:
             .search(managed_objects)
         )
         (changed, return_code, return_msg) = Pool.Methods.BindClevis(
-            get_object(pool_object_path),
-            {
-                "pin": clevis_info.pin,
-                "json": json.dumps(clevis_info.config),
-            },
+            get_object(pool_object_path), clevis_info.as_str_table()
         )
 
         if return_code != StratisdErrors.OK:
@@ -80,14 +66,9 @@ class BindActions:
         :raises StratisCliNoChangeError:
         :raises StratisCliEngineError:
         """
-        clevis_config = {CLEVIS_KEY_URL: namespace.url}
-        if namespace.trust_url:
-            clevis_config[CLEVIS_KEY_TANG_TRUST_URL] = True
-        else:
-            assert namespace.thumbprint is not None
-            clevis_config[CLEVIS_KEY_THP] = namespace.thumbprint
-
-        BindActions._bind_clevis(namespace, ClevisInfo(CLEVIS_PIN_TANG, clevis_config))
+        BindActions._bind_clevis(
+            namespace, ClevisInfo.get_info_from_namespace_bind(namespace, Clevis.TANG)
+        )
 
     @staticmethod
     def bind_tpm(namespace):
@@ -98,7 +79,9 @@ class BindActions:
         :raises StratisCliEngineError:
         """
 
-        BindActions._bind_clevis(namespace, ClevisInfo(CLEVIS_PIN_TPM2, {}))
+        BindActions._bind_clevis(
+            namespace, ClevisInfo.get_info_from_namespace_bind(namespace, Clevis.TPM2)
+        )
 
     @staticmethod
     def bind_keyring(namespace):

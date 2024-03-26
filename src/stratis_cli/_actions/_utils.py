@@ -25,8 +25,7 @@ from .._stratisd_constants import (
     CLEVIS_KEY_TANG_TRUST_URL,
     CLEVIS_KEY_THP,
     CLEVIS_KEY_URL,
-    CLEVIS_PIN_TANG,
-    CLEVIS_PIN_TPM2,
+    ClevisPin,
 )
 
 
@@ -41,7 +40,7 @@ class ClevisInfo:
         """
         Initialize clevis information.
 
-        :param str pin: the Clevis "pin"
+        :param ClevisPin pin: the Clevis "pin"
         :param dict config: the JSON config corresponding to the pin
         """
         self.pin = pin
@@ -71,10 +70,10 @@ class ClevisInfo:
                     assert namespace.thumbprint is not None
                     clevis_config[CLEVIS_KEY_THP] = namespace.thumbprint
 
-                clevis_info = ClevisInfo(CLEVIS_PIN_TANG, clevis_config)
+                clevis_info = ClevisInfo(ClevisPin.TANG, clevis_config)
 
             elif namespace.clevis is Clevis.TPM2:
-                clevis_info = ClevisInfo(CLEVIS_PIN_TPM2, {})
+                clevis_info = ClevisInfo(ClevisPin.TPM2, {})
 
             else:
                 raise AssertionError(
@@ -82,6 +81,49 @@ class ClevisInfo:
                 )  # pragma: no cover
 
         return clevis_info
+
+    @staticmethod
+    def get_info_from_dbus_property(value):  # pragma: no cover
+        """
+        Get ClevisInfo from a D-Bus property.
+        """
+        (pin, config) = value
+        return ClevisInfo(ClevisPin(str(pin)), json.loads(str(config)))
+
+    @staticmethod
+    def get_info_from_namespace_bind(namespace, clevis):
+        """
+        Get info from a namespace on the bind tang command.
+        :param Clevis clevis: clevis method to use
+        """
+        if clevis in (Clevis.TANG, Clevis.NBDE):
+            clevis_config = {CLEVIS_KEY_URL: namespace.url}
+            if namespace.trust_url:
+                clevis_config[CLEVIS_KEY_TANG_TRUST_URL] = True
+            else:
+                assert namespace.thumbprint is not None
+                clevis_config[CLEVIS_KEY_THP] = namespace.thumbprint
+
+            return ClevisInfo(ClevisPin.TANG, clevis_config)
+
+        if clevis is Clevis.TPM2:
+            return ClevisInfo(ClevisPin.TPM2, {})
+
+        raise AssertionError(
+            f"unexpected value {namespace.clevis} for clevis option"
+        )  # pragma: no cover
+
+    def as_str_tuple(self):
+        """
+        Return a tuple of str, for putting on the D-Bus.
+        """
+        return (str(self.pin), json.dumps(self.config))
+
+    def as_str_table(self):
+        """
+        Return a table.
+        """
+        return {"pin": str(self.pin), "json": json.dumps(self.config)}
 
 
 class EncryptionInfo:  # pylint: disable=too-few-public-methods
@@ -121,8 +163,7 @@ class EncryptionInfoClevis(EncryptionInfo):  # pylint: disable=too-few-public-me
         if hasattr(self, "value"):  # pragma: no cover
             value = self.value
             if value is not None:
-                (pin, config) = value  # pyright: ignore [ reportGeneralTypeIssues ]
-                self.value = ClevisInfo(str(pin), json.loads(str(config)))
+                self.value = ClevisInfo.get_info_from_dbus_property(value)
 
 
 class EncryptionInfoKeyDescription(
