@@ -16,10 +16,11 @@ Miscellaneous top-level actions.
 """
 
 # isort: STDLIB
+import errno
 import json
 import os
 import sys
-from getpass import getpass
+import termios
 
 from .._errors import (
     StratisCliEngineError,
@@ -53,6 +54,45 @@ def _fetch_keylist(proxy):
     return keys
 
 
+def get_pass(prompt):
+    """
+    Prompt for a passphrase on stdin.
+
+    :param str prompt: prompt to display to user when fetching passphrase
+    :return: password
+    :rtype: str or None
+    """
+    print(prompt, end="")
+    sys.stdout.flush()
+    old_attrs = None
+    try:  # pragma: no cover
+        old_attrs = termios.tcgetattr(sys.stdin)
+        new_attrs = termios.tcgetattr(sys.stdin)
+        new_attrs[3] &= ~termios.ECHO
+        new_attrs[3] |= termios.ECHONL
+        termios.tcsetattr(sys.stdin, termios.TCSAFLUSH, new_attrs)
+    except termios.error as err:  # pragma: no cover
+        if err.args[0] == errno.ENOTTY:
+            print(
+                "Warning: this device is not a TTY so the password may be echoed",
+                file=sys.stderr,
+            )
+    except Exception:  # nosec pylint: disable=broad-exception-caught
+        pass
+
+    password = None
+    try:
+        password = sys.stdin.readline()
+    except Exception as err:  # pragma: no cover
+        if old_attrs is not None:
+            termios.tcsetattr(sys.stdin, termios.TCSAFLUSH, old_attrs)
+        raise err
+
+    if old_attrs is not None:
+        termios.tcsetattr(sys.stdin, termios.TCSAFLUSH, old_attrs)  # pragma: no cover
+    return password.strip()
+
+
 def _add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
     """
     Issue a command to set or reset a key in the kernel keyring with the option
@@ -72,8 +112,8 @@ def _add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
     from ._data import Manager
 
     if capture_key:
-        password = getpass(prompt="Enter key data followed by the return key: ")
-        verify = getpass(prompt="Verify key data entered: ")
+        password = get_pass("Enter key data followed by the return key: ")
+        verify = get_pass("Verify key data entered: ")
 
         if password != verify:
             raise StratisCliPassphraseMismatchError()
