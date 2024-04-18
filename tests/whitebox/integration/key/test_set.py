@@ -15,12 +15,8 @@
 Test 'set'.
 """
 
-# isort: STDLIB
-from unittest.mock import patch
-
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
-from stratis_cli._actions import _top
 from stratis_cli._errors import (
     StratisCliEngineError,
     StratisCliKeyfileNotFoundError,
@@ -65,7 +61,11 @@ class TestKeySet(SimTestCase):
         """
         with RandomKeyTmpFile(128) as fname:
             command_line = self._MENU + [self._KEYNAME, "--keyfile-path", fname]
-            self.check_error(StratisCliEngineError, command_line, _ERROR)
+            self.check_error(
+                StratisCliEngineError,
+                command_line,
+                _ERROR,
+            )
 
     def test_set_key_filename_missing(self):
         """
@@ -80,13 +80,16 @@ class TestKeySet(SimTestCase):
         Test specifying a key via the --capture-key option.
         """
         command_line = self._MENU + [self._KEYNAME, "--capture-key"]
-        with patch.object(_top, "getpass", return_value="totally_secret"):
-            TEST_RUNNER(command_line)
+        TEST_RUNNER(command_line, "totally_secret\ntotally_secret\n")
 
     def test_set_key_capture_key_fail_verify(self):
         """
         Test capture key fails if passphrase do not match
         """
         command_line = self._MENU + [self._KEYNAME, "--capture-key"]
-        with patch.object(_top, "getpass", side_effect=["totally_secret", "different"]):
-            self.check_error(StratisCliPassphraseMismatchError, command_line, _ERROR)
+        self.check_error(
+            StratisCliPassphraseMismatchError,
+            command_line,
+            _ERROR,
+            stdin="totally_secret\ndifferent\n",
+        )
