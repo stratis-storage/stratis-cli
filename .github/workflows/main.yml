@@ -131,6 +131,9 @@ jobs:
           toolchain: 1.71.1  # LOWEST SUPPORTED RUST TOOLCHAIN
       - name: Check out stratisd
         run: git clone https://github.com/stratis-storage/stratisd.git
+      - name: Use stratisd 3.6.7
+        run: git checkout tags/stratisd-v3.6.7 -b version-3.6.7
+        working-directory: ./stratisd
       - name: Build stratisd
         run: PROFILEDIR=debug make build-all
         working-directory: ./stratisd
