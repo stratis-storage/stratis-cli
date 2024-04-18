@@ -1,3 +1,41 @@
+stratis-cli 3.6.1
+=================
+Required stratisd version: 3.6.0
+
+Recommended development environment: Fedora 38
+
+* New commits:
+  * Remove weekly CI
+  * Run CI against patch branch
+  * Use stratid 3.6.7
+
+* Cherry-picked commits:
+  * Do not specify the version to create_archive.py
+  * Use create_artifacts.py to remove Requires line
+  * github actions: update recommended Rust to 1.74.0
+  * Advance current development environment to Fedora 39
+  * github actions: update recommended Rust to 1.74.1
+  * github actions: update recommended Rust to 1.75.0
+  * Use checkout@v4
+  * Disable pylint fixme check
+  * Add a Makefile variable for pylint disables
+  * Make a group for Clevis-related pool create options
+  * Post-process namespace to detect parser errors
+  * Fix some parser tests
+  * Enforce precise parsing requirements for Clevis options
+  * github actions: update recommended Rust to 1.76.0
+  * Eliminate redundant action specifications
+  * Do not specify default value of None
+  * Simplify use of enums as choices in parser
+  * Use enum for Clevis choices
+  * Run pyright checks
+  * Use type keyword argument rather than action
+  * github actions: update recommended Rust to 1.77.0
+  * Allow two abbreviations
+  * github actions: update recommended Rust to 1.77.2
+  * Replace getpass with custom implementation that uses sys.stdin
+
+
 stratis-cli 3.6.0
 =================
 Required stratisd version: 3.6.0
