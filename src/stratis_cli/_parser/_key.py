@@ -22,7 +22,7 @@ KEY_SUBCMDS = [
         "set",
         {
             "help": "Set a key in the kernel keyring",
-            "args": [("keydesc", {"action": "store", "help": "key description"})],
+            "args": [("keydesc", {"help": "key description"})],
             "mut_ex_args": [
                 (
                     True,
@@ -30,7 +30,6 @@ KEY_SUBCMDS = [
                         (
                             "--keyfile-path",
                             {
-                                "action": "store",
                                 "help": (
                                     "Path to the key file containing a key to set "
                                     "in the keyring"
@@ -59,7 +58,7 @@ KEY_SUBCMDS = [
         "reset",
         {
             "help": "Reset an existing key in the kernel keyring",
-            "args": [("keydesc", {"action": "store", "help": "key description"})],
+            "args": [("keydesc", {"help": "key description"})],
             "mut_ex_args": [
                 (
                     True,
@@ -67,7 +66,6 @@ KEY_SUBCMDS = [
                         (
                             "--keyfile-path",
                             {
-                                "action": "store",
                                 "help": (
                                     "Path to the key file containing a key to reset "
                                     "in the keyring"
@@ -96,7 +94,7 @@ KEY_SUBCMDS = [
         "unset",
         {
             "help": "Unset a key in the kernel keyring",
-            "args": [("keydesc", {"action": "store", "help": "key description"})],
+            "args": [("keydesc", {"help": "key description"})],
             "func": TopActions.unset_key,
         },
     ),

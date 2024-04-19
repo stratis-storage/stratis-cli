@@ -16,15 +16,16 @@ Bind/Rebind command parser for Stratis CLI.
 """
 
 from .._actions import BindActions, RebindActions
+from .._constants import Clevis
 
 BIND_SUBCMDS = [
     (
-        "nbde",
+        str(Clevis.NBDE),
         {
             "help": "Bind using NBDE via a tang server",
             "args": [
-                ("pool_name", {"action": "store", "help": "Pool name"}),
-                ("url", {"action": "store", "help": "URL of tang server"}),
+                ("pool_name", {"help": "Pool name"}),
+                ("url", {"help": "URL of tang server"}),
             ],
             "mut_ex_args": [
                 (
@@ -41,7 +42,6 @@ BIND_SUBCMDS = [
                         (
                             "--thumbprint",
                             {
-                                "action": "store",
                                 "help": "Thumbprint of tang server at specified URL",
                                 "dest": "thumbprint",
                             },
@@ -49,16 +49,16 @@ BIND_SUBCMDS = [
                     ],
                 )
             ],
-            "aliases": ["tang"],
+            "aliases": [str(Clevis.TANG)],
             "func": BindActions.bind_tang,
         },
     ),
     (
-        "tpm2",
+        str(Clevis.TPM2),
         {
             "help": "Bind using TPM2",
             "args": [
-                ("pool_name", {"action": "store", "help": "Pool name"}),
+                ("pool_name", {"help": "Pool name"}),
             ],
             "func": BindActions.bind_tpm,
         },
@@ -68,8 +68,8 @@ BIND_SUBCMDS = [
         {
             "help": "Bind using the kernel keyring",
             "args": [
-                ("pool_name", {"action": "store", "help": "Pool name"}),
-                ("keydesc", {"action": "store", "help": "key description"}),
+                ("pool_name", {"help": "Pool name"}),
+                ("keydesc", {"help": "key description"}),
             ],
             "func": BindActions.bind_keyring,
         },
@@ -85,7 +85,7 @@ REBIND_SUBCMDS = [
                 "Clevis configuration"
             ),
             "args": [
-                ("pool_name", {"action": "store", "help": "Pool name"}),
+                ("pool_name", {"help": "Pool name"}),
             ],
             "func": RebindActions.rebind_clevis,
         },
@@ -98,8 +98,8 @@ REBIND_SUBCMDS = [
                 "key in the kernel keyring"
             ),
             "args": [
-                ("pool_name", {"action": "store", "help": "Pool name"}),
-                ("keydesc", {"action": "store", "help": "key description"}),
+                ("pool_name", {"help": "Pool name"}),
+                ("keydesc", {"help": "key description"}),
             ],
             "func": RebindActions.rebind_keyring,
         },

@@ -5,7 +5,7 @@ name: stratis-cli CI
 on:
   push:
     branches:
-      - master
+      - patch-3.6.0
     paths-ignore:
       - 'CHANGES.txt'
       - '**/README.rst'
@@ -14,7 +14,7 @@ on:
       - '.packit.yaml'
   pull_request:
     branches:
-      - master
+      - patch-3.6.0
     paths-ignore:
       - 'CHANGES.txt'
       - '**/README.rst'
@@ -41,29 +41,34 @@ jobs:
               python3-packaging
               python3-psutil
               python3-wcwidth
-            task: PYTHONPATH=./src make -f Makefile lint
+            task: >
+              PATH=${PATH}:/github/home/.local/bin PYTHONPATH=./src
+              make -f Makefile lint
           - dependencies: black python3-isort
             task: make -f Makefile fmt-ci
           - dependencies: shfmt
             task: make -f Makefile fmt-shell-ci
     runs-on: ubuntu-latest
-    container: fedora:38  # CURRENT DEVELOPMENT ENVIRONMENT
+    container: fedora:39  # CURRENT DEVELOPMENT ENVIRONMENT
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install dependencies
         run: >
           dnf install -y
           make
+          pip
           python-unversioned-command
           ${{ matrix.dependencies }}
       - name: Display Python version
         run: python --version
+      - name: Install pyright
+        run: pip install --user pyright
       - name: Run test
         run: ${{ matrix.task }}
 
   check-typos:
     runs-on: ubuntu-latest
-    container: fedora:38  # CURRENT DEVELOPMENT ENVIRONMENT
+    container: fedora:39  # CURRENT DEVELOPMENT ENVIRONMENT
     steps:
       - name: Install dependencies
         run: >
@@ -71,11 +76,11 @@ jobs:
           clang
           glibc-static
           make
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@master
         with:
           components: cargo
-          toolchain: 1.73.0  # CURRENT DEVELOPMENT RUST TOOLCHAIN
+          toolchain: 1.77.2  # CURRENT DEVELOPMENT RUST TOOLCHAIN
       - uses: baptiste0928/cargo-install@v2
         with:
           crate: typos-cli
@@ -89,10 +94,10 @@ jobs:
           # MANDATORY CHECKS USING CURRENT DEVELOPMENT ENVIRONMENT
           - task: make -f Makefile all-tests
             rust_log: RUST_LOG=stratisd=debug
-            image: fedora:38  # CURRENT DEVELOPMENT ENVIRONMENT
+            image: fedora:39  # CURRENT DEVELOPMENT ENVIRONMENT
           - task: make -f Makefile coverage-no-html
             rust_log:
-            image: fedora:38  # CURRENT DEVELOPMENT ENVIRONMENT
+            image: fedora:39  # CURRENT DEVELOPMENT ENVIRONMENT
           # MANDATORY CHECKS USING LOWEST SUPPORTED ENVIRONMENT PROXY
           - task: make -f Makefile all-tests
             rust_log: RUST_LOG=stratisd=debug
@@ -103,7 +108,7 @@ jobs:
       # yamllint disable rule:line-length
       options: --privileged --userns=host --ipc=host -v /run/dbus/system_bus_socket:/run/dbus/system_bus_socket:ro -v /usr/share/dbus-1:/usr/share/dbus-1
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install dependencies
         run: >
           dnf install -y
@@ -131,6 +136,9 @@ jobs:
           toolchain: 1.71.1  # LOWEST SUPPORTED RUST TOOLCHAIN
       - name: Check out stratisd
         run: git clone https://github.com/stratis-storage/stratisd.git
+      - name: Use stratisd 3.6.7
+        run: git checkout tags/stratisd-v3.6.7 -b version-3.6.7
+        working-directory: ./stratisd
       - name: Build stratisd
         run: PROFILEDIR=debug make build-all
         working-directory: ./stratisd
@@ -166,7 +174,7 @@ jobs:
     steps:
       - name: Display Python version
         run: python3 --version
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install dependencies
         run: >
           dnf install -y

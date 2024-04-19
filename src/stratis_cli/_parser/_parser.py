@@ -42,6 +42,16 @@ def print_help(parser):
     return lambda _: parser.error("missing sub-command")
 
 
+def _add_groups(parser, groups):
+    """
+    Make an argument group.
+    """
+    for name, group in groups:
+        new_group = parser.add_argument_group(name, group["description"])
+        _add_args(new_group, group.get("args", []))
+        _add_mut_ex_args(new_group, group.get("mut_ex_args", []))
+
+
 def _add_args(parser, args):
     """
     Call subcommand.add_argument() based on args list.
@@ -83,6 +93,7 @@ def add_subcommand(subparser, cmd):
         for subcmd in subcmds:
             add_subcommand(subparsers, subcmd)
 
+    _add_groups(parser, info.get("groups", []))
     _add_args(parser, info.get("args", []))
     _add_mut_ex_args(parser, info.get("mut_ex_args", []))
 
@@ -144,11 +155,11 @@ ROOT_SUBCOMMANDS = [
                 (
                     "report_name",
                     {
-                        "default": "engine_state_report",
-                        "type": str,
+                        "default": ReportKey.ENGINE_STATE,
+                        "type": ReportKey,
                         "help": ("Name of the report to display"),
                         "nargs": "?",
-                        "choices": [x.value for x in list(ReportKey)],
+                        "choices": list(ReportKey),
                     },
                 )
             ],

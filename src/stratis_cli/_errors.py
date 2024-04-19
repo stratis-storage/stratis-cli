@@ -65,7 +65,7 @@ class StratisCliNoPropertyChangeError(StratisCliUserError):
         """
         Initializer.
 
-        :param bool value: overprovision value
+        :param object value: property value that was not changed
         """
         # pylint: disable=super-init-not-called
         self.value = value
@@ -227,39 +227,6 @@ class StratisCliNameConflictError(StratisCliUserError):
 
     def __str__(self):
         return f"A {self.object_type} named {self.name} already exists"
-
-
-class StratisCliParserError(StratisCliRuntimeError):
-    """
-    Raised when user has passed arguments that the parser should reject
-    but can not due to its configuration limitations.
-    """
-
-
-class StratisCliMissingClevisTangURLError(StratisCliParserError):
-    """
-    Raised during pool creation if --clevis=[tang|nbde] specified but no
-    URL supplied.
-    """
-
-    def __str__(self):
-        return (
-            "Specified binding with Clevis Tang server, but URL was not "
-            "specified. Use --tang-url option to specify tang URL."
-        )
-
-
-class StratisCliMissingClevisThumbprintError(StratisCliParserError):
-    """
-    Raised during pool creation if --clevis=[tang|nbde] specified but neither
-    a thumbprint nor instructions to trust the URL were supplied.
-    """
-
-    def __str__(self):
-        return (
-            "Specified binding with Clevis Tang server, but neither "
-            "--thumbprint nor --trust-url option was specified."
-        )
 
 
 class StratisCliIncoherenceError(StratisCliRuntimeError):

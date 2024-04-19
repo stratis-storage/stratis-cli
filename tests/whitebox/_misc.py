@@ -24,6 +24,7 @@ import subprocess
 import sys
 import time
 import unittest
+from io import StringIO
 from uuid import UUID
 
 # isort: THIRDPARTY
@@ -157,7 +158,7 @@ class RunTestCase(unittest.TestCase):
     Test case for running the program.
     """
 
-    def check_error(self, expected_cause, command_line, expected_code):
+    def check_error(self, expected_cause, command_line, expected_code, stdin=None):
         """
         Check that the expected exception was raised, and that the cause
         and exit codes were also as expected, based on the command line
@@ -175,7 +176,7 @@ class RunTestCase(unittest.TestCase):
         :type expected_code: int
         """
         with self.assertRaises(StratisCliActionError) as context:
-            RUNNER(command_line)
+            RUNNER(command_line, stdin)
 
         exception = context.exception
         cause = exception.__cause__
@@ -238,16 +239,70 @@ class SimTestCase(RunTestCase):
 _RUNNER = run()
 
 
-def run_with_delay(command_line_args):
+class StdinMock:
+    """
+    Mock object for stdin in stratis-cli.
+    """
+
+    def __init__(self, stdin):
+        """
+        Initialize mock object for stdin.
+
+        :param stdin: contents of stdin
+        :type stdin: str
+        """
+        self.stdin = StringIO(stdin)
+
+    def fileno(self):
+        """
+        Return file description for mock stdin
+
+        This method is required because of how stratis-cli uses the termios
+        library. Because we pass stdin into the termios calls directly, termios
+        will invoke .fileno() on the object passed in to get the file
+        descriptor.  The other option is to call fileno() in stratis-cli which
+        still requires this method.
+
+        :returns: nothing
+        :rtype: None
+        """
+        return None
+
+    def readline(self):
+        """
+        Read line from mock stdin
+
+        :returns: one line from provided stdin
+        :rtype: str
+        """
+        return self.stdin.readline()
+
+
+def run_with_delay(command_line_args, stdin=None):
     """
     Wait 1/4 of a second before running stratis with the specified
     command-line arguments.
 
     :param command_line_args: the command line args to pass
     :type command_line_args: list of str
+    :param stdin: standard input to set for the test
+    :type stdin: str or None
     """
+    stdin_save = sys.stdin
+    if stdin is not None:
+        sys.stdin = StdinMock(stdin)
+
     time.sleep(0.25)
-    return _RUNNER(command_line_args)
+    try:
+        ret = _RUNNER(command_line_args)
+    except Exception as err:
+        if stdin is not None:
+            sys.stdin = stdin_save
+        raise err
+
+    if stdin is not None:
+        sys.stdin = stdin_save
+    return ret
 
 
 RUNNER = run_with_delay
@@ -262,16 +317,18 @@ class StratisCliTestRunError(AssertionError):
         return "Unexpected failure of command-line call in test"
 
 
-def test_runner(command_line):
+def test_runner(command_line, stdin=None):
     """
     Execute the RUNNER method, and if it encounters a StratisCliActionError,
     raise a StratisCliTestRunError to display the exception contents.
 
     :param command_line: the command line arguments
     :type command_line: list
+    :param stdin: standard input to set for the test
+    :type stdin: str or None
     """
     try:
-        RUNNER(command_line)
+        RUNNER(command_line, stdin)
     except StratisCliActionError as err:
         raise StratisCliTestRunError from err
 

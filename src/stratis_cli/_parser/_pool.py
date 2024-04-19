@@ -20,7 +20,7 @@ from argparse import ArgumentTypeError
 from uuid import UUID
 
 from .._actions import BindActions, PoolActions
-from .._constants import EncryptionMethod, YesOrNo
+from .._constants import Clevis, EncryptionMethod, YesOrNo
 from .._error_codes import PoolErrorCode
 from ._bind import BIND_SUBCMDS, REBIND_SUBCMDS
 from ._debug import POOL_DEBUG_SUBCMDS
@@ -45,8 +45,69 @@ POOL_SUBCMDS = [
         "create",
         {
             "help": "Create a pool",
+            "groups": [
+                (
+                    "clevis",
+                    {
+                        "description": "Arguments controlling creation with Clevis encryption",
+                        "args": [
+                            (
+                                "--clevis",
+                                {
+                                    "type": Clevis,
+                                    "help": ("Specification for binding with Clevis."),
+                                    "dest": "clevis",
+                                    "choices": list(Clevis),
+                                },
+                            ),
+                            (
+                                "--tang-url",
+                                {
+                                    "type": str,
+                                    "help": (
+                                        "URL of Clevis tang server "
+                                        "(--clevis=[tang|nbde] must be set)"
+                                    ),
+                                    "dest": "tang_url",
+                                },
+                            ),
+                        ],
+                        "mut_ex_args": [
+                            (
+                                False,
+                                [
+                                    (
+                                        "--trust-url",
+                                        {
+                                            "action": "store_true",
+                                            "help": (
+                                                "Omit verification of tang "
+                                                "server credentials "
+                                                "(--tang-url option must be "
+                                                "set)"
+                                            ),
+                                            "dest": "trust_url",
+                                        },
+                                    ),
+                                    (
+                                        "--thumbprint",
+                                        {
+                                            "help": (
+                                                "Thumbprint of tang server "
+                                                "(--tang-url option must be "
+                                                "set)"
+                                            ),
+                                            "dest": "thumbprint",
+                                        },
+                                    ),
+                                ],
+                            )
+                        ],
+                    },
+                )
+            ],
             "args": [
-                ("pool_name", {"action": "store", "help": "Name of new pool"}),
+                ("pool_name", {"help": "Name of new pool"}),
                 (
                     "blockdevs",
                     {"help": "Create the pool using these block devs", "nargs": "+"},
@@ -54,35 +115,12 @@ POOL_SUBCMDS = [
                 (
                     "--key-desc",
                     {
-                        "default": None,
                         "type": str,
                         "help": (
                             "Key description of key in kernel keyring to use "
                             "for encryption"
                         ),
                         "dest": "key_desc",
-                    },
-                ),
-                (
-                    "--clevis",
-                    {
-                        "default": None,
-                        "type": str,
-                        "help": ("Specification for binding with Clevis."),
-                        "dest": "clevis",
-                        "choices": ["nbde", "tang", "tpm2"],
-                    },
-                ),
-                (
-                    "--tang-url",
-                    {
-                        "default": None,
-                        "type": str,
-                        "help": (
-                            "URL of Clevis tang server (ignored if "
-                            "--clevis=[tang|nbde] not set)"
-                        ),
-                        "dest": "tang_url",
                     },
                 ),
                 (
@@ -97,37 +135,6 @@ POOL_SUBCMDS = [
                         "dest": "no_overprovision",
                     },
                 ),
-            ],
-            "mut_ex_args": [
-                (
-                    False,
-                    [
-                        (
-                            "--trust-url",
-                            {
-                                "action": "store_true",
-                                "help": (
-                                    "Omit verification of tang server "
-                                    "credentials (ignored if "
-                                    "--clevis=[tang|nbde] not set)"
-                                ),
-                                "dest": "trust_url",
-                            },
-                        ),
-                        (
-                            "--thumbprint",
-                            {
-                                "action": "store",
-                                "help": (
-                                    "Thumbprint of tang server at specified "
-                                    "URL (ignored if --clevis=[tang|nbde] not "
-                                    "set)"
-                                ),
-                                "dest": "thumbprint",
-                            },
-                        ),
-                    ],
-                )
             ],
             "func": PoolActions.create_pool,
         },
@@ -146,14 +153,13 @@ POOL_SUBCMDS = [
                         (
                             "--uuid",
                             {
-                                "action": "store",
                                 "type": UUID,
                                 "help": "UUID of the pool to stop",
                             },
                         ),
                         (
                             "--name",
-                            {"action": "store", "help": "name of the pool to stop"},
+                            {"help": "name of the pool to stop"},
                         ),
                     ],
                 )
@@ -172,14 +178,13 @@ POOL_SUBCMDS = [
                         (
                             "--uuid",
                             {
-                                "action": "store",
                                 "type": UUID,
                                 "help": "UUID of the pool to start",
                             },
                         ),
                         (
                             "--name",
-                            {"action": "store", "help": "name of the pool to start"},
+                            {"help": "name of the pool to start"},
                         ),
                     ],
                 )
@@ -188,11 +193,10 @@ POOL_SUBCMDS = [
                 (
                     "--unlock-method",
                     {
-                        "default": None,
                         "dest": "unlock_method",
-                        "action": "store",
-                        "choices": [x.value for x in list(EncryptionMethod)],
+                        "choices": list(EncryptionMethod),
                         "help": "Method to use to unlock the pool if encrypted.",
+                        "type": EncryptionMethod,
                     },
                 ),
             ],
@@ -207,7 +211,6 @@ POOL_SUBCMDS = [
                 (
                     "pool_name",
                     {
-                        "action": "store",
                         "help": ("Name of the pool for which to initialize the cache"),
                     },
                 ),
@@ -234,7 +237,6 @@ POOL_SUBCMDS = [
                         (
                             "--uuid",
                             {
-                                "action": "store",
                                 "type": UUID,
                                 "help": "UUID of pool to list",
                             },
@@ -242,7 +244,6 @@ POOL_SUBCMDS = [
                         (
                             "--name",
                             {
-                                "action": "store",
                                 "help": "name of pool to list",
                             },
                         ),
@@ -265,7 +266,7 @@ POOL_SUBCMDS = [
         "destroy",
         {
             "help": "Destroy a pool",
-            "args": [("pool_name", {"action": "store", "help": "pool name"})],
+            "args": [("pool_name", {"help": "pool name"})],
             "func": PoolActions.destroy_pool,
         },
     ),
@@ -274,8 +275,8 @@ POOL_SUBCMDS = [
         {
             "help": "Rename a pool",
             "args": [
-                ("current", {"action": "store", "help": "Current pool name"}),
-                ("new", {"action": "store", "help": "New pool name"}),
+                ("current", {"help": "Current pool name"}),
+                ("new", {"help": "New pool name"}),
             ],
             "func": PoolActions.rename_pool,
         },
@@ -285,7 +286,7 @@ POOL_SUBCMDS = [
         {
             "help": "Add one or more blockdevs to an existing pool for use as data storage",
             "args": [
-                ("pool_name", {"action": "store", "help": "Pool name"}),
+                ("pool_name", {"help": "Pool name"}),
                 (
                     "blockdevs",
                     {
@@ -303,7 +304,7 @@ POOL_SUBCMDS = [
         {
             "help": "Add one or more blockdevs to an existing pool for use as cache",
             "args": [
-                ("pool_name", {"action": "store", "help": "Pool name"}),
+                ("pool_name", {"help": "Pool name"}),
                 (
                     "blockdevs",
                     {
@@ -325,7 +326,7 @@ POOL_SUBCMDS = [
                 "expansion of a component RAID device."
             ),
             "args": [
-                ("pool_name", {"action": "store", "help": "Pool name"}),
+                ("pool_name", {"help": "Pool name"}),
                 (
                     "--device-uuid",
                     {
@@ -371,12 +372,12 @@ POOL_SUBCMDS = [
                 (
                     "method",
                     {
-                        "action": "store",
-                        "choices": [x.value for x in list(EncryptionMethod)],
+                        "choices": list(EncryptionMethod),
                         "help": "Encryption method to unbind",
+                        "type": EncryptionMethod,
                     },
                 ),
-                ("pool_name", {"action": "store", "help": "Pool name"}),
+                ("pool_name", {"help": "Pool name"}),
             ],
             "func": BindActions.unbind,
         },
@@ -386,11 +387,10 @@ POOL_SUBCMDS = [
         {
             "help": "Set the maximum number of filesystems the pool can support.",
             "args": [
-                ("pool_name", {"action": "store", "help": "Pool name"}),
+                ("pool_name", {"help": "Pool name"}),
                 (
                     "amount",
                     {
-                        "action": "store",
                         "type": _ensure_nat,
                         "help": "Number of filesystems.",
                     },
@@ -404,13 +404,13 @@ POOL_SUBCMDS = [
         {
             "help": "Specify whether or not to allow overprovisioning for the pool.",
             "args": [
-                ("pool_name", {"action": "store", "help": "Pool name"}),
+                ("pool_name", {"help": "Pool name"}),
                 (
                     "decision",
                     {
-                        "action": "store",
                         "help": "yes to allow overprovisioning, otherwise no",
-                        "choices": [x.value for x in list(YesOrNo)],
+                        "choices": list(YesOrNo),
+                        "type": YesOrNo,
                     },
                 ),
             ],
@@ -425,7 +425,6 @@ POOL_SUBCMDS = [
                 (
                     "code",
                     {
-                        "action": "store",
                         "choices": [str(x) for x in PoolErrorCode.codes()],
                         "help": "Error code to explain",
                     },

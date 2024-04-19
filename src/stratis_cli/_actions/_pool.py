@@ -25,7 +25,7 @@ from uuid import UUID
 # isort: THIRDPARTY
 from justbytes import Range
 
-from .._constants import PoolIdType, YesOrNo
+from .._constants import PoolIdType
 from .._error_codes import PoolErrorCode
 from .._errors import (
     StratisCliEngineError,
@@ -105,9 +105,11 @@ def _check_opposite_tier(managed_objects, to_be_added, other_tier):
     if pools_to_blockdevs:
         raise StratisCliInUseOtherTierError(
             pools_to_blockdevs,
-            BlockDevTiers.DATA
-            if other_tier == BlockDevTiers.CACHE
-            else BlockDevTiers.CACHE,
+            (
+                BlockDevTiers.DATA
+                if other_tier == BlockDevTiers.CACHE
+                else BlockDevTiers.CACHE
+            ),
         )
 
 
@@ -192,9 +194,11 @@ class PoolActions:
                     if namespace.key_desc is not None
                     else (False, "")
                 ),
-                "clevis_info": (False, ("", ""))
-                if clevis_info is None
-                else (True, (clevis_info.pin, json.dumps(clevis_info.config))),
+                "clevis_info": (
+                    (False, ("", ""))
+                    if clevis_info is None
+                    else (True, (clevis_info.pin, json.dumps(clevis_info.config)))
+                ),
             },
         )
 
@@ -269,9 +273,11 @@ class PoolActions:
             {
                 "id": pool_id,
                 "id_type": id_type,
-                "unlock_method": (False, "")
-                if namespace.unlock_method is None
-                else (True, namespace.unlock_method),
+                "unlock_method": (
+                    (False, "")
+                    if namespace.unlock_method is None
+                    else (True, str(namespace.unlock_method))
+                ),
             },
         )
 
@@ -689,7 +695,7 @@ class PoolActions:
         # pylint: disable=import-outside-toplevel
         from ._data import MOPool, ObjectManager, Pool, pools
 
-        decision = bool(YesOrNo(namespace.decision))
+        decision = bool(namespace.decision)
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})

@@ -20,11 +20,7 @@ Miscellaneous functions.
 import json
 from uuid import UUID
 
-from .._constants import PoolIdType
-from .._errors import (
-    StratisCliMissingClevisTangURLError,
-    StratisCliMissingClevisThumbprintError,
-)
+from .._constants import Clevis, PoolIdType
 from .._stratisd_constants import (
     CLEVIS_KEY_TANG_TRUST_URL,
     CLEVIS_KEY_THP,
@@ -63,12 +59,10 @@ class ClevisInfo:
         """
         clevis_info = None
         if namespace.clevis is not None:
-            if namespace.clevis in ("nbde", "tang"):
-                if namespace.tang_url is None:
-                    raise StratisCliMissingClevisTangURLError()
+            if namespace.clevis in (Clevis.NBDE, Clevis.TANG):
+                assert namespace.tang_url is not None
 
-                if not namespace.trust_url and namespace.thumbprint is None:
-                    raise StratisCliMissingClevisThumbprintError()
+                assert namespace.trust_url or namespace.thumbprint is not None
 
                 clevis_config = {CLEVIS_KEY_URL: namespace.tang_url}
                 if namespace.trust_url:
@@ -79,7 +73,7 @@ class ClevisInfo:
 
                 clevis_info = ClevisInfo(CLEVIS_PIN_TANG, clevis_config)
 
-            elif namespace.clevis == "tpm2":
+            elif namespace.clevis is Clevis.TPM2:
                 clevis_info = ClevisInfo(CLEVIS_PIN_TPM2, {})
 
             else:
@@ -127,7 +121,7 @@ class EncryptionInfoClevis(EncryptionInfo):  # pylint: disable=too-few-public-me
         if hasattr(self, "value"):  # pragma: no cover
             value = self.value
             if value is not None:
-                (pin, config) = value
+                (pin, config) = value  # pyright: ignore [ reportGeneralTypeIssues ]
                 self.value = ClevisInfo(str(pin), json.loads(str(config)))
 
 
@@ -221,19 +215,11 @@ class PoolSelector:
         :returns: a function for selecting from StoppedPools items
         :rtype: (str * (dict of (str * object))) -> bool
         """
-        if self.pool_id_type is PoolIdType.UUID:
-            selection_value = self.value.hex
-
-            def selection_func(uuid, _info):
-                return uuid == selection_value
-
-        else:
-            selection_value = self.value
-
-            def selection_func(_uuid, info):
-                return info.get("name") == selection_value
-
-        return selection_func
+        return (
+            (lambda uuid, _info: uuid == self.value.hex)
+            if self.pool_id_type is PoolIdType.UUID
+            else (lambda _uuid, info: info.get("name") == self.value)
+        )
 
     def __str__(self):
         pool_id_type_str = "UUID" if self.pool_id_type is PoolIdType.UUID else "name"

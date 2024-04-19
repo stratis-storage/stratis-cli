@@ -135,15 +135,17 @@ class LogicalActions:
         filesystems_with_props = [
             MOFilesystem(info)
             for objpath, info in filesystems(
-                props=None
-                if pool_name is None
-                else {
-                    "Pool": next(
-                        pools(props={"Name": pool_name})
-                        .require_unique_match(True)
-                        .search(managed_objects)
-                    )[0]
-                }
+                props=(
+                    None
+                    if pool_name is None
+                    else {
+                        "Pool": next(
+                            pools(props={"Name": pool_name})
+                            .require_unique_match(True)
+                            .search(managed_objects)
+                        )[0]
+                    }
+                )
             ).search(managed_objects)
         ]
 
@@ -354,20 +356,20 @@ class LogicalActions:
             .search(managed_objects)
         )
 
-        limit = namespace.limit
+        (limit, user_input) = namespace.limit
         mofs = MOFilesystem(fs_info)
 
-        new_limit = str(mofs.Size() if limit == "current" else limit[0].magnitude)
+        new_limit = Range(int(str(mofs.Size()))) if user_input == "current" else limit
 
         valid, maybe_size_limit = mofs.SizeLimit()
 
-        if valid and new_limit == maybe_size_limit:
+        if valid and new_limit.magnitude == int(str(maybe_size_limit)):
             raise StratisCliFsSizeLimitChangeError(
-                Range(new_limit) if limit == "current" else limit[1]
+                new_limit if limit == "current" else user_input
             )
 
         Filesystem.Properties.SizeLimit.Set(
-            get_object(fs_object_path), (True, new_limit)
+            get_object(fs_object_path), (True, new_limit.magnitude)
         )
 
     @staticmethod
