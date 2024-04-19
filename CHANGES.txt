@@ -1,3 +1,13 @@
+stratis-cli 3.6.2
+=================
+Required stratisd version: 3.6.0
+
+Recommended development environment: Fedora 38
+
+* Cherry-picked commits:
+  * Fix a typo in classifiers list in metadata
+
+
 stratis-cli 3.6.1
 =================
 Required stratisd version: 3.6.0
