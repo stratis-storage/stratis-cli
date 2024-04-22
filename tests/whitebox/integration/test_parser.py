@@ -205,12 +205,44 @@ class ParserTestCase(RunTestCase):
         for prefix in [[], ["--propagate"]]:
             self.check_system_exit(prefix + command_line, _PARSE_ERROR)
 
+    def test_create_with_post_parser_set(self):
+        """
+        Verify that setting the --post-parser option will always result in
+        failure on pool creation.
+        """
+        command_line = [
+            "pool",
+            "create",
+            "pn",
+            "/dev/n",
+            "--clevis=tpm2",
+            "--post-parser=yes",
+        ]
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
     def test_stratis_list_filesystem_with_name_no_pool(self):
         """
         We want to get a parse error if filesystem UUID is specified but no
         name.
         """
         command_line = ["fs", "list", "--name=bogus"]
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
+    def test_stratis_list_filesystem_with_post_parser_1(self):
+        """
+        Verify that parser error is returned if unsettable option is assigned.
+        """
+        command_line = ["fs", "list", "--post-parser=no"]
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
+    def test_stratis_list_filesystem_with_post_parser_2(self):
+        """
+        Verify that parser error is returned if unsettable option is set.
+        """
+        command_line = ["fs", "list", "--post-parser"]
         for prefix in [[], ["--propagate"]]:
             self.check_system_exit(prefix + command_line, _PARSE_ERROR)
 
