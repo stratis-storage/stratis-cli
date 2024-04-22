@@ -63,7 +63,6 @@ POOL_SUBCMDS = [
                             (
                                 "--tang-url",
                                 {
-                                    "type": str,
                                     "help": (
                                         "URL of Clevis tang server "
                                         "(--clevis=[tang|nbde] must be set)"
@@ -115,7 +114,6 @@ POOL_SUBCMDS = [
                 (
                     "--key-desc",
                     {
-                        "type": str,
                         "help": (
                             "Key description of key in kernel keyring to use "
                             "for encryption"
