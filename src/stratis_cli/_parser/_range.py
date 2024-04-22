@@ -73,3 +73,14 @@ def parse_range(values):
     units = _unit_map(unit)
 
     return Range(int(magnitude), units)
+
+
+class RejectAction(argparse.Action):
+    """
+    Just reject any use of the option.
+    """
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        raise argparse.ArgumentError(
+            self, f"Option {option_string} can not be assigned to or set."
+        )

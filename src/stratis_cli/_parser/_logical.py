@@ -16,11 +16,12 @@ Definition of filesystem actions to display in the CLI.
 """
 
 # isort: STDLIB
+from argparse import SUPPRESS
 from uuid import UUID
 
 from .._actions import LogicalActions
 from ._debug import FILESYSTEM_DEBUG_SUBCMDS
-from ._range import parse_range
+from ._range import RejectAction, parse_range
 
 
 def parse_range_or_current(values):
@@ -32,6 +33,28 @@ def parse_range_or_current(values):
     needs to be reported an idempotency error.
     """
     return (None if values == "current" else parse_range(values), values)
+
+
+class FilesystemListOptions:  # pylint: disable=too-few-public-methods
+    """
+    Verifies filesystem list options.
+    """
+
+    def __init__(self, _namespace):
+        pass
+
+    def verify(self, namespace, parser):
+        """
+        Do supplementary parsing of conditional arguments.
+        """
+
+        if namespace.pool_name is None and (
+            namespace.uuid is not None or namespace.name is not None
+        ):
+            parser.error(
+                "If filesystem UUID or name is specified then pool "
+                "name must also be specified."
+            )
 
 
 LOGICAL_SUBCMDS = [
@@ -104,12 +127,21 @@ LOGICAL_SUBCMDS = [
             ],
             "args": [
                 (
+                    "--post-parser",
+                    {
+                        "action": RejectAction,
+                        "default": FilesystemListOptions,
+                        "help": SUPPRESS,
+                        "nargs": "?",
+                    },
+                ),
+                (
                     "pool_name",
                     {
                         "nargs": "?",
                         "help": "Pool name",
                     },
-                )
+                ),
             ],
             "func": LogicalActions.list_volumes,
         },
