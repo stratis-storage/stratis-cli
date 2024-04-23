@@ -56,7 +56,6 @@ POOL_SUBCMDS = [
                                 {
                                     "type": Clevis,
                                     "help": ("Specification for binding with Clevis."),
-                                    "dest": "clevis",
                                     "choices": list(Clevis),
                                 },
                             ),
@@ -67,7 +66,6 @@ POOL_SUBCMDS = [
                                         "URL of Clevis tang server "
                                         "(--clevis=[tang|nbde] must be set)"
                                     ),
-                                    "dest": "tang_url",
                                 },
                             ),
                         ],
@@ -85,7 +83,6 @@ POOL_SUBCMDS = [
                                                 "(--tang-url option must be "
                                                 "set)"
                                             ),
-                                            "dest": "trust_url",
                                         },
                                     ),
                                     (
@@ -96,7 +93,6 @@ POOL_SUBCMDS = [
                                                 "(--tang-url option must be "
                                                 "set)"
                                             ),
-                                            "dest": "thumbprint",
                                         },
                                     ),
                                 ],
@@ -118,7 +114,6 @@ POOL_SUBCMDS = [
                             "Key description of key in kernel keyring to use "
                             "for encryption"
                         ),
-                        "dest": "key_desc",
                     },
                 ),
                 (
@@ -130,7 +125,6 @@ POOL_SUBCMDS = [
                             "pool's filesystems to exceed the size of the "
                             "pool's data area."
                         ),
-                        "dest": "no_overprovision",
                     },
                 ),
             ],
@@ -191,7 +185,6 @@ POOL_SUBCMDS = [
                 (
                     "--unlock-method",
                     {
-                        "dest": "unlock_method",
                         "choices": list(EncryptionMethod),
                         "help": "Method to use to unlock the pool if encrypted.",
                         "type": EncryptionMethod,
@@ -329,7 +322,6 @@ POOL_SUBCMDS = [
                     "--device-uuid",
                     {
                         "action": "extend",
-                        "dest": "device_uuid",
                         "nargs": "*",
                         "type": UUID,
                         "default": [],

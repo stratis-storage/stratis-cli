@@ -51,7 +51,6 @@ LOGICAL_SUBCMDS = [
                 (
                     "--size",
                     {
-                        "dest": "size",
                         "help": 'The size of the filesystems to be created, e.g., "32GiB"',
                         "type": parse_range,
                     },
@@ -59,7 +58,6 @@ LOGICAL_SUBCMDS = [
                 (
                     "--size-limit",
                     {
-                        "dest": "size_limit",
                         "help": 'An upper limit on the size of filesystems, e.g., "2TiB"',
                         "type": parse_range,
                     },
