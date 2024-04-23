@@ -56,14 +56,12 @@ POOL_DEBUG_SUBCMDS = [
                             "--name",
                             {
                                 "help": "Name of pool",
-                                "dest": "name",
                             },
                         ),
                         (
                             "--uuid",
                             {
                                 "help": "UUID of pool",
-                                "dest": "uuid",
                                 "type": UUID,
                             },
                         ),
@@ -88,14 +86,12 @@ FILESYSTEM_DEBUG_SUBCMDS = [
                             "--name",
                             {
                                 "help": "Name of filesystem",
-                                "dest": "name",
                             },
                         ),
                         (
                             "--uuid",
                             {
                                 "help": "UUID of filesystem",
-                                "dest": "uuid",
                                 "type": UUID,
                             },
                         ),
@@ -120,7 +116,6 @@ BLOCKDEV_DEBUG_SUBCMDS = [
                             "--uuid",
                             {
                                 "help": "UUID of filesystem",
-                                "dest": "uuid",
                                 "type": UUID,
                             },
                         ),

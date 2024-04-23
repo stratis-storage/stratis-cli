@@ -167,7 +167,6 @@ ROOT_SUBCOMMANDS = [
                     {
                         "action": "store_true",
                         "help": "Turn off sorting keys when printing result.",
-                        "dest": "no_sort_keys",
                     },
                 ),
             ],

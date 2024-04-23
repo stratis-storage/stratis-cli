@@ -36,14 +36,12 @@ BIND_SUBCMDS = [
                             {
                                 "action": "store_true",
                                 "help": "Omit verification of tang server credentials",
-                                "dest": "trust_url",
                             },
                         ),
                         (
                             "--thumbprint",
                             {
                                 "help": "Thumbprint of tang server at specified URL",
-                                "dest": "thumbprint",
                             },
                         ),
                     ],
