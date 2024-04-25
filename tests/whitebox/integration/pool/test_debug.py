@@ -70,3 +70,38 @@ class DebugTestCase(SimTestCase):
             self._POOLNAME,
         ]
         TEST_RUNNER(command_line)
+
+
+class DebugMetadataTestCase(SimTestCase):
+    """
+    Test getting Stratis metadata.
+    """
+
+    _MENU = ["--propagate", "pool", "debug", "get-metadata"]
+    _POOLNAME = "poolname"
+
+    def setUp(self):
+        super().setUp()
+        command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
+        RUNNER(command_line)
+
+    def test_get_metadata(self):
+        """
+        Test getting Stratis metadata.
+        """
+        command_line = self._MENU + [f"--name={self._POOLNAME}"]
+        TEST_RUNNER(command_line)
+
+    def test_get_metadata_pretty(self):
+        """
+        Test getting Stratis metadata and formatting it prettily as JSON.
+        """
+        command_line = self._MENU + [f"--name={self._POOLNAME}", "--pretty"]
+        TEST_RUNNER(command_line)
+
+    def test_get_metadata_uuid_bogus(self):
+        """
+        Test getting stratis metadata specifying a bogus UUID.
+        """
+        command_line = self._MENU + [f"--uuid={uuid4()}"]
+        self.check_error(DbusClientUniqueResultError, command_line, _ERROR)
