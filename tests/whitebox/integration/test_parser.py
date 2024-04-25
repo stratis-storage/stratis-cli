@@ -361,6 +361,14 @@ class TestBadlyFormattedUuid(RunTestCase):
         for prefix in [[], ["--propagate"]]:
             self.check_system_exit(prefix + command_line, _PARSE_ERROR)
 
+    def test_bad_uuid_metadata(self):
+        """
+        Test badly formed UUID for get-metadata.
+        """
+        command_line = ["pool", "debug", "get-metadata", "--uuid=not"]
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
 
 class ParserSimTestCase(SimTestCase):
     """
