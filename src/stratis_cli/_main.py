@@ -18,10 +18,8 @@ Highest level runner.
 # isort: THIRDPARTY
 import justbytes as jb
 
-from ._constants import Clevis
 from ._error_reporting import handle_error
 from ._errors import StratisCliActionError, StratisCliEnvironmentError
-from ._exit import StratisCliErrorCodes, exit_
 from ._parser import gen_parser
 
 
@@ -39,78 +37,15 @@ def run():
         """
         Run according to the arguments passed.
         """
-        result = parser.parse_args(command_line_args)
+        namespace = parser.parse_args(command_line_args)
 
-        # Use a very specific condition to determine if namespace verification
-        # is needed. FIXME: This code should be reviewed if any change is
-        # made to how the "pool create" subcommand's options are parsed in
-        # case it is made unnecessary by that change.
-        # I filed an argparse issue that might address this:
-        # https://github.com/python/cpython/issues/114411.
-        if (  # pylint: disable=too-many-boolean-expressions
-            hasattr(result, "clevis")
-            and hasattr(result, "trust_url")
-            and hasattr(result, "thumbprint")
-            and hasattr(result, "tang_url")
-            and "create" in command_line_args
-            and "pool" in command_line_args
-        ):
-            if result.clevis in (Clevis.NBDE, Clevis.TANG) and result.tang_url is None:
-                exit_(
-                    StratisCliErrorCodes.PARSE_ERROR,
-                    "Specified binding with Clevis Tang server, but "
-                    "URL was not specified. Use --tang-url option to "
-                    "specify tang URL.",
-                )
-
-            if result.tang_url is not None and (
-                not result.trust_url and result.thumbprint is None
-            ):
-                exit_(
-                    StratisCliErrorCodes.PARSE_ERROR,
-                    "Specified binding with Clevis Tang server, but "
-                    "neither --thumbprint nor --trust-url option was "
-                    "specified.",
-                )
-
-            if result.tang_url is not None and (
-                result.clevis not in (Clevis.NBDE, Clevis.TANG)
-            ):
-                exit_(
-                    StratisCliErrorCodes.PARSE_ERROR,
-                    "Specified --tang-url without specifying Clevis "
-                    "encryption method. Use --clevis=tang to choose Clevis "
-                    "encryption.",
-                )
-
-            if (
-                result.trust_url or result.thumbprint is not None
-            ) and result.tang_url is None:
-                exit_(
-                    StratisCliErrorCodes.PARSE_ERROR,
-                    "Specified --trust-url or --thumbprint without specifying "
-                    "tang URL. Use --tang-url to specify URL.",
-                )
-
-        if (  # pylint: disable=too-many-boolean-expressions
-            ("filesystem" in command_line_args or "fs" in command_line_args)
-            and "list" in command_line_args
-            and hasattr(result, "pool_name")
-            and hasattr(result, "uuid")
-            and hasattr(result, "name")
-        ):
-            if result.pool_name is None and (
-                result.uuid is not None or result.name is not None
-            ):
-                exit_(
-                    StratisCliErrorCodes.PARSE_ERROR,
-                    "If filesystem UUID or name is specified then pool name "
-                    "must also be specified.",
-                )
+        post_parser = getattr(namespace, "post_parser", None)
+        if post_parser is not None:
+            post_parser(namespace).verify(namespace, parser)
 
         try:
             try:
-                result.func(result)
+                namespace.func(namespace)
 
             # Keyboard Interrupt is recaught at the outermost possible layer.
             # It is outside the regular execution of the program, so it is
@@ -126,9 +61,9 @@ def run():
             ) as err:
                 raise err
             except BaseException as err:
-                raise StratisCliActionError(command_line_args, result) from err
+                raise StratisCliActionError(command_line_args, namespace) from err
         except StratisCliActionError as err:
-            if result.propagate:
+            if namespace.propagate:
                 raise
 
             handle_error(err)

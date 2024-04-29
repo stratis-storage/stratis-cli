@@ -16,7 +16,8 @@ Definition of pool actions to display in the CLI.
 """
 
 # isort: STDLIB
-from argparse import ArgumentTypeError
+import copy
+from argparse import SUPPRESS, ArgumentTypeError
 from uuid import UUID
 
 from .._actions import BindActions, PoolActions
@@ -24,6 +25,60 @@ from .._constants import Clevis, EncryptionMethod, YesOrNo
 from .._error_codes import PoolErrorCode
 from ._bind import BIND_SUBCMDS, REBIND_SUBCMDS
 from ._debug import POOL_DEBUG_SUBCMDS
+from ._range import RejectAction
+
+
+class ClevisEncryptionOptions:  # pylint: disable=too-few-public-methods
+    """
+    Gathers and verifies encryption options.
+    """
+
+    def __init__(self, namespace):
+        self.clevis = copy.copy(namespace.clevis)
+        del namespace.clevis
+
+        self.thumbprint = copy.copy(namespace.thumbprint)
+        del namespace.thumbprint
+
+        self.tang_url = copy.copy(namespace.tang_url)
+        del namespace.tang_url
+
+        self.trust_url = copy.copy(namespace.trust_url)
+        del namespace.trust_url
+
+    def verify(self, namespace, parser):
+        """
+        Do supplementary parsing of conditional arguments.
+        """
+        if self.clevis in (Clevis.NBDE, Clevis.TANG) and self.tang_url is None:
+            parser.error(
+                "Specified binding with Clevis Tang server, but URL was not "
+                "specified. Use --tang-url option to specify tang URL."
+            )
+
+        if self.tang_url is not None and (
+            not self.trust_url and self.thumbprint is None
+        ):
+            parser.error(
+                "Specified binding with Clevis Tang server, but neither "
+                "--thumbprint nor --trust-url option was specified."
+            )
+
+        if self.tang_url is not None and (
+            self.clevis not in (Clevis.NBDE, Clevis.TANG)
+        ):
+            parser.error(
+                "Specified --tang-url without specifying Clevis encryption "
+                "method. Use --clevis=tang to choose Clevis encryption."
+            )
+
+        if (self.trust_url or self.thumbprint is not None) and self.tang_url is None:
+            parser.error(
+                "Specified --trust-url or --thumbprint without specifying tang "
+                "URL. Use --tang-url to specify URL."
+            )
+
+        namespace.clevis = None if self.clevis is None else self
 
 
 def _ensure_nat(arg):
@@ -51,6 +106,15 @@ POOL_SUBCMDS = [
                     {
                         "description": "Arguments controlling creation with Clevis encryption",
                         "args": [
+                            (
+                                "--post-parser",
+                                {
+                                    "action": RejectAction,
+                                    "default": ClevisEncryptionOptions,
+                                    "help": SUPPRESS,
+                                    "nargs": "?",
+                                },
+                            ),
                             (
                                 "--clevis",
                                 {

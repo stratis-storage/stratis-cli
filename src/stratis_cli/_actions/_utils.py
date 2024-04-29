@@ -48,38 +48,36 @@ class ClevisInfo:
         self.config = config
 
     @staticmethod
-    def get_info_from_namespace(namespace):
+    def get_info(options):
         """
-        Get clevis info, if any, from the namespace.
+        Get clevis info from the clevis options.
 
-        :param namespace: namespace set up by the parser
+        :param options: ClevisEncryptionOptions
 
         :returns: clevis info or None
         :rtype: ClevisInfo or NoneType
         """
-        clevis_info = None
-        if namespace.clevis is not None:
-            if namespace.clevis in (Clevis.NBDE, Clevis.TANG):
-                assert namespace.tang_url is not None
+        if options.clevis in (Clevis.NBDE, Clevis.TANG):
+            assert options.tang_url is not None
 
-                assert namespace.trust_url or namespace.thumbprint is not None
+            assert options.trust_url or options.thumbprint is not None
 
-                clevis_config = {CLEVIS_KEY_URL: namespace.tang_url}
-                if namespace.trust_url:
-                    clevis_config[CLEVIS_KEY_TANG_TRUST_URL] = True
-                else:
-                    assert namespace.thumbprint is not None
-                    clevis_config[CLEVIS_KEY_THP] = namespace.thumbprint
-
-                clevis_info = ClevisInfo(CLEVIS_PIN_TANG, clevis_config)
-
-            elif namespace.clevis is Clevis.TPM2:
-                clevis_info = ClevisInfo(CLEVIS_PIN_TPM2, {})
-
+            clevis_config = {CLEVIS_KEY_URL: options.tang_url}
+            if options.trust_url:
+                clevis_config[CLEVIS_KEY_TANG_TRUST_URL] = True
             else:
-                raise AssertionError(
-                    f"unexpected value {namespace.clevis} for clevis option"
-                )  # pragma: no cover
+                assert options.thumbprint is not None
+                clevis_config[CLEVIS_KEY_THP] = options.thumbprint
+
+            clevis_info = ClevisInfo(CLEVIS_PIN_TANG, clevis_config)
+
+        elif options.clevis is Clevis.TPM2:
+            clevis_info = ClevisInfo(CLEVIS_PIN_TPM2, {})
+
+        else:
+            raise AssertionError(
+                f"unexpected value {options.clevis} for clevis option"
+            )  # pragma: no cover
 
         return clevis_info
 

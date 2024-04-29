@@ -178,7 +178,9 @@ class PoolActions:
 
         _check_same_tier(pool_name, managed_objects, blockdevs, BlockDevTiers.DATA)
 
-        clevis_info = ClevisInfo.get_info_from_namespace(namespace)
+        clevis_info = (
+            None if namespace.clevis is None else ClevisInfo.get_info(namespace.clevis)
+        )
 
         (
             (changed, (pool_object_path, _)),
