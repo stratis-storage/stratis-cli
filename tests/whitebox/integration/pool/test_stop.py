@@ -15,9 +15,12 @@
 Test 'stop'.
 """
 
+# isort: STDLIB
+from uuid import uuid4
+
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
-from stratis_cli._errors import StratisCliNoChangeError
+from stratis_cli._errors import StratisCliEngineError, StratisCliNoChangeError
 
 from .._misc import RUNNER, TEST_RUNNER, SimTestCase, device_name_list
 
@@ -56,3 +59,12 @@ class StopTestCase(SimTestCase):
         ]
         RUNNER(command_line)
         self.check_error(StratisCliNoChangeError, command_line, _ERROR)
+
+    def test_stop_bogus_uuid(self):
+        """
+        Test stopping passing a bogus UUID.
+        """
+        command_line = self._MENU + [
+            f"--uuid={uuid4()}",
+        ]
+        self.check_error(StratisCliEngineError, command_line, _ERROR)
