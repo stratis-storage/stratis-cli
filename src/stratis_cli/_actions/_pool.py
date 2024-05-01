@@ -233,7 +233,7 @@ class PoolActions:
 
         (pool_id, id_type) = (
             (namespace.uuid.hex, "uuid")
-            if getattr(namespace, "name") is None
+            if namespace.name is None
             else (namespace.name, "name")
         )
 
@@ -266,7 +266,7 @@ class PoolActions:
 
         (pool_id, id_type) = (
             (namespace.uuid.hex, "uuid")
-            if getattr(namespace, "name") is None
+            if namespace.name is None
             else (namespace.name, "name")
         )
 

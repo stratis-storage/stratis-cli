@@ -81,11 +81,10 @@ class PoolDebugActions:  # pylint: disable=too-few-public-methods
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        maybe_pool_name_opt = getattr(namespace, "name", None)
         props = (
             {"Uuid": namespace.uuid.hex}
-            if maybe_pool_name_opt is None
-            else {"Name": maybe_pool_name_opt}
+            if namespace.name is None
+            else {"Name": namespace.name}
         )
         (pool_object_path, _) = next(
             pools(props=props).require_unique_match(True).search(managed_objects)
@@ -111,11 +110,10 @@ class FilesystemDebugActions:  # pylint: disable=too-few-public-methods
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        maybe_fs_name_opt = getattr(namespace, "name", None)
         props = (
             {"Uuid": namespace.uuid.hex}
-            if maybe_fs_name_opt is None
-            else {"Name": maybe_fs_name_opt}
+            if namespace.name is None
+            else {"Name": namespace.name}
         )
         (fs_object_path, _) = next(
             filesystems(props=props).require_unique_match(True).search(managed_objects)
