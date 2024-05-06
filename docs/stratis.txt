@@ -103,6 +103,11 @@ pool explain <code> ::
      "warning", or an "E" for "error".
 pool debug get-object-path <(--uuid <uuid> |--name <name>)> ::
      Look up the D-Bus object path for a pool given the UUID or name.
+pool debug get-metadata [--pretty] [--written] <(--uuid <uuid> |--name <name>)> ::
+     Get the pool-level metadata for the specified pool. If '--written' is not
+     set, get metadata that would be written if metadata were written now,
+     otherwise get the most recently written metadata. If '--pretty' is set,
+     format prettily, otherwise print all on one line.
 filesystem create <pool_name> <fs_name> [<fs_name>..] [--size <size>] [--size-limit <size_limit>]::
 	   Create one or more filesystems from the specified pool.
            If the '--size' option is specified, make each filesystem the

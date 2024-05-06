@@ -71,6 +71,49 @@ POOL_DEBUG_SUBCMDS = [
             "func": PoolDebugActions.get_object_path,
         },
     ),
+    (
+        "get-metadata",
+        {
+            "args": [
+                (
+                    "--pretty",
+                    {
+                        "action": "store_true",
+                        "help": "Format output string prettily",
+                    },
+                ),
+                (
+                    "--written",
+                    {
+                        "action": "store_true",
+                        "help": "Read the metadata most recently written",
+                    },
+                ),
+            ],
+            "mut_ex_args": [
+                (
+                    True,
+                    [
+                        (
+                            "--name",
+                            {
+                                "help": "Name of pool",
+                            },
+                        ),
+                        (
+                            "--uuid",
+                            {
+                                "help": "UUID of pool",
+                                "type": UUID,
+                            },
+                        ),
+                    ],
+                ),
+            ],
+            "help": "Report the pool's metadata",
+            "func": PoolDebugActions.get_metadata,
+        },
+    ),
 ]
 
 FILESYSTEM_DEBUG_SUBCMDS = [
