@@ -35,7 +35,7 @@ jobs:
           - dependencies: yamllint
             task: make -f Makefile yamllint
     runs-on: ubuntu-latest
-    container: fedora:39  # NEXT DEVELOPMENT ENVIRONMENT
+    container: fedora:40  # NEXT DEVELOPMENT ENVIRONMENT
     steps:
       - uses: actions/checkout@v4
       - name: Install dependencies
