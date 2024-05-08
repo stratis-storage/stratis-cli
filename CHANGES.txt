@@ -1,8 +1,8 @@
 stratis-cli 3.7.0 (UNRELEASED)
 ==============================
-Required stratisd version: 3.6.0
+Required stratisd version: 3.7.0
 
-Recommended development environment: Fedora 39
+Recommended development environment: Fedora 40
 Lowest supported Python interpreter: 3.9.16
 
 - Update for r7 D-Bus revision:
@@ -11,6 +11,9 @@ Lowest supported Python interpreter: 3.9.16
 - Display snapshot origin in filesystem detail view:
   https://github.com/stratis-storage/stratis-cli/pull/1045
 
+- Support getting Stratis pool-level metadata over the D-Bus:
+  https://github.com/stratis-storage/stratis-cli/pull/1075
+
 - Extend filesystem listing with a detail view:
   https://github.com/stratis-storage/stratis-cli/pull/1051
   https://github.com/stratis-storage/stratis-cli/pull/1050
@@ -18,14 +21,27 @@ Lowest supported Python interpreter: 3.9.16
 - Sort JSON output from report by default:
   https://github.com/stratis-storage/stratis-cli/pull/1048
 
+- Replace getpass with custom function that uses sys.stdin:
+  https://github.com/stratis-storage/stratis-cli/pull/1068
+
 - Make parsing errors related to Clevis options actual parser errors:
   https://github.com/stratis-storage/stratis-cli/issues/1055
+  https://github.com/stratis-storage/stratis-cli/pull/1073
   https://github.com/stratis-storage/stratis-cli/pull/1060
   https://github.com/stratis-storage/stratis-cli/pull/1057
   https://github.com/stratis-storage/stratis-cli/pull/1056
   https://github.com/stratis-storage/stratis-cli/pull/1053
 
 - Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/1079
+  https://github.com/stratis-storage/stratis-cli/pull/1078
+  https://github.com/stratis-storage/stratis-cli/pull/1077
+  https://github.com/stratis-storage/stratis-cli/pull/1076
+  https://github.com/stratis-storage/stratis-cli/pull/1074
+  https://github.com/stratis-storage/stratis-cli/pull/1072
+  https://github.com/stratis-storage/stratis-cli/pull/1070
+  https://github.com/stratis-storage/stratis-cli/pull/1067
+  https://github.com/stratis-storage/stratis-cli/pull/1065
   https://github.com/stratis-storage/stratis-cli/pull/1064
   https://github.com/stratis-storage/stratis-cli/pull/1063
   https://github.com/stratis-storage/stratis-cli/pull/1061
