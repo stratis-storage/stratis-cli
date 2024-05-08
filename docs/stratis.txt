@@ -254,6 +254,55 @@ Key Description::
 Clevis::
 	  The status of Clevis encryption ("present" or "N/A").
 
+FIELDS for stratis pool list [(--uuid <uuid> |--name <name>)]
+
+UUID::
+	The UUID of the pool.
+
+Name::
+	The name of the pool.
+
+Alerts::
+	A list of all alerts on the pool, as a text summary.
+
+Actions Allowed::
+	What actions may be taken on the pool. Generally the pool will be
+	listed as fully operational.
+
+Cache::
+	Whether or not the pool has a cache.
+
+Filesystem Limit::
+	The maximum number of filesystems the pool allows.
+
+Allows Overprovisioning::
+	Whether or not the pool allows overprovisioning.
+
+Key Description::
+	The key description, if the pool is encrypted using a key in the
+	kernel keyring.
+
+Clevis Configuration::
+	The Clevis configuration, if the pool is encrypted via Clevis.
+
+Space Usage: Fully Allocated::
+	Whether or not all the space on a pool's devices has been allocated
+	for some purpose.
+
+Space Usage: Size::
+	The total size of all the devices in the pool.
+
+Space Usage: Allocated::
+	The space on the devices allocated for some purpose, e.g., to store
+	Stratis filesystem metadata or user data. Once space has been allocated
+	for one purpose, it can not, in general, be reclaimed and used for
+        another purpose.
+
+Space Usage: Used::
+	The space on the devices that is in use. Used space can be reclaimed.
+	For example, destroying a Stratis filesystem will reduce this value.
+
+
 FIELDS for stratis filesystem list
 
 Pool::
