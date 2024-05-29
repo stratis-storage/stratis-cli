@@ -145,14 +145,13 @@ class EncryptionInfoKeyDescription(
                 self.value = str(value)
 
 
-class Device:  # pylint: disable=too-few-public-methods
+class Device(BaseModel):
     """
     A representation of a device in a stopped pool.
     """
 
-    def __init__(self, mapping):
-        self.uuid = UUID(mapping["uuid"])
-        self.devnode = str(mapping["devnode"])
+    uuid: UUID
+    devnode: str
 
 
 class StoppedPool(BaseModel):
