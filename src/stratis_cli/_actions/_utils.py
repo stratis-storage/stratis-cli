@@ -18,7 +18,11 @@ Miscellaneous functions.
 
 # isort: STDLIB
 import json
+from typing import List, Optional
 from uuid import UUID
+
+# isort: THIRDPARTY
+from pydantic import BaseModel, validator
 
 from .._constants import Clevis
 from .._stratisd_constants import (
@@ -151,33 +155,32 @@ class Device:  # pylint: disable=too-few-public-methods
         self.devnode = str(mapping["devnode"])
 
 
-class StoppedPool:  # pylint: disable=too-few-public-methods
+class StoppedPool(BaseModel):
     """
-    A representation of a single stopped pool.
+    A representaton of a single stopped pool.
     """
 
-    def __init__(self, pool_info):
+    devs: List[Device]
+    clevis_info: Optional[EncryptionInfoClevis]
+    key_description: Optional[EncryptionInfoKeyDescription]
+    name: Optional[str]
+
+    @validator("key_description", allow_reuse=True)
+    def validate_key_description(cls, v):  # pylint: disable=no-self-argument
         """
-        Initializer.
-        :param pool_info: a D-Bus structure
+        Validate the key description.
         """
+        return EncryptionInfoKeyDescription(v)
 
-        self.devs = [Device(info) for info in pool_info["devs"]]
+    @validator("clevis_info", allow_reuse=True)
+    def validate_clevis_info(cls, v):  # pylint: disable=no-self-argument
+        """
+        Validate the Clevis info.
+        """
+        return EncryptionInfoClevis(v)
 
-        clevis_info = pool_info.get("clevis_info")
-        self.clevis_info = (
-            None if clevis_info is None else EncryptionInfoClevis(clevis_info)
-        )
-
-        key_description = pool_info.get("key_description")
-        self.key_description = (
-            None
-            if key_description is None
-            else EncryptionInfoKeyDescription(key_description)
-        )
-
-        name = pool_info.get("name")
-        self.name = None if name is None else str(name)
+    class Config:  # pylint: disable=too-few-public-methods,missing-docstring
+        arbitrary_types_allowed = True
 
 
 class PoolSelector:
