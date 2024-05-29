@@ -40,6 +40,7 @@ jobs:
               python3-justbytes
               python3-packaging
               python3-psutil
+              python3-pydantic
               python3-wcwidth
             task: >
               PATH=${PATH}:/github/home/.local/bin PYTHONPATH=./src
@@ -128,6 +129,7 @@ jobs:
           python3-dateutil
           python3-packaging
           python3-psutil
+          python3-pydantic
           python3-wcwidth
           systemd-devel
       - uses: dtolnay/rust-toolchain@master
@@ -164,6 +166,7 @@ jobs:
               python3-dateutil
               python3-packaging
               python3-psutil
+              python3-pydantic
               python3-wcwidth
             task: make -f Makefile legacy-package
     runs-on: ubuntu-latest
