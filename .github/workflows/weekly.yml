@@ -24,6 +24,7 @@ jobs:
               python3-justbytes
               python3-packaging
               python3-psutil
+              python3-pydantic
               python3-wcwidth
             task: >
               PATH=${PATH}:/github/home/.local/bin PYTHONPATH=./src
