@@ -21,7 +21,7 @@ from argparse import SUPPRESS, ArgumentTypeError
 from uuid import UUID
 
 from .._actions import BindActions, PoolActions
-from .._constants import Clevis, EncryptionMethod, YesOrNo
+from .._constants import Clevis, EncryptionMethod, UnlockMethod, YesOrNo
 from .._error_codes import PoolErrorCode
 from ._bind import BIND_SUBCMDS, REBIND_SUBCMDS
 from ._debug import POOL_DEBUG_SUBCMDS
@@ -227,6 +227,32 @@ POOL_SUBCMDS = [
         "start",
         {
             "help": "Start a pool.",
+            "groups": [
+                (
+                    "Key Specification",
+                    {
+                        "description": "Arguments to allow specifying a key",
+                        "mut_ex_args": [
+                            (
+                                False,
+                                [
+                                    (
+                                        "--keyfile-path",
+                                        {"help": "Path to a key file containing a key"},
+                                    ),
+                                    (
+                                        "--capture-key",
+                                        {
+                                            "action": "store_true",
+                                            "help": "Read key from stdin",
+                                        },
+                                    ),
+                                ],
+                            ),
+                        ],
+                    },
+                )
+            ],
             "mut_ex_args": [
                 (
                     True,
@@ -243,15 +269,15 @@ POOL_SUBCMDS = [
                             {"help": "name of the pool to start"},
                         ),
                     ],
-                )
+                ),
             ],
             "args": [
                 (
                     "--unlock-method",
                     {
-                        "choices": list(EncryptionMethod),
+                        "choices": list(UnlockMethod),
                         "help": "Method to use to unlock the pool if encrypted.",
-                        "type": EncryptionMethod,
+                        "type": UnlockMethod,
                     },
                 ),
             ],
