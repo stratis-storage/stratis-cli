@@ -80,3 +80,14 @@ class StartTestCase(SimTestCase):
         RUNNER(command_line)
 
         self.check_error(StratisCliNoChangeError, command_line, _ERROR)
+
+    def test_capture_key(self):
+        """
+        Test trying to start an unencrypted pool with a verified passphrase.
+        """
+        command_line = ["pool", "stop", f"--name={self._POOLNAME}"]
+        RUNNER(command_line)
+        command_line = self._MENU + [f"--name={self._POOLNAME}", "--capture-key"]
+        self.check_error(
+            StratisCliEngineError, command_line, _ERROR, stdin="password\npassword\n"
+        )

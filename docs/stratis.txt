@@ -41,10 +41,18 @@ pool create [--key-desc <key_desc>] [--clevis <(nbde|tang|tpm2)> [--tang-url <ta
 pool stop <(--uuid <uuid> |--name <name>)>::
      Stop a pool, specifying the pool by its UUID or by its name. Tear down
      the storage stack but leave all metadata intact.
-pool start <(--uuid <uuid> |--name <name>)> --unlock-method <(keyring | clevis)>::
+pool start [--keyfile-path KEYFILE_PATH | --capture-key] --unlock-method <(any | clevis | keyring)> <(--uuid <uuid> |--name <name>)>::
      Start a pool, specifying the pool by its UUID or by its name. Use the
-     --unlock-method option to specify method of unlocking the pool if it is
-     encrypted.
+     --unlock-method option to specify a method of unlocking the pool if it
+     is encrypted. If an unlock method of any is specified the pool will be
+     unlocked with any facility available that allows the pool to be unlocked.
+     If --keyfile-path or --capture-key is specified, then the pool will use
+     only the passphrase specified by either of these options; the pool will
+     not be unlocked if the passphrase is incorrect. The --unlock-method
+     option is required if --keyfile-path or --capture-key is used. If the
+     value is any, the specified passphrase will be tried for all keyslots;
+     otherwise the specified passphrase will be tried only for the keyslot
+     corresponding to the specified method.
 pool list [--stopped] [(--uuid <uuid> |--name <name>)]::
      List pools. If the --stopped option is used, list only stopped pools.
      Otherwise, list only started pools. If a UUID or name is specified, print
