@@ -421,7 +421,7 @@ POOL_SUBCMDS = [
     (
         "unbind",
         {
-            "help": "Unbind the given pool, removing support for encryption with Clevis",
+            "help": "Unbind the given pool, removing use of the specified encryption method",
             "args": [
                 (
                     "method",
