@@ -140,7 +140,7 @@ jobs:
         # yamllint disable rule:line-length
         run: |
           git checkout -b jbaublitz-metadata-rework master
-          git reset --hard 19bafdc3e9969e4c209a428fa229c8b80d5dc310
+          git reset --hard 682d103671ea8cc5745513f78c671456934e8d8e
           git pull https://github.com/jbaublitz/stratisd.git metadata-rework
         working-directory: ./stratisd
       - name: Build stratisd
