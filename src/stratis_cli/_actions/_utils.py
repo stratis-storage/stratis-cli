@@ -184,6 +184,11 @@ class StoppedPool:  # pylint: disable=too-few-public-methods
         name = pool_info.get("name")
         self.name = None if name is None else str(name)
 
+        metadata_version_valid, metadata_version = pool_info["metadata_version"]
+        self.metadata_version = (
+            int(metadata_version) if metadata_version_valid else None
+        )
+
 
 class PoolSelector:
     """

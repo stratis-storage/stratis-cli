@@ -454,6 +454,16 @@ class Stopped(List):  # pylint: disable=too-few-public-methods
         """
         return "<UNAVAILABLE>" if maybe_value is None else maybe_value
 
+    @staticmethod
+    def _metadata_version_str(maybe_value):
+        """
+        Return formatted string for metadata version.
+
+        :param maybe_value: the metadata version
+        :type maybe_value: int or NoneType
+        """
+        return "mixed" if maybe_value is None else str(maybe_value)
+
 
 class StoppedDetail(Stopped):  # pylint: disable=too-few-public-methods
     """
@@ -481,6 +491,8 @@ class StoppedDetail(Stopped):  # pylint: disable=too-few-public-methods
         print(f"Name: {self._pool_name(pool.name)}")
 
         print(f"UUID: {self.uuid_formatter(pool_uuid)}")
+
+        print(f"Metadata Version: {self._metadata_version_str(pool.metadata_version)}")
 
         key_description = pool.key_description
         key_description_str = (
@@ -570,6 +582,7 @@ class StoppedTable(Stopped):  # pylint: disable=too-few-public-methods
         tables = [
             (
                 self._pool_name(sp.name),
+                self._metadata_version_str(sp.metadata_version),
                 self.uuid_formatter(pool_uuid),
                 str(len(sp.devs)),
                 key_description_str(sp.key_description),
@@ -582,7 +595,7 @@ class StoppedTable(Stopped):  # pylint: disable=too-few-public-methods
         ]
 
         print_table(
-            ["Name", "UUID", "# Devices", "Key Description", "Clevis"],
+            ["Name", "Version", "UUID", "# Devices", "Key Description", "Clevis"],
             sorted(tables, key=lambda entry: entry[0]),
-            ["<", "<", ">", "<", "<"],
+            ["<", ">", "<", ">", "<", "<"],
         )
