@@ -494,24 +494,25 @@ class StoppedDetail(Stopped):  # pylint: disable=too-few-public-methods
 
         print(f"Metadata Version: {self._metadata_version_str(pool.metadata_version)}")
 
-        key_description = pool.key_description
-        key_description_str = (
-            "unencrypted"
-            if key_description is None
-            else _non_existent_or_inconsistent_to_str(key_description)
-        )
-        print(f"Key Description: {key_description_str}")
-
-        clevis_info = pool.clevis_info
-        clevis_info_str = (
-            "unencrypted"
-            if clevis_info is None
-            else _non_existent_or_inconsistent_to_str(
-                clevis_info,
-                interp=_clevis_to_str,  # pyright: ignore [ reportArgumentType ]
+        if pool.metadata_version == 1:  # pragma: no cover
+            key_description = pool.key_description
+            key_description_str = (
+                "unencrypted"
+                if key_description is None
+                else _non_existent_or_inconsistent_to_str(key_description)
             )
-        )
-        print(f"Clevis Configuration: {clevis_info_str}")
+            print(f"Key Description: {key_description_str}")
+
+            clevis_info = pool.clevis_info
+            clevis_info_str = (
+                "unencrypted"
+                if clevis_info is None
+                else _non_existent_or_inconsistent_to_str(
+                    clevis_info,
+                    interp=_clevis_to_str,  # pyright: ignore [ reportArgumentType ]
+                )
+            )
+            print(f"Clevis Configuration: {clevis_info_str}")
 
         print("Devices:")
         for dev in pool.devs:
@@ -564,8 +565,11 @@ class StoppedTable(Stopped):  # pylint: disable=too-few-public-methods
 
         stopped_pools = _fetch_stopped_pools_property(proxy)
 
-        def clevis_str(value):
-            if value is None:
+        def clevis_str(value, metadata_version):
+            if metadata_version == 2:
+                return "N/A"
+
+            if value is None:  # pragma: no cover
                 return "unencrypted"
 
             return _non_existent_or_inconsistent_to_str(
@@ -573,11 +577,14 @@ class StoppedTable(Stopped):  # pylint: disable=too-few-public-methods
                 interp=lambda _: "present",  # pyright: ignore [ reportArgumentType ]
             )  # pragma: no cover
 
-        def key_description_str(value):
-            if value is None:
+        def key_description_str(value, metadata_version):
+            if metadata_version == 2:
+                return "N/A"
+
+            if value is None:  # pragma: no cover
                 return "unencrypted"
 
-            return _non_existent_or_inconsistent_to_str(value)
+            return _non_existent_or_inconsistent_to_str(value)  # pragma: no cover
 
         tables = [
             (
@@ -585,8 +592,8 @@ class StoppedTable(Stopped):  # pylint: disable=too-few-public-methods
                 self._metadata_version_str(sp.metadata_version),
                 self.uuid_formatter(pool_uuid),
                 str(len(sp.devs)),
-                key_description_str(sp.key_description),
-                clevis_str(sp.clevis_info),
+                key_description_str(sp.key_description, sp.metadata_version),
+                clevis_str(sp.clevis_info, sp.metadata_version),
             )
             for pool_uuid, sp in (
                 (pool_uuid, StoppedPool(info))
