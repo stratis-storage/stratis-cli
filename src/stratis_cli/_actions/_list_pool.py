@@ -33,7 +33,12 @@ from ._formatting import (
     print_table,
     size_triple,
 )
-from ._utils import EncryptionInfoClevis, EncryptionInfoKeyDescription, StoppedPool
+from ._utils import (
+    EncryptionInfoClevis,
+    EncryptionInfoKeyDescription,
+    PoolFeature,
+    StoppedPool,
+)
 
 
 def _fetch_stopped_pools_property(proxy):
@@ -514,6 +519,9 @@ class StoppedDetail(Stopped):  # pylint: disable=too-few-public-methods
             )
             print(f"Clevis Configuration: {clevis_info_str}")
 
+        if pool.metadata_version == 2 and PoolFeature.ENCRYPTION in pool.features:
+            print("Encryption enabled")
+
         print("Devices:")
         for dev in pool.devs:
             print(f"{self.uuid_formatter(dev.uuid)}  {dev.devnode}")
@@ -565,9 +573,13 @@ class StoppedTable(Stopped):  # pylint: disable=too-few-public-methods
 
         stopped_pools = _fetch_stopped_pools_property(proxy)
 
-        def clevis_str(value, metadata_version):
+        def clevis_str(value, metadata_version, features):
             if metadata_version == 2:
-                return "N/A"
+                return (
+                    "<UNAVAILABLE>"
+                    if PoolFeature.ENCRYPTION in features
+                    else "unencrypted"
+                )
 
             if value is None:  # pragma: no cover
                 return "unencrypted"
@@ -577,9 +589,13 @@ class StoppedTable(Stopped):  # pylint: disable=too-few-public-methods
                 interp=lambda _: "present",  # pyright: ignore [ reportArgumentType ]
             )  # pragma: no cover
 
-        def key_description_str(value, metadata_version):
+        def key_description_str(value, metadata_version, features):
             if metadata_version == 2:
-                return "N/A"
+                return (
+                    "<UNAVAILABLE>"
+                    if PoolFeature.ENCRYPTION in features
+                    else "unencrypted"
+                )
 
             if value is None:  # pragma: no cover
                 return "unencrypted"
@@ -592,8 +608,10 @@ class StoppedTable(Stopped):  # pylint: disable=too-few-public-methods
                 self._metadata_version_str(sp.metadata_version),
                 self.uuid_formatter(pool_uuid),
                 str(len(sp.devs)),
-                key_description_str(sp.key_description, sp.metadata_version),
-                clevis_str(sp.clevis_info, sp.metadata_version),
+                key_description_str(
+                    sp.key_description, sp.metadata_version, sp.features
+                ),
+                clevis_str(sp.clevis_info, sp.metadata_version, sp.features),
             )
             for pool_uuid, sp in (
                 (pool_uuid, StoppedPool(info))
