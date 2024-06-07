@@ -272,7 +272,7 @@ class DefaultDetail(Default):
                 EncryptionInfoKeyDescription(mopool.KeyDescription())
             )
             if encrypted
-            else "unencrypted"
+            else "<UNENCRYPTED>"
         )
         print(f"Key Description: {key_description_str}")
 
@@ -282,7 +282,7 @@ class DefaultDetail(Default):
                 interp=_clevis_to_str,  # pyright: ignore [ reportArgumentType ]
             )
             if encrypted
-            else "unencrypted"
+            else "<UNENCRYPTED>"
         )
         print(f"Clevis Configuration: {clevis_info_str}")
 
@@ -502,7 +502,7 @@ class StoppedDetail(Stopped):  # pylint: disable=too-few-public-methods
         if pool.metadata_version == 1:  # pragma: no cover
             key_description = pool.key_description
             key_description_str = (
-                "unencrypted"
+                "<UNENCRYPTED>"
                 if key_description is None
                 else _non_existent_or_inconsistent_to_str(key_description)
             )
@@ -510,7 +510,7 @@ class StoppedDetail(Stopped):  # pylint: disable=too-few-public-methods
 
             clevis_info = pool.clevis_info
             clevis_info_str = (
-                "unencrypted"
+                "<UNENCRYPTED>"
                 if clevis_info is None
                 else _non_existent_or_inconsistent_to_str(
                     clevis_info,
@@ -580,11 +580,11 @@ class StoppedTable(Stopped):  # pylint: disable=too-few-public-methods
                 return (
                     "<UNAVAILABLE>"
                     if PoolFeature.ENCRYPTION in features
-                    else "unencrypted"
+                    else "<UNENCRYPTED>"
                 )
 
             if value is None:  # pragma: no cover
-                return "unencrypted"
+                return "<UNENCRYPTED>"
 
             return _non_existent_or_inconsistent_to_str(
                 value,
@@ -596,11 +596,11 @@ class StoppedTable(Stopped):  # pylint: disable=too-few-public-methods
                 return (
                     "<UNAVAILABLE>"
                     if PoolFeature.ENCRYPTION in features
-                    else "unencrypted"
+                    else "<UNENCRYPTED>"
                 )
 
             if value is None:  # pragma: no cover
-                return "unencrypted"
+                return "<UNENCRYPTED>"
 
             return _non_existent_or_inconsistent_to_str(value)  # pragma: no cover
 
