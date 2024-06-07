@@ -501,23 +501,23 @@ class StoppedDetail(Stopped):  # pylint: disable=too-few-public-methods
 
         if pool.metadata_version == 1:  # pragma: no cover
             key_description = pool.key_description
-            key_description_str = (
-                "<UNENCRYPTED>"
-                if key_description is None
-                else _non_existent_or_inconsistent_to_str(key_description)
-            )
-            print(f"Key Description: {key_description_str}")
-
             clevis_info = pool.clevis_info
-            clevis_info_str = (
-                "<UNENCRYPTED>"
-                if clevis_info is None
-                else _non_existent_or_inconsistent_to_str(
+
+            if clevis_info is None and key_description is None:
+                print("Encryption enabled: No")
+            else:
+                print("Encryption enabled: Yes")
+
+                key_description_str = _non_existent_or_inconsistent_to_str(
+                    key_description
+                )
+                print(f"    Key Description: {key_description_str}")
+
+                clevis_info_str = _non_existent_or_inconsistent_to_str(
                     clevis_info,
                     interp=_clevis_to_str,  # pyright: ignore [ reportArgumentType ]
                 )
-            )
-            print(f"Clevis Configuration: {clevis_info_str}")
+                print(f"    Clevis Configuration: {clevis_info_str}")
 
         if pool.metadata_version == 2:
             print(
