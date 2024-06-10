@@ -267,24 +267,22 @@ class DefaultDetail(Default):
             f"{'Yes' if mopool.Overprovisioning() else 'No'}"
         )
 
-        key_description_str = (
-            _non_existent_or_inconsistent_to_str(
+        if encrypted:
+            print("Encryption enabled: Yes")
+
+            key_description_str = _non_existent_or_inconsistent_to_str(
                 EncryptionInfoKeyDescription(mopool.KeyDescription())
             )
-            if encrypted
-            else "<UNENCRYPTED>"
-        )
-        print(f"Key Description: {key_description_str}")
+            print(f"    Key Description: {key_description_str}")
 
-        clevis_info_str = (
-            _non_existent_or_inconsistent_to_str(
+            clevis_info_str = _non_existent_or_inconsistent_to_str(
                 EncryptionInfoClevis(mopool.ClevisInfo()),
                 interp=_clevis_to_str,  # pyright: ignore [ reportArgumentType ]
             )
-            if encrypted
-            else "<UNENCRYPTED>"
-        )
-        print(f"Clevis Configuration: {clevis_info_str}")
+            print(f"    Clevis Configuration: {clevis_info_str}")
+
+        else:
+            print("Encryption enabled: No")
 
         total_physical_used = get_property(mopool.TotalPhysicalUsed(), Range, None)
 
