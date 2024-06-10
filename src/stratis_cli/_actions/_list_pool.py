@@ -519,10 +519,13 @@ class StoppedDetail(Stopped):  # pylint: disable=too-few-public-methods
                 )
                 print(f"    Clevis Configuration: {clevis_info_str}")
 
-        if pool.metadata_version == 2:  # pragma: no cover
+        elif pool.metadata_version == 2:  # pragma: no cover
             print(
                 f"Encryption enabled: {'Yes' if PoolFeature.ENCRYPTION in pool.features else 'No'}"
             )
+
+        else:  # pragma: no cover
+            print("Encryption enabled: <UNAVAILABLE>")
 
         print("Devices:")
         for dev in pool.devs:
