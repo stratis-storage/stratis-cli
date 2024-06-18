@@ -136,6 +136,13 @@ jobs:
           toolchain: 1.71.1  # LOWEST SUPPORTED RUST TOOLCHAIN
       - name: Check out stratisd
         run: git clone https://github.com/stratis-storage/stratisd.git
+      - name: Temporarily switch to PR branch
+        # yamllint disable rule:line-length
+        run: |
+          git checkout -b jbaublitz-metadata-rework master
+          git reset --hard b59b52f55e916cdad7243a18af898ae8e1f1412d
+          git pull https://github.com/jbaublitz/stratisd.git metadata-rework
+        working-directory: ./stratisd
       - name: Build stratisd
         run: PROFILEDIR=debug make build-all
         working-directory: ./stratisd

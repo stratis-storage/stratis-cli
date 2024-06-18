@@ -16,25 +16,22 @@ Miscellaneous top-level actions.
 """
 
 # isort: STDLIB
-import errno
 import json
 import os
 import sys
-import termios
 
 from .._errors import (
     StratisCliEngineError,
     StratisCliIncoherenceError,
-    StratisCliKeyfileNotFoundError,
     StratisCliNameConflictError,
     StratisCliNoChangeError,
-    StratisCliPassphraseMismatchError,
     StratisCliResourceNotFoundError,
 )
 from .._stratisd_constants import ReportKey, StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import print_table
+from ._utils import get_passphrase_fd
 
 
 def _fetch_keylist(proxy):
@@ -54,45 +51,6 @@ def _fetch_keylist(proxy):
     return keys
 
 
-def get_pass(prompt):
-    """
-    Prompt for a passphrase on stdin.
-
-    :param str prompt: prompt to display to user when fetching passphrase
-    :return: password
-    :rtype: str or None
-    """
-    print(prompt, end="")
-    sys.stdout.flush()
-    old_attrs = None
-    try:  # pragma: no cover
-        old_attrs = termios.tcgetattr(sys.stdin)
-        new_attrs = termios.tcgetattr(sys.stdin)
-        new_attrs[3] &= ~termios.ECHO
-        new_attrs[3] |= termios.ECHONL
-        termios.tcsetattr(sys.stdin, termios.TCSAFLUSH, new_attrs)
-    except termios.error as err:  # pragma: no cover
-        if err.args[0] == errno.ENOTTY:
-            print(
-                "Warning: this device is not a TTY so the password may be echoed",
-                file=sys.stderr,
-            )
-    except Exception:  # nosec pylint: disable=broad-exception-caught
-        pass
-
-    password = None
-    try:
-        password = sys.stdin.readline()
-    except Exception as err:  # pragma: no cover
-        if old_attrs is not None:
-            termios.tcsetattr(sys.stdin, termios.TCSAFLUSH, old_attrs)
-        raise err
-
-    if old_attrs is not None:
-        termios.tcsetattr(sys.stdin, termios.TCSAFLUSH, old_attrs)  # pragma: no cover
-    return password.strip()
-
-
 def _add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
     """
     Issue a command to set or reset a key in the kernel keyring with the option
@@ -108,38 +66,17 @@ def _add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
     """
     assert capture_key == (keyfile_path is None)
 
+    fd_argument, fd_to_close = get_passphrase_fd(keyfile_path=keyfile_path)
+
     # pylint: disable=import-outside-toplevel
     from ._data import Manager
 
-    if capture_key:
-        password = get_pass("Enter key data followed by the return key: ")
-        verify = get_pass("Verify key data entered: ")
-
-        if password != verify:
-            raise StratisCliPassphraseMismatchError()
-
-        (read, write) = os.pipe()
-        os.write(write, password.encode("utf-8"))
-
-        file_desc = read
-        fd_is_pipe = True
-    else:
-        try:
-            file_desc = os.open(keyfile_path, os.O_RDONLY)
-        except FileNotFoundError as err:
-            raise StratisCliKeyfileNotFoundError(keyfile_path) from err
-
-        fd_is_pipe = False
-
     add_ret = Manager.Methods.SetKey(
         proxy,
-        {"key_desc": key_desc, "key_fd": file_desc},
+        {"key_desc": key_desc, "key_fd": fd_argument},
     )
 
-    if fd_is_pipe:
-        os.close(write)  # pyright: ignore [ reportPossiblyUnboundVariable]
-    else:
-        os.close(file_desc)
+    os.close(fd_to_close)
 
     return add_ret
 

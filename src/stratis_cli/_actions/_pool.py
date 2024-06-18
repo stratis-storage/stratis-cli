@@ -25,7 +25,7 @@ from uuid import UUID
 # isort: THIRDPARTY
 from justbytes import Range
 
-from .._constants import Id, IdType
+from .._constants import Id, IdType, UnlockMethod
 from .._error_codes import PoolErrorCode
 from .._errors import (
     StratisCliEngineError,
@@ -46,7 +46,7 @@ from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import get_property, get_uuid_formatter
 from ._list_pool import list_pools
-from ._utils import ClevisInfo, PoolSelector
+from ._utils import ClevisInfo, PoolSelector, get_passphrase_fd
 
 
 def _generate_pools_to_blockdevs(managed_objects, to_be_added, tier):
@@ -270,18 +270,40 @@ class PoolActions:
             else (namespace.name, "name")
         )
 
+        if namespace.capture_key or namespace.keyfile_path is not None:
+            fd_argument, fd_to_close = get_passphrase_fd(
+                keyfile_path=namespace.keyfile_path
+            )
+            key_fd_arg = (True, fd_argument)
+            unlock_method = (
+                True,
+                str(
+                    UnlockMethod.ANY
+                    if namespace.unlock_method is None
+                    else namespace.unlock_method
+                ),
+            )
+        else:
+            fd_to_close = None
+            key_fd_arg = (False, 0)
+            unlock_method = (
+                (False, "")
+                if namespace.unlock_method is None
+                else (True, str(namespace.unlock_method))
+            )
+
         ((started, _), return_code, message) = Manager.Methods.StartPool(
             proxy,
             {
                 "id": pool_id,
                 "id_type": id_type,
-                "unlock_method": (
-                    (False, "")
-                    if namespace.unlock_method is None
-                    else (True, str(namespace.unlock_method))
-                ),
+                "unlock_method": unlock_method,
+                "key_fd": key_fd_arg,
             },
         )
+
+        if fd_to_close is not None:
+            os.close(fd_to_close)
 
         if return_code != StratisdErrors.OK:
             raise StratisCliEngineError(return_code, message)
