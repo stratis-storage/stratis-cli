@@ -21,6 +21,12 @@ Lowest supported Python interpreter: 3.9.16
 - Sort JSON output from report by default:
   https://github.com/stratis-storage/stratis-cli/pull/1048
 
+- Add description of fields in pool detail view:
+  https://github.com/stratis-storage/stratis-cli/pull/1080
+
+- Fix help text for the unbind command:
+  https://github.com/stratis-storage/stratis-cli/pull/1083
+
 - Replace getpass with custom function that uses sys.stdin:
   https://github.com/stratis-storage/stratis-cli/pull/1068
 
@@ -33,6 +39,7 @@ Lowest supported Python interpreter: 3.9.16
   https://github.com/stratis-storage/stratis-cli/pull/1053
 
 - Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/1084
   https://github.com/stratis-storage/stratis-cli/pull/1079
   https://github.com/stratis-storage/stratis-cli/pull/1078
   https://github.com/stratis-storage/stratis-cli/pull/1077
