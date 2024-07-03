@@ -534,7 +534,7 @@ class StoppedDetail(Stopped):  # pylint: disable=too-few-public-methods
 
         (pool_uuid, pool) = stopped_pool
 
-        self._print_detail_view(pool_uuid, StoppedPool(pool))
+        self._print_detail_view(pool_uuid, StoppedPool(**pool))
 
 
 class StoppedTable(Stopped):  # pylint: disable=too-few-public-methods
@@ -582,7 +582,7 @@ class StoppedTable(Stopped):  # pylint: disable=too-few-public-methods
                 clevis_str(sp.clevis_info),
             )
             for pool_uuid, sp in (
-                (pool_uuid, StoppedPool(info))
+                (pool_uuid, StoppedPool(**info))
                 for pool_uuid, info in stopped_pools.items()
             )
         ]
