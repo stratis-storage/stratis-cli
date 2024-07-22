@@ -92,6 +92,19 @@ class EncryptionMethod(Enum):
         return self.value
 
 
+class UnlockMethod(Enum):
+    """
+    Unlock method.
+    """
+
+    ANY = "any"
+    CLEVIS = "clevis"
+    KEYRING = "keyring"
+
+    def __str__(self):
+        return self.value
+
+
 class Clevis(Enum):
     """
     Clevis encryption methods.

@@ -19,7 +19,6 @@ Pool actions.
 from abc import ABC, abstractmethod
 
 # isort: THIRDPARTY
-from dbus import Boolean
 from justbytes import Range
 
 from .._error_codes import PoolAllocSpaceErrorCode, PoolDeviceSizeChangeCode
@@ -34,7 +33,12 @@ from ._formatting import (
     print_table,
     size_triple,
 )
-from ._utils import EncryptionInfoClevis, EncryptionInfoKeyDescription, StoppedPool
+from ._utils import (
+    EncryptionInfoClevis,
+    EncryptionInfoKeyDescription,
+    PoolFeature,
+    StoppedPool,
+)
 
 
 def _fetch_stopped_pools_property(proxy):
@@ -250,6 +254,8 @@ class DefaultDetail(Default):
         for line in alert_summary:  # pragma: no cover
             print(f"     {line}")
 
+        print(f"Metadata Version: {mopool.MetadataVersion()}")
+
         print(
             f"Actions Allowed: "
             f"{PoolActionAvailability[str(mopool.AvailableActions())].name}"
@@ -261,24 +267,22 @@ class DefaultDetail(Default):
             f"{'Yes' if mopool.Overprovisioning() else 'No'}"
         )
 
-        key_description_str = (
-            _non_existent_or_inconsistent_to_str(
+        if encrypted:
+            print("Encryption Enabled: Yes")
+
+            key_description_str = _non_existent_or_inconsistent_to_str(
                 EncryptionInfoKeyDescription(mopool.KeyDescription())
             )
-            if encrypted
-            else "unencrypted"
-        )
-        print(f"Key Description: {key_description_str}")
+            print(f"    Key Description: {key_description_str}")
 
-        clevis_info_str = (
-            _non_existent_or_inconsistent_to_str(
+            clevis_info_str = _non_existent_or_inconsistent_to_str(
                 EncryptionInfoClevis(mopool.ClevisInfo()),
                 interp=_clevis_to_str,  # pyright: ignore [ reportArgumentType ]
             )
-            if encrypted
-            else "unencrypted"
-        )
-        print(f"Clevis Configuration: {clevis_info_str}")
+            print(f"    Clevis Configuration: {clevis_info_str}")
+
+        else:
+            print("Encryption Enabled: No")
 
         total_physical_used = get_property(mopool.TotalPhysicalUsed(), Range, None)
 
@@ -386,25 +390,18 @@ class DefaultTable(Default):
                 """
                 Generate the display string for a boolean property
 
-                :param has_property: whether the property is true or false
-                :type has_property: bool or object
+                :param bool has_property: whether the property is true or false
                 :param str code: the code to generate the string for
                 :returns: the generated string
                 :rtype: str
                 """
-                # must check membership in dbus.Boolean, because dbus.Boolean is
-                # not a subclass of bool, but of int.
-                prefix = (
-                    "?"
-                    if not isinstance(has_property, Boolean)
-                    else (" " if has_property else "~")
-                )
-                return prefix + code
+                return (" " if has_property else "~") + code
 
             props_list = [
-                (mopool.HasCache(), "Ca"),
-                (mopool.Encrypted(), "Cr"),
-                (mopool.Overprovisioning(), "Op"),
+                (int(mopool.MetadataVersion()) == 1, "Le"),
+                (bool(mopool.HasCache()), "Ca"),
+                (bool(mopool.Encrypted()), "Cr"),
+                (bool(mopool.Overprovisioning()), "Op"),
             ]
             return ",".join(gen_string(x, y) for x, y in props_list)
 
@@ -460,6 +457,16 @@ class Stopped(List):  # pylint: disable=too-few-public-methods
         """
         return "<UNAVAILABLE>" if maybe_value is None else maybe_value
 
+    @staticmethod
+    def _metadata_version_str(maybe_value):
+        """
+        Return formatted string for metadata version.
+
+        :param maybe_value: the metadata version
+        :type maybe_value: int or NoneType
+        """
+        return "<MIXED>" if maybe_value is None else str(maybe_value)
+
 
 class StoppedDetail(Stopped):  # pylint: disable=too-few-public-methods
     """
@@ -484,28 +491,42 @@ class StoppedDetail(Stopped):  # pylint: disable=too-few-public-methods
         :param StoppedPool pool: information about a single pool
         :type pool: dict of str * object
         """
-        print(f"Name: {self._pool_name(pool.name)}")
-
         print(f"UUID: {self.uuid_formatter(pool_uuid)}")
 
-        key_description = pool.key_description
-        key_description_str = (
-            "unencrypted"
-            if key_description is None
-            else _non_existent_or_inconsistent_to_str(key_description)
-        )
-        print(f"Key Description: {key_description_str}")
+        print(f"Name: {self._pool_name(pool.name)}")
 
-        clevis_info = pool.clevis_info
-        clevis_info_str = (
-            "unencrypted"
-            if clevis_info is None
-            else _non_existent_or_inconsistent_to_str(
-                clevis_info,
-                interp=_clevis_to_str,  # pyright: ignore [ reportArgumentType ]
+        print(f"Metadata Version: {self._metadata_version_str(pool.metadata_version)}")
+
+        if pool.metadata_version == 1:  # pragma: no cover
+            key_description = pool.key_description
+            clevis_info = pool.clevis_info
+
+            if clevis_info is None and key_description is None:
+                print("Encryption Enabled: No")
+            else:
+                print("Encryption Enabled: Yes")
+
+                key_description_str = _non_existent_or_inconsistent_to_str(
+                    key_description
+                )
+                print(f"    Key Description: {key_description_str}")
+
+                clevis_info_str = _non_existent_or_inconsistent_to_str(
+                    clevis_info,
+                    interp=_clevis_to_str,  # pyright: ignore [ reportArgumentType ]
+                )
+                print(f"    Clevis Configuration: {clevis_info_str}")
+
+        elif pool.metadata_version == 2:  # pragma: no cover
+            encryption_str = (
+                "Unknown"
+                if pool.features is None
+                else ("Yes" if PoolFeature.ENCRYPTION in pool.features else "No")
             )
-        )
-        print(f"Clevis Configuration: {clevis_info_str}")
+            print(f"Encryption Enabled: {encryption_str}")
+
+        else:  # pragma: no cover
+            print("Encryption Enabled: <UNAVAILABLE>")
 
         print("Devices:")
         for dev in pool.devs:
@@ -558,28 +579,53 @@ class StoppedTable(Stopped):  # pylint: disable=too-few-public-methods
 
         stopped_pools = _fetch_stopped_pools_property(proxy)
 
-        def clevis_str(value):
-            if value is None:
-                return "unencrypted"
+        def clevis_str(value, metadata_version, features):
+            if metadata_version == 2:
+                return (
+                    "<UNKNOWN>"
+                    if features is None
+                    else (
+                        "<UNAVAILABLE>"
+                        if PoolFeature.ENCRYPTION in features
+                        else "<UNENCRYPTED>"
+                    )
+                )
+
+            if value is None:  # pragma: no cover
+                return "<UNENCRYPTED>"
 
             return _non_existent_or_inconsistent_to_str(
                 value,
                 interp=lambda _: "present",  # pyright: ignore [ reportArgumentType ]
             )  # pragma: no cover
 
-        def key_description_str(value):
-            if value is None:
-                return "unencrypted"
+        def key_description_str(value, metadata_version, features):
+            if metadata_version == 2:
+                return (
+                    "<UNKNOWN>"
+                    if features is None
+                    else (
+                        "<UNAVAILABLE>"
+                        if PoolFeature.ENCRYPTION in features
+                        else "<UNENCRYPTED>"
+                    )
+                )
 
-            return _non_existent_or_inconsistent_to_str(value)
+            if value is None:  # pragma: no cover
+                return "<UNENCRYPTED>"
+
+            return _non_existent_or_inconsistent_to_str(value)  # pragma: no cover
 
         tables = [
             (
                 self._pool_name(sp.name),
+                self._metadata_version_str(sp.metadata_version),
                 self.uuid_formatter(pool_uuid),
                 str(len(sp.devs)),
-                key_description_str(sp.key_description),
-                clevis_str(sp.clevis_info),
+                key_description_str(
+                    sp.key_description, sp.metadata_version, sp.features
+                ),
+                clevis_str(sp.clevis_info, sp.metadata_version, sp.features),
             )
             for pool_uuid, sp in (
                 (pool_uuid, StoppedPool(info))
@@ -588,7 +634,7 @@ class StoppedTable(Stopped):  # pylint: disable=too-few-public-methods
         ]
 
         print_table(
-            ["Name", "UUID", "# Devices", "Key Description", "Clevis"],
+            ["Name", "Version", "UUID", "# Devices", "Key Description", "Clevis"],
             sorted(tables, key=lambda entry: entry[0]),
-            ["<", "<", ">", "<", "<"],
+            ["<", ">", "<", ">", "<", "<"],
         )

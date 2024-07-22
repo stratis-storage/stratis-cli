@@ -17,10 +17,16 @@ Miscellaneous functions.
 """
 
 # isort: STDLIB
+import errno
 import json
+import os
+import sys
+import termios
+from enum import Enum
 from uuid import UUID
 
 from .._constants import Clevis
+from .._errors import StratisCliKeyfileNotFoundError, StratisCliPassphraseMismatchError
 from .._stratisd_constants import (
     CLEVIS_KEY_TANG_TRUST_URL,
     CLEVIS_KEY_THP,
@@ -151,6 +157,20 @@ class Device:  # pylint: disable=too-few-public-methods
         self.devnode = str(mapping["devnode"])
 
 
+class PoolFeature(Enum):
+    """
+    Elements of a pool feature set that may be exposed in the StoppedPools
+    property.
+    """
+
+    ENCRYPTION = "encryption"
+    INTEGRITY = "integrity"
+    RAID = "raid"
+
+    def __str__(self):  # pragma: no cover
+        return self.value
+
+
 class StoppedPool:  # pylint: disable=too-few-public-methods
     """
     A representation of a single stopped pool.
@@ -178,6 +198,16 @@ class StoppedPool:  # pylint: disable=too-few-public-methods
 
         name = pool_info.get("name")
         self.name = None if name is None else str(name)
+
+        metadata_version_valid, metadata_version = pool_info["metadata_version"]
+        self.metadata_version = (
+            int(metadata_version) if metadata_version_valid else None
+        )
+
+        features_valid, features = pool_info["features"]
+        self.features = (
+            frozenset(PoolFeature(f) for f in features) if features_valid else None
+        )
 
 
 class PoolSelector:
@@ -217,3 +247,75 @@ class PoolSelector:
 
     def __str__(self):
         return f"pool with {self.pool_id}"
+
+
+def get_pass(prompt):
+    """
+    Prompt for a passphrase on stdin.
+
+    :param str prompt: prompt to display to user when fetching passphrase
+    :return: password
+    :rtype: str or None
+    """
+    print(prompt, end="")
+    sys.stdout.flush()
+    old_attrs = None
+    try:  # pragma: no cover
+        old_attrs = termios.tcgetattr(sys.stdin)
+        new_attrs = termios.tcgetattr(sys.stdin)
+        new_attrs[3] &= ~termios.ECHO
+        new_attrs[3] |= termios.ECHONL
+        termios.tcsetattr(sys.stdin, termios.TCSAFLUSH, new_attrs)
+    except termios.error as err:  # pragma: no cover
+        if err.args[0] == errno.ENOTTY:
+            print(
+                "Warning: this device is not a TTY so the password may be echoed",
+                file=sys.stderr,
+            )
+    except Exception:  # nosec pylint: disable=broad-exception-caught
+        pass
+
+    password = None
+    try:
+        password = sys.stdin.readline()
+    except Exception as err:  # pragma: no cover
+        if old_attrs is not None:
+            termios.tcsetattr(sys.stdin, termios.TCSAFLUSH, old_attrs)
+        raise err
+
+    if old_attrs is not None:
+        termios.tcsetattr(sys.stdin, termios.TCSAFLUSH, old_attrs)  # pragma: no cover
+    return password.strip()
+
+
+def get_passphrase_fd(*, keyfile_path=None):
+    """
+    Get a passphrase either from stdin or from a file.
+
+    :param str keyfile_path: path to a keyfile, may be None
+
+    :return: a file descriptor to pass on the D-Bus, what to close when done
+    """
+    if keyfile_path is None:
+        password = get_pass("Enter passphrase followed by the return key: ")
+        verify = get_pass("Verify passphrase entered: ")
+
+        if password != verify:
+            raise StratisCliPassphraseMismatchError()
+
+        (read, write) = os.pipe()
+        os.write(write, password.encode("utf-8"))
+
+        file_desc = read
+    else:
+        try:
+            file_desc = os.open(keyfile_path, os.O_RDONLY)
+        except FileNotFoundError as err:
+            raise StratisCliKeyfileNotFoundError(keyfile_path) from err
+
+    if keyfile_path is None:
+        fd_to_close = write  # pyright: ignore [ reportPossiblyUnboundVariable]
+    else:
+        fd_to_close = file_desc
+
+    return (file_desc, fd_to_close)
