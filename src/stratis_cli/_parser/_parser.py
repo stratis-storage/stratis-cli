@@ -157,7 +157,7 @@ ROOT_SUBCOMMANDS = [
                     {
                         "default": ReportKey.ENGINE_STATE,
                         "type": ReportKey,
-                        "help": ("Name of the report to display"),
+                        "help": "Name of the report to display",
                         "nargs": "?",
                         "choices": list(ReportKey),
                     },
