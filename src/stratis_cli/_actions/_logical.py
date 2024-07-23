@@ -21,6 +21,7 @@ from justbytes import Range
 from .._constants import Id, IdType
 from .._errors import (
     StratisCliEngineError,
+    StratisCliFsMergeScheduledChangeError,
     StratisCliFsSizeLimitChangeError,
     StratisCliIncoherenceError,
     StratisCliNoChangeError,
@@ -336,3 +337,64 @@ class LogicalActions:
             raise StratisCliFsSizeLimitChangeError(None)
 
         Filesystem.Properties.SizeLimit.Set(get_object(fs_object_path), (False, ""))
+
+    @staticmethod
+    def schedule_revert(namespace):
+        """
+        Schedule reverting a snapshot into its origin.
+        """
+        # pylint: disable=import-outside-toplevel
+        from ._data import Filesystem, MOFilesystem, ObjectManager, filesystems, pools
+
+        proxy = get_object(TOP_OBJECT)
+        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
+        (pool_object_path, _) = next(
+            pools(props={"Name": namespace.pool_name})
+            .require_unique_match(True)
+            .search(managed_objects)
+        )
+        (fs_object_path, fs_info) = next(
+            filesystems(
+                props={"Name": namespace.snapshot_name, "Pool": pool_object_path}
+            )
+            .require_unique_match(True)
+            .search(managed_objects)
+        )
+
+        merge_requested = MOFilesystem(fs_info).MergeScheduled()
+
+        if bool(merge_requested):
+            raise StratisCliFsMergeScheduledChangeError(True)
+
+        Filesystem.Properties.MergeScheduled.Set(get_object(fs_object_path), True)
+
+    @staticmethod
+    def cancel_revert(namespace):
+        """
+        Cancel reverting a snapshot into its origin.
+        """
+        # pylint: disable=import-outside-toplevel
+        from ._data import Filesystem, MOFilesystem, ObjectManager, filesystems, pools
+
+        proxy = get_object(TOP_OBJECT)
+        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
+        (pool_object_path, _) = next(
+            pools(props={"Name": namespace.pool_name})
+            .require_unique_match(True)
+            .search(managed_objects)
+        )
+        (fs_object_path, fs_info) = next(
+            filesystems(
+                props={"Name": namespace.snapshot_name, "Pool": pool_object_path}
+            )
+            .require_unique_match(True)
+            .search(managed_objects)
+        )
+
+        mofs = MOFilesystem(fs_info)
+        (merge_requested, (origin_set, _)) = (mofs.MergeScheduled(), mofs.Origin())
+
+        if origin_set and not bool(merge_requested):
+            raise StratisCliFsMergeScheduledChangeError(False)
+
+        Filesystem.Properties.MergeScheduled.Set(get_object(fs_object_path), False)
