@@ -103,6 +103,18 @@ class StratisCliFsSizeLimitChangeError(StratisCliNoPropertyChangeError):
         return f"Filesystem's size limit is exactly {self.value}"
 
 
+class StratisCliFsMergeScheduledChangeError(StratisCliNoPropertyChangeError):
+    """
+    Raised when the user requests the same filesystems MergeScheduled value
+    that the filesystem already has.
+    """
+
+    def __str__(self):
+        if self.value:
+            return "Filesystem is already scheduled for a revert operation."
+        return "Filesystem is not currently scheduled for a revert operation."
+
+
 class StratisCliHasCacheChangeError(StratisCliNoPropertyChangeError):
     """
     Raised when the user request cache initialization, but a cache is already
