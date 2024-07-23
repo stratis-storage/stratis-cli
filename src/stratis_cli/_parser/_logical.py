@@ -238,7 +238,7 @@ LOGICAL_SUBCMDS = [
     (
         "debug",
         {
-            "help": ("Miscellaneous filesystem-level debug commands"),
+            "help": "Miscellaneous filesystem-level debug commands",
             "subcmds": FILESYSTEM_DEBUG_SUBCMDS,
         },
     ),

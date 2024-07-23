@@ -38,7 +38,7 @@ PHYSICAL_SUBCMDS = [
     (
         "debug",
         {
-            "help": ("Miscellaneous blockdev-level debug commands"),
+            "help": "Miscellaneous blockdev-level debug commands",
             "subcmds": BLOCKDEV_DEBUG_SUBCMDS,
         },
     ),

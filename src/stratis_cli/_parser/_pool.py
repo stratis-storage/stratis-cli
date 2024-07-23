@@ -119,7 +119,7 @@ POOL_SUBCMDS = [
                                 "--clevis",
                                 {
                                     "type": Clevis,
-                                    "help": ("Specification for binding with Clevis."),
+                                    "help": "Specification for binding with Clevis.",
                                     "choices": list(Clevis),
                                 },
                             ),
@@ -292,7 +292,7 @@ POOL_SUBCMDS = [
                 (
                     "pool_name",
                     {
-                        "help": ("Name of the pool for which to initialize the cache"),
+                        "help": "Name of the pool for which to initialize the cache",
                     },
                 ),
                 (
@@ -516,7 +516,7 @@ POOL_SUBCMDS = [
     (
         "debug",
         {
-            "help": ("Miscellaneous pool-level debug commands"),
+            "help": "Miscellaneous pool-level debug commands",
             "subcmds": POOL_DEBUG_SUBCMDS,
         },
     ),
