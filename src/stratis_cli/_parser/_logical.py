@@ -273,7 +273,7 @@ LOGICAL_SUBCMDS = [
                     },
                 ),
                 (
-                    "fs_name",
+                    "snapshot_name",
                     {"help": "Name of the snapshot filesystem"},
                 ),
             ],

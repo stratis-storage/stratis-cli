@@ -354,7 +354,9 @@ class LogicalActions:
             .search(managed_objects)
         )
         (fs_object_path, fs_info) = next(
-            filesystems(props={"Name": namespace.fs_name, "Pool": pool_object_path})
+            filesystems(
+                props={"Name": namespace.snapshot_name, "Pool": pool_object_path}
+            )
             .require_unique_match(True)
             .search(managed_objects)
         )
@@ -382,7 +384,9 @@ class LogicalActions:
             .search(managed_objects)
         )
         (fs_object_path, fs_info) = next(
-            filesystems(props={"Name": namespace.fs_name, "Pool": pool_object_path})
+            filesystems(
+                props={"Name": namespace.snapshot_name, "Pool": pool_object_path}
+            )
             .require_unique_match(True)
             .search(managed_objects)
         )
