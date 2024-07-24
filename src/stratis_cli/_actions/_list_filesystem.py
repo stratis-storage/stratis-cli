@@ -187,6 +187,9 @@ class Detail(List):  # pylint: disable=too-few-public-methods
         print(f"Created: {created}")
         print()
         print(f"Snapshot origin: {origin}")
+        if origin is not None:
+            scheduled = "Yes" if fs.MergeScheduled() else "No"
+            print(f"    Revert scheduled: {scheduled}")
         print()
         print("Sizes:")
         print(f"  Logical size of thin device: {total}")
