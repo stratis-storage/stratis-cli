@@ -144,6 +144,34 @@ FILESYSTEM_DEBUG_SUBCMDS = [
             "func": FilesystemDebugActions.get_object_path,
         },
     ),
+    (
+        "get-metadata",
+        {
+            "help": (
+                "Get the filesystem metadata for all filesystems belonging to "
+                "the specified pool"
+            ),
+            "args": [
+                ("pool_name", {"help": "Pool name"}),
+                (
+                    "--pretty",
+                    {
+                        "action": "store_true",
+                        "help": "Format output string prettily",
+                    },
+                ),
+                (
+                    "--written",
+                    {
+                        "action": "store_true",
+                        "help": "Read the metadata most recently written",
+                    },
+                ),
+                ("--fs-name", {"help": "Optional filesystem name"}),
+            ],
+            "func": FilesystemDebugActions.get_metadata,
+        },
+    ),
 ]
 
 BLOCKDEV_DEBUG_SUBCMDS = [
