@@ -144,6 +144,12 @@ filesystem unset-size-limit <pool_name> <fs_name>::
            Remove a filesystem size limit previously set.
 filesystem debug get-object-path <(--uuid <uuid> |--name <name>)> ::
      Look up the D-Bus object path for a filesystem given the UUID or name.
+filesystem debug get-metadata <pool_name> [--pretty] [--written] [--fs-name <fs-name>] ::
+     Get the filesystem metadata for the specified pool and optionally
+     specified filesystem. If '--written' is not set, get metadata that would
+     be written if metadata were written now, otherwise get the most recently
+     written metadata. If '--pretty' is set, format prettily, otherwise print
+     all on one line.
 blockdev list [pool_name]::
 	 List all blockdevs that make up the specified pool, or all pools, if
 	 no pool name is given.
