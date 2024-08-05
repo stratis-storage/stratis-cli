@@ -39,6 +39,11 @@ from stratis_cli._errors import StratisCliActionError
 
 _OK = StratisCliErrorCodes.OK
 
+_STRATIS_SKIP_TESTS_VALUE = os.getenv("STRATIS_SKIP_TESTS")
+_STRATIS_SKIP_TESTS = (
+    [] if _STRATIS_SKIP_TESTS_VALUE is None else _STRATIS_SKIP_TESTS_VALUE.split(";")
+)
+
 
 def device_name_list(min_devices=0, max_devices=10, unique=False):
     """
@@ -334,6 +339,14 @@ def test_runner(command_line, stdin=None):
 
 
 TEST_RUNNER = test_runner
+
+
+def skip_if_requested(test_id):
+    """
+    Return true if the test id is included in the environment variable
+    STRATIS_SKIP_TESTS.
+    """
+    return any(x.endswith(test_id) for x in _STRATIS_SKIP_TESTS)
 
 
 def get_pool(proxy, pool_name):

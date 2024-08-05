@@ -16,14 +16,13 @@ Test 'stratis report'.
 """
 
 # isort: STDLIB
-import os
 import unittest
 
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
 from stratis_cli._stratisd_constants import ReportKey
 
-from .._misc import TEST_RUNNER, SimTestCase
+from .._misc import TEST_RUNNER, SimTestCase, skip_if_requested
 
 _ERROR = StratisCliErrorCodes.ERROR
 
@@ -35,6 +34,7 @@ class ReportTestCase(SimTestCase):
 
     _MENU = ["--propagate", "report"]
 
+    @unittest.skipIf(skip_if_requested("ReportTestCase.test_report"), "skip requested")
     def test_report(self):
         """
         Test getting stopped pool report.
