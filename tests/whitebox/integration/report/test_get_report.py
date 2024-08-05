@@ -35,12 +35,6 @@ class ReportTestCase(SimTestCase):
 
     _MENU = ["--propagate", "report"]
 
-    @unittest.skipIf(
-        os.getenv("STRATIS_SKIP_UNSTABLE_TEST") is not None,
-        "This test relies on the Report interface's GetReport method which "
-        "does not guarantee the stability, between minor versions of stratisd, "
-        "of the report key arguments that it supports.",
-    )
     def test_report(self):
         """
         Test getting stopped pool report.
