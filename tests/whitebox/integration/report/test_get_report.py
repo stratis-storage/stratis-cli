@@ -41,18 +41,28 @@ class ReportTestCase(SimTestCase):
         """
         TEST_RUNNER(self._MENU + [ReportKey.STOPPED_POOLS.value])
 
+    @unittest.skipIf(
+        skip_if_requested("ReportTestCase.test_report_no_name"), "skip requested"
+    )
     def test_report_no_name(self):
         """
         Test getting engine state report when no name specified.
         """
         TEST_RUNNER(self._MENU)
 
+    @unittest.skipIf(
+        skip_if_requested("ReportTestCase.test_engine_state_report"), "skip requested"
+    )
     def test_engine_state_report(self):
         """
         Test getting engine state report.
         """
         TEST_RUNNER(self._MENU + [ReportKey.ENGINE_STATE.value])
 
+    @unittest.skipIf(
+        skip_if_requested("ReportTestCase.test_managed_objects_report"),
+        "skip requested",
+    )
     def test_managed_objects_report(self):
         """
         Test getting managed_objects report.
