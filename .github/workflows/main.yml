@@ -96,7 +96,7 @@ jobs:
             image: fedora:40  # CURRENT DEVELOPMENT ENVIRONMENT
           - task: make -f Makefile all-tests
             rust_log: RUST_LOG=stratisd=debug
-            image: fedora:34  # LOWEST DEVELOPMENT ENVIRONMENT
+            image: fedora:35  # LOWEST DEVELOPMENT ENVIRONMENT
     runs-on: ubuntu-latest
     container:
       image: ${{ matrix.image }}
@@ -219,7 +219,7 @@ jobs:
               python3-wcwidth
             task: make -f Makefile legacy-package
     runs-on: ubuntu-latest
-    container: fedora:34  # LOWEST DEVELOPMENT ENVIRONMENT
+    container: fedora:35  # LOWEST DEVELOPMENT ENVIRONMENT
     steps:
       - name: Display Python version
         run: python3 --version
