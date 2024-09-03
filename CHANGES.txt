@@ -8,8 +8,14 @@ Lowest supported Python interpreter: 3.9.16
 - Update for r7 D-Bus revision:
   https://github.com/stratis-storage/stratis-cli/pull/1035
 
+- Support v2 metadata changes in display code:
+  https://github.com/stratis-storage/stratis-cli/pull/1023
+
 - Display snapshot origin in filesystem detail view:
   https://github.com/stratis-storage/stratis-cli/pull/1045
+
+- Support getting Stratis filesystem metadata over the D-Bus:
+  https://github.com/stratis-storage/stratis-cli/pull/1089
 
 - Support getting Stratis pool-level metadata over the D-Bus:
   https://github.com/stratis-storage/stratis-cli/pull/1075
@@ -39,6 +45,12 @@ Lowest supported Python interpreter: 3.9.16
   https://github.com/stratis-storage/stratis-cli/pull/1053
 
 - Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/1094
+  https://github.com/stratis-storage/stratis-cli/pull/1093
+  https://github.com/stratis-storage/stratis-cli/pull/1092
+  https://github.com/stratis-storage/stratis-cli/pull/1090
+  https://github.com/stratis-storage/stratis-cli/pull/1088
+  https://github.com/stratis-storage/stratis-cli/pull/1086
   https://github.com/stratis-storage/stratis-cli/pull/1084
   https://github.com/stratis-storage/stratis-cli/pull/1079
   https://github.com/stratis-storage/stratis-cli/pull/1078
