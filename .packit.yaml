@@ -28,3 +28,7 @@ jobs:
     manual_trigger: true
     targets:
       - fedora-all
+
+notifications:
+  pull_request:
+    successful_build: true
