@@ -363,6 +363,34 @@ UUID::
 	  The UUID of the filesystem.
 
 
+FIELDS for stratis filesystem list [(--uuid <uuid> |--name <name>)]
+
+UUID::
+	The UUID of the filesystem.
+
+Name::
+	The name of the filesystem.
+
+Pool::
+	The name of the filesystem's pool.
+
+Device::
+	The device path to use for mounting the filesystem.
+
+Created::
+	The time the filesystem was created.
+
+Snapshot origin::
+	If this filesystem is a snapshot, its origin.
+
+Sizes::
+	The logical size of the Stratis filesystem, the total space actually
+	used, and the logical amount free on the Stratis filesystem. Since
+	every Stratis filesystem holds an XFS filesystem, a new Stratis
+	filesystem will have a non-zero amount used for the XFS filesystem
+	metadata.
+
+
 FIELDS for stratis blockdev list
 
 Pool Name::
