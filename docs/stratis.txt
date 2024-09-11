@@ -134,6 +134,11 @@ filesystem set-size-limit <pool_name> <fs_name> <size_limit>::
            as the filesystem's current size, use the keyword "current".
 filesystem unset-size-limit <pool_name> <fs_name>::
            Remove a filesystem size limit previously set.
+filesystem schedule-revert <pool_name> <snapshot_name>::
+     Set a flag so that when the pool is next started, the specified snapshot
+     will overwrite its origin filesystem.
+filesystem cancel-revert <pool_name> <snapshot_name>::
+     Cancel a scheduled revert.
 filesystem debug get-object-path <(--uuid <uuid> |--name <name>)> ::
      Look up the D-Bus object path for a filesystem given the UUID or name.
 filesystem debug get-metadata <pool_name> [--pretty] [--written] [--fs-name <fs-name>] ::
