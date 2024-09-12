@@ -386,7 +386,9 @@ Created::
 	The time the filesystem was created.
 
 Snapshot origin::
-	If this filesystem is a snapshot, its origin.
+	If this filesystem is a snapshot, its origin. If the filesystem is
+	a snapshot, whether or not it is scheduled to replace its origin
+	next time the pool is started.
 
 Sizes::
 	The logical size of the Stratis filesystem, the total space actually
