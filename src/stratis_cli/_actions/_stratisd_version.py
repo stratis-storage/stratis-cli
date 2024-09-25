@@ -16,7 +16,8 @@ Check version of stratisd
 """
 
 # isort: THIRDPARTY
-from packaging.specifiers import SpecifierSet, Version
+from packaging.specifiers import SpecifierSet
+from packaging.version import Version
 
 from .._errors import StratisCliStratisdVersionError
 from ._connection import get_object

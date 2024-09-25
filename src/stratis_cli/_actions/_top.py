@@ -16,10 +16,11 @@ Miscellaneous top-level actions.
 """
 
 # isort: STDLIB
+import errno
 import json
 import os
 import sys
-from getpass import getpass
+import termios
 
 from .._errors import (
     StratisCliEngineError,
@@ -53,6 +54,45 @@ def _fetch_keylist(proxy):
     return keys
 
 
+def get_pass(prompt):
+    """
+    Prompt for a passphrase on stdin.
+
+    :param str prompt: prompt to display to user when fetching passphrase
+    :return: password
+    :rtype: str or None
+    """
+    print(prompt, end="")
+    sys.stdout.flush()
+    old_attrs = None
+    try:  # pragma: no cover
+        old_attrs = termios.tcgetattr(sys.stdin)
+        new_attrs = termios.tcgetattr(sys.stdin)
+        new_attrs[3] &= ~termios.ECHO
+        new_attrs[3] |= termios.ECHONL
+        termios.tcsetattr(sys.stdin, termios.TCSAFLUSH, new_attrs)
+    except termios.error as err:  # pragma: no cover
+        if err.args[0] == errno.ENOTTY:
+            print(
+                "Warning: this device is not a TTY so the password may be echoed",
+                file=sys.stderr,
+            )
+    except Exception:  # nosec pylint: disable=broad-exception-caught
+        pass
+
+    password = None
+    try:
+        password = sys.stdin.readline()
+    except Exception as err:  # pragma: no cover
+        if old_attrs is not None:
+            termios.tcsetattr(sys.stdin, termios.TCSAFLUSH, old_attrs)
+        raise err
+
+    if old_attrs is not None:
+        termios.tcsetattr(sys.stdin, termios.TCSAFLUSH, old_attrs)  # pragma: no cover
+    return password.strip()
+
+
 def _add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
     """
     Issue a command to set or reset a key in the kernel keyring with the option
@@ -72,8 +112,8 @@ def _add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
     from ._data import Manager
 
     if capture_key:
-        password = getpass(prompt="Enter key data followed by the return key: ")
-        verify = getpass(prompt="Verify key data entered: ")
+        password = get_pass("Enter key data followed by the return key: ")
+        verify = get_pass("Verify key data entered: ")
 
         if password != verify:
             raise StratisCliPassphraseMismatchError()
@@ -97,7 +137,7 @@ def _add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
     )
 
     if fd_is_pipe:
-        os.close(write)
+        os.close(write)  # pyright: ignore [ reportPossiblyUnboundVariable]
     else:
         os.close(file_desc)
 
@@ -118,7 +158,7 @@ class TopActions:
         """
 
         # pylint: disable=import-outside-toplevel
-        if namespace.report_name == ReportKey.MANAGED_OBJECTS.value:
+        if namespace.report_name is ReportKey.MANAGED_OBJECTS:
             from ._data import ObjectManager
 
             json_report = ObjectManager.Methods.GetManagedObjects(
@@ -126,7 +166,7 @@ class TopActions:
             )
 
         else:
-            if namespace.report_name == ReportKey.ENGINE_STATE.value:
+            if namespace.report_name is ReportKey.ENGINE_STATE:
                 from ._data import Manager
 
                 (report, return_code, message) = Manager.Methods.EngineStateReport(
@@ -137,7 +177,7 @@ class TopActions:
                 from ._data import Report
 
                 (report, return_code, message) = Report.Methods.GetReport(
-                    get_object(TOP_OBJECT), {"name": namespace.report_name}
+                    get_object(TOP_OBJECT), {"name": str(namespace.report_name)}
                 )
 
             # The only reason that stratisd has for returning an error code is
@@ -150,7 +190,9 @@ class TopActions:
 
             json_report = json.loads(report)
 
-        json.dump(json_report, sys.stdout, indent=4)
+        json.dump(
+            json_report, sys.stdout, indent=4, sort_keys=(not namespace.no_sort_keys)
+        )
         print(file=sys.stdout)
 
     @staticmethod

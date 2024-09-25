@@ -5,7 +5,7 @@ name: stratis-cli CI
 on:
   push:
     branches:
-      - master
+      - rebase-3.6.0
     paths-ignore:
       - 'CHANGES.txt'
       - '**/README.rst'
@@ -14,7 +14,7 @@ on:
       - '.packit.yaml'
   pull_request:
     branches:
-      - master
+      - rebase-3.6.0
     paths-ignore:
       - 'CHANGES.txt'
       - '**/README.rst'
@@ -41,29 +41,34 @@ jobs:
               python3-packaging
               python3-psutil
               python3-wcwidth
-            task: PYTHONPATH=./src make -f Makefile lint
+            task: >
+              PATH=${PATH}:/github/home/.local/bin PYTHONPATH=./src
+              make -f Makefile lint
           - dependencies: black python3-isort
             task: make -f Makefile fmt-ci
           - dependencies: shfmt
             task: make -f Makefile fmt-shell-ci
     runs-on: ubuntu-latest
-    container: fedora:38  # CURRENT DEVELOPMENT ENVIRONMENT
+    container: fedora:40  # CURRENT DEVELOPMENT ENVIRONMENT
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install dependencies
         run: >
           dnf install -y
           make
+          pip
           python-unversioned-command
           ${{ matrix.dependencies }}
       - name: Display Python version
         run: python --version
+      - name: Install pyright
+        run: pip install --user pyright
       - name: Run test
         run: ${{ matrix.task }}
 
   check-typos:
     runs-on: ubuntu-latest
-    container: fedora:38  # CURRENT DEVELOPMENT ENVIRONMENT
+    container: fedora:40  # CURRENT DEVELOPMENT ENVIRONMENT
     steps:
       - name: Install dependencies
         run: >
@@ -71,12 +76,12 @@ jobs:
           clang
           glibc-static
           make
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@master
         with:
           components: cargo
-          toolchain: 1.73.0  # CURRENT DEVELOPMENT RUST TOOLCHAIN
-      - uses: baptiste0928/cargo-install@v2
+          toolchain: 1.81.0  # CURRENT DEVELOPMENT RUST TOOLCHAIN
+      - uses: baptiste0928/cargo-install@v3
         with:
           crate: typos-cli
       - name: Run test
@@ -86,24 +91,76 @@ jobs:
     strategy:
       matrix:
         include:
-          # MANDATORY CHECKS USING CURRENT DEVELOPMENT ENVIRONMENT
           - task: make -f Makefile all-tests
             rust_log: RUST_LOG=stratisd=debug
-            image: fedora:38  # CURRENT DEVELOPMENT ENVIRONMENT
-          - task: make -f Makefile coverage-no-html
-            rust_log:
-            image: fedora:38  # CURRENT DEVELOPMENT ENVIRONMENT
-          # MANDATORY CHECKS USING LOWEST SUPPORTED ENVIRONMENT PROXY
+            image: fedora:40  # CURRENT DEVELOPMENT ENVIRONMENT
           - task: make -f Makefile all-tests
             rust_log: RUST_LOG=stratisd=debug
-            image: fedora:34  # LOWEST DEVELOPMENT ENVIRONMENT
+            image: fedora:35  # LOWEST DEVELOPMENT ENVIRONMENT
     runs-on: ubuntu-latest
     container:
       image: ${{ matrix.image }}
       # yamllint disable rule:line-length
       options: --privileged --userns=host --ipc=host -v /run/dbus/system_bus_socket:/run/dbus/system_bus_socket:ro -v /usr/share/dbus-1:/usr/share/dbus-1
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: >
+          dnf install -y
+          asciidoc
+          clang
+          cryptsetup-devel
+          device-mapper-devel
+          dbus-devel
+          git
+          glibc-static
+          libblkid-devel
+          make
+          python3-dbus-client-gen
+          python3-dbus-python-client-gen
+          python3-justbytes
+          python3-dateutil
+          python3-packaging
+          python3-psutil
+          python3-wcwidth
+          systemd-devel
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          components: cargo
+          toolchain: 1.71.1  # LOWEST SUPPORTED RUST TOOLCHAIN
+      - name: Check out stratisd
+        run: git clone https://github.com/stratis-storage/stratisd.git
+      - name: Build stratisd
+        run: PROFILEDIR=debug make build-all
+        working-directory: ./stratisd
+      - name: Install stratisd
+        run: PROFILEDIR=debug make install
+        working-directory: ./stratisd
+      - name: Workaround for D-Bus inotify
+        run: cp stratisd.conf /usr/share/dbus-1/system.d
+        working-directory: ./stratisd
+      - name: Run test
+        run: >
+          ${{ matrix.rust_log }}
+          STRATISD=/usr/libexec/stratisd
+          PYTHONPATH=./src
+          ${{ matrix.task }}
+
+  coverage-runs:
+    needs: test-runs
+    strategy:
+      matrix:
+        include:
+          - task: make -f Makefile coverage-no-html
+            rust_log:
+            image: fedora:40  # CURRENT DEVELOPMENT ENVIRONMENT
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ matrix.image }}
+      # yamllint disable rule:line-length
+      options: --privileged --userns=host --ipc=host -v /run/dbus/system_bus_socket:/run/dbus/system_bus_socket:ro -v /usr/share/dbus-1:/usr/share/dbus-1
+    steps:
+      - uses: actions/checkout@v4
       - name: Install dependencies
         run: >
           dnf install -y
@@ -162,11 +219,11 @@ jobs:
               python3-wcwidth
             task: make -f Makefile legacy-package
     runs-on: ubuntu-latest
-    container: fedora:34  # LOWEST DEVELOPMENT ENVIRONMENT
+    container: fedora:35  # LOWEST DEVELOPMENT ENVIRONMENT
     steps:
       - name: Display Python version
         run: python3 --version
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install dependencies
         run: >
           dnf install -y

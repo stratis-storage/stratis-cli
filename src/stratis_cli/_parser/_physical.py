@@ -27,8 +27,6 @@ PHYSICAL_SUBCMDS = [
                 (
                     "pool_name",
                     {
-                        "action": "store",
-                        "default": None,
                         "nargs": "?",
                         "help": "Pool name",
                     },
@@ -40,7 +38,7 @@ PHYSICAL_SUBCMDS = [
     (
         "debug",
         {
-            "help": ("Miscellaneous blockdev-level debug commands"),
+            "help": "Miscellaneous blockdev-level debug commands",
             "subcmds": BLOCKDEV_DEBUG_SUBCMDS,
         },
     ),

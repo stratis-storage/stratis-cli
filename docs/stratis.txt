@@ -103,6 +103,11 @@ pool explain <code> ::
      "warning", or an "E" for "error".
 pool debug get-object-path <(--uuid <uuid> |--name <name>)> ::
      Look up the D-Bus object path for a pool given the UUID or name.
+pool debug get-metadata [--pretty] [--written] <(--uuid <uuid> |--name <name>)> ::
+     Get the pool-level metadata for the specified pool. If '--written' is not
+     set, get metadata that would be written if metadata were written now,
+     otherwise get the most recently written metadata. If '--pretty' is set,
+     format prettily, otherwise print all on one line.
 filesystem create <pool_name> <fs_name> [<fs_name>..] [--size <size>] [--size-limit <size_limit>]::
 	   Create one or more filesystems from the specified pool.
            If the '--size' option is specified, make each filesystem the
@@ -131,6 +136,12 @@ filesystem unset-size-limit <pool_name> <fs_name>::
            Remove a filesystem size limit previously set.
 filesystem debug get-object-path <(--uuid <uuid> |--name <name>)> ::
      Look up the D-Bus object path for a filesystem given the UUID or name.
+filesystem debug get-metadata <pool_name> [--pretty] [--written] [--fs-name <fs-name>] ::
+     Get the filesystem metadata for the specified pool and optionally
+     specified filesystem. If '--written' is not set, get metadata that would
+     be written if metadata were written now, otherwise get the most recently
+     written metadata. If '--pretty' is set, format prettily, otherwise print
+     all on one line.
 blockdev list [pool_name]::
 	 List all blockdevs that make up the specified pool, or all pools, if
 	 no pool name is given.
@@ -145,11 +156,13 @@ key reset <(--keyfile-path <path> | --capture-key)> <key_desc>::
 key unset <key_desc>::
      Unset a key in the kernel keyring so it is no longer available for encryption
      operations.
-report <report_name>::
+report <report_name> [--no-sort-keys]::
         Get a report from the daemon regarding its internal state.
         The engine_state_report name will be supported in future releases.
         Any other report name should be considered unstable and may be removed
-        in a future release. The JSON schema of any report must always be considered unstable.
+        in a future release. The JSON schema of any report must always be
+        considered unstable. The keys in the JSON schema are sorted in the
+        output, unless the --no-sort-keys option is set.
 daemon version::
         Show the Stratis service's version.
 debug refresh::
@@ -247,6 +260,55 @@ Key Description::
 Clevis::
 	  The status of Clevis encryption ("present" or "N/A").
 
+FIELDS for stratis pool list [(--uuid <uuid> |--name <name>)]
+
+UUID::
+	The UUID of the pool.
+
+Name::
+	The name of the pool.
+
+Alerts::
+	A list of all alerts on the pool, as a text summary.
+
+Actions Allowed::
+	What actions may be taken on the pool. Generally the pool will be
+	listed as fully operational.
+
+Cache::
+	Whether or not the pool has a cache.
+
+Filesystem Limit::
+	The maximum number of filesystems the pool allows.
+
+Allows Overprovisioning::
+	Whether or not the pool allows overprovisioning.
+
+Key Description::
+	The key description, if the pool is encrypted using a key in the
+	kernel keyring.
+
+Clevis Configuration::
+	The Clevis configuration, if the pool is encrypted via Clevis.
+
+Space Usage: Fully Allocated::
+	Whether or not all the space on a pool's devices has been allocated
+	for some purpose.
+
+Space Usage: Size::
+	The total size of all the devices in the pool.
+
+Space Usage: Allocated::
+	The space on the devices allocated for some purpose, e.g., to store
+	Stratis filesystem metadata or user data. Once space has been allocated
+	for one purpose, it can not, in general, be reclaimed and used for
+        another purpose.
+
+Space Usage: Used::
+	The space on the devices that is in use. Used space can be reclaimed.
+	For example, destroying a Stratis filesystem will reduce this value.
+
+
 FIELDS for stratis filesystem list
 
 Pool::
@@ -261,6 +323,34 @@ Device::
 	  The device path to use for mounting the filesystem.
 UUID::
 	  The UUID of the filesystem.
+
+
+FIELDS for stratis filesystem list [(--uuid <uuid> |--name <name>)]
+
+UUID::
+	The UUID of the filesystem.
+
+Name::
+	The name of the filesystem.
+
+Pool::
+	The name of the filesystem's pool.
+
+Device::
+	The device path to use for mounting the filesystem.
+
+Created::
+	The time the filesystem was created.
+
+Snapshot origin::
+	If this filesystem is a snapshot, its origin.
+
+Sizes::
+	The logical size of the Stratis filesystem, the total space actually
+	used, and the logical amount free on the Stratis filesystem. Since
+	every Stratis filesystem holds an XFS filesystem, a new Stratis
+	filesystem will have a non-zero amount used for the XFS filesystem
+	metadata.
 
 
 FIELDS for stratis blockdev list

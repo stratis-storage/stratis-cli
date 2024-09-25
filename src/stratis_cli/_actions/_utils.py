@@ -20,11 +20,7 @@ Miscellaneous functions.
 import json
 from uuid import UUID
 
-from .._constants import PoolIdType
-from .._errors import (
-    StratisCliMissingClevisTangURLError,
-    StratisCliMissingClevisThumbprintError,
-)
+from .._constants import Clevis
 from .._stratisd_constants import (
     CLEVIS_KEY_TANG_TRUST_URL,
     CLEVIS_KEY_THP,
@@ -52,40 +48,36 @@ class ClevisInfo:
         self.config = config
 
     @staticmethod
-    def get_info_from_namespace(namespace):
+    def get_info(options):
         """
-        Get clevis info, if any, from the namespace.
+        Get clevis info from the clevis options.
 
-        :param namespace: namespace set up by the parser
+        :param options: ClevisEncryptionOptions
 
         :returns: clevis info or None
         :rtype: ClevisInfo or NoneType
         """
-        clevis_info = None
-        if namespace.clevis is not None:
-            if namespace.clevis in ("nbde", "tang"):
-                if namespace.tang_url is None:
-                    raise StratisCliMissingClevisTangURLError()
+        if options.clevis in (Clevis.NBDE, Clevis.TANG):
+            assert options.tang_url is not None
 
-                if not namespace.trust_url and namespace.thumbprint is None:
-                    raise StratisCliMissingClevisThumbprintError()
+            assert options.trust_url or options.thumbprint is not None
 
-                clevis_config = {CLEVIS_KEY_URL: namespace.tang_url}
-                if namespace.trust_url:
-                    clevis_config[CLEVIS_KEY_TANG_TRUST_URL] = True
-                else:
-                    assert namespace.thumbprint is not None
-                    clevis_config[CLEVIS_KEY_THP] = namespace.thumbprint
-
-                clevis_info = ClevisInfo(CLEVIS_PIN_TANG, clevis_config)
-
-            elif namespace.clevis == "tpm2":
-                clevis_info = ClevisInfo(CLEVIS_PIN_TPM2, {})
-
+            clevis_config = {CLEVIS_KEY_URL: options.tang_url}
+            if options.trust_url:
+                clevis_config[CLEVIS_KEY_TANG_TRUST_URL] = True
             else:
-                raise AssertionError(
-                    f"unexpected value {namespace.clevis} for clevis option"
-                )  # pragma: no cover
+                assert options.thumbprint is not None
+                clevis_config[CLEVIS_KEY_THP] = options.thumbprint
+
+            clevis_info = ClevisInfo(CLEVIS_PIN_TANG, clevis_config)
+
+        elif options.clevis is Clevis.TPM2:
+            clevis_info = ClevisInfo(CLEVIS_PIN_TPM2, {})
+
+        else:
+            raise AssertionError(
+                f"unexpected value {options.clevis} for clevis option"
+            )  # pragma: no cover
 
         return clevis_info
 
@@ -127,7 +119,7 @@ class EncryptionInfoClevis(EncryptionInfo):  # pylint: disable=too-few-public-me
         if hasattr(self, "value"):  # pragma: no cover
             value = self.value
             if value is not None:
-                (pin, config) = value
+                (pin, config) = value  # pyright: ignore [ reportGeneralTypeIssues ]
                 self.value = ClevisInfo(str(pin), json.loads(str(config)))
 
 
@@ -193,15 +185,13 @@ class PoolSelector:
     Methods to help locate a pool by one of its identifiers.
     """
 
-    def __init__(self, pool_id_type, value):
+    def __init__(self, pool_id):
         """
         Initializer.
 
-        :param PoolIdType pool_id_type: the id type
-        :param object value: the value, determined by the type
+        :param Id pool_id: the id
         """
-        self.pool_id_type = pool_id_type
-        self.value = value
+        self.pool_id = pool_id
 
     def managed_objects_key(self):
         """
@@ -209,11 +199,7 @@ class PoolSelector:
         :rtype: dict of str * object
         :returns: a dict containing a correct configuration for pools() method
         """
-        return (
-            {"Uuid": self.value.hex}
-            if self.pool_id_type is PoolIdType.UUID
-            else {"Name": self.value}
-        )
+        return self.pool_id.managed_objects_key()
 
     def stopped_pools_func(self):
         """
@@ -221,20 +207,13 @@ class PoolSelector:
         :returns: a function for selecting from StoppedPools items
         :rtype: (str * (dict of (str * object))) -> bool
         """
-        if self.pool_id_type is PoolIdType.UUID:
-            selection_value = self.value.hex
+        selection_value = self.pool_id.dbus_value()
 
-            def selection_func(uuid, _info):
-                return uuid == selection_value
-
-        else:
-            selection_value = self.value
-
-            def selection_func(_uuid, info):
-                return info.get("name") == selection_value
-
-        return selection_func
+        return (
+            (lambda uuid, info: uuid == selection_value)
+            if self.pool_id.is_uuid()
+            else (lambda uuid, info: info.get("name") == selection_value)
+        )
 
     def __str__(self):
-        pool_id_type_str = "UUID" if self.pool_id_type is PoolIdType.UUID else "name"
-        return f"pool with {pool_id_type_str} {self.value}"
+        return f"pool with {self.pool_id}"

@@ -37,10 +37,15 @@ def run():
         """
         Run according to the arguments passed.
         """
-        result = parser.parse_args(command_line_args)
+        namespace = parser.parse_args(command_line_args)
+
+        post_parser = getattr(namespace, "post_parser", None)
+        if post_parser is not None:
+            post_parser(namespace).verify(namespace, parser)
+
         try:
             try:
-                result.func(result)
+                namespace.func(namespace)
 
             # Keyboard Interrupt is recaught at the outermost possible layer.
             # It is outside the regular execution of the program, so it is
@@ -56,9 +61,9 @@ def run():
             ) as err:
                 raise err
             except BaseException as err:
-                raise StratisCliActionError(command_line_args, result) from err
+                raise StratisCliActionError(command_line_args, namespace) from err
         except StratisCliActionError as err:
-            if result.propagate:
+            if namespace.propagate:
                 raise
 
             handle_error(err)

@@ -16,9 +16,9 @@ Miscellaneous logical actions.
 """
 
 # isort: THIRDPARTY
-from dateutil import parser as date_parser
 from justbytes import Range
 
+from .._constants import Id, IdType
 from .._errors import (
     StratisCliEngineError,
     StratisCliFsSizeLimitChangeError,
@@ -29,13 +29,8 @@ from .._errors import (
 from .._stratisd_constants import StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
-from ._formatting import (
-    TOTAL_USED_FREE,
-    get_property,
-    get_uuid_formatter,
-    print_table,
-    size_triple,
-)
+from ._formatting import get_uuid_formatter
+from ._list_filesystem import list_filesystems
 
 
 class LogicalActions:
@@ -122,81 +117,25 @@ class LogicalActions:
         """
         List the volumes in a pool.
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import MOFilesystem, MOPool, ObjectManager, filesystems, pools
-
         # This method is invoked as the default for "stratis filesystem";
-        # the namespace may not have a pool_name field.
-        pool_name = getattr(namespace, "pool_name", None)
-
-        proxy = get_object(TOP_OBJECT)
-        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-
-        filesystems_with_props = [
-            MOFilesystem(info)
-            for objpath, info in filesystems(
-                props=None
-                if pool_name is None
-                else {
-                    "Pool": next(
-                        pools(props={"Name": pool_name})
-                        .require_unique_match(True)
-                        .search(managed_objects)
-                    )[0]
-                }
-            ).search(managed_objects)
-        ]
-
-        path_to_name = dict(
-            (path, MOPool(info).Name())
-            for path, info in pools(
-                props=None if pool_name is None else {"Name": pool_name}
-            ).search(managed_objects)
+        # these namespace fields may not have been set.
+        (pool_name, fs_uuid, fs_name) = (
+            getattr(namespace, "pool_name", None),
+            getattr(namespace, "uuid", None),
+            getattr(namespace, "name", None),
         )
 
-        def filesystem_size_quartet(dbus_props):
-            """
-            Calculate the triple to display for filesystem size.
+        assert (fs_name is None and fs_uuid is None) or pool_name is not None
 
-            :param dbus_props: filesystem D-Bus properties
-            :type dbus_props: MOFilesystem
+        uuid_formatter = get_uuid_formatter(namespace.unhyphenated_uuids)
 
-            :returns: a string a formatted string showing all three values
-            :rtype: str
-            """
-            total = Range(dbus_props.Size())
-            used = get_property(dbus_props.Used(), Range, None)
-            limit = get_property(dbus_props.SizeLimit(), Range, None)
-            return f'{size_triple(total, used)} / {"None" if limit is None else limit}'
-
-        format_uuid = get_uuid_formatter(namespace.unhyphenated_uuids)
-
-        tables = [
-            (
-                path_to_name[mofilesystem.Pool()],
-                mofilesystem.Name(),
-                filesystem_size_quartet(mofilesystem),
-                date_parser.parse(mofilesystem.Created())
-                .astimezone()
-                .strftime("%b %d %Y %H:%M"),
-                mofilesystem.Devnode(),
-                format_uuid(mofilesystem.Uuid()),
-            )
-            for mofilesystem in filesystems_with_props
-        ]
-
-        print_table(
-            [
-                "Pool",
-                "Filesystem",
-                f"{TOTAL_USED_FREE} / Limit",
-                "Created",
-                "Device",
-                "UUID",
-            ],
-            sorted(tables, key=lambda entry: (entry[0], entry[1])),
-            ["<", "<", "<", "<", "<", "<"],
+        fs_id = (
+            (None if fs_name is None else Id(IdType.NAME, fs_name))
+            if fs_uuid is None
+            else Id(IdType.UUID, fs_uuid)
         )
+
+        return list_filesystems(uuid_formatter, pool_name=pool_name, fs_id=fs_id)
 
     @staticmethod
     def destroy_volumes(namespace):
@@ -354,20 +293,20 @@ class LogicalActions:
             .search(managed_objects)
         )
 
-        limit = namespace.limit
+        (limit, user_input) = namespace.limit
         mofs = MOFilesystem(fs_info)
 
-        new_limit = str(mofs.Size() if limit == "current" else limit[0].magnitude)
+        new_limit = Range(int(str(mofs.Size()))) if user_input == "current" else limit
 
         valid, maybe_size_limit = mofs.SizeLimit()
 
-        if valid and new_limit == maybe_size_limit:
+        if valid and new_limit.magnitude == int(str(maybe_size_limit)):
             raise StratisCliFsSizeLimitChangeError(
-                Range(new_limit) if limit == "current" else limit[1]
+                new_limit if limit == "current" else user_input
             )
 
         Filesystem.Properties.SizeLimit.Set(
-            get_object(fs_object_path), (True, new_limit)
+            get_object(fs_object_path), (True, new_limit.magnitude)
         )
 
     @staticmethod

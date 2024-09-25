@@ -80,13 +80,23 @@ def _non_existent_or_inconsistent_to_str(
 def list_pools(uuid_formatter, *, stopped=False, selection=None):
     """
     List the specified information about pools.
+    :param uuid_formatter: how to format UUIDs
+    :type uuid_formatter: (str or UUID) -> str
+    :param bool stopped: True if stopped pools should be listed, else False
+    :param PoolSelector selection: how to select pools to list
     """
-    klass = (
-        Stopped(uuid_formatter, selection=selection)
-        if stopped
-        else Default(uuid_formatter, selection=selection)
-    )
-    klass.list_pools()
+    if stopped:
+        if selection is None:
+            klass = StoppedTable(uuid_formatter)
+        else:
+            klass = StoppedDetail(uuid_formatter, selection)
+    else:
+        if selection is None:
+            klass = DefaultTable(uuid_formatter)
+        else:
+            klass = DefaultDetail(uuid_formatter, selection)
+
+    klass.display()
 
 
 def _clevis_to_str(clevis_info):  # pragma: no cover
@@ -102,25 +112,13 @@ def _clevis_to_str(clevis_info):  # pragma: no cover
     return f"{clevis_info.pin}   {config_string}"
 
 
-class List(ABC):  # pylint: disable=too-few-public-methods
+class List(ABC):  # pylint:disable=too-few-public-methods
     """
     Handle listing a pool or pools.
     """
 
-    def __init__(self, uuid_formatter, *, selection=None):
-        """
-        Initialize a List object.
-        :param uuid_formatter: function to format a UUID str or UUID
-        :param uuid_formatter: str or UUID -> str
-        :param bool stopped: whether to list stopped pools
-        :param selection: how to select the pool to display
-        :type selection: pair of str * object or NoneType
-        """
-        self.uuid_formatter = uuid_formatter
-        self.selection = selection
-
     @abstractmethod
-    def list_pools(self):
+    def display(self):
         """
         List the pools.
         """
@@ -130,32 +128,6 @@ class Default(List):
     """
     Handle listing the pools that are listed by default.
     """
-
-    @staticmethod
-    def alert_string(codes):
-        """
-        Alert information to display, if any
-
-        :param codes: list of error codes to display
-        :type codes: list of PoolErrorCode
-
-        :returns: string w/ alert information, "" if no alert
-        :rtype: str
-        """
-        return ", ".join(sorted(str(code) for code in codes))
-
-    @staticmethod
-    def alert_summary(codes):
-        """
-        Alert summary to display, if any
-
-        :param codes: list of error codes to display
-        :type codes: list of PoolErrorCode
-
-        :returns: string with alert summary
-        :rtype: str
-        """
-        return [f"{code}: {code.summarize()}" for code in codes]
 
     @staticmethod
     def alert_codes(mopool):
@@ -230,6 +202,35 @@ class Default(List):
             return [PoolDeviceSizeChangeCode.DEVICE_SIZE_DECREASED]
         return []
 
+
+class DefaultDetail(Default):
+    """
+    List one pool with a detail view.
+    """
+
+    def __init__(self, uuid_formatter, selection):
+        """
+        Initializer.
+        :param uuid_formatter: function to format a UUID str or UUID
+        :param uuid_formatter: str or UUID -> str
+        :param PoolSelector selection: how to select pools to list
+        """
+        self.uuid_formatter = uuid_formatter
+        self.selection = selection
+
+    @staticmethod
+    def alert_summary(codes):
+        """
+        Alert summary to display, if any
+
+        :param codes: list of error codes to display
+        :type codes: list of PoolErrorCode
+
+        :returns: string with alert summary
+        :rtype: str
+        """
+        return [f"{code}: {code.summarize()}" for code in codes]
+
     def _print_detail_view(self, mopool, size_change_codes):
         """
         Print the detailed view for a single pool.
@@ -271,7 +272,8 @@ class Default(List):
 
         clevis_info_str = (
             _non_existent_or_inconsistent_to_str(
-                EncryptionInfoClevis(mopool.ClevisInfo()), interp=_clevis_to_str
+                EncryptionInfoClevis(mopool.ClevisInfo()),
+                interp=_clevis_to_str,  # pyright: ignore [ reportArgumentType ]
             )
             if encrypted
             else "unencrypted"
@@ -292,9 +294,61 @@ class Default(List):
 
         print(f"    Used: {total_physical_used_str}")
 
-    def list_pools(self):  # pylint: disable=too-many-locals
+    def display(self):
         """
-        List all pools that are listed by default. These are all started pools.
+        List a single pool in detail.
+        """
+        # pylint: disable=import-outside-toplevel
+        from ._data import MOPool, ObjectManager, devs, pools
+
+        proxy = get_object(TOP_OBJECT)
+
+        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
+
+        (pool_object_path, mopool) = next(
+            pools(props=self.selection.managed_objects_key())
+            .require_unique_match(True)
+            .search(managed_objects)
+        )
+
+        (increased, decreased) = self._pools_with_changed_devs(
+            devs(props={"Pool": pool_object_path}).search(managed_objects)
+        )
+
+        device_change_codes = self._from_sets(pool_object_path, increased, decreased)
+
+        self._print_detail_view(MOPool(mopool), device_change_codes)
+
+
+class DefaultTable(Default):
+    """
+    List several pools with a table view.
+    """
+
+    def __init__(self, uuid_formatter):
+        """
+        Initializer.
+        :param uuid_formatter: function to format a UUID str or UUID
+        :param uuid_formatter: str or UUID -> str
+        """
+        self.uuid_formatter = uuid_formatter
+
+    @staticmethod
+    def alert_string(codes):
+        """
+        Alert information to display, if any
+
+        :param codes: list of error codes to display
+        :type codes: list of PoolErrorCode
+
+        :returns: string w/ alert information, "" if no alert
+        :rtype: str
+        """
+        return ", ".join(sorted(str(code) for code in codes))
+
+    def display(self):
+        """
+        List pools in table view.
         """
         # pylint: disable=import-outside-toplevel
         from ._data import MOPool, ObjectManager, devs, pools
@@ -355,58 +409,40 @@ class Default(List):
             return ",".join(gen_string(x, y) for x, y in props_list)
 
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        if self.selection is None:
-            (increased, decreased) = self._pools_with_changed_devs(
-                devs().search(managed_objects)
+
+        (increased, decreased) = self._pools_with_changed_devs(
+            devs().search(managed_objects)
+        )
+
+        pools_with_props = [
+            (objpath, MOPool(info)) for objpath, info in pools().search(managed_objects)
+        ]
+
+        tables = [
+            (
+                mopool.Name(),
+                physical_size_triple(mopool),
+                properties_string(mopool),
+                self.uuid_formatter(mopool.Uuid()),
+                self.alert_string(
+                    self.alert_codes(mopool)
+                    + self._from_sets(pool_object_path, increased, decreased)
+                ),
             )
+            for (pool_object_path, mopool) in pools_with_props
+        ]
 
-            pools_with_props = [
-                (objpath, MOPool(info))
-                for objpath, info in pools().search(managed_objects)
-            ]
-
-            tables = [
-                (
-                    mopool.Name(),
-                    physical_size_triple(mopool),
-                    properties_string(mopool),
-                    self.uuid_formatter(mopool.Uuid()),
-                    self.alert_string(
-                        self.alert_codes(mopool)
-                        + self._from_sets(pool_object_path, increased, decreased)
-                    ),
-                )
-                for (pool_object_path, mopool) in pools_with_props
-            ]
-
-            print_table(
-                [
-                    "Name",
-                    TOTAL_USED_FREE,
-                    "Properties",
-                    "UUID",
-                    "Alerts",
-                ],
-                sorted(tables, key=lambda entry: entry[0]),
-                ["<", ">", ">", ">", "<"],
-            )
-
-        else:
-            (pool_object_path, mopool) = next(
-                pools(props=self.selection.managed_objects_key())
-                .require_unique_match(True)
-                .search(managed_objects)
-            )
-
-            (increased, decreased) = self._pools_with_changed_devs(
-                devs(props={"Pool": pool_object_path}).search(managed_objects)
-            )
-
-            device_change_codes = self._from_sets(
-                pool_object_path, increased, decreased
-            )
-
-            self._print_detail_view(MOPool(mopool), device_change_codes)
+        print_table(
+            [
+                "Name",
+                TOTAL_USED_FREE,
+                "Properties",
+                "UUID",
+                "Alerts",
+            ],
+            sorted(tables, key=lambda entry: entry[0]),
+            ["<", ">", ">", ">", "<"],
+        )
 
 
 class Stopped(List):  # pylint: disable=too-few-public-methods
@@ -423,6 +459,22 @@ class Stopped(List):  # pylint: disable=too-few-public-methods
         :type maybe_value: str or NoneType
         """
         return "<UNAVAILABLE>" if maybe_value is None else maybe_value
+
+
+class StoppedDetail(Stopped):  # pylint: disable=too-few-public-methods
+    """
+    Detailed view of one stopped pool.
+    """
+
+    def __init__(self, uuid_formatter, selection):
+        """
+        Initializer.
+        :param uuid_formatter: function to format a UUID str or UUID
+        :param uuid_formatter: str or UUID -> str
+        :param PoolSelector selection: how to select pools to list
+        """
+        self.uuid_formatter = uuid_formatter
+        self.selection = selection
 
     def _print_detail_view(self, pool_uuid, pool):
         """
@@ -449,7 +501,8 @@ class Stopped(List):  # pylint: disable=too-few-public-methods
             "unencrypted"
             if clevis_info is None
             else _non_existent_or_inconsistent_to_str(
-                clevis_info, interp=_clevis_to_str
+                clevis_info,
+                interp=_clevis_to_str,  # pyright: ignore [ reportArgumentType ]
             )
         )
         print(f"Clevis Configuration: {clevis_info_str}")
@@ -458,11 +511,49 @@ class Stopped(List):  # pylint: disable=too-few-public-methods
         for dev in pool.devs:
             print(f"{self.uuid_formatter(dev.uuid)}  {dev.devnode}")
 
-    def list_pools(self):
+    def display(self):
+        """
+        Display info about a stopped pool.
+        """
+
+        proxy = get_object(TOP_OBJECT)
+        stopped_pools = _fetch_stopped_pools_property(proxy)
+        selection_func = self.selection.stopped_pools_func()
+
+        stopped_pool = next(
+            (
+                (uuid, info)
+                for (uuid, info) in stopped_pools.items()
+                if selection_func(uuid, info)
+            ),
+            None,
+        )
+
+        if stopped_pool is None:
+            raise StratisCliResourceNotFoundError("list", str(self.selection))
+
+        (pool_uuid, pool) = stopped_pool
+
+        self._print_detail_view(pool_uuid, StoppedPool(pool))
+
+
+class StoppedTable(Stopped):  # pylint: disable=too-few-public-methods
+    """
+    Table view of one or many stopped pools.
+    """
+
+    def __init__(self, uuid_formatter):
+        """
+        Initializer.
+        :param uuid_formatter: function to format a UUID str or UUID
+        :param uuid_formatter: str or UUID -> str
+        """
+        self.uuid_formatter = uuid_formatter
+
+    def display(self):
         """
         List stopped pools.
         """
-
         proxy = get_object(TOP_OBJECT)
 
         stopped_pools = _fetch_stopped_pools_property(proxy)
@@ -472,7 +563,8 @@ class Stopped(List):  # pylint: disable=too-few-public-methods
                 return "unencrypted"
 
             return _non_existent_or_inconsistent_to_str(
-                value, interp=lambda _: "present"
+                value,
+                interp=lambda _: "present",  # pyright: ignore [ reportArgumentType ]
             )  # pragma: no cover
 
         def key_description_str(value):
@@ -481,42 +573,22 @@ class Stopped(List):  # pylint: disable=too-few-public-methods
 
             return _non_existent_or_inconsistent_to_str(value)
 
-        if self.selection is None:
-            tables = [
-                (
-                    self._pool_name(sp.name),
-                    self.uuid_formatter(pool_uuid),
-                    str(len(sp.devs)),
-                    key_description_str(sp.key_description),
-                    clevis_str(sp.clevis_info),
-                )
-                for pool_uuid, sp in (
-                    (pool_uuid, StoppedPool(info))
-                    for pool_uuid, info in stopped_pools.items()
-                )
-            ]
-
-            print_table(
-                ["Name", "UUID", "# Devices", "Key Description", "Clevis"],
-                sorted(tables, key=lambda entry: entry[0]),
-                ["<", "<", ">", "<", "<"],
+        tables = [
+            (
+                self._pool_name(sp.name),
+                self.uuid_formatter(pool_uuid),
+                str(len(sp.devs)),
+                key_description_str(sp.key_description),
+                clevis_str(sp.clevis_info),
             )
-
-        else:
-            selection_func = self.selection.stopped_pools_func()
-
-            stopped_pool = next(
-                (
-                    (uuid, info)
-                    for (uuid, info) in stopped_pools.items()
-                    if selection_func(uuid, info)
-                ),
-                None,
+            for pool_uuid, sp in (
+                (pool_uuid, StoppedPool(info))
+                for pool_uuid, info in stopped_pools.items()
             )
+        ]
 
-            if stopped_pool is None:
-                raise StratisCliResourceNotFoundError("list", str(self.selection))
-
-            (pool_uuid, pool) = stopped_pool
-
-            self._print_detail_view(pool_uuid, StoppedPool(pool))
+        print_table(
+            ["Name", "UUID", "# Devices", "Key Description", "Clevis"],
+            sorted(tables, key=lambda entry: entry[0]),
+            ["<", "<", ">", "<", "<"],
+        )

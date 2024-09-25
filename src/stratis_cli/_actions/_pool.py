@@ -25,7 +25,7 @@ from uuid import UUID
 # isort: THIRDPARTY
 from justbytes import Range
 
-from .._constants import PoolIdType, YesOrNo
+from .._constants import Id, IdType
 from .._error_codes import PoolErrorCode
 from .._errors import (
     StratisCliEngineError,
@@ -105,9 +105,11 @@ def _check_opposite_tier(managed_objects, to_be_added, other_tier):
     if pools_to_blockdevs:
         raise StratisCliInUseOtherTierError(
             pools_to_blockdevs,
-            BlockDevTiers.DATA
-            if other_tier == BlockDevTiers.CACHE
-            else BlockDevTiers.CACHE,
+            (
+                BlockDevTiers.DATA
+                if other_tier == BlockDevTiers.CACHE
+                else BlockDevTiers.CACHE
+            ),
         )
 
 
@@ -176,7 +178,9 @@ class PoolActions:
 
         _check_same_tier(pool_name, managed_objects, blockdevs, BlockDevTiers.DATA)
 
-        clevis_info = ClevisInfo.get_info_from_namespace(namespace)
+        clevis_info = (
+            None if namespace.clevis is None else ClevisInfo.get_info(namespace.clevis)
+        )
 
         (
             (changed, (pool_object_path, _)),
@@ -192,9 +196,11 @@ class PoolActions:
                     if namespace.key_desc is not None
                     else (False, "")
                 ),
-                "clevis_info": (False, ("", ""))
-                if clevis_info is None
-                else (True, (clevis_info.pin, json.dumps(clevis_info.config))),
+                "clevis_info": (
+                    (False, ("", ""))
+                    if clevis_info is None
+                    else (True, (clevis_info.pin, json.dumps(clevis_info.config)))
+                ),
             },
         )
 
@@ -227,7 +233,7 @@ class PoolActions:
 
         (pool_id, id_type) = (
             (namespace.uuid.hex, "uuid")
-            if getattr(namespace, "name") is None
+            if namespace.name is None
             else (namespace.name, "name")
         )
 
@@ -260,7 +266,7 @@ class PoolActions:
 
         (pool_id, id_type) = (
             (namespace.uuid.hex, "uuid")
-            if getattr(namespace, "name") is None
+            if namespace.name is None
             else (namespace.name, "name")
         )
 
@@ -269,9 +275,11 @@ class PoolActions:
             {
                 "id": pool_id,
                 "id_type": id_type,
-                "unlock_method": (False, "")
-                if namespace.unlock_method is None
-                else (True, namespace.unlock_method),
+                "unlock_method": (
+                    (False, "")
+                    if namespace.unlock_method is None
+                    else (True, str(namespace.unlock_method))
+                ),
             },
         )
 
@@ -352,9 +360,9 @@ class PoolActions:
         uuid_formatter = get_uuid_formatter(namespace.unhyphenated_uuids)
 
         selection = (
-            (None if pool_name is None else PoolSelector(PoolIdType.NAME, pool_name))
+            (None if pool_name is None else PoolSelector(Id(IdType.NAME, pool_name)))
             if pool_uuid is None
-            else PoolSelector(PoolIdType.UUID, pool_uuid)
+            else PoolSelector(Id(IdType.UUID, pool_uuid))
         )
 
         return list_pools(uuid_formatter, stopped=stopped, selection=selection)
@@ -689,7 +697,7 @@ class PoolActions:
         # pylint: disable=import-outside-toplevel
         from ._data import MOPool, ObjectManager, Pool, pools
 
-        decision = bool(YesOrNo(namespace.decision))
+        decision = bool(namespace.decision)
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})

@@ -73,3 +73,72 @@ class DebugTestCase(SimTestCase):
             self._FSNAME,
         ]
         TEST_RUNNER(command_line)
+
+    def test_metadata_name(self):
+        """
+        Test getting filesystem metadata.
+        """
+        command_line = ["filesystem", "create", self._POOLNAME, "newname"]
+        RUNNER(command_line)
+
+        command_line = self._MENU + [
+            "get-metadata",
+            self._POOLNAME,
+        ]
+        TEST_RUNNER(command_line)
+
+    def test_metadata_name_pretty(self):
+        """
+        Test getting filesystem metadata and pretty printing it.
+        """
+        command_line = ["filesystem", "create", self._POOLNAME, "newname"]
+        RUNNER(command_line)
+
+        command_line = self._MENU + [
+            "get-metadata",
+            self._POOLNAME,
+            "--pretty",
+        ]
+        TEST_RUNNER(command_line)
+
+    def test_metadata_name_pretty_fs_name(self):
+        """
+        Test getting filesystem metadata and pretty printing it, specifying
+        the filesystem name.
+        """
+        command_line = ["filesystem", "create", self._POOLNAME, "newname"]
+        RUNNER(command_line)
+
+        command_line = self._MENU + [
+            "get-metadata",
+            self._POOLNAME,
+            "--pretty",
+            "--fs-name=newname",
+        ]
+        TEST_RUNNER(command_line)
+
+    def test_metadata_name_fs_name_not_present(self):
+        """
+        Test getting filesystem metadata specifying a filename that does not
+        actually exist.
+        """
+
+        command_line = ["filesystem", "create", self._POOLNAME, "newname"]
+        RUNNER(command_line)
+
+        command_line = self._MENU + [
+            "get-metadata",
+            self._POOLNAME,
+            "--fs-name=fakename",
+        ]
+        TEST_RUNNER(command_line)
+
+    def test_metadata_name_no_fss(self):
+        """
+        Test printing when no filesystems present.
+        """
+        command_line = self._MENU + [
+            "get-metadata",
+            self._POOLNAME,
+        ]
+        TEST_RUNNER(command_line)

@@ -22,7 +22,7 @@ KEY_SUBCMDS = [
         "set",
         {
             "help": "Set a key in the kernel keyring",
-            "args": [("keydesc", {"action": "store", "help": "key description"})],
+            "args": [("keydesc", {"help": "key description"})],
             "mut_ex_args": [
                 (
                     True,
@@ -30,12 +30,10 @@ KEY_SUBCMDS = [
                         (
                             "--keyfile-path",
                             {
-                                "action": "store",
                                 "help": (
                                     "Path to the key file containing a key to set "
                                     "in the keyring"
                                 ),
-                                "dest": "keyfile_path",
                             },
                         ),
                         (
@@ -46,7 +44,6 @@ KEY_SUBCMDS = [
                                     "Read key from stdin with no terminal echo or "
                                     "userspace buffer storage"
                                 ),
-                                "dest": "capture_key",
                             },
                         ),
                     ],
@@ -59,7 +56,7 @@ KEY_SUBCMDS = [
         "reset",
         {
             "help": "Reset an existing key in the kernel keyring",
-            "args": [("keydesc", {"action": "store", "help": "key description"})],
+            "args": [("keydesc", {"help": "key description"})],
             "mut_ex_args": [
                 (
                     True,
@@ -67,12 +64,10 @@ KEY_SUBCMDS = [
                         (
                             "--keyfile-path",
                             {
-                                "action": "store",
                                 "help": (
                                     "Path to the key file containing a key to reset "
                                     "in the keyring"
                                 ),
-                                "dest": "keyfile_path",
                             },
                         ),
                         (
@@ -83,7 +78,6 @@ KEY_SUBCMDS = [
                                     "Read key from stdin with no terminal echo or "
                                     "userspace buffer storage"
                                 ),
-                                "dest": "capture_key",
                             },
                         ),
                     ],
@@ -96,7 +90,7 @@ KEY_SUBCMDS = [
         "unset",
         {
             "help": "Unset a key in the kernel keyring",
-            "args": [("keydesc", {"action": "store", "help": "key description"})],
+            "args": [("keydesc", {"help": "key description"})],
             "func": TopActions.unset_key,
         },
     ),

@@ -56,54 +56,31 @@ def _unit_map(unit_specifier):
     assert False, f'Unknown unit specifier "{unit_specifier}"'
 
 
-class RangeAction(argparse.Action):
+def parse_range(values):
     """
-    Parse a justbytes Range from a str
+    Parse a range value.
 
-    Round down to the nearest byte
+    :param str values: string to parse
     """
+    match = _RANGE_RE.search(values)
+    if match is None:
+        raise argparse.ArgumentTypeError(
+            f"Ill-formed size specification: {_SIZE_SPECIFICATION}"
+        )
 
-    def __init__(self, option_strings, dest, **kwargs):
-        """
-        Initialize the object
-        """
-        super().__init__(option_strings, dest, **kwargs)
+    (magnitude, unit) = (match.group("magnitude"), match.group("units"))
 
-    def __call__(self, parser, namespace, values, option_string=None):
-        """
-        Set dest namespace attribute to Range value parsed from values.
-        """
-        match = _RANGE_RE.search(values)
-        if match is None:
-            raise argparse.ArgumentError(
-                self, f"Ill-formed size specification: {_SIZE_SPECIFICATION}"
-            )
+    units = _unit_map(unit)
 
-        (magnitude, unit) = (match.group("magnitude"), match.group("units"))
-
-        units = _unit_map(unit)
-
-        size = Range(magnitude, units)
-
-        setattr(namespace, self.dest, size)
+    return Range(int(magnitude), units)
 
 
-class RangeActionOrCurrent(RangeAction):
+class RejectAction(argparse.Action):
     """
-    Allow specifying a Range or the value "current". Include the original
-    value specified by the user as well as the Range result if the user
-    specified a valid range. This is purely useful for error messages,
-    so that an error message will contain what the user specified if there
-    needs to be reported an idempotency error.
+    Just reject any use of the option.
     """
 
     def __call__(self, parser, namespace, values, option_string=None):
-        """
-        Allow "current" as well as range specifications.
-        """
-
-        if values == "current":
-            setattr(namespace, self.dest, "current")
-        else:
-            super().__call__(parser, namespace, values, option_string=option_string)
-            setattr(namespace, self.dest, (getattr(namespace, self.dest), values))
+        raise argparse.ArgumentError(
+            self, f"Option {option_string} can not be assigned to or set."
+        )

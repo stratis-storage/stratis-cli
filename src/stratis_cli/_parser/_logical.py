@@ -15,9 +15,47 @@
 Definition of filesystem actions to display in the CLI.
 """
 
+# isort: STDLIB
+from argparse import SUPPRESS
+from uuid import UUID
+
 from .._actions import LogicalActions
 from ._debug import FILESYSTEM_DEBUG_SUBCMDS
-from ._range import RangeAction, RangeActionOrCurrent
+from ._range import RejectAction, parse_range
+
+
+def parse_range_or_current(values):
+    """
+    Allow specifying a Range or the value "current". Include the original
+    value specified by the user as well as the Range result if the user
+    specified a valid range. This is purely useful for error messages,
+    so that an error message will contain what the user specified if there
+    needs to be reported an idempotency error.
+    """
+    return (None if values == "current" else parse_range(values), values)
+
+
+class FilesystemListOptions:  # pylint: disable=too-few-public-methods
+    """
+    Verifies filesystem list options.
+    """
+
+    def __init__(self, _namespace):
+        pass
+
+    def verify(self, namespace, parser):
+        """
+        Do supplementary parsing of conditional arguments.
+        """
+
+        if namespace.pool_name is None and (
+            namespace.uuid is not None or namespace.name is not None
+        ):
+            parser.error(
+                "If filesystem UUID or name is specified then pool "
+                "name must also be specified."
+            )
+
 
 LOGICAL_SUBCMDS = [
     (
@@ -25,7 +63,7 @@ LOGICAL_SUBCMDS = [
         {
             "help": "Create filesystems in a pool",
             "args": [
-                ("pool_name", {"action": "store", "help": "pool name"}),
+                ("pool_name", {"help": "pool name"}),
                 (
                     "fs_name",
                     {
@@ -36,17 +74,15 @@ LOGICAL_SUBCMDS = [
                 (
                     "--size",
                     {
-                        "action": RangeAction,
-                        "dest": "size",
                         "help": 'The size of the filesystems to be created, e.g., "32GiB"',
+                        "type": parse_range,
                     },
                 ),
                 (
                     "--size-limit",
                     {
-                        "action": RangeAction,
-                        "dest": "size_limit",
                         "help": 'An upper limit on the size of filesystems, e.g., "2TiB"',
+                        "type": parse_range,
                     },
                 ),
             ],
@@ -58,9 +94,9 @@ LOGICAL_SUBCMDS = [
         {
             "help": "Snapshot the named filesystem in a pool",
             "args": [
-                ("pool_name", {"action": "store", "help": "pool name"}),
-                ("origin_name", {"action": "store", "help": "origin name"}),
-                ("snapshot_name", {"action": "store", "help": "snapshot name"}),
+                ("pool_name", {"help": "pool name"}),
+                ("origin_name", {"help": "origin name"}),
+                ("snapshot_name", {"help": "snapshot name"}),
             ],
             "func": LogicalActions.snapshot_filesystem,
         },
@@ -69,16 +105,43 @@ LOGICAL_SUBCMDS = [
         "list",
         {
             "help": "List filesystems",
+            "mut_ex_args": [
+                (
+                    False,
+                    [
+                        (
+                            "--uuid",
+                            {
+                                "type": UUID,
+                                "help": "UUID of filesystem to list",
+                            },
+                        ),
+                        (
+                            "--name",
+                            {
+                                "help": "name of filesystem to list",
+                            },
+                        ),
+                    ],
+                ),
+            ],
             "args": [
+                (
+                    "--post-parser",
+                    {
+                        "action": RejectAction,
+                        "default": FilesystemListOptions,
+                        "help": SUPPRESS,
+                        "nargs": "?",
+                    },
+                ),
                 (
                     "pool_name",
                     {
-                        "action": "store",
-                        "default": None,
                         "nargs": "?",
                         "help": "Pool name",
                     },
-                )
+                ),
             ],
             "func": LogicalActions.list_volumes,
         },
@@ -88,7 +151,7 @@ LOGICAL_SUBCMDS = [
         {
             "help": "Destroy filesystems in a pool",
             "args": [
-                ("pool_name", {"action": "store", "help": "pool name"}),
+                ("pool_name", {"help": "pool name"}),
                 (
                     "fs_name",
                     {
@@ -108,17 +171,16 @@ LOGICAL_SUBCMDS = [
                 (
                     "pool_name",
                     {
-                        "action": "store",
                         "help": "Name of the pool the filesystem is part of",
                     },
                 ),
                 (
                     "fs_name",
-                    {"action": "store", "help": "Name of the filesystem to change"},
+                    {"help": "Name of the filesystem to change"},
                 ),
                 (
                     "new_name",
-                    {"action": "store", "help": "New name to give that filesystem"},
+                    {"help": "New name to give that filesystem"},
                 ),
             ],
             "func": LogicalActions.rename_fs,
@@ -132,23 +194,22 @@ LOGICAL_SUBCMDS = [
                 (
                     "pool_name",
                     {
-                        "action": "store",
                         "help": "Name of the pool the filesystem is part of",
                     },
                 ),
                 (
                     "fs_name",
-                    {"action": "store", "help": "Name of the filesystem to change"},
+                    {"help": "Name of the filesystem to change"},
                 ),
                 (
                     "limit",
                     {
-                        "action": RangeActionOrCurrent,
                         "help": (
                             "Upper limit on size of filesystem. Use the "
                             'keyword "current" to specify the current size of '
                             "the filesystem."
                         ),
+                        "type": parse_range_or_current,
                     },
                 ),
             ],
@@ -163,13 +224,12 @@ LOGICAL_SUBCMDS = [
                 (
                     "pool_name",
                     {
-                        "action": "store",
                         "help": "Name of the pool the filesystem is part of",
                     },
                 ),
                 (
                     "fs_name",
-                    {"action": "store", "help": "Name of the filesystem to change"},
+                    {"help": "Name of the filesystem to change"},
                 ),
             ],
             "func": LogicalActions.unset_size_limit,
@@ -178,7 +238,7 @@ LOGICAL_SUBCMDS = [
     (
         "debug",
         {
-            "help": ("Miscellaneous filesystem-level debug commands"),
+            "help": "Miscellaneous filesystem-level debug commands",
             "subcmds": FILESYSTEM_DEBUG_SUBCMDS,
         },
     ),

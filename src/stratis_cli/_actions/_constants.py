@@ -15,7 +15,7 @@
 General constants.
 """
 # isort: THIRDPARTY
-from packaging.specifiers import Version
+from packaging.version import Version
 
 SERVICE = "org.storage.stratis3"
 TOP_OBJECT = "/org/storage/stratis3"
@@ -23,7 +23,7 @@ TOP_OBJECT = "/org/storage/stratis3"
 SECTOR_SIZE = 512
 
 MAXIMUM_STRATISD_VERSION = "4.0.0"
-MINIMUM_STRATISD_VERSION = "3.6.0"
+MINIMUM_STRATISD_VERSION = "3.7.0"
 assert Version(MINIMUM_STRATISD_VERSION) < Version(MAXIMUM_STRATISD_VERSION)
 
 REVISION = f"r{MINIMUM_STRATISD_VERSION.split('.')[1]}"

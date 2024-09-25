@@ -16,6 +16,7 @@ Miscellaneous debugging actions.
 """
 
 # isort: STDLIB
+import json
 import os
 
 from .._errors import StratisCliEngineError, StratisCliSynthUeventError
@@ -81,16 +82,47 @@ class PoolDebugActions:  # pylint: disable=too-few-public-methods
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        maybe_pool_name_opt = getattr(namespace, "name", None)
         props = (
             {"Uuid": namespace.uuid.hex}
-            if maybe_pool_name_opt is None
-            else {"Name": maybe_pool_name_opt}
+            if namespace.name is None
+            else {"Name": namespace.name}
         )
         (pool_object_path, _) = next(
             pools(props=props).require_unique_match(True).search(managed_objects)
         )
         print(pool_object_path)
+
+    @staticmethod
+    def get_metadata(namespace):
+        """
+        Get some information about the pool-level metadata.
+        """
+        # pylint: disable=import-outside-toplevel
+        from ._data import ObjectManager, Pool, pools
+
+        proxy = get_object(TOP_OBJECT)
+        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
+
+        props = (
+            {"Uuid": namespace.uuid.hex}
+            if namespace.name is None
+            else {"Name": namespace.name}
+        )
+        (pool_object_path, _) = next(
+            pools(props=props).require_unique_match(True).search(managed_objects)
+        )
+
+        (metadata, return_code, message) = Pool.Methods.Metadata(
+            get_object(pool_object_path), {"current": not namespace.written}
+        )
+
+        if return_code != StratisdErrors.OK:  # pragma: no cover
+            raise StratisCliEngineError(return_code, message)
+
+        if namespace.pretty:
+            print(json.dumps(json.loads(metadata), sort_keys=True, indent=4))
+        else:
+            print(json.dumps(json.loads(metadata)))
 
 
 class FilesystemDebugActions:  # pylint: disable=too-few-public-methods
@@ -111,16 +143,56 @@ class FilesystemDebugActions:  # pylint: disable=too-few-public-methods
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        maybe_fs_name_opt = getattr(namespace, "name", None)
         props = (
             {"Uuid": namespace.uuid.hex}
-            if maybe_fs_name_opt is None
-            else {"Name": maybe_fs_name_opt}
+            if namespace.name is None
+            else {"Name": namespace.name}
         )
         (fs_object_path, _) = next(
             filesystems(props=props).require_unique_match(True).search(managed_objects)
         )
         print(fs_object_path)
+
+    @staticmethod
+    def get_metadata(namespace):
+        """
+        Get filesystem medatada. If a specific filesystem is not specified,
+        get metadata for all filesystems in the pool.
+
+        :raises StratisCliEngineError:
+        """
+
+        # pylint: disable=import-outside-toplevel
+        from ._data import ObjectManager, Pool, pools
+
+        proxy = get_object(TOP_OBJECT)
+        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
+
+        (pool_object_path, _) = next(
+            pools(props={"Name": namespace.pool_name})
+            .require_unique_match(True)
+            .search(managed_objects)
+        )
+
+        (metadata, return_code, message) = Pool.Methods.FilesystemMetadata(
+            get_object(pool_object_path),
+            {
+                "fs_name": (
+                    (False, "")
+                    if namespace.fs_name is None
+                    else (True, namespace.fs_name)
+                ),
+                "current": not namespace.written,
+            },
+        )
+
+        if return_code != StratisdErrors.OK:  # pragma: no cover
+            raise StratisCliEngineError(return_code, message)
+
+        if namespace.pretty:
+            print(json.dumps(json.loads(metadata), sort_keys=True, indent=4))
+        else:
+            print(json.dumps(json.loads(metadata)))
 
 
 class BlockdevDebugActions:  # pylint: disable=too-few-public-methods

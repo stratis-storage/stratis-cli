@@ -37,7 +37,7 @@ TOP_DEBUG_SUBCMDS = [
         "uevent",
         {
             "help": "Generate a synthetic uevent.",
-            "args": [("device", {"action": "store", "help": "Path to device"})],
+            "args": [("device", {"help": "Path to device"})],
             "func": TopDebugActions.send_uevent,
         },
     ),
@@ -55,17 +55,13 @@ POOL_DEBUG_SUBCMDS = [
                         (
                             "--name",
                             {
-                                "action": "store",
                                 "help": "Name of pool",
-                                "dest": "name",
                             },
                         ),
                         (
                             "--uuid",
                             {
-                                "action": "store",
                                 "help": "UUID of pool",
-                                "dest": "uuid",
                                 "type": UUID,
                             },
                         ),
@@ -73,6 +69,49 @@ POOL_DEBUG_SUBCMDS = [
                 )
             ],
             "func": PoolDebugActions.get_object_path,
+        },
+    ),
+    (
+        "get-metadata",
+        {
+            "args": [
+                (
+                    "--pretty",
+                    {
+                        "action": "store_true",
+                        "help": "Format output string prettily",
+                    },
+                ),
+                (
+                    "--written",
+                    {
+                        "action": "store_true",
+                        "help": "Read the metadata most recently written",
+                    },
+                ),
+            ],
+            "mut_ex_args": [
+                (
+                    True,
+                    [
+                        (
+                            "--name",
+                            {
+                                "help": "Name of pool",
+                            },
+                        ),
+                        (
+                            "--uuid",
+                            {
+                                "help": "UUID of pool",
+                                "type": UUID,
+                            },
+                        ),
+                    ],
+                ),
+            ],
+            "help": "Report the pool's metadata",
+            "func": PoolDebugActions.get_metadata,
         },
     ),
 ]
@@ -89,17 +128,13 @@ FILESYSTEM_DEBUG_SUBCMDS = [
                         (
                             "--name",
                             {
-                                "action": "store",
                                 "help": "Name of filesystem",
-                                "dest": "name",
                             },
                         ),
                         (
                             "--uuid",
                             {
-                                "action": "store",
                                 "help": "UUID of filesystem",
-                                "dest": "uuid",
                                 "type": UUID,
                             },
                         ),
@@ -107,6 +142,34 @@ FILESYSTEM_DEBUG_SUBCMDS = [
                 )
             ],
             "func": FilesystemDebugActions.get_object_path,
+        },
+    ),
+    (
+        "get-metadata",
+        {
+            "help": (
+                "Get the filesystem metadata for all filesystems belonging to "
+                "the specified pool"
+            ),
+            "args": [
+                ("pool_name", {"help": "Pool name"}),
+                (
+                    "--pretty",
+                    {
+                        "action": "store_true",
+                        "help": "Format output string prettily",
+                    },
+                ),
+                (
+                    "--written",
+                    {
+                        "action": "store_true",
+                        "help": "Read the metadata most recently written",
+                    },
+                ),
+                ("--fs-name", {"help": "Optional filesystem name"}),
+            ],
+            "func": FilesystemDebugActions.get_metadata,
         },
     ),
 ]
@@ -123,9 +186,7 @@ BLOCKDEV_DEBUG_SUBCMDS = [
                         (
                             "--uuid",
                             {
-                                "action": "store",
                                 "help": "UUID of filesystem",
-                                "dest": "uuid",
                                 "type": UUID,
                             },
                         ),
