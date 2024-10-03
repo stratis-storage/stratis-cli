@@ -129,7 +129,10 @@ jobs:
           components: cargo
           toolchain: 1.71.1  # LOWEST SUPPORTED RUST TOOLCHAIN
       - name: Check out stratisd
-        run: git clone https://github.com/stratis-storage/stratisd.git
+        run: >
+          git clone
+          https://github.com/stratis-storage/stratisd.git
+          --branch rebase-3.6.0
       - name: Build stratisd
         run: PROFILEDIR=debug make build-all
         working-directory: ./stratisd
@@ -187,7 +190,10 @@ jobs:
           components: cargo
           toolchain: 1.71.1  # LOWEST SUPPORTED RUST TOOLCHAIN
       - name: Check out stratisd
-        run: git clone https://github.com/stratis-storage/stratisd.git
+        run: >
+          git clone
+          https://github.com/stratis-storage/stratisd.git
+          --branch rebase-3.6.0
       - name: Build stratisd
         run: PROFILEDIR=debug make build-all
         working-directory: ./stratisd
