@@ -176,7 +176,7 @@ class Detail(List):  # pylint: disable=too-few-public-methods
             date_parser.parse(fs.Created()).astimezone().strftime("%b %d %Y %H:%M")
         )
 
-        origin = get_property(fs.Origin(), self.uuid_formatter, "None")
+        origin = get_property(fs.Origin(), self.uuid_formatter, None)
 
         print(f"UUID: {self.uuid_formatter(fs.Uuid())}")
         print(f"Name: {fs.Name()}")
@@ -186,7 +186,10 @@ class Detail(List):  # pylint: disable=too-few-public-methods
         print()
         print(f"Created: {created}")
         print()
-        print(f"Snapshot origin: {origin}")
+        print(f'Snapshot origin: {"None" if origin is None else origin}')
+        if origin is not None:
+            scheduled = "Yes" if fs.MergeScheduled() else "No"
+            print(f"    Revert scheduled: {scheduled}")
         print()
         print("Sizes:")
         print(f"  Logical size of thin device: {total}")
