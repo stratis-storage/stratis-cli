@@ -26,12 +26,6 @@ Lowest supported Python interpreter: 3.9.16
   https://github.com/stratis-storage/stratis-cli/pull/1076
   https://github.com/stratis-storage/stratis-cli/pull/1073
 
-- Implement Clevis-related parser errors as parser errors:
-  https://github.com/stratis-storage/stratis-cli/pull/1060
-  https://github.com/stratis-storage/stratis-cli/pull/1057
-  https://github.com/stratis-storage/stratis-cli/pull/1056
-  https://github.com/stratis-storage/stratis-cli/pull/1053
-
 * Sort JSON output from report by default:
   https://github.com/stratis-storage/stratis-cli/pull/1048
 
@@ -46,6 +40,12 @@ Lowest supported Python interpreter: 3.9.16
 
 * Refactor filesystem listing code:
   https://github.com/stratis-storage/stratis-cli/pull/1050
+
+- Implement Clevis-related parser errors as parser errors:
+  https://github.com/stratis-storage/stratis-cli/pull/1060
+  https://github.com/stratis-storage/stratis-cli/pull/1057
+  https://github.com/stratis-storage/stratis-cli/pull/1056
+  https://github.com/stratis-storage/stratis-cli/pull/1053
 
 - Replace use of getpass with custom implementation:
   https://github.com/stratis-storage/stratis-cli/pull/1068
