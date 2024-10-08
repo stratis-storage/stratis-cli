@@ -1,4 +1,4 @@
-stratis-cli 3.7.0 (UNRELEASED)
+stratis-cli 3.7.0
 =================
 Required stratisd version 3.7.0
 
@@ -9,6 +9,10 @@ Lowest supported Python interpreter: 3.9.16
 
 * Update for r7 D-Bus revision:
   https://github.com/stratis-storage/stratis-cli/pull/1035
+
+* Add suppport for scheduling snapshot revert and reporting revert status:
+  https://github.com/stratis-storage/stratis-cli/issues/1085
+  https://github.com/stratis-storage/stratis-cli/pull/1100
 
 * Display snapshot origin in filesystem detail view:
   https://github.com/stratis-storage/stratis-cli/pull/1045
@@ -26,12 +30,6 @@ Lowest supported Python interpreter: 3.9.16
   https://github.com/stratis-storage/stratis-cli/pull/1076
   https://github.com/stratis-storage/stratis-cli/pull/1073
 
-- Implement Clevis-related parser errors as parser errors:
-  https://github.com/stratis-storage/stratis-cli/pull/1060
-  https://github.com/stratis-storage/stratis-cli/pull/1057
-  https://github.com/stratis-storage/stratis-cli/pull/1056
-  https://github.com/stratis-storage/stratis-cli/pull/1053
-
 * Sort JSON output from report by default:
   https://github.com/stratis-storage/stratis-cli/pull/1048
 
@@ -46,6 +44,12 @@ Lowest supported Python interpreter: 3.9.16
 
 * Refactor filesystem listing code:
   https://github.com/stratis-storage/stratis-cli/pull/1050
+
+- Implement Clevis-related parser errors as parser errors:
+  https://github.com/stratis-storage/stratis-cli/pull/1060
+  https://github.com/stratis-storage/stratis-cli/pull/1057
+  https://github.com/stratis-storage/stratis-cli/pull/1056
+  https://github.com/stratis-storage/stratis-cli/pull/1053
 
 - Replace use of getpass with custom implementation:
   https://github.com/stratis-storage/stratis-cli/pull/1068
