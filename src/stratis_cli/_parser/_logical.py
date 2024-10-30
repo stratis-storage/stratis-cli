@@ -236,6 +236,51 @@ LOGICAL_SUBCMDS = [
         },
     ),
     (
+        "schedule-revert",
+        {
+            "help": (
+                "Schedule a revert operation for this snapshot filesystem "
+                "into its origin filesystem"
+            ),
+            "args": [
+                (
+                    "pool_name",
+                    {
+                        "help": (
+                            "Name of the pool the snapshot and its origin belong to"
+                        ),
+                    },
+                ),
+                (
+                    "snapshot_name",
+                    {"help": "Name of the snapshot filesystem"},
+                ),
+            ],
+            "func": LogicalActions.schedule_revert,
+        },
+    ),
+    (
+        "cancel-revert",
+        {
+            "help": "Cancel a previously scheduled revert operation",
+            "args": [
+                (
+                    "pool_name",
+                    {
+                        "help": (
+                            "Name of the pool the snapshot and its origin belong to"
+                        ),
+                    },
+                ),
+                (
+                    "snapshot_name",
+                    {"help": "Name of the snapshot filesystem"},
+                ),
+            ],
+            "func": LogicalActions.cancel_revert,
+        },
+    ),
+    (
         "debug",
         {
             "help": "Miscellaneous filesystem-level debug commands",

@@ -144,6 +144,14 @@ class List5TestCase(SimTestCase):
         RUNNER(command_line)
         command_line = ["filesystem", "create", self._POOLNAMES[0], self._VOLUMES[1]]
         RUNNER(command_line)
+        command_line = [
+            "filesystem",
+            "snapshot",
+            self._POOLNAMES[0],
+            self._VOLUMES[1],
+            self._VOLUMES[2],
+        ]
+        RUNNER(command_line)
         command_line = ["pool", "create", self._POOLNAMES[1]] + device_lists[1]
         RUNNER(command_line)
         command_line = ["filesystem", "create", self._POOLNAMES[1], self._VOLUMES[2]]
@@ -191,3 +199,10 @@ class List5TestCase(SimTestCase):
         self.check_error(
             DbusClientUniqueResultError, command_line, StratisCliErrorCodes.ERROR
         )
+
+    def test_list_fs_name_snapshot(self):
+        """
+        Test list detailed view of a snapshot to test printing of revert information.
+        """
+        command_line = self._MENU + [self._POOLNAMES[0], f"--name={self._VOLUMES[2]}"]
+        TEST_RUNNER(command_line)
