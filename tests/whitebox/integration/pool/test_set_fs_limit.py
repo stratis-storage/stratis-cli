@@ -20,7 +20,7 @@ from dbus_python_client_gen import DPClientInvocationError
 
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
-from stratis_cli._errors import StratisCliFsLimitChangeError
+from stratis_cli._errors import StratisCliNoPropertyChangeError
 
 from .._misc import RUNNER, TEST_RUNNER, SimTestCase, device_name_list
 
@@ -68,4 +68,4 @@ class SetFsLimitTestCase(SimTestCase):
         RUNNER(command_line)
 
         command_line = self._MENU + [self._POOLNAME, fs_limit_value]
-        self.check_error(StratisCliFsLimitChangeError, command_line, _ERROR)
+        self.check_error(StratisCliNoPropertyChangeError, command_line, _ERROR)

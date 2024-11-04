@@ -20,7 +20,7 @@ from dbus_python_client_gen import DPClientInvocationError
 
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
-from stratis_cli._errors import StratisCliFsMergeScheduledChangeError
+from stratis_cli._errors import StratisCliNoPropertyChangeError
 
 from .._misc import RUNNER, TEST_RUNNER, SimTestCase, device_name_list
 
@@ -72,7 +72,7 @@ class FsScheduleRevertTestCase(SimTestCase):
             self._SNAPNAME,
         ]
         RUNNER(command_line)
-        self.check_error(StratisCliFsMergeScheduledChangeError, command_line, _ERROR)
+        self.check_error(StratisCliNoPropertyChangeError, command_line, _ERROR)
 
     def test_schedule_revert_once(self):
         """
