@@ -20,7 +20,7 @@ from dbus_python_client_gen import DPClientInvocationError
 
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
-from stratis_cli._errors import StratisCliFsMergeScheduledChangeError
+from stratis_cli._errors import StratisCliNoPropertyChangeError
 
 from .._misc import RUNNER, SimTestCase, device_name_list
 
@@ -68,7 +68,7 @@ class FsCancelRevertTestCase(SimTestCase):
         Cancelling an unscheduled revert should fail.
         """
         command_line = self._MENU + [self._POOLNAME, self._SNAPNAME]
-        self.check_error(StratisCliFsMergeScheduledChangeError, command_line, _ERROR)
+        self.check_error(StratisCliNoPropertyChangeError, command_line, _ERROR)
 
     def test_cancel_revert_when_no_origin(self):
         """
@@ -91,4 +91,4 @@ class FsCancelRevertTestCase(SimTestCase):
         RUNNER(command_line)
         command_line = self._MENU + [self._POOLNAME, self._SNAPNAME]
         RUNNER(command_line)
-        self.check_error(StratisCliFsMergeScheduledChangeError, command_line, _ERROR)
+        self.check_error(StratisCliNoPropertyChangeError, command_line, _ERROR)

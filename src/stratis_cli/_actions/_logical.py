@@ -21,10 +21,9 @@ from justbytes import Range
 from .._constants import Id, IdType
 from .._errors import (
     StratisCliEngineError,
-    StratisCliFsMergeScheduledChangeError,
-    StratisCliFsSizeLimitChangeError,
     StratisCliIncoherenceError,
     StratisCliNoChangeError,
+    StratisCliNoPropertyChangeError,
     StratisCliPartialChangeError,
 )
 from .._stratisd_constants import StratisdErrors
@@ -302,8 +301,9 @@ class LogicalActions:
         valid, maybe_size_limit = mofs.SizeLimit()
 
         if valid and new_limit.magnitude == int(str(maybe_size_limit)):
-            raise StratisCliFsSizeLimitChangeError(
-                new_limit if limit == "current" else user_input
+            raise StratisCliNoPropertyChangeError(
+                "Filesystem size limit is exactly "
+                f'{new_limit if user_input == "current" else user_input}'
             )
 
         Filesystem.Properties.SizeLimit.Set(
@@ -334,7 +334,7 @@ class LogicalActions:
         valid, _ = MOFilesystem(fs_info).SizeLimit()
 
         if not valid:
-            raise StratisCliFsSizeLimitChangeError(None)
+            raise StratisCliNoPropertyChangeError("Filesystem size limit is not set")
 
         Filesystem.Properties.SizeLimit.Set(get_object(fs_object_path), (False, ""))
 
@@ -364,7 +364,9 @@ class LogicalActions:
         merge_requested = MOFilesystem(fs_info).MergeScheduled()
 
         if bool(merge_requested):
-            raise StratisCliFsMergeScheduledChangeError(True)
+            raise StratisCliNoPropertyChangeError(
+                "Filesystem is already scheduled for a revert operation"
+            )
 
         Filesystem.Properties.MergeScheduled.Set(get_object(fs_object_path), True)
 
@@ -395,6 +397,8 @@ class LogicalActions:
         (merge_requested, (origin_set, _)) = (mofs.MergeScheduled(), mofs.Origin())
 
         if origin_set and not bool(merge_requested):
-            raise StratisCliFsMergeScheduledChangeError(False)
+            raise StratisCliNoPropertyChangeError(
+                "Filesystem is not currently scheduled for a revert operation"
+            )
 
         Filesystem.Properties.MergeScheduled.Set(get_object(fs_object_path), False)

@@ -17,7 +17,7 @@ Test 'overprovision'
 
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
-from stratis_cli._errors import StratisCliOverprovisionChangeError
+from stratis_cli._errors import StratisCliNoPropertyChangeError
 
 from .._misc import RUNNER, TEST_RUNNER, SimTestCase, device_name_list
 
@@ -46,7 +46,7 @@ class SetOverprovisionModeTestCase(SimTestCase):
         Test setting overprovision mode to true when true.
         """
         command_line = self._MENU + [self._POOLNAME] + ["yes"]
-        self.check_error(StratisCliOverprovisionChangeError, command_line, _ERROR)
+        self.check_error(StratisCliNoPropertyChangeError, command_line, _ERROR)
 
     def test_set_overprovision_true_false(self):
         """
@@ -89,4 +89,4 @@ class SetOverprovisionModeFromFalseTestCase(SimTestCase):
         Test setting overprovision mode to false.
         """
         command_line = self._MENU + [self._POOLNAME] + ["no"]
-        self.check_error(StratisCliOverprovisionChangeError, command_line, _ERROR)
+        self.check_error(StratisCliNoPropertyChangeError, command_line, _ERROR)

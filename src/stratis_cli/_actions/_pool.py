@@ -29,15 +29,13 @@ from .._constants import Id, IdType, UnlockMethod
 from .._error_codes import PoolErrorCode
 from .._errors import (
     StratisCliEngineError,
-    StratisCliFsLimitChangeError,
-    StratisCliHasCacheChangeError,
     StratisCliIncoherenceError,
     StratisCliInUseOtherTierError,
     StratisCliInUseSameTierError,
     StratisCliNameConflictError,
     StratisCliNoChangeError,
     StratisCliNoDeviceSizeChangeError,
-    StratisCliOverprovisionChangeError,
+    StratisCliNoPropertyChangeError,
     StratisCliPartialChangeError,
     StratisCliResourceNotFoundError,
 )
@@ -332,7 +330,9 @@ class PoolActions:
         )
 
         if MOPool(pool_info).HasCache():
-            raise StratisCliHasCacheChangeError()
+            raise StratisCliNoPropertyChangeError(
+                "Pool already has an initialized cache"
+            )
 
         blockdevs = frozenset([os.path.abspath(p) for p in namespace.blockdevs])
 
@@ -707,7 +707,9 @@ class PoolActions:
         )
 
         if namespace.amount == MOPool(pool_info).FsLimit():
-            raise StratisCliFsLimitChangeError(namespace.amount)
+            raise StratisCliNoPropertyChangeError(
+                f"Pool filesystem limit is exactly {str(namespace.amount).lower()}"
+            )
 
         Pool.Properties.FsLimit.Set(get_object(pool_object_path), namespace.amount)
 
@@ -730,7 +732,9 @@ class PoolActions:
         )
 
         if decision == MOPool(pool_info).Overprovisioning():
-            raise StratisCliOverprovisionChangeError(decision)
+            raise StratisCliNoPropertyChangeError(
+                f"Pool's overprovision mode is already set to {str(decision).lower()}"
+            )
 
         Pool.Properties.Overprovisioning.Set(get_object(pool_object_path), decision)
 

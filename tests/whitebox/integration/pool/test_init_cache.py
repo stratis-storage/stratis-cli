@@ -20,7 +20,7 @@ from dbus_client_gen import DbusClientUniqueResultError
 
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
-from stratis_cli._errors import StratisCliHasCacheChangeError
+from stratis_cli._errors import StratisCliNoPropertyChangeError
 
 from .._keyutils import RandomKeyTmpFile
 from .._misc import RUNNER, TEST_RUNNER, SimTestCase, device_name_list
@@ -58,7 +58,7 @@ class InitCacheFailTestCase(SimTestCase):
         RUNNER(command_line)
 
         command_line = self._MENU + [self._POOLNAME] + _DEVICE_STRATEGY()
-        self.check_error(StratisCliHasCacheChangeError, command_line, _ERROR)
+        self.check_error(StratisCliNoPropertyChangeError, command_line, _ERROR)
 
 
 class InitCacheFail2TestCase(SimTestCase):
@@ -89,7 +89,7 @@ class InitCacheFail2TestCase(SimTestCase):
         devices = _DEVICE_STRATEGY()
         command_line = self._MENU + [self._POOLNAME] + devices
         RUNNER(command_line)
-        self.check_error(StratisCliHasCacheChangeError, command_line, _ERROR)
+        self.check_error(StratisCliNoPropertyChangeError, command_line, _ERROR)
 
 
 class InitCacheFail3TestCase(SimTestCase):
