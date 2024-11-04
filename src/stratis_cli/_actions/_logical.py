@@ -303,7 +303,7 @@ class LogicalActions:
         if valid and new_limit.magnitude == int(str(maybe_size_limit)):
             raise StratisCliNoPropertyChangeError(
                 "Filesystem size limit is exactly "
-                f'{new_limit if limit == "current" else user_input}'
+                f'{new_limit if user_input == "current" else user_input}'
             )
 
         Filesystem.Properties.SizeLimit.Set(
