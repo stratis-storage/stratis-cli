@@ -144,7 +144,10 @@ filesystem unset-size-limit <pool_name> <fs_name>::
            Remove a filesystem size limit previously set.
 filesystem schedule-revert <pool_name> <snapshot_name>::
      Set a flag so that when the pool is next started, the specified snapshot
-     will overwrite its origin filesystem.
+     will overwrite its origin filesystem. A snapshot that is scheduled to
+     overwrite its origin filesystem can not be destroyed; the scheduled
+     revert must be cancelled before the snapshot or its origin can be
+     destroyed.
 filesystem cancel-revert <pool_name> <snapshot_name>::
      Cancel a scheduled revert.
 filesystem debug get-object-path <(--uuid <uuid> |--name <name>)> ::
