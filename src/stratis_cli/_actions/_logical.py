@@ -78,13 +78,13 @@ class LogicalActions:
         requested_size_arg = (
             (False, "")
             if namespace.size is None
-            else (True, str(namespace.size.magnitude))
+            else (True, namespace.size.magnitude.numerator)
         )
 
         requested_size_limit_arg = (
             (False, "")
             if namespace.size_limit is None
-            else (True, str(namespace.size_limit.magnitude))
+            else (True, namespace.size_limit.magnitude.numerator)
         )
 
         requested_specs = [
@@ -307,7 +307,7 @@ class LogicalActions:
             )
 
         Filesystem.Properties.SizeLimit.Set(
-            get_object(fs_object_path), (True, new_limit.magnitude)
+            get_object(fs_object_path), (True, new_limit.magnitude.numerator)
         )
 
     @staticmethod
