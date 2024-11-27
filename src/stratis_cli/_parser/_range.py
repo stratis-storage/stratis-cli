@@ -72,7 +72,11 @@ def parse_range(values):
 
     units = _unit_map(unit)
 
-    return Range(int(magnitude), units)
+    result = Range(int(magnitude), units)
+
+    assert result.magnitude.denominator == 1
+
+    return result
 
 
 class RejectAction(argparse.Action):
