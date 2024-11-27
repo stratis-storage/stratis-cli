@@ -25,7 +25,7 @@ from uuid import UUID
 # isort: THIRDPARTY
 from justbytes import Range
 
-from .._constants import Id, IdType, UnlockMethod
+from .._constants import Id, IdType, IntegrityOption, IntegrityTagSpec, UnlockMethod
 from .._error_codes import PoolErrorCode
 from .._errors import (
     StratisCliEngineError,
@@ -180,6 +180,16 @@ class PoolActions:
             None if namespace.clevis is None else ClevisInfo.get_info(namespace.clevis)
         )
 
+        (journal_size, tag_spec, allocate_superblock) = (
+            ((True, 0), (True, IntegrityTagSpec.B0), (True, False))
+            if namespace.integrity.integrity is IntegrityOption.NO
+            else (
+                (True, namespace.integrity.journal_size.magnitude.numerator),
+                (True, namespace.integrity.tag_spec),
+                (True, True),
+            )
+        )
+
         (
             (changed, (pool_object_path, _)),
             return_code,
@@ -199,10 +209,13 @@ class PoolActions:
                     if clevis_info is None
                     else (True, (clevis_info.pin, json.dumps(clevis_info.config)))
                 ),
+                "journal_size": journal_size,
+                "tag_spec": tag_spec,
+                "allocate_superblock": allocate_superblock,
             },
         )
 
-        if return_code != StratisdErrors.OK:  # pragma: no cover
+        if return_code != StratisdErrors.OK:
             raise StratisCliEngineError(return_code, message)
 
         if not changed:  # pragma: no cover

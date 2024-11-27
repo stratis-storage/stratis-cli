@@ -116,3 +116,28 @@ class Clevis(Enum):
 
     def __str__(self):
         return self.value
+
+
+class IntegrityTagSpec(Enum):
+    """
+    Options for specifying integrity tag size.
+    """
+
+    B0 = "0b"
+    B32 = "32b"
+    B512 = "512b"
+
+    def __str__(self):
+        return self.value
+
+
+class IntegrityOption(Enum):
+    """
+    Options for specifying integrity choices on create.
+    """
+
+    NO = "no"
+    PRE_ALLOCATE = "pre-allocate"
+
+    def __str__(self):
+        return self.value
