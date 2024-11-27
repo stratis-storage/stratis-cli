@@ -199,6 +199,8 @@ class PoolActions:
                     if clevis_info is None
                     else (True, (clevis_info.pin, json.dumps(clevis_info.config)))
                 ),
+                "journal_size": (False, 0),
+                "tag_size": (False, 0),
             },
         )
 
