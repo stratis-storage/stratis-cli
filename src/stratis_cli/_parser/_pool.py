@@ -191,7 +191,8 @@ POOL_SUBCMDS = [
                                     "help": (
                                         "Size of tag to use to verify "
                                         "correctness of 4KiB block, e.g, 64B. "
-                                        "Must be less than 128B."
+                                        "Must be a power of 2 and less than "
+                                        "128B."
                                     ),
                                     "type": parse_bytes_range,
                                 },
