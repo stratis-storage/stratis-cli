@@ -179,8 +179,8 @@ POOL_SUBCMDS = [
                                         "Size of integrity device's journal. "
                                         "Each block is written to this journal "
                                         "before being written to its address. "
-                                        "The size of must be a multiple of 4 "
-                                        "KiB."
+                                        "The size of the journal must be a "
+                                        "multiple of 4 KiB."
                                     ),
                                     "type": parse_range,
                                 },
