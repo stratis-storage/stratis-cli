@@ -223,14 +223,14 @@ class ParserTestCase(RunTestCase):
 
     def test_create_with_oversize_tag_value(self):
         """
-        Verify that a tag value of at least 128B will result in a parser error.
+        Verify that a tag value of at least 256B will result in a parser error.
         """
         command_line = [
             "pool",
             "create",
             "pn",
             "/dev/n",
-            "--tag-size=128B",
+            "--tag-size=256B",
         ]
         for prefix in [[], ["--propagate"]]:
             self.check_system_exit(prefix + command_line, _PARSE_ERROR)

@@ -88,9 +88,9 @@ def parse_range(values, *, bound=None):
 
 def parse_bytes_range(values):
     """
-    Parse a range that must be less than 128B.
+    Parse a range that must be less than 256B.
     """
-    return parse_range(values, bound=Range(128))
+    return parse_range(values, bound=Range(256))
 
 
 class RejectAction(argparse.Action):
