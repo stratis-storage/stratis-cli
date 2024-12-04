@@ -61,7 +61,7 @@ def parse_range(values, *, bound=None):
     Parse a range value.
 
     :param str values: string to parse
-    :param bound: upper bound on the Range value
+    :param bound: exclusive upper bound on the Range value
     :type bound: Range
     """
     match = _RANGE_RE.search(values)
@@ -78,7 +78,7 @@ def parse_range(values, *, bound=None):
 
     assert result.magnitude.denominator == 1
 
-    if bound is not None and bound < result:
+    if bound is not None and result >= bound:
         raise argparse.ArgumentTypeError(
             f"Specified size {result} is at least upper bound {bound}."
         )
