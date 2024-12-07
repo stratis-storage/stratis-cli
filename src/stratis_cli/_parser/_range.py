@@ -56,11 +56,13 @@ def _unit_map(unit_specifier):
     assert False, f'Unknown unit specifier "{unit_specifier}"'
 
 
-def parse_range(values):
+def parse_range(values, *, bound=None):
     """
     Parse a range value.
 
     :param str values: string to parse
+    :param bound: exclusive upper bound on the Range value
+    :type bound: Range
     """
     match = _RANGE_RE.search(values)
     if match is None:
@@ -76,7 +78,19 @@ def parse_range(values):
 
     assert result.magnitude.denominator == 1
 
+    if bound is not None and result >= bound:
+        raise argparse.ArgumentTypeError(
+            f"Specified size {result} is at least upper bound {bound}."
+        )
+
     return result
+
+
+def parse_bytes_range(values):
+    """
+    Parse a range that must be less than 256B.
+    """
+    return parse_range(values, bound=Range(256))
 
 
 class RejectAction(argparse.Action):
