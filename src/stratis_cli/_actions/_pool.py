@@ -199,16 +199,8 @@ class PoolActions:
                     if clevis_info is None
                     else (True, (clevis_info.pin, json.dumps(clevis_info.config)))
                 ),
-                "journal_size": (
-                    (False, 0)
-                    if namespace.journal_size is None
-                    else (True, namespace.journal_size.magnitude.numerator)
-                ),
-                "tag_spec": (
-                    (False, 0)
-                    if namespace.tag_spec is None
-                    else (True, namespace.tag_spec)
-                ),
+                "journal_size": (True, namespace.journal_size.magnitude.numerator),
+                "tag_spec": (True, namespace.tag_spec),
             },
         )
 

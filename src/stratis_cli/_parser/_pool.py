@@ -20,6 +20,9 @@ import copy
 from argparse import SUPPRESS, ArgumentTypeError
 from uuid import UUID
 
+# isort: THIRDPARTY
+from justbytes import MiB, Range
+
 from .._actions import BindActions, PoolActions
 from .._constants import (
     Clevis,
@@ -185,9 +188,12 @@ POOL_SUBCMDS = [
                                         "Size of integrity device's journal. "
                                         "Each block is written to this journal "
                                         "before being written to its address. "
-                                        "The size of the journal must be a "
-                                        "multiple of 4 KiB."
+                                        "The default is %(default)s. Specify "
+                                        "0B if you have determined that you "
+                                        "will never make use of integrity "
+                                        "features."
                                     ),
+                                    "default": Range(128, MiB),
                                     "type": parse_range,
                                 },
                             ),
@@ -198,10 +204,13 @@ POOL_SUBCMDS = [
                                         "Integrity tag specification defining "
                                         "the size of the tag used to store a "
                                         "checksum or other value for each "
-                                        "block on a device. stratisd chooses "
-                                        "a default specification if none is "
-                                        "given."
+                                        "block on a device. All size "
+                                        "specifications are in bits. The "
+                                        "default is %(default)s. Specify 0b "
+                                        "if you have determined that you will "
+                                        "never make use of integrity features."
                                     ),
+                                    "default": IntegrityTagSpec.B512,
                                     "choices": list(IntegrityTagSpec),
                                     "type": IntegrityTagSpec,
                                 },
