@@ -221,6 +221,20 @@ class ParserTestCase(RunTestCase):
         for prefix in [[], ["--propagate"]]:
             self.check_system_exit(prefix + command_line, _PARSE_ERROR)
 
+    def test_create_with_oversize_tag_value(self):
+        """
+        Verify that a tag value of at least 256B will result in a parser error.
+        """
+        command_line = [
+            "pool",
+            "create",
+            "pn",
+            "/dev/n",
+            "--tag-size=256B",
+        ]
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
     def test_stratis_list_filesystem_with_name_no_pool(self):
         """
         We want to get a parse error if filesystem UUID is specified but no

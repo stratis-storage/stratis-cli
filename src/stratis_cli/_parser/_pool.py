@@ -20,12 +20,21 @@ import copy
 from argparse import SUPPRESS, ArgumentTypeError
 from uuid import UUID
 
+# isort: THIRDPARTY
+from justbytes import MiB, Range
+
 from .._actions import BindActions, PoolActions
-from .._constants import Clevis, EncryptionMethod, UnlockMethod, YesOrNo
+from .._constants import (
+    Clevis,
+    EncryptionMethod,
+    IntegrityTagSpec,
+    UnlockMethod,
+    YesOrNo,
+)
 from .._error_codes import PoolErrorCode
 from ._bind import BIND_SUBCMDS, REBIND_SUBCMDS
 from ._debug import POOL_DEBUG_SUBCMDS
-from ._range import RejectAction
+from ._range import RejectAction, parse_range
 
 
 class ClevisEncryptionOptions:  # pylint: disable=too-few-public-methods
@@ -163,7 +172,52 @@ POOL_SUBCMDS = [
                             )
                         ],
                     },
-                )
+                ),
+                (
+                    "integrity",
+                    {
+                        "description": (
+                            "Optional parameters for configuring integrity "
+                            "metadata pre-allocation"
+                        ),
+                        "args": [
+                            (
+                                "--journal-size",
+                                {
+                                    "help": (
+                                        "Size of integrity device's journal. "
+                                        "Each block is written to this journal "
+                                        "before being written to its address. "
+                                        "The default is %(default)s. Specify "
+                                        "0B if you have determined that you "
+                                        "will never make use of integrity "
+                                        "features."
+                                    ),
+                                    "default": Range(128, MiB),
+                                    "type": parse_range,
+                                },
+                            ),
+                            (
+                                "--tag-spec",
+                                {
+                                    "help": (
+                                        "Integrity tag specification defining "
+                                        "the size of the tag used to store a "
+                                        "checksum or other value for each "
+                                        "block on a device. All size "
+                                        "specifications are in bits. The "
+                                        "default is %(default)s. Specify 0b "
+                                        "if you have determined that you will "
+                                        "never make use of integrity features."
+                                    ),
+                                    "default": IntegrityTagSpec.B512,
+                                    "choices": list(IntegrityTagSpec),
+                                    "type": IntegrityTagSpec,
+                                },
+                            ),
+                        ],
+                    },
+                ),
             ],
             "args": [
                 ("pool_name", {"help": "Name of new pool"}),
