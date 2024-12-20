@@ -129,3 +129,15 @@ class IntegrityTagSpec(Enum):
 
     def __str__(self):
         return self.value
+
+
+class IntegrityOption(Enum):
+    """
+    Options for specifying integrity choices on create.
+    """
+
+    NO = "no"
+    PRE_ALLOCATE = "pre-allocate"
+
+    def __str__(self):
+        return self.value

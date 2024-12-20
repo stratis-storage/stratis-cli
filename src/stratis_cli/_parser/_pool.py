@@ -27,6 +27,7 @@ from .._actions import BindActions, PoolActions
 from .._constants import (
     Clevis,
     EncryptionMethod,
+    IntegrityOption,
     IntegrityTagSpec,
     UnlockMethod,
     YesOrNo,
@@ -34,7 +35,7 @@ from .._constants import (
 from .._error_codes import PoolErrorCode
 from ._bind import BIND_SUBCMDS, REBIND_SUBCMDS
 from ._debug import POOL_DEBUG_SUBCMDS
-from ._range import RejectAction, parse_range
+from ._range import DefaultAction, RejectAction, parse_range
 
 
 class ClevisEncryptionOptions:  # pylint: disable=too-few-public-methods
@@ -90,6 +91,62 @@ class ClevisEncryptionOptions:  # pylint: disable=too-few-public-methods
         namespace.clevis = None if self.clevis is None else self
 
 
+class IntegrityOptions:  # pylint: disable=too-few-public-methods
+    """
+    Gathers and verifies integrity options.
+    """
+
+    def __init__(self, namespace):
+        self.integrity = copy.copy(namespace.integrity)
+        del namespace.integrity
+
+        self.journal_size = copy.copy(namespace.journal_size)
+        del namespace.journal_size
+
+        self.journal_size_default = getattr(namespace, "journal_size_default", True)
+
+        self.tag_spec = copy.copy(namespace.tag_spec)
+        del namespace.tag_spec
+
+        self.tag_spec_default = getattr(namespace, "tag_spec_default", True)
+
+    def verify(self, namespace, parser):
+        """
+        Do supplementary parsing of conditional arguments.
+        """
+
+        if self.integrity is IntegrityOption.NO and not self.journal_size_default:
+            parser.error(
+                f'--integrity value "{IntegrityOption.NO}" and --journal-size '
+                "option can not be specified together"
+            )
+
+        if self.integrity is IntegrityOption.NO and not self.tag_spec_default:
+            parser.error(
+                f'--integrity value "{IntegrityOption.NO}" and --tag-spec '
+                "option can not be specified together"
+            )
+
+        namespace.integrity = self
+
+
+class CreateOptions:  # pylint: disable=too-few-public-methods
+    """
+    Gathers and verifies options specified on pool create.
+    """
+
+    def __init__(self, namespace):
+        self.clevis_encryption_options = ClevisEncryptionOptions(namespace)
+        self.integrity_options = IntegrityOptions(namespace)
+
+    def verify(self, namespace, parser):
+        """
+        Verify that create command-line is formed correctly.
+        """
+        self.clevis_encryption_options.verify(namespace, parser)
+        self.integrity_options.verify(namespace, parser)
+
+
 def _ensure_nat(arg):
     """
     Raise error if argument is not an natural number.
@@ -119,7 +176,7 @@ POOL_SUBCMDS = [
                                 "--post-parser",
                                 {
                                     "action": RejectAction,
-                                    "default": ClevisEncryptionOptions,
+                                    "default": CreateOptions,
                                     "help": SUPPRESS,
                                     "nargs": "?",
                                 },
@@ -182,17 +239,37 @@ POOL_SUBCMDS = [
                         ),
                         "args": [
                             (
+                                "--integrity",
+                                {
+                                    "help": (
+                                        "Integrity options for this pool. If "
+                                        f'"{IntegrityOption.NO}" no space will '
+                                        "be allocated for integrity metadata "
+                                        "and it will never be possible to turn "
+                                        "on integrity functionality for this "
+                                        "pool. "
+                                        f'If "{IntegrityOption.PRE_ALLOCATE}" '
+                                        "then space will be allocated for "
+                                        "integrity metadata and it will be "
+                                        "possible to switch on integrity "
+                                        "functionality in future. The default "
+                                        'is "%(default)s".'
+                                    ),
+                                    "choices": list(IntegrityOption),
+                                    "default": IntegrityOption.PRE_ALLOCATE,
+                                    "type": IntegrityOption,
+                                },
+                            ),
+                            (
                                 "--journal-size",
                                 {
                                     "help": (
                                         "Size of integrity device's journal. "
                                         "Each block is written to this journal "
                                         "before being written to its address. "
-                                        "The default is %(default)s. Specify "
-                                        "0B if you have determined that you "
-                                        "will never make use of integrity "
-                                        "features."
+                                        "The default is %(default)s."
                                     ),
+                                    "action": DefaultAction,
                                     "default": Range(128, MiB),
                                     "type": parse_range,
                                 },
@@ -206,12 +283,15 @@ POOL_SUBCMDS = [
                                         "checksum or other value for each "
                                         "block on a device. All size "
                                         "specifications are in bits. The "
-                                        "default is %(default)s. Specify 0b "
-                                        "if you have determined that you will "
-                                        "never make use of integrity features."
+                                        "default is %(default)s."
                                     ),
+                                    "action": DefaultAction,
                                     "default": IntegrityTagSpec.B512,
-                                    "choices": list(IntegrityTagSpec),
+                                    "choices": [
+                                        x
+                                        for x in list(IntegrityTagSpec)
+                                        if x is not IntegrityTagSpec.B0
+                                    ],
                                     "type": IntegrityTagSpec,
                                 },
                             ),

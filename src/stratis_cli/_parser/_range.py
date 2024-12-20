@@ -88,3 +88,13 @@ class RejectAction(argparse.Action):
         raise argparse.ArgumentError(
             self, f"Option {option_string} can not be assigned to or set."
         )
+
+
+class DefaultAction(argparse.Action):
+    """
+    Detect if the default value was set.
+    """
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        setattr(namespace, self.dest, values)
+        setattr(namespace, self.dest + "_default", False)
