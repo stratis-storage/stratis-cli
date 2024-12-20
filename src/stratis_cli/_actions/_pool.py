@@ -201,6 +201,7 @@ class PoolActions:
                 ),
                 "journal_size": (True, namespace.journal_size.magnitude.numerator),
                 "tag_spec": (True, namespace.tag_spec),
+                "allocate_superblock": (False, False),
             },
         )
 
