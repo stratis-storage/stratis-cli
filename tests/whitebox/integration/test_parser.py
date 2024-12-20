@@ -221,16 +221,48 @@ class ParserTestCase(RunTestCase):
         for prefix in [[], ["--propagate"]]:
             self.check_system_exit(prefix + command_line, _PARSE_ERROR)
 
-    def test_create_with_oversize_tag_value(self):
+    def test_create_with_bad_tag_value(self):
         """
-        Verify that a tag value of at least 256B will result in a parser error.
+        Verify that an unrecognized tag value causes an error.
         """
         command_line = [
             "pool",
             "create",
             "pn",
             "/dev/n",
-            "--tag-size=256B",
+            "--tag-spec=512",
+        ]
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
+    def test_create_with_integrity_no_journal_size(self):
+        """
+        Verify that creating with integrity = no plus good journal-size
+        results in a parse error.
+        """
+        command_line = [
+            "pool",
+            "create",
+            "pn",
+            "/dev/n",
+            "--integrity=no",
+            "--journal-size=128MiB",
+        ]
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
+    def test_create_with_integrity_no_tag_spec(self):
+        """
+        Verify that creating with integrity = no plus good journal-size
+        results in a parse error.
+        """
+        command_line = [
+            "pool",
+            "create",
+            "pn",
+            "/dev/n",
+            "--integrity=no",
+            "--tag-spec=32b",
         ]
         for prefix in [[], ["--propagate"]]:
             self.check_system_exit(prefix + command_line, _PARSE_ERROR)
