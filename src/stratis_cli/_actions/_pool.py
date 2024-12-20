@@ -215,7 +215,7 @@ class PoolActions:
             },
         )
 
-        if return_code != StratisdErrors.OK:  # pragma: no cover
+        if return_code != StratisdErrors.OK:
             raise StratisCliEngineError(return_code, message)
 
         if not changed:  # pragma: no cover
