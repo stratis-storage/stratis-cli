@@ -18,6 +18,7 @@ Test 'create'.
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
 from stratis_cli._errors import (
+    StratisCliEngineError,
     StratisCliInUseSameTierError,
     StratisCliNameConflictError,
 )
@@ -165,3 +166,22 @@ class Create6TestCase(SimTestCase):
             self._MENU + [self._POOLNAME] + self._DEVICES + ["--no-overprovision"]
         )
         TEST_RUNNER(command_line)
+
+
+class Create7TestCase(SimTestCase):
+    """
+    Test create with integrity options.
+    """
+
+    _MENU = ["--propagate", "pool", "create"]
+    _DEVICES = _DEVICE_STRATEGY()
+    _POOLNAME = "thispool"
+
+    def test_invalid_journal_size(self):
+        """
+        Test creating with an invalid journal size.
+        """
+        command_line = (
+            self._MENU + [self._POOLNAME] + self._DEVICES + ["--journal-size=131079KiB"]
+        )
+        self.check_error(StratisCliEngineError, command_line, _ERROR)

@@ -130,6 +130,11 @@ jobs:
           toolchain: 1.71.1  # LOWEST SUPPORTED RUST TOOLCHAIN
       - name: Check out stratisd
         run: git clone https://github.com/stratis-storage/stratisd.git
+      - name: Switch
+        run: |
+          git checkout -b mulkieran-jbaublitz-metadata-rework-integrity master
+          git pull https://github.com/mulkieran/stratisd.git jbaublitz-metadata-rework-integrity
+        working-directory: ./stratisd
       - name: Build stratisd
         run: PROFILEDIR=debug make build-all
         working-directory: ./stratisd
@@ -188,6 +193,11 @@ jobs:
           toolchain: 1.71.1  # LOWEST SUPPORTED RUST TOOLCHAIN
       - name: Check out stratisd
         run: git clone https://github.com/stratis-storage/stratisd.git
+      - name: Switch
+        run: |
+          git checkout -b mulkieran-jbaublitz-metadata-rework-integrity master
+          git pull https://github.com/mulkieran/stratisd.git jbaublitz-metadata-rework-integrity
+        working-directory: ./stratisd
       - name: Build stratisd
         run: PROFILEDIR=debug make build-all
         working-directory: ./stratisd
