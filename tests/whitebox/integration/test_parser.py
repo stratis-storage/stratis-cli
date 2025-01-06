@@ -23,7 +23,7 @@ from ._misc import RUNNER, RunTestCase, SimTestCase
 _PARSE_ERROR = StratisCliErrorCodes.PARSE_ERROR
 
 
-class ParserTestCase(RunTestCase):
+class ParserTestCase(RunTestCase):  # pylint: disable=too-many-public-methods
     """
     Test parser behavior. The behavior should be identical, regardless of
     whether the "--propagate" flag is set. That is, stratis should never produce
@@ -217,6 +217,52 @@ class ParserTestCase(RunTestCase):
             "/dev/n",
             "--clevis=tpm2",
             "--post-parser=yes",
+        ]
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
+    def test_create_with_bad_tag_value(self):
+        """
+        Verify that an unrecognized tag value causes an error.
+        """
+        command_line = [
+            "pool",
+            "create",
+            "pn",
+            "/dev/n",
+            "--tag-spec=512",
+        ]
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
+    def test_create_with_integrity_no_journal_size(self):
+        """
+        Verify that creating with integrity = no plus good journal-size
+        results in a parse error.
+        """
+        command_line = [
+            "pool",
+            "create",
+            "pn",
+            "/dev/n",
+            "--integrity=no",
+            "--journal-size=128MiB",
+        ]
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
+    def test_create_with_integrity_no_tag_spec(self):
+        """
+        Verify that creating with integrity = no plus good tag-size
+        results in a parse error.
+        """
+        command_line = [
+            "pool",
+            "create",
+            "pn",
+            "/dev/n",
+            "--integrity=no",
+            "--tag-spec=32b",
         ]
         for prefix in [[], ["--propagate"]]:
             self.check_system_exit(prefix + command_line, _PARSE_ERROR)

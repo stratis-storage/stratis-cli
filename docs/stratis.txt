@@ -36,8 +36,10 @@ GLOBAL OPTIONS
 
 COMMANDS
 --------
-pool create [--key-desc <key_desc>] [--clevis <(nbde|tang|tpm2)> [--tang-url <tang_url>] [<(--thumbprint <thp> | --trust-url)>] [--no-overprovision] <pool_name> <blockdev> [<blockdev>..]::
+pool create [--key-desc <key_desc>] [--clevis <(nbde|tang|tpm2)> [--tang-url <tang_url>] [<(--thumbprint <thp> | --trust-url)>] [--no-overprovision] [--integrity <(no,pre-allocate)>] [--journal-size <journal_size>] [--tag-spec <tag_spec>] <pool_name> <blockdev> [<blockdev>..]::
      Create a pool from one or more block devices, with the given pool name.
+     The --tag-spec and --journal-size options are used to configure the amount
+     of space to reserve for integrity metadata.
 pool stop <(--uuid <uuid> |--name <name>)>::
      Stop a pool, specifying the pool by its UUID or by its name. Tear down
      the storage stack but leave all metadata intact.
