@@ -25,7 +25,7 @@ from uuid import UUID
 # isort: THIRDPARTY
 from justbytes import Range
 
-from .._constants import Id, IdType, IntegrityOption, IntegrityTagSpec, UnlockMethod
+from .._constants import Id, IdType, IntegrityOption, IntegrityTagSpec
 from .._error_codes import PoolErrorCode
 from .._errors import (
     StratisCliEngineError,
@@ -200,14 +200,14 @@ class PoolActions:
                 "name": pool_name,
                 "devices": blockdevs,
                 "key_desc": (
-                    (True, namespace.key_desc)
-                    if namespace.key_desc is not None
-                    else (False, "")
+                    []
+                    if namespace.key_desc is None
+                    else [((False, 0), namespace.key_desc)]
                 ),
                 "clevis_info": (
-                    (False, ("", ""))
+                    []
                     if clevis_info is None
-                    else (True, (clevis_info.pin, json.dumps(clevis_info.config)))
+                    else [((False, 0), clevis_info.pin, json.dumps(clevis_info.config))]
                 ),
                 "journal_size": journal_size,
                 "tag_spec": tag_spec,
@@ -286,22 +286,11 @@ class PoolActions:
                 keyfile_path=namespace.keyfile_path
             )
             key_fd_arg = (True, fd_argument)
-            unlock_method = (
-                True,
-                str(
-                    UnlockMethod.ANY
-                    if namespace.unlock_method is None
-                    else namespace.unlock_method
-                ),
-            )
+            unlock_method = (True, (False, 0))
         else:
             fd_to_close = None
             key_fd_arg = (False, 0)
-            unlock_method = (
-                (False, "")
-                if namespace.unlock_method is None
-                else (True, str(namespace.unlock_method))
-            )
+            unlock_method = (False, (False, 0))
 
         ((started, _), return_code, message) = Manager.Methods.StartPool(
             proxy,
