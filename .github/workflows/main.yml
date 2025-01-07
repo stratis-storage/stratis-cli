@@ -130,6 +130,11 @@ jobs:
           toolchain: 1.74.0  # LOWEST SUPPORTED RUST TOOLCHAIN
       - name: Check out stratisd
         run: git clone https://github.com/stratis-storage/stratisd.git
+      - name: Switch
+        run: |
+          git checkout -b jbaublitz-issue-stratisd-3598 master
+          git pull https://github.com/jbaublitz/stratisd.git issue-stratisd-3598
+        working-directory: ./stratisd
       - name: Build stratisd
         run: PROFILEDIR=debug make build-all
         working-directory: ./stratisd
@@ -188,6 +193,11 @@ jobs:
           toolchain: 1.74.0  # LOWEST SUPPORTED RUST TOOLCHAIN
       - name: Check out stratisd
         run: git clone https://github.com/stratis-storage/stratisd.git
+      - name: Switch
+        run: |
+          git checkout -b jbaublitz-issue-stratisd-3598 master
+          git pull https://github.com/jbaublitz/stratisd.git issue-stratisd-3598
+        working-directory: ./stratisd
       - name: Build stratisd
         run: PROFILEDIR=debug make build-all
         working-directory: ./stratisd
