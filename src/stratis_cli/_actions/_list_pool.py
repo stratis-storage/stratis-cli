@@ -16,6 +16,8 @@ Pool actions.
 """
 
 # isort: STDLIB
+import json
+import os
 from abc import ABC, abstractmethod
 
 # isort: THIRDPARTY
@@ -42,13 +44,14 @@ from ._utils import (
 )
 
 
+# This method is only used with legacy pools
 def _non_existent_or_inconsistent_to_str(
     value,
     *,
     inconsistent_str="inconsistent",
     non_existent_str="N/A",
     interp=lambda x: str(x),  # pylint: disable=unnecessary-lambda
-):
+):  # pragma: no cover
     """
     Process dbus result that encodes both inconsistency and existence of the
     value.
@@ -60,7 +63,7 @@ def _non_existent_or_inconsistent_to_str(
     :returns: a string to print
     :rtype: str
     """
-    if not value.consistent():  # pragma: no cover
+    if not value.consistent():
         return inconsistent_str
 
     value = value.value
@@ -69,6 +72,40 @@ def _non_existent_or_inconsistent_to_str(
         return non_existent_str
 
     return interp(value)
+
+
+class TokenSlotInfo:  # pylint: disable=too-few-public-methods
+    """
+    Just a class to merge info about two different ways of occupying LUKS
+    token slots into one, so that the two different ways can be sorted by
+    token and then printed.
+    """
+
+    def __init__(self, token_slot, *, key=None, clevis=None):
+        """
+        Initialize either information about a key or about a Clevis
+        configuration for purposes of printing later.
+
+        :param int token_slot: token slot
+        :param str key: key
+        :param clevis: clevis configuration
+        :type clevis: pair of pin and configuration, str * json
+        """
+        assert (key is None) ^ (clevis is None)
+
+        self.token_slot = token_slot
+        self.key = key
+        self.clevis = clevis
+
+    def __str__(self):
+        return f"Token Slot: {self.token_slot}{os.linesep}" + (
+            f"    Key Description: {self.key}"
+            if self.clevis is None
+            else (
+                f"    Clevis Pin: {self.clevis[0]}{os.linesep}"
+                f"    Clevis Configuration: {self.clevis[1]}"
+            )
+        )
 
 
 def list_pools(uuid_formatter, *, stopped=False, selection=None):
@@ -267,17 +304,37 @@ class DefaultDetail(Default):
         if encrypted:
             print("Encryption Enabled: Yes")
 
-            key_description_str = _non_existent_or_inconsistent_to_str(
-                EncryptionInfoKeyDescription(mopool.KeyDescription())
-            )
-            print(f"    Key Description: {key_description_str}")
+            if metadata_version is MetadataVersion.V1:  # pragma: no cover
+                key_description_str = _non_existent_or_inconsistent_to_str(
+                    EncryptionInfoKeyDescription(mopool.KeyDescriptions())
+                )
+                print(f"    Key Description: {key_description_str}")
 
-            clevis_info_str = _non_existent_or_inconsistent_to_str(
-                EncryptionInfoClevis(mopool.ClevisInfo()),
-                interp=_clevis_to_str,
-            )
-            print(f"    Clevis Configuration: {clevis_info_str}")
+                clevis_info_str = _non_existent_or_inconsistent_to_str(
+                    EncryptionInfoClevis(mopool.ClevisInfos()),
+                    interp=_clevis_to_str,
+                )
+                print(f"    Clevis Configuration: {clevis_info_str}")
+            elif metadata_version is MetadataVersion.V2:
+                encryption_infos = sorted(
+                    [
+                        TokenSlotInfo(token_slot, key=str(description))
+                        for token_slot, description in mopool.KeyDescriptions()
+                    ]
+                    + [
+                        TokenSlotInfo(
+                            token_slot, clevis=(str(pin), json.loads(str(config)))
+                        )
+                        for token_slot, (pin, config) in mopool.ClevisInfos()
+                    ],
+                    key=lambda x: x.token_slot,
+                )
 
+                for info in encryption_infos:
+                    for line in str(info).split(os.linesep):
+                        print(f"    {line}")
+            else:  # pragma: no cover
+                pass
         else:
             print("Encryption Enabled: No")
 

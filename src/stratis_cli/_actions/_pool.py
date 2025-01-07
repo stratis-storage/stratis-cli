@@ -32,6 +32,7 @@ from .._errors import (
     StratisCliIncoherenceError,
     StratisCliInUseOtherTierError,
     StratisCliInUseSameTierError,
+    StratisCliInvalidCommandLineOptionValue,
     StratisCliNameConflictError,
     StratisCliNoChangeError,
     StratisCliNoDeviceSizeChangeError,
@@ -39,12 +40,18 @@ from .._errors import (
     StratisCliPartialChangeError,
     StratisCliResourceNotFoundError,
 )
-from .._stratisd_constants import BlockDevTiers, StratisdErrors
+from .._stratisd_constants import BlockDevTiers, MetadataVersion, StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import get_property, get_uuid_formatter
 from ._list_pool import list_pools
-from ._utils import ClevisInfo, PoolSelector, get_passphrase_fd
+from ._utils import (
+    ClevisInfo,
+    PoolSelector,
+    StoppedPool,
+    fetch_stopped_pools_property,
+    get_passphrase_fd,
+)
 
 
 def _generate_pools_to_blockdevs(managed_objects, to_be_added, tier):
@@ -200,14 +207,14 @@ class PoolActions:
                 "name": pool_name,
                 "devices": blockdevs,
                 "key_desc": (
-                    (True, namespace.key_desc)
-                    if namespace.key_desc is not None
-                    else (False, "")
+                    []
+                    if namespace.key_desc is None
+                    else [((False, 0), namespace.key_desc)]
                 ),
                 "clevis_info": (
-                    (False, ("", ""))
+                    []
                     if clevis_info is None
-                    else (True, (clevis_info.pin, json.dumps(clevis_info.config)))
+                    else [((False, 0), clevis_info.pin, json.dumps(clevis_info.config))]
                 ),
                 "journal_size": journal_size,
                 "tag_spec": tag_spec,
@@ -263,7 +270,7 @@ class PoolActions:
             raise StratisCliNoChangeError("stop", pool_id)
 
     @staticmethod
-    def start_pool(namespace):
+    def start_pool(namespace):  # pylint: disable=too-many-locals
         """
         Start a pool.
 
@@ -281,27 +288,57 @@ class PoolActions:
             else (namespace.name, "name")
         )
 
+        if namespace.token_slot is None:
+            if namespace.unlock_method is None:
+                unlock_method = (
+                    namespace.capture_key or namespace.keyfile_path is not None,
+                    (False, 0),
+                )
+            elif namespace.unlock_method is UnlockMethod.ANY:
+                unlock_method = (True, (False, 0))
+            else:
+                stopped_pools = fetch_stopped_pools_property(proxy)
+                selection_func = PoolSelector(Id(id_type, pool_id)).stopped_pools_func()
+                stopped_pool = next(
+                    (
+                        (uuid, StoppedPool(info))
+                        for (uuid, info) in stopped_pools.items()
+                        if selection_func(uuid, info)
+                    ),
+                    None,
+                )
+
+                if stopped_pool is None:
+                    raise StratisCliResourceNotFoundError(
+                        "start", f"pool with {id_type}: {pool_id}"
+                    )
+
+                (_, stopped_pool) = stopped_pool
+
+                if stopped_pool.metadata_version is MetadataVersion.V2:
+                    raise StratisCliInvalidCommandLineOptionValue(
+                        f'"--unlock-method={namespace.unlock_method}" can not '
+                        "be used with metadata version "
+                        f"{stopped_pool.metadata_version} pools. Use "
+                        f'"--unlock-method=any" or specify a token slot using '
+                        '"--token-slot" instead.'
+                    )
+
+                unlock_method = (
+                    True,
+                    (True, namespace.unlock_method.legacy_token_slot()),
+                )  # pragma: no cover
+        else:
+            unlock_method = (True, (True, namespace.token_slot))
+
         if namespace.capture_key or namespace.keyfile_path is not None:
             fd_argument, fd_to_close = get_passphrase_fd(
                 keyfile_path=namespace.keyfile_path, verify=False
             )
             key_fd_arg = (True, fd_argument)
-            unlock_method = (
-                True,
-                str(
-                    UnlockMethod.ANY
-                    if namespace.unlock_method is None
-                    else namespace.unlock_method
-                ),
-            )
         else:
             fd_to_close = None
             key_fd_arg = (False, 0)
-            unlock_method = (
-                (False, "")
-                if namespace.unlock_method is None
-                else (True, str(namespace.unlock_method))
-            )
 
         ((started, _), return_code, message) = Manager.Methods.StartPool(
             proxy,

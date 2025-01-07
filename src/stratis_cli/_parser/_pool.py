@@ -17,7 +17,7 @@ Definition of pool actions to display in the CLI.
 
 # isort: STDLIB
 import copy
-from argparse import SUPPRESS, ArgumentTypeError
+from argparse import SUPPRESS
 from uuid import UUID
 
 # isort: THIRDPARTY
@@ -35,7 +35,7 @@ from .._constants import (
 from .._error_codes import PoolErrorCode
 from ._bind import BIND_SUBCMDS, REBIND_SUBCMDS
 from ._debug import POOL_DEBUG_SUBCMDS
-from ._range import DefaultAction, RejectAction, parse_range
+from ._range import DefaultAction, RejectAction, ensure_nat, parse_range
 
 
 class ClevisEncryptionOptions:  # pylint: disable=too-few-public-methods
@@ -145,20 +145,6 @@ class CreateOptions:  # pylint: disable=too-few-public-methods
         """
         self.clevis_encryption_options.verify(namespace, parser)
         self.integrity_options.verify(namespace, parser)
-
-
-def _ensure_nat(arg):
-    """
-    Raise error if argument is not an natural number.
-    """
-    try:
-        result = int(arg)
-    except Exception as err:
-        raise ArgumentTypeError(f"Argument {arg} is not a natural number.") from err
-
-    if result < 0:
-        raise ArgumentTypeError(f"Argument {arg} is not a natural number.")
-    return result
 
 
 POOL_SUBCMDS = [
@@ -363,6 +349,39 @@ POOL_SUBCMDS = [
             "help": "Start a pool.",
             "groups": [
                 (
+                    "Unlock Method",
+                    {
+                        "description": (
+                            "Arguments to allow specifying an unlock method when pool is encrypted"
+                        ),
+                        "mut_ex_args": [
+                            (
+                                False,
+                                [
+                                    (
+                                        "--unlock-method",
+                                        {
+                                            "choices": list(UnlockMethod),
+                                            "help": "Method to use to unlock the pool",
+                                            "type": UnlockMethod,
+                                        },
+                                    ),
+                                    (
+                                        "--token-slot",
+                                        {
+                                            "help": (
+                                                "token slot; alternative way of specifying "
+                                                "an unlock method; for V2 pools only"
+                                            ),
+                                            "type": ensure_nat,
+                                        },
+                                    ),
+                                ],
+                            ),
+                        ],
+                    },
+                ),
+                (
                     "Key Specification",
                     {
                         "description": "Arguments to allow specifying a key",
@@ -385,7 +404,7 @@ POOL_SUBCMDS = [
                             ),
                         ],
                     },
-                )
+                ),
             ],
             "mut_ex_args": [
                 (
@@ -403,16 +422,6 @@ POOL_SUBCMDS = [
                             {"help": "name of the pool to start"},
                         ),
                     ],
-                ),
-            ],
-            "args": [
-                (
-                    "--unlock-method",
-                    {
-                        "choices": list(UnlockMethod),
-                        "help": "Method to use to unlock the pool if encrypted.",
-                        "type": UnlockMethod,
-                    },
                 ),
             ],
             "func": PoolActions.start_pool,
@@ -592,6 +601,16 @@ POOL_SUBCMDS = [
                     },
                 ),
                 ("pool_name", {"help": "Pool name"}),
+                (
+                    "--token-slot",
+                    {
+                        "help": (
+                            "token slot; must be specified if there is more "
+                            "than one binding with the specified method"
+                        ),
+                        "type": ensure_nat,
+                    },
+                ),
             ],
             "func": BindActions.unbind,
         },
@@ -605,7 +624,7 @@ POOL_SUBCMDS = [
                 (
                     "amount",
                     {
-                        "type": _ensure_nat,
+                        "type": ensure_nat,
                         "help": "Number of filesystems.",
                     },
                 ),
