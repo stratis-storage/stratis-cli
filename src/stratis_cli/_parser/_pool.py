@@ -168,9 +168,9 @@ POOL_SUBCMDS = [
             "help": "Create a pool",
             "groups": [
                 (
-                    "clevis",
+                    "encryption",
                     {
-                        "description": "Arguments controlling creation with Clevis encryption",
+                        "description": "Arguments controlling creation with encryption",
                         "args": [
                             (
                                 "--post-parser",
@@ -179,6 +179,15 @@ POOL_SUBCMDS = [
                                     "default": CreateOptions,
                                     "help": SUPPRESS,
                                     "nargs": "?",
+                                },
+                            ),
+                            (
+                                "--key-desc",
+                                {
+                                    "help": (
+                                        "Key description of key in kernel keyring to use "
+                                        "for encryption"
+                                    ),
                                 },
                             ),
                             (
@@ -304,15 +313,6 @@ POOL_SUBCMDS = [
                 (
                     "blockdevs",
                     {"help": "Create the pool using these block devs", "nargs": "+"},
-                ),
-                (
-                    "--key-desc",
-                    {
-                        "help": (
-                            "Key description of key in kernel keyring to use "
-                            "for encryption"
-                        ),
-                    },
                 ),
                 (
                     "--no-overprovision",
