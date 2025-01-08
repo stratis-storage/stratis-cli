@@ -34,7 +34,7 @@ import psutil
 from stratis_cli import StratisCliErrorCodes, run
 from stratis_cli._actions._connection import get_object
 from stratis_cli._actions._constants import TOP_OBJECT
-from stratis_cli._error_reporting import handle_error
+from stratis_cli._error_reporting import get_errors, handle_error
 from stratis_cli._errors import StratisCliActionError
 
 _OK = StratisCliErrorCodes.OK
@@ -180,7 +180,14 @@ class RunTestCase(unittest.TestCase):
 
         exception = context.exception
         cause = exception.__cause__
-        self.assertIsInstance(cause, expected_cause)
+        self.assertIsInstance(
+            cause,
+            expected_cause,
+            msg=(
+                "Additional causes: "
+                f'{", ".join((str(e) for e in list(get_errors(cause))[1:])) or "none"}'
+            ),
+        )
 
         error_string = str(exception)
         self.assertIsInstance(error_string, str)
