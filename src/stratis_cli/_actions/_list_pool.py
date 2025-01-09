@@ -287,16 +287,16 @@ class DefaultDetail(Default):
         total_physical_used = get_property(mopool.TotalPhysicalUsed(), Range, None)
 
         print("Space Usage:")
-        print(f"Fully Allocated: {'Yes' if mopool.NoAllocSpace() else 'No'}")
-        print(f"    Size: {Range(mopool.TotalPhysicalSize())}")
-        print(f"    Allocated: {Range(mopool.AllocatedSize())}")
+        print(f"    Fully Allocated: {'Yes' if mopool.NoAllocSpace() else 'No'}")
+        print(f"        Size: {Range(mopool.TotalPhysicalSize())}")
+        print(f"        Allocated: {Range(mopool.AllocatedSize())}")
 
         total_physical_used = get_property(mopool.TotalPhysicalUsed(), Range, None)
         total_physical_used_str = (
             TABLE_FAILURE_STRING if total_physical_used is None else total_physical_used
         )
 
-        print(f"    Used: {total_physical_used_str}")
+        print(f"        Used: {total_physical_used_str}")
 
     def display(self):
         """
