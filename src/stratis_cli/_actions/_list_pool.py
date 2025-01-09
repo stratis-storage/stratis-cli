@@ -286,7 +286,6 @@ class DefaultDetail(Default):
 
         total_physical_used = get_property(mopool.TotalPhysicalUsed(), Range, None)
 
-        print("Space Usage:")
         print(f"Fully Allocated: {'Yes' if mopool.NoAllocSpace() else 'No'}")
         print(f"    Size: {Range(mopool.TotalPhysicalSize())}")
         print(f"    Allocated: {Range(mopool.AllocatedSize())}")
