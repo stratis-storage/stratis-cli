@@ -349,6 +349,39 @@ POOL_SUBCMDS = [
             "help": "Start a pool.",
             "groups": [
                 (
+                    "Unlock Method",
+                    {
+                        "description": (
+                            "Arguments to allow specifying an unlock method when pool is encrypted"
+                        ),
+                        "mut_ex_args": [
+                            (
+                                False,
+                                [
+                                    (
+                                        "--unlock-method",
+                                        {
+                                            "choices": list(UnlockMethod),
+                                            "help": "Method to use to unlock the pool",
+                                            "type": UnlockMethod,
+                                        },
+                                    ),
+                                    (
+                                        "--token-slot",
+                                        {
+                                            "help": (
+                                                "token slot; alternative way of specifying "
+                                                "an unlock method; for V2 pools only"
+                                            ),
+                                            "type": ensure_nat,
+                                        },
+                                    ),
+                                ],
+                            ),
+                        ],
+                    },
+                ),
+                (
                     "Key Specification",
                     {
                         "description": "Arguments to allow specifying a key",
@@ -371,7 +404,7 @@ POOL_SUBCMDS = [
                             ),
                         ],
                     },
-                )
+                ),
             ],
             "mut_ex_args": [
                 (
@@ -389,16 +422,6 @@ POOL_SUBCMDS = [
                             {"help": "name of the pool to start"},
                         ),
                     ],
-                ),
-            ],
-            "args": [
-                (
-                    "--unlock-method",
-                    {
-                        "choices": list(UnlockMethod),
-                        "help": "Method to use to unlock the pool if encrypted.",
-                        "type": UnlockMethod,
-                    },
                 ),
             ],
             "func": PoolActions.start_pool,
