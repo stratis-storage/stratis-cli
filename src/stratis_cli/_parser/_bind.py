@@ -90,7 +90,8 @@ REBIND_SUBCMDS = [
                     {
                         "help": (
                             "token slot; must be specified if there is more "
-                            "than one binding with the specified method"
+                            "than one binding with the specified method; for "
+                            "V2 pools only"
                         ),
                         "type": ensure_nat,
                     },
@@ -114,7 +115,8 @@ REBIND_SUBCMDS = [
                     {
                         "help": (
                             "token slot; must be specified if there is more "
-                            "than one binding with the specified method"
+                            "than one binding with the specified method; for "
+                            "V2 pools only"
                         ),
                         "type": ensure_nat,
                     },
