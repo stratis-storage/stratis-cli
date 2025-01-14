@@ -17,7 +17,7 @@ Test 'unbind'.
 
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
-from stratis_cli._errors import StratisCliEngineError
+from stratis_cli._errors import StratisCliEngineError, StratisCliNoChangeError
 
 from .._keyutils import RandomKeyTmpFile
 from .._misc import RUNNER, TEST_RUNNER, SimTestCase, device_name_list
@@ -104,3 +104,20 @@ class UnbindTestCase2(SimTestCase):
         RUNNER(command_line)
         command_line = self._MENU + ["clevis", self._POOLNAME]
         TEST_RUNNER(command_line)
+
+    def test_unbind_with_unused_token_slot(self):
+        """
+        Unbind with unused token slot.
+        """
+        command_line = [
+            "--propagate",
+            "pool",
+            "bind",
+            "nbde",
+            self._POOLNAME,
+            "URL",
+            "--trust-url",
+        ]
+        RUNNER(command_line)
+        command_line = self._MENU + ["clevis", self._POOLNAME, "--token-slot=32"]
+        self.check_error(StratisCliNoChangeError, command_line, _ERROR)
