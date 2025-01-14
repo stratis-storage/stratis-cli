@@ -38,9 +38,10 @@ from ._formatting import (
 from ._utils import PoolFeature, StoppedPool, fetch_stopped_pools_property
 
 
+# This method is only used with legacy pools
 def _non_existent_or_inconsistent_to_str(
     value, *, inconsistent_str="inconsistent", non_existent_str="N/A", interp=str
-):
+):  # pragma: no cover
     """
     Process dbus result that encodes both inconsistency and existence of the
     value.
@@ -52,7 +53,7 @@ def _non_existent_or_inconsistent_to_str(
     :returns: a string to print
     :rtype: str
     """
-    if not value.consistent():  # pragma: no cover
+    if not value.consistent():
         return inconsistent_str
 
     value = value.value

@@ -107,7 +107,8 @@ class EncryptionInfo:  # pylint: disable=too-few-public-methods
             # No tests that generate inconsistent encryption information
             self.error = str(info)  # pragma: no cover
 
-    def consistent(self):
+    # This method is only invoked when displaying legacy pool information
+    def consistent(self):  # pragma: no cover
         """
         True if consistent, otherwise False.
         """
