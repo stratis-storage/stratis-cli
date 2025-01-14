@@ -70,7 +70,10 @@ class BindActions:
         if return_code != StratisdErrors.OK:
             raise StratisCliEngineError(return_code, return_msg)
 
-        if not changed:
+        # stratisd does not do idempotency checks when binding with Clevis;
+        # because there are multiple token slots, a new Clevis binding will
+        # just find the next token slot.
+        if not changed:  # pragma: no cover
             raise StratisCliNoChangeError("bind", pool_name)
 
     @staticmethod

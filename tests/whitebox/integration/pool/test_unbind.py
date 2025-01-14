@@ -17,7 +17,7 @@ Test 'unbind'.
 
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
-from stratis_cli._errors import StratisCliEngineError, StratisCliNoChangeError
+from stratis_cli._errors import StratisCliEngineError
 
 from .._keyutils import RandomKeyTmpFile
 from .._misc import RUNNER, TEST_RUNNER, SimTestCase, device_name_list
@@ -81,11 +81,12 @@ class UnbindTestCase2(SimTestCase):
 
     def test_unbind_when_unbound(self):
         """
-        Unbinding when encrypted but unbound should raise a no change error,
-        as the action is assumed to be unintentional.
+        Unbinding when encrypted but with only one binding mechanism results in
+        an engine error, as removing the one remaining binding mechanism would
+        make the pool unreadable as soon as it is stopped.
         """
         command_line = self._MENU + ["clevis", self._POOLNAME]
-        self.check_error(StratisCliNoChangeError, command_line, _ERROR)
+        self.check_error(StratisCliEngineError, command_line, _ERROR)
 
     def test_unbind_when_bound(self):
         """
