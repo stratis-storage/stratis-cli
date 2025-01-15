@@ -91,3 +91,21 @@ class StartTestCase(SimTestCase):
         self.check_error(
             StratisCliEngineError, command_line, _ERROR, stdin="password\npassword\n"
         )
+
+    def test_unlock_method_any(self):
+        """
+        Test trying to start an unencrypted pool with unlock method ANY.
+        """
+        command_line = ["pool", "stop", f"--name={self._POOLNAME}"]
+        RUNNER(command_line)
+        command_line = self._MENU + [f"--name={self._POOLNAME}", "--unlock-method=any"]
+        self.check_error(StratisCliEngineError, command_line, _ERROR)
+
+    def test_token_slot_0(self):
+        """
+        Test trying to start an unencrypted pool with unlock method ANY.
+        """
+        command_line = ["pool", "stop", f"--name={self._POOLNAME}"]
+        RUNNER(command_line)
+        command_line = self._MENU + [f"--name={self._POOLNAME}", "--token-slot=0"]
+        self.check_error(StratisCliEngineError, command_line, _ERROR)
