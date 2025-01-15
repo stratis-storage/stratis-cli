@@ -23,7 +23,7 @@ from justbytes import Range
 
 from .._error_codes import PoolAllocSpaceErrorCode, PoolDeviceSizeChangeCode
 from .._errors import StratisCliResourceNotFoundError
-from .._stratisd_constants import PoolActionAvailability
+from .._stratisd_constants import MetadataVersion, PoolActionAvailability
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import (
@@ -396,8 +396,13 @@ class DefaultTable(Default):
                 """
                 return (" " if has_property else "~") + code
 
+            try:
+                metadata_version = MetadataVersion(int(mopool.MetadataVersion()))
+            except ValueError:  # pragma: no cover
+                metadata_version = None
+
             props_list = [
-                (int(mopool.MetadataVersion()) == 1, "Le"),
+                (metadata_version in (MetadataVersion.V1, None), "Le"),
                 (bool(mopool.HasCache()), "Ca"),
                 (bool(mopool.Encrypted()), "Cr"),
                 (bool(mopool.Overprovisioning()), "Op"),
@@ -496,7 +501,7 @@ class StoppedDetail(Stopped):  # pylint: disable=too-few-public-methods
 
         print(f"Metadata Version: {self._metadata_version_str(pool.metadata_version)}")
 
-        if pool.metadata_version == 1:  # pragma: no cover
+        if pool.metadata_version is MetadataVersion.V1:  # pragma: no cover
             key_description = pool.key_description
             clevis_info = pool.clevis_info
 
@@ -516,7 +521,7 @@ class StoppedDetail(Stopped):  # pylint: disable=too-few-public-methods
                 )
                 print(f"    Clevis Configuration: {clevis_info_str}")
 
-        elif pool.metadata_version == 2:  # pragma: no cover
+        elif pool.metadata_version is MetadataVersion.V2:
             encryption_str = (
                 "Unknown"
                 if pool.features is None
@@ -579,7 +584,7 @@ class StoppedTable(Stopped):  # pylint: disable=too-few-public-methods
         stopped_pools = _fetch_stopped_pools_property(proxy)
 
         def clevis_str(value, metadata_version, features):
-            if metadata_version == 2:
+            if metadata_version is MetadataVersion.V2:
                 return (
                     "<UNKNOWN>"
                     if features is None
@@ -599,7 +604,7 @@ class StoppedTable(Stopped):  # pylint: disable=too-few-public-methods
             )  # pragma: no cover
 
         def key_description_str(value, metadata_version, features):
-            if metadata_version == 2:
+            if metadata_version is MetadataVersion.V2:
                 return (
                     "<UNKNOWN>"
                     if features is None
