@@ -25,7 +25,7 @@ from uuid import UUID
 # isort: THIRDPARTY
 from justbytes import Range
 
-from .._constants import Id, IdType, IntegrityOption, IntegrityTagSpec
+from .._constants import Id, IdType, IntegrityOption, IntegrityTagSpec, UnlockMethod
 from .._error_codes import PoolErrorCode
 from .._errors import (
     StratisCliEngineError,
@@ -281,16 +281,25 @@ class PoolActions:
             else (namespace.name, "name")
         )
 
+        if namespace.token_slot is None:
+            if namespace.unlock_method is None:
+                unlock_method = (False, (False, 0))
+            elif namespace.unlock_method is UnlockMethod.ANY:
+                unlock_method = (True, (False, 0))
+            else:
+                # FIXME: calculate correct token slot
+                unlock_method = (True, (True, 32))
+        else:
+            unlock_method = (True, (True, namespace.token_slot))
+
         if namespace.capture_key or namespace.keyfile_path is not None:
             fd_argument, fd_to_close = get_passphrase_fd(
                 keyfile_path=namespace.keyfile_path
             )
             key_fd_arg = (True, fd_argument)
-            unlock_method = (True, (False, 0))
         else:
             fd_to_close = None
             key_fd_arg = (False, 0)
-            unlock_method = (False, (False, 0))
 
         ((started, _), return_code, message) = Manager.Methods.StartPool(
             proxy,
