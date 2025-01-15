@@ -92,3 +92,15 @@ class PoolActionAvailability(IntEnum):
             codes.append(PoolMaintenanceErrorCode.NO_POOL_CHANGES)
 
         return codes
+
+
+class MetadataVersion(Enum):
+    """
+    Stratis metadata version.
+    """
+
+    V1 = 1
+    V2 = 2
+
+    def __str__(self):
+        return str(self.value)

@@ -33,6 +33,7 @@ from .._stratisd_constants import (
     CLEVIS_KEY_URL,
     CLEVIS_PIN_TANG,
     CLEVIS_PIN_TPM2,
+    MetadataVersion,
 )
 
 
@@ -200,9 +201,14 @@ class StoppedPool:  # pylint: disable=too-few-public-methods
         self.name = None if name is None else str(name)
 
         metadata_version_valid, metadata_version = pool_info["metadata_version"]
-        self.metadata_version = (
-            int(metadata_version) if metadata_version_valid else None
-        )
+        try:
+            self.metadata_version = (
+                MetadataVersion(int(metadata_version))
+                if metadata_version_valid
+                else None
+            )
+        except ValueError:  # pragma: no cover
+            self.metadata_version = None
 
         features_valid, features = pool_info["features"]
         self.features = (
