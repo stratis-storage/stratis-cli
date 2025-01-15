@@ -38,22 +38,8 @@ from ._utils import (
     EncryptionInfoKeyDescription,
     PoolFeature,
     StoppedPool,
+    fetch_stopped_pools_property,
 )
-
-
-def _fetch_stopped_pools_property(proxy):
-    """
-    Fetch the StoppedPools property from stratisd.
-    :param proxy: proxy to the top object in stratisd
-    :return: a representation of stopped devices
-    :rtype: dict
-    :raises StratisCliEngineError:
-    """
-
-    # pylint: disable=import-outside-toplevel
-    from ._data import Manager
-
-    return Manager.Properties.StoppedPools.Get(proxy)
 
 
 def _non_existent_or_inconsistent_to_str(
@@ -553,7 +539,7 @@ class StoppedDetail(Stopped):  # pylint: disable=too-few-public-methods
         """
 
         proxy = get_object(TOP_OBJECT)
-        stopped_pools = _fetch_stopped_pools_property(proxy)
+        stopped_pools = fetch_stopped_pools_property(proxy)
         selection_func = self.selection.stopped_pools_func()
 
         stopped_pool = next(
@@ -592,7 +578,7 @@ class StoppedTable(Stopped):  # pylint: disable=too-few-public-methods
         """
         proxy = get_object(TOP_OBJECT)
 
-        stopped_pools = _fetch_stopped_pools_property(proxy)
+        stopped_pools = fetch_stopped_pools_property(proxy)
 
         def clevis_str(value, metadata_version, features):
             if metadata_version is MetadataVersion.V2:
