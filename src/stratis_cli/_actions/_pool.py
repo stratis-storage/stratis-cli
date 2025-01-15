@@ -32,6 +32,7 @@ from .._errors import (
     StratisCliIncoherenceError,
     StratisCliInUseOtherTierError,
     StratisCliInUseSameTierError,
+    StratisCliInvalidCommandLineOptionValue,
     StratisCliNameConflictError,
     StratisCliNoChangeError,
     StratisCliNoDeviceSizeChangeError,
@@ -39,12 +40,18 @@ from .._errors import (
     StratisCliPartialChangeError,
     StratisCliResourceNotFoundError,
 )
-from .._stratisd_constants import BlockDevTiers, StratisdErrors
+from .._stratisd_constants import BlockDevTiers, MetadataVersion, StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import get_property, get_uuid_formatter
 from ._list_pool import list_pools
-from ._utils import ClevisInfo, PoolSelector, get_passphrase_fd
+from ._utils import (
+    ClevisInfo,
+    PoolSelector,
+    StoppedPool,
+    fetch_stopped_pools_property,
+    get_passphrase_fd,
+)
 
 
 def _generate_pools_to_blockdevs(managed_objects, to_be_added, tier):
@@ -263,7 +270,7 @@ class PoolActions:
             raise StratisCliNoChangeError("stop", pool_id)
 
     @staticmethod
-    def start_pool(namespace):
+    def start_pool(namespace):  # pylint: disable=too-many-locals
         """
         Start a pool.
 
@@ -287,8 +294,43 @@ class PoolActions:
             elif namespace.unlock_method is UnlockMethod.ANY:
                 unlock_method = (True, (False, 0))
             else:
-                # FIXME: calculate correct token slot
-                unlock_method = (True, (True, 32))
+                assert namespace.unlock_method in (
+                    UnlockMethod.CLEVIS,
+                    UnlockMethod.KEYRING,
+                )
+
+                stopped_pools = fetch_stopped_pools_property(proxy)
+                selection_func = PoolSelector(Id(id_type, pool_id)).stopped_pools_func()
+                stopped_pool = next(
+                    (
+                        (uuid, StoppedPool(info))
+                        for (uuid, info) in stopped_pools.items()
+                        if selection_func(uuid, info)
+                    ),
+                    None,
+                )
+
+                if stopped_pool is None:
+                    raise StratisCliResourceNotFoundError(
+                        "start", f"pool with {id_type}: {pool_id}"
+                    )
+
+                (_, stopped_pool) = stopped_pool
+
+                if stopped_pool.metadata_version is MetadataVersion.V2:
+                    raise StratisCliInvalidCommandLineOptionValue(
+                        f'"--unlock-method={namespace.unlock_method}" can not '
+                        "be used with metadata version "
+                        f"{stopped_pool.metadata_version} pools. Use "
+                        f'"--unlock-method=any" or specify a token slot using '
+                        '"--token-slot" instead.'
+                    )
+
+                unlock_method = (
+                    True,
+                    (True, 1 if namespace.unlock_method is UnlockMethod.KEYRING else 2),
+                )
+
         else:
             unlock_method = (True, (True, namespace.token_slot))
 
