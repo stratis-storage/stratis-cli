@@ -290,7 +290,10 @@ class PoolActions:
 
         if namespace.token_slot is None:
             if namespace.unlock_method is None:
-                unlock_method = (False, (False, 0))
+                unlock_method = (
+                    namespace.capture_key or namespace.keyfile_path is not None,
+                    (False, 0),
+                )
             elif namespace.unlock_method is UnlockMethod.ANY:
                 unlock_method = (True, (False, 0))
             else:
