@@ -104,7 +104,7 @@ class UnlockMethod(Enum):
     def __str__(self):
         return self.value
 
-    def legacy_token_slot(self):
+    def legacy_token_slot(self):  # pragma: no cover
         """
         Token slot for legacy pool.
         """
