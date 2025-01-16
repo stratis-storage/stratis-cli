@@ -294,11 +294,6 @@ class PoolActions:
             elif namespace.unlock_method is UnlockMethod.ANY:
                 unlock_method = (True, (False, 0))
             else:
-                assert namespace.unlock_method in (
-                    UnlockMethod.CLEVIS,
-                    UnlockMethod.KEYRING,
-                )
-
                 stopped_pools = fetch_stopped_pools_property(proxy)
                 selection_func = PoolSelector(Id(id_type, pool_id)).stopped_pools_func()
                 stopped_pool = next(
@@ -328,9 +323,8 @@ class PoolActions:
 
                 unlock_method = (
                     True,
-                    (True, 1 if namespace.unlock_method is UnlockMethod.KEYRING else 2),
+                    (True, namespace.unlock_method.legacy_token_slot()),
                 )
-
         else:
             unlock_method = (True, (True, namespace.token_slot))
 
