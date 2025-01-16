@@ -35,7 +35,13 @@ from ._formatting import (
     print_table,
     size_triple,
 )
-from ._utils import PoolFeature, StoppedPool, fetch_stopped_pools_property
+from ._utils import (
+    EncryptionInfoClevis,
+    EncryptionInfoKeyDescription,
+    PoolFeature,
+    StoppedPool,
+    fetch_stopped_pools_property,
+)
 
 
 # This method is only used with legacy pools
@@ -294,24 +300,37 @@ class DefaultDetail(Default):
         if encrypted:
             print("Encryption Enabled: Yes")
 
-            encryption_infos = sorted(
-                [
-                    TokenSlotInfo(token_slot, key=str(description))
-                    for token_slot, description in mopool.KeyDescriptions()
-                ]
-                + [
-                    TokenSlotInfo(
-                        token_slot, clevis=(str(pin), json.loads(str(config)))
-                    )
-                    for token_slot, (pin, config) in mopool.ClevisInfos()
-                ],
-                key=lambda x: x.token_slot,
-            )
+            if metadata_version is MetadataVersion.V1:
+                key_description_str = _non_existent_or_inconsistent_to_str(
+                    EncryptionInfoKeyDescription(mopool.KeyDescription())
+                )
+                print(f"    Key Description: {key_description_str}")
 
-            for info in encryption_infos:
-                for line in str(info).split(os.linesep):
-                    print(f"    {line}")
+                clevis_info_str = _non_existent_or_inconsistent_to_str(
+                    EncryptionInfoClevis(mopool.ClevisInfo()),
+                    interp=_clevis_to_str,  # pyright: ignore [ reportArgumentType ]
+                )
+                print(f"    Clevis Configuration: {clevis_info_str}")
+            elif metadata_version is MetadataVersion.V2:
+                encryption_infos = sorted(
+                    [
+                        TokenSlotInfo(token_slot, key=str(description))
+                        for token_slot, description in mopool.KeyDescriptions()
+                    ]
+                    + [
+                        TokenSlotInfo(
+                            token_slot, clevis=(str(pin), json.loads(str(config)))
+                        )
+                        for token_slot, (pin, config) in mopool.ClevisInfos()
+                    ],
+                    key=lambda x: x.token_slot,
+                )
 
+                for info in encryption_infos:
+                    for line in str(info).split(os.linesep):
+                        print(f"    {line}")
+            else:  # pragma: no cover
+                pass
         else:
             print("Encryption Enabled: No")
 
