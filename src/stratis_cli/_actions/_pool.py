@@ -324,7 +324,7 @@ class PoolActions:
                 unlock_method = (
                     True,
                     (True, namespace.unlock_method.legacy_token_slot()),
-                )
+                )  # pragma: no cover
         else:
             unlock_method = (True, (True, namespace.token_slot))
 
