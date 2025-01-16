@@ -20,7 +20,12 @@ from uuid import uuid4
 
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
-from stratis_cli._errors import StratisCliEngineError, StratisCliNoChangeError
+from stratis_cli._constants import UnlockMethod
+from stratis_cli._errors import (
+    StratisCliEngineError,
+    StratisCliInvalidCommandLineOptionValue,
+    StratisCliNoChangeError,
+)
 
 from .._misc import RUNNER, SimTestCase, device_name_list, stop_pool
 
@@ -109,3 +114,27 @@ class StartTestCase(SimTestCase):
         RUNNER(command_line)
         command_line = self._MENU + [f"--name={self._POOLNAME}", "--token-slot=0"]
         self.check_error(StratisCliEngineError, command_line, _ERROR)
+
+    def test_method_clevis(self):
+        """
+        Test trying to start an unencrypted pool with unlock method clevis.
+        """
+        command_line = ["pool", "stop", f"--name={self._POOLNAME}"]
+        RUNNER(command_line)
+        command_line = self._MENU + [
+            f"--name={self._POOLNAME}",
+            f"--unlock-method={UnlockMethod.CLEVIS}",
+        ]
+        self.check_error(StratisCliInvalidCommandLineOptionValue, command_line, _ERROR)
+
+    def test_method_keyring(self):
+        """
+        Test trying to start an unencrypted pool with unlock method keyring.
+        """
+        command_line = ["pool", "stop", f"--name={self._POOLNAME}"]
+        RUNNER(command_line)
+        command_line = self._MENU + [
+            f"--name={self._POOLNAME}",
+            f"--unlock-method={UnlockMethod.KEYRING}",
+        ]
+        self.check_error(StratisCliInvalidCommandLineOptionValue, command_line, _ERROR)
