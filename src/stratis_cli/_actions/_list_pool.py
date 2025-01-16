@@ -254,7 +254,14 @@ class DefaultDetail(Default):
         for line in alert_summary:  # pragma: no cover
             print(f"     {line}")
 
-        print(f"Metadata Version: {mopool.MetadataVersion()}")
+        try:
+            metadata_version = MetadataVersion(int(mopool.MetadataVersion()))
+        except ValueError:  # pragma: no cover
+            metadata_version = None
+
+        print(
+            f'Metadata Version: {"none" if metadata_version is None else metadata_version}'
+        )
 
         print(
             f"Actions Allowed: "
