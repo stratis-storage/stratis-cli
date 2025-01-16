@@ -25,6 +25,7 @@ from stratis_cli._errors import (
     StratisCliEngineError,
     StratisCliInvalidCommandLineOptionValue,
     StratisCliNoChangeError,
+    StratisCliResourceNotFoundError,
 )
 
 from .._misc import RUNNER, SimTestCase, device_name_list, stop_pool
@@ -138,3 +139,15 @@ class StartTestCase(SimTestCase):
             f"--unlock-method={UnlockMethod.KEYRING}",
         ]
         self.check_error(StratisCliInvalidCommandLineOptionValue, command_line, _ERROR)
+
+    def test_method_keyring_unknown_pool(self):
+        """
+        Test trying to start an unencrypted pool with unlock method keyring.
+        """
+        command_line = ["pool", "stop", f"--name={self._POOLNAME}"]
+        RUNNER(command_line)
+        command_line = self._MENU + [
+            "--name=bogus",
+            f"--unlock-method={UnlockMethod.KEYRING}",
+        ]
+        self.check_error(StratisCliResourceNotFoundError, command_line, _ERROR)
