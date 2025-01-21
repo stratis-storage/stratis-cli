@@ -333,7 +333,7 @@ class PoolActions:
 
         if namespace.capture_key or namespace.keyfile_path is not None:
             fd_argument, fd_to_close = get_passphrase_fd(
-                keyfile_path=namespace.keyfile_path
+                keyfile_path=namespace.keyfile_path, verify=False
             )
             key_fd_arg = (True, fd_argument)
         else:
