@@ -104,6 +104,15 @@ class UnlockMethod(Enum):
     def __str__(self):
         return self.value
 
+    def legacy_token_slot(self):  # pragma: no cover
+        """
+        Token slot for legacy pool.
+        """
+        assert self in (UnlockMethod.KEYRING, UnlockMethod.CLEVIS)
+        if self is UnlockMethod.KEYRING:
+            return 1
+        return 2
+
 
 class Clevis(Enum):
     """

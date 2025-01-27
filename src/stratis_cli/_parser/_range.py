@@ -98,3 +98,19 @@ class DefaultAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         setattr(namespace, self.dest, values)
         setattr(namespace, self.dest + "_default", False)
+
+
+def ensure_nat(arg):
+    """
+    Raise error if argument is not an natural number.
+    """
+    try:
+        result = int(arg)
+    except Exception as err:
+        raise argparse.ArgumentTypeError(
+            f"Argument {arg} is not a natural number."
+        ) from err
+
+    if result < 0:
+        raise argparse.ArgumentTypeError(f"Argument {arg} is not a natural number.")
+    return result
