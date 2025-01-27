@@ -5,14 +5,12 @@ UNITTEST_OPTS = --verbose
 # need to be warned.
 BANDIT_SKIP = --skip B404
 
-PYLINT_DISABLE = --disable=fixme
-
 .PHONY: lint
 lint:
-	pylint setup.py ${PYLINT_DISABLE}
-	pylint bin/stratis ${PYLINT_DISABLE}
-	pylint src/stratis_cli --disable=duplicate-code ${PYLINT_DISABLE} --ignore=_introspect.py
-	pylint tests/whitebox --disable=duplicate-code ${PYLINT_DISABLE}
+	pylint setup.py
+	pylint bin/stratis
+	pylint src/stratis_cli --disable=duplicate-code --ignore=_introspect.py
+	pylint tests/whitebox --disable=duplicate-code
 	bandit setup.py ${BANDIT_SKIP}
 	bandit bin/stratis ${BANDIT_SKIP}
 	# Ignore B101 errors. We do not distribute optimized code, i.e., .pyo
