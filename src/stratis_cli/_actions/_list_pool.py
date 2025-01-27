@@ -300,7 +300,7 @@ class DefaultDetail(Default):
         if encrypted:
             print("Encryption Enabled: Yes")
 
-            if metadata_version is MetadataVersion.V1:
+            if metadata_version is MetadataVersion.V1:  # pragma: no cover
                 key_description_str = _non_existent_or_inconsistent_to_str(
                     EncryptionInfoKeyDescription(mopool.KeyDescription())
                 )
