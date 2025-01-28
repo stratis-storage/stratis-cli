@@ -15,6 +15,10 @@
 Test command-line argument parsing.
 """
 
+# isort: STDLIB
+from io import StringIO
+from unittest import mock
+
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
 
@@ -432,3 +436,16 @@ class ParserSimTestCase(SimTestCase):
         for subcommand in [["pool"], ["filesystem"], ["blockdev"]]:
             for prefix in [[], ["--propagate"]]:
                 self.assertEqual(RUNNER(prefix + subcommand), 0)
+
+
+class TestAllHelp(RunTestCase):
+    """
+    Verify that --print-all-help option succeeds.
+    """
+
+    def test_print_all_help(self):
+        """
+        Test the --print-all-help option.
+        """
+        with mock.patch("sys.stdout", new=StringIO()):
+            self.check_system_exit(["--print-all-help"], 0)
