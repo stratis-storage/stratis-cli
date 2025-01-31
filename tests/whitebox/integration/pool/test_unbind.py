@@ -81,11 +81,12 @@ class UnbindTestCase2(SimTestCase):
 
     def test_unbind_when_unbound(self):
         """
-        Unbinding when encrypted but unbound should raise a no change error,
-        as the action is assumed to be unintentional.
+        Unbinding when encrypted but with only one binding mechanism results in
+        an engine error, as removing the one remaining binding mechanism would
+        make the pool unreadable as soon as it is stopped.
         """
         command_line = self._MENU + ["clevis", self._POOLNAME]
-        self.check_error(StratisCliNoChangeError, command_line, _ERROR)
+        self.check_error(StratisCliEngineError, command_line, _ERROR)
 
     def test_unbind_when_bound(self):
         """
@@ -103,3 +104,20 @@ class UnbindTestCase2(SimTestCase):
         RUNNER(command_line)
         command_line = self._MENU + ["clevis", self._POOLNAME]
         TEST_RUNNER(command_line)
+
+    def test_unbind_with_unused_token_slot(self):
+        """
+        Unbind with unused token slot.
+        """
+        command_line = [
+            "--propagate",
+            "pool",
+            "bind",
+            "nbde",
+            self._POOLNAME,
+            "URL",
+            "--trust-url",
+        ]
+        RUNNER(command_line)
+        command_line = self._MENU + ["clevis", self._POOLNAME, "--token-slot=32"]
+        self.check_error(StratisCliNoChangeError, command_line, _ERROR)
