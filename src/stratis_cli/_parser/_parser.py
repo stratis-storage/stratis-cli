@@ -33,6 +33,7 @@ from ._key import KEY_SUBCMDS
 from ._logical import LOGICAL_SUBCMDS
 from ._physical import PHYSICAL_SUBCMDS
 from ._pool import POOL_SUBCMDS
+from ._range import PrintHelpAction
 
 
 def print_help(parser):
@@ -212,6 +213,11 @@ def gen_parser():
 
     # version is special, it has explicit support in argparse
     parser.add_argument("--version", action="version", version=__version__)
+
+    # --print-all-help is special because it introspects on the parser
+    parser.add_argument(
+        "--print-all-help", action=PrintHelpAction, help=argparse.SUPPRESS, nargs=0
+    )
 
     _add_args(parser, GEN_ARGS)
 
