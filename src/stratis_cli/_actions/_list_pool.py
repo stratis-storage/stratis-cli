@@ -57,7 +57,11 @@ def _fetch_stopped_pools_property(proxy):
 
 
 def _non_existent_or_inconsistent_to_str(
-    value, *, inconsistent_str="inconsistent", non_existent_str="N/A", interp=str
+    value,
+    *,
+    inconsistent_str="inconsistent",
+    non_existent_str="N/A",
+    interp=lambda x: str(x),  # pylint: disable=unnecessary-lambda
 ):
     """
     Process dbus result that encodes both inconsistency and existence of the
@@ -284,7 +288,7 @@ class DefaultDetail(Default):
 
             clevis_info_str = _non_existent_or_inconsistent_to_str(
                 EncryptionInfoClevis(mopool.ClevisInfo()),
-                interp=_clevis_to_str,  # pyright: ignore [ reportArgumentType ]
+                interp=_clevis_to_str,
             )
             print(f"    Clevis Configuration: {clevis_info_str}")
 
@@ -524,7 +528,7 @@ class StoppedDetail(Stopped):  # pylint: disable=too-few-public-methods
 
                 clevis_info_str = _non_existent_or_inconsistent_to_str(
                     clevis_info,
-                    interp=_clevis_to_str,  # pyright: ignore [ reportArgumentType ]
+                    interp=_clevis_to_str,
                 )
                 print(f"    Clevis Configuration: {clevis_info_str}")
 
@@ -607,7 +611,7 @@ class StoppedTable(Stopped):  # pylint: disable=too-few-public-methods
 
             return _non_existent_or_inconsistent_to_str(
                 value,
-                interp=lambda _: "present",  # pyright: ignore [ reportArgumentType ]
+                interp=lambda _: "present",
             )  # pragma: no cover
 
         def key_description_str(value, metadata_version, features):
