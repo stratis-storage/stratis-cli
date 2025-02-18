@@ -314,15 +314,12 @@ def get_passphrase_fd(*, keyfile_path=None, verify=True):
         os.write(write, password.encode("utf-8"))
 
         file_desc = read
+        fd_to_close = write
     else:
         try:
             file_desc = os.open(keyfile_path, os.O_RDONLY)
+            fd_to_close = file_desc
         except FileNotFoundError as err:
             raise StratisCliKeyfileNotFoundError(keyfile_path) from err
-
-    if keyfile_path is None:
-        fd_to_close = write  # pyright: ignore [ reportPossiblyUnboundVariable]
-    else:
-        fd_to_close = file_desc
 
     return (file_desc, fd_to_close)
