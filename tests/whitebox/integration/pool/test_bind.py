@@ -116,19 +116,15 @@ class BindTestCase2(SimTestCase):
 
     def test_bind_when_bound_1(self):
         """
-        Binding when encrypted and bound should raise a no change error,
-        as the action is assumed to be unintentional.
+        Binding when encrypted and bound with Clevis should not raise a no
+        change error when token slot is not specified.
         """
         command_line = self._MENU + [
             "tpm2",
             self._POOLNAME,
         ]
         RUNNER(command_line)
-        command_line = self._MENU + [
-            "tpm2",
-            self._POOLNAME,
-        ]
-        self.check_error(StratisCliNoChangeError, command_line, _ERROR)
+        TEST_RUNNER(command_line)
 
     def test_bind_when_bound_2(self):
         """

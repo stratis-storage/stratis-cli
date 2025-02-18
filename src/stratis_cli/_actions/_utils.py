@@ -107,7 +107,8 @@ class EncryptionInfo:  # pylint: disable=too-few-public-methods
             # No tests that generate inconsistent encryption information
             self.error = str(info)  # pragma: no cover
 
-    def consistent(self):
+    # This method is only invoked when displaying legacy pool information
+    def consistent(self):  # pragma: no cover
         """
         True if consistent, otherwise False.
         """
@@ -323,3 +324,18 @@ def get_passphrase_fd(*, keyfile_path=None, verify=True):
             raise StratisCliKeyfileNotFoundError(keyfile_path) from err
 
     return (file_desc, fd_to_close)
+
+
+def fetch_stopped_pools_property(proxy):
+    """
+    Fetch the StoppedPools property from stratisd.
+    :param proxy: proxy to the top object in stratisd
+    :return: a representation of stopped devices
+    :rtype: dict
+    :raises StratisCliEngineError:
+    """
+
+    # pylint: disable=import-outside-toplevel
+    from ._data import Manager
+
+    return Manager.Properties.StoppedPools.Get(proxy)

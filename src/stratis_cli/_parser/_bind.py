@@ -17,6 +17,7 @@ Bind/Rebind command parser for Stratis CLI.
 
 from .._actions import BindActions, RebindActions
 from .._constants import Clevis
+from ._range import ensure_nat
 
 BIND_SUBCMDS = [
     (
@@ -84,6 +85,17 @@ REBIND_SUBCMDS = [
             ),
             "args": [
                 ("pool_name", {"help": "Pool name"}),
+                (
+                    "--token-slot",
+                    {
+                        "help": (
+                            "token slot; may be specified if there is more "
+                            "than one binding with the specified method; for "
+                            "V2 pools only"
+                        ),
+                        "type": ensure_nat,
+                    },
+                ),
             ],
             "func": RebindActions.rebind_clevis,
         },
@@ -98,6 +110,17 @@ REBIND_SUBCMDS = [
             "args": [
                 ("pool_name", {"help": "Pool name"}),
                 ("keydesc", {"help": "key description"}),
+                (
+                    "--token-slot",
+                    {
+                        "help": (
+                            "token slot; may be specified if there is more "
+                            "than one binding with the specified method; for "
+                            "V2 pools only"
+                        ),
+                        "type": ensure_nat,
+                    },
+                ),
             ],
             "func": RebindActions.rebind_keyring,
         },

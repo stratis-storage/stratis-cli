@@ -63,13 +63,17 @@ class BindActions:
             {
                 "pin": clevis_info.pin,
                 "json": json.dumps(clevis_info.config),
+                "token_slot": (False, 0),
             },
         )
 
         if return_code != StratisdErrors.OK:
             raise StratisCliEngineError(return_code, return_msg)
 
-        if not changed:
+        # stratisd does not do idempotency checks when binding with Clevis;
+        # because there are multiple token slots, a new Clevis binding will
+        # just find the next token slot.
+        if not changed:  # pragma: no cover
             raise StratisCliNoChangeError("bind", pool_name)
 
     @staticmethod
@@ -120,6 +124,7 @@ class BindActions:
             get_object(pool_object_path),
             {
                 "key_desc": namespace.keydesc,
+                "token_slot": (False, 0),
             },
         )
 
@@ -156,7 +161,14 @@ class BindActions:
         )
 
         (changed, return_code, return_msg) = unbind_method(
-            get_object(pool_object_path), {}
+            get_object(pool_object_path),
+            {
+                "token_slot": (
+                    (False, 0)
+                    if namespace.token_slot is None
+                    else (True, namespace.token_slot)
+                )
+            },
         )
 
         if return_code != StratisdErrors.OK:
@@ -189,7 +201,14 @@ class RebindActions:
             .search(managed_objects)
         )
         (changed, return_code, return_msg) = Pool.Methods.RebindClevis(
-            get_object(pool_object_path), {}
+            get_object(pool_object_path),
+            {
+                "token_slot": (
+                    (False, 0)
+                    if namespace.token_slot is None
+                    else (True, namespace.token_slot)
+                )
+            },
         )
 
         if return_code != StratisdErrors.OK:
@@ -219,7 +238,15 @@ class RebindActions:
         )
 
         (changed, return_code, return_msg) = Pool.Methods.RebindKeyring(
-            get_object(pool_object_path), {"key_desc": keydesc}
+            get_object(pool_object_path),
+            {
+                "key_desc": keydesc,
+                "token_slot": (
+                    (False, 0)
+                    if namespace.token_slot is None
+                    else (True, namespace.token_slot)
+                ),
+            },
         )
 
         if return_code != StratisdErrors.OK:

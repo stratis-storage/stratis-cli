@@ -432,3 +432,16 @@ class StratisCliPassphraseMismatchError(StratisCliUserError):
 
     def __str__(self):
         return "Passphrases do not match"
+
+
+class StratisCliInvalidCommandLineOptionValue(StratisCliUserError):
+    """
+    Raised if the user passed an invalid option that cannot be checked at
+    parse time.
+    """
+
+    def __init__(self, msg):
+        self.msg = msg
+
+    def __str__(self):
+        return self.msg
