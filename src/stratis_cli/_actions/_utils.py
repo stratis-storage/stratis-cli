@@ -294,34 +294,32 @@ def get_pass(prompt):
     return password.strip()
 
 
-def get_passphrase_fd(*, keyfile_path=None):
+def get_passphrase_fd(*, keyfile_path=None, verify=True):
     """
     Get a passphrase either from stdin or from a file.
 
     :param str keyfile_path: path to a keyfile, may be None
+    :param bool verify: If verify is True, check password match
 
     :return: a file descriptor to pass on the D-Bus, what to close when done
     """
     if keyfile_path is None:
         password = get_pass("Enter passphrase followed by the return key: ")
-        verify = get_pass("Verify passphrase entered: ")
+        password_2 = get_pass("Verify passphrase entered: ") if verify else password
 
-        if password != verify:
+        if password != password_2:
             raise StratisCliPassphraseMismatchError()
 
         (read, write) = os.pipe()
         os.write(write, password.encode("utf-8"))
 
         file_desc = read
+        fd_to_close = write
     else:
         try:
             file_desc = os.open(keyfile_path, os.O_RDONLY)
+            fd_to_close = file_desc
         except FileNotFoundError as err:
             raise StratisCliKeyfileNotFoundError(keyfile_path) from err
-
-    if keyfile_path is None:
-        fd_to_close = write  # pyright: ignore [ reportPossiblyUnboundVariable]
-    else:
-        fd_to_close = file_desc
 
     return (file_desc, fd_to_close)

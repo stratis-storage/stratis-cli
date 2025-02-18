@@ -89,5 +89,5 @@ class StartTestCase(SimTestCase):
         RUNNER(command_line)
         command_line = self._MENU + [f"--name={self._POOLNAME}", "--capture-key"]
         self.check_error(
-            StratisCliEngineError, command_line, _ERROR, stdin="password\npassword\n"
+            StratisCliEngineError, command_line, _ERROR, stdin="password\n"
         )
