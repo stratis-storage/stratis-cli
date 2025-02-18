@@ -1,5 +1,5 @@
-stratis-cli 3.8.0 (UNRELEASED)
-==============================
+stratis-cli 3.8.0
+=================
 Required stratisd version: 3.7.0
 
 Recommended development environment: Fedora 40
@@ -10,7 +10,16 @@ Lowest supported Python interpreter: 3.9.16
 * Update for r8 D-Bus revision:
   https://github.com/stratis-storage/stratis-cli/pull/1107
 
+* Adapt to new token-slot using D-Bus API:
+  https://github.com/stratis-storage/stratis-cli/pull/1116
+
+* Support integrity options on pool create:
+  https://github.com/stratis-storage/stratis-cli/pull/1110
+
 * Support v2 metadata changes in display code:
+  https://github.com/stratis-storage/stratis-cli/pull/1127
+  https://github.com/stratis-storage/stratis-cli/pull/1125
+  https://github.com/stratis-storage/stratis-cli/pull/1122
   https://github.com/stratis-storage/stratis-cli/pull/1023
 
 * Remove error classes for distinguishing D-Bus properties:
@@ -19,6 +28,10 @@ Lowest supported Python interpreter: 3.9.16
 
 - Update for r7 D-Bus revision:
   https://github.com/stratis-storage/stratis-cli/pull/1035
+
+* man: add more information to schedule-revert entry:
+  https://github.com/stratis-storage/stratis-cli/issues/1104
+  https://github.com/stratis-storage/stratis-cli/pull/1108
 
 - Support snapshot revert operations:
   https://github.com/stratis-storage/stratis-cli/issues/1085
@@ -36,6 +49,9 @@ Lowest supported Python interpreter: 3.9.16
 - Extend filesystem listing with a detail view:
   https://github.com/stratis-storage/stratis-cli/pull/1051
   https://github.com/stratis-storage/stratis-cli/pull/1050
+
+* When unlocking, don't require passphrase twice:
+  https://github.com/stratis-storage/stratis-cli/pull/1129
 
 - Sort JSON output from report by default:
   https://github.com/stratis-storage/stratis-cli/pull/1048
@@ -60,7 +76,24 @@ Lowest supported Python interpreter: 3.9.16
   https://github.com/stratis-storage/stratis-cli/pull/1056
   https://github.com/stratis-storage/stratis-cli/pull/1053
 
+* Remove "Space Usage:" heading from pool detail view:
+  https://github.com/stratis-storage/stratis-cli/pull/1120
+
+* Always specify magnitude for Range values on the D-Bus:
+  https://github.com/stratis-storage/stratis-cli/pull/1111
+
+* Add an option to print the help text for every subcommand:
+  https://github.com/stratis-storage/stratis-cli/pull/1126
+  https://github.com/stratis-storage/stratis-cli/pull/1123
+
 - Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/1128
+  https://github.com/stratis-storage/stratis-cli/pull/1124
+  https://github.com/stratis-storage/stratis-cli/pull/1117
+  https://github.com/stratis-storage/stratis-cli/pull/1115
+  https://github.com/stratis-storage/stratis-cli/pull/1113
+  https://github.com/stratis-storage/stratis-cli/pull/1112
+  https://github.com/stratis-storage/stratis-cli/pull/1109
   https://github.com/stratis-storage/stratis-cli/pull/1103
   https://github.com/stratis-storage/stratis-cli/pull/1096
   https://github.com/stratis-storage/stratis-cli/pull/1095
