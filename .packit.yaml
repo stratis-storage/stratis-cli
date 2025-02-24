@@ -29,6 +29,11 @@ jobs:
     targets:
       - fedora-all
 
+  - job: copr_build
+    trigger: commit
+    targets:
+      - fedora-all
+
 notifications:
   pull_request:
     successful_build: true
