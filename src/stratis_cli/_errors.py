@@ -434,6 +434,15 @@ class StratisCliPassphraseMismatchError(StratisCliUserError):
         return "Passphrases do not match"
 
 
+class StratisCliPassphraseEmptyError(StratisCliUserError):
+    """
+    Raised if the user specified passphrase was empty.
+    """
+
+    def __str__(self):
+        return "Passphrase is empty"
+
+
 class StratisCliInvalidCommandLineOptionValue(StratisCliUserError):
     """
     Raised if the user passed an invalid option that cannot be checked at

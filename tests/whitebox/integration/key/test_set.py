@@ -21,6 +21,7 @@ from stratis_cli._errors import (
     StratisCliEngineError,
     StratisCliKeyfileNotFoundError,
     StratisCliNameConflictError,
+    StratisCliPassphraseEmptyError,
     StratisCliPassphraseMismatchError,
 )
 
@@ -114,3 +115,15 @@ class TestKeySet(SimTestCase):
         """
         command_line = self._MENU + [self._KEYNAME, "--capture-key"]
         TEST_RUNNER(command_line, stdin="     \n     \n")
+
+    def test_set_key_capture_key_empty_error(self):
+        """
+        Test that an exception is raised on an empty passphrase.
+        """
+        command_line = self._MENU + [self._KEYNAME, "--capture-key"]
+        self.check_error(
+            StratisCliPassphraseEmptyError,
+            command_line,
+            _ERROR,
+            stdin="\n\n",
+        )
