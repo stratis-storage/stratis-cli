@@ -292,7 +292,7 @@ def get_pass(prompt):
 
     if old_attrs is not None:
         termios.tcsetattr(sys.stdin, termios.TCSAFLUSH, old_attrs)  # pragma: no cover
-    return password.strip()
+    return password.rstrip("\n")
 
 
 def get_passphrase_fd(*, keyfile_path=None, verify=True):
