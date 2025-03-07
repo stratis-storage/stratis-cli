@@ -80,8 +80,7 @@ REBIND_SUBCMDS = [
         "clevis",
         {
             "help": (
-                "Rebind the devices in the specified pool using their current "
-                "Clevis configuration"
+                "Rebind the specified pool using the current Clevis configuration"
             ),
             "args": [
                 ("pool_name", {"help": "Pool name"}),
@@ -104,8 +103,8 @@ REBIND_SUBCMDS = [
         "keyring",
         {
             "help": (
-                "Rebind the devices in the specified pool using the specified "
-                "key in the kernel keyring"
+                "Rebind the specified pool using the specified key in the "
+                "kernel keyring"
             ),
             "args": [
                 ("pool_name", {"help": "Pool name"}),
