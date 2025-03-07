@@ -65,6 +65,9 @@ Lowest supported Python interpreter: 3.9.16
 - Fix help text for the unbind command:
   https://github.com/stratis-storage/stratis-cli/pull/1083
 
+* Strip only right-side newlines from password end:
+  https://github.com/stratis-storage/stratis-cli/pull/1132
+
 - Replace getpass with custom function that uses sys.stdin:
   https://github.com/stratis-storage/stratis-cli/pull/1068
 
@@ -87,6 +90,8 @@ Lowest supported Python interpreter: 3.9.16
   https://github.com/stratis-storage/stratis-cli/pull/1123
 
 - Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/1131
+  https://github.com/stratis-storage/stratis-cli/pull/1130
   https://github.com/stratis-storage/stratis-cli/pull/1128
   https://github.com/stratis-storage/stratis-cli/pull/1124
   https://github.com/stratis-storage/stratis-cli/pull/1117
