@@ -26,7 +26,11 @@ from enum import Enum
 from uuid import UUID
 
 from .._constants import Clevis
-from .._errors import StratisCliKeyfileNotFoundError, StratisCliPassphraseMismatchError
+from .._errors import (
+    StratisCliKeyfileNotFoundError,
+    StratisCliPassphraseEmptyError,
+    StratisCliPassphraseMismatchError,
+)
 from .._stratisd_constants import (
     CLEVIS_KEY_TANG_TRUST_URL,
     CLEVIS_KEY_THP,
@@ -292,7 +296,7 @@ def get_pass(prompt):
 
     if old_attrs is not None:
         termios.tcsetattr(sys.stdin, termios.TCSAFLUSH, old_attrs)  # pragma: no cover
-    return password.strip()
+    return password.rstrip("\n")
 
 
 def get_passphrase_fd(*, keyfile_path=None, verify=True):
@@ -310,6 +314,9 @@ def get_passphrase_fd(*, keyfile_path=None, verify=True):
 
         if password != password_2:
             raise StratisCliPassphraseMismatchError()
+
+        if len(password) == 0:
+            raise StratisCliPassphraseEmptyError()
 
         (read, write) = os.pipe()
         os.write(write, password.encode("utf-8"))

@@ -21,6 +21,7 @@ from stratis_cli._errors import (
     StratisCliEngineError,
     StratisCliKeyfileNotFoundError,
     StratisCliNameConflictError,
+    StratisCliPassphraseEmptyError,
     StratisCliPassphraseMismatchError,
 )
 
@@ -92,4 +93,37 @@ class TestKeySet(SimTestCase):
             command_line,
             _ERROR,
             stdin="totally_secret\ndifferent\n",
+        )
+
+    def test_set_key_capture_key_fail_verify_whitespace(self):
+        """
+        Test capture key fails if passphrases do not match on trailing
+        whitespace differences.
+        """
+        command_line = self._MENU + [self._KEYNAME, "--capture-key"]
+        self.check_error(
+            StratisCliPassphraseMismatchError,
+            command_line,
+            _ERROR,
+            stdin="totally_secret\ntotally_secret \n",
+        )
+
+    def test_set_key_capture_key_only_whitespace(self):
+        """
+        Test capture key succeeds if both passphrases are same amount of
+        whitespace.
+        """
+        command_line = self._MENU + [self._KEYNAME, "--capture-key"]
+        TEST_RUNNER(command_line, stdin="     \n     \n")
+
+    def test_set_key_capture_key_empty_error(self):
+        """
+        Test that an exception is raised on an empty passphrase.
+        """
+        command_line = self._MENU + [self._KEYNAME, "--capture-key"]
+        self.check_error(
+            StratisCliPassphraseEmptyError,
+            command_line,
+            _ERROR,
+            stdin="\n\n",
         )
