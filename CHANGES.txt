@@ -1,3 +1,137 @@
+stratis-cli 3.8.0
+=================
+Required stratisd version: 3.8.0
+
+Recommended development environment: Fedora 40
+Lowest supported Python interpreter: 3.9.16
+
+* Indicates new for 3.8.0:
+
+* Update for r8 D-Bus revision:
+  https://github.com/stratis-storage/stratis-cli/pull/1107
+
+* Adapt to new token-slot using D-Bus API:
+  https://github.com/stratis-storage/stratis-cli/pull/1133
+  https://github.com/stratis-storage/stratis-cli/pull/1129
+  https://github.com/stratis-storage/stratis-cli/pull/1116
+
+* Support integrity options on pool create:
+  https://github.com/stratis-storage/stratis-cli/pull/1110
+
+* Support v2 metadata changes in display code:
+  https://github.com/stratis-storage/stratis-cli/pull/1127
+  https://github.com/stratis-storage/stratis-cli/pull/1125
+  https://github.com/stratis-storage/stratis-cli/pull/1122
+  https://github.com/stratis-storage/stratis-cli/pull/1023
+
+* Remove error classes for distinguishing D-Bus properties:
+  https://github.com/stratis-storage/stratis-cli/issues/1105
+  https://github.com/stratis-storage/stratis-cli/pull/1106
+
+- Update for r7 D-Bus revision:
+  https://github.com/stratis-storage/stratis-cli/pull/1035
+
+* man: add more information to schedule-revert entry:
+  https://github.com/stratis-storage/stratis-cli/issues/1104
+  https://github.com/stratis-storage/stratis-cli/pull/1108
+
+- Support snapshot revert operations:
+  https://github.com/stratis-storage/stratis-cli/issues/1085
+  https://github.com/stratis-storage/stratis-cli/pull/1087
+
+- Display snapshot origin in filesystem detail view:
+  https://github.com/stratis-storage/stratis-cli/pull/1045
+
+- Support getting Stratis filesystem metadata over the D-Bus:
+  https://github.com/stratis-storage/stratis-cli/pull/1089
+
+- Support getting Stratis pool-level metadata over the D-Bus:
+  https://github.com/stratis-storage/stratis-cli/pull/1075
+
+- Extend filesystem listing with a detail view:
+  https://github.com/stratis-storage/stratis-cli/pull/1051
+  https://github.com/stratis-storage/stratis-cli/pull/1050
+
+- Sort JSON output from report by default:
+  https://github.com/stratis-storage/stratis-cli/pull/1048
+
+- Add description of fields in pool detail view:
+  https://github.com/stratis-storage/stratis-cli/pull/1080
+
+- Add description of fields in filesystem detail view:
+  https://github.com/stratis-storage/stratis-cli/pull/1097
+
+- Fix help text for the unbind command:
+  https://github.com/stratis-storage/stratis-cli/pull/1083
+
+* Strip only right-side newlines from password end:
+  https://github.com/stratis-storage/stratis-cli/pull/1132
+
+- Replace getpass with custom function that uses sys.stdin:
+  https://github.com/stratis-storage/stratis-cli/pull/1068
+
+- Make parsing errors related to Clevis options actual parser errors:
+  https://github.com/stratis-storage/stratis-cli/issues/1055
+  https://github.com/stratis-storage/stratis-cli/pull/1073
+  https://github.com/stratis-storage/stratis-cli/pull/1060
+  https://github.com/stratis-storage/stratis-cli/pull/1057
+  https://github.com/stratis-storage/stratis-cli/pull/1056
+  https://github.com/stratis-storage/stratis-cli/pull/1053
+
+* Remove "Space Usage:" heading from pool detail view:
+  https://github.com/stratis-storage/stratis-cli/pull/1120
+
+* Always specify magnitude for Range values on the D-Bus:
+  https://github.com/stratis-storage/stratis-cli/pull/1111
+
+* Add an option to print the help text for every subcommand:
+  https://github.com/stratis-storage/stratis-cli/pull/1126
+  https://github.com/stratis-storage/stratis-cli/pull/1123
+
+- Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/1131
+  https://github.com/stratis-storage/stratis-cli/pull/1130
+  https://github.com/stratis-storage/stratis-cli/pull/1128
+  https://github.com/stratis-storage/stratis-cli/pull/1124
+  https://github.com/stratis-storage/stratis-cli/pull/1117
+  https://github.com/stratis-storage/stratis-cli/pull/1115
+  https://github.com/stratis-storage/stratis-cli/pull/1113
+  https://github.com/stratis-storage/stratis-cli/pull/1112
+  https://github.com/stratis-storage/stratis-cli/pull/1109
+  https://github.com/stratis-storage/stratis-cli/pull/1103
+  https://github.com/stratis-storage/stratis-cli/pull/1096
+  https://github.com/stratis-storage/stratis-cli/pull/1095
+  https://github.com/stratis-storage/stratis-cli/pull/1094
+  https://github.com/stratis-storage/stratis-cli/pull/1093
+  https://github.com/stratis-storage/stratis-cli/pull/1092
+  https://github.com/stratis-storage/stratis-cli/pull/1090
+  https://github.com/stratis-storage/stratis-cli/pull/1088
+  https://github.com/stratis-storage/stratis-cli/pull/1086
+  https://github.com/stratis-storage/stratis-cli/pull/1084
+  https://github.com/stratis-storage/stratis-cli/pull/1079
+  https://github.com/stratis-storage/stratis-cli/pull/1078
+  https://github.com/stratis-storage/stratis-cli/pull/1077
+  https://github.com/stratis-storage/stratis-cli/pull/1076
+  https://github.com/stratis-storage/stratis-cli/pull/1074
+  https://github.com/stratis-storage/stratis-cli/pull/1072
+  https://github.com/stratis-storage/stratis-cli/pull/1070
+  https://github.com/stratis-storage/stratis-cli/pull/1067
+  https://github.com/stratis-storage/stratis-cli/pull/1065
+  https://github.com/stratis-storage/stratis-cli/pull/1064
+  https://github.com/stratis-storage/stratis-cli/pull/1063
+  https://github.com/stratis-storage/stratis-cli/pull/1061
+  https://github.com/stratis-storage/stratis-cli/pull/1059
+  https://github.com/stratis-storage/stratis-cli/pull/1058
+  https://github.com/stratis-storage/stratis-cli/pull/1054
+  https://github.com/stratis-storage/stratis-cli/pull/1052
+  https://github.com/stratis-storage/stratis-cli/pull/1049
+  https://github.com/stratis-storage/stratis-cli/pull/1046
+  https://github.com/stratis-storage/stratis-cli/pull/1043
+  https://github.com/stratis-storage/stratis-cli/pull/1040
+  https://github.com/stratis-storage/stratis-cli/pull/1038
+  https://github.com/stratis-storage/stratis-cli/pull/1036
+
+
 stratis-cli 3.6.0
 =================
 Required stratisd version: 3.6.0
