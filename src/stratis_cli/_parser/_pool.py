@@ -35,7 +35,7 @@ from .._constants import (
 from .._error_codes import PoolErrorCode
 from ._debug import POOL_DEBUG_SUBCMDS
 from ._encryption import BIND_SUBCMDS, ENCRYPTION_SUBCMDS, REBIND_SUBCMDS
-from ._shared import DefaultAction, RejectAction, ensure_nat, parse_range
+from ._shared import DefaultAction, MoveNotice, RejectAction, ensure_nat, parse_range
 
 
 class ClevisEncryptionOptions:  # pylint: disable=too-few-public-methods
@@ -581,12 +581,14 @@ POOL_SUBCMDS = [
     (
         "bind",
         {
+            "epilog": str(MoveNotice("bind", "pool", "pool encryption", "3.10.0")),
             "subcmds": BIND_SUBCMDS,
         },
     ),
     (
         "rebind",
         {
+            "epilog": str(MoveNotice("rebind", "pool", "pool encryption", "3.10.0")),
             "subcmds": REBIND_SUBCMDS,
         },
     ),
@@ -614,6 +616,7 @@ POOL_SUBCMDS = [
                     },
                 ),
             ],
+            "epilog": str(MoveNotice("unbind", "pool", "pool encryption", "3.10.0")),
             "func": BindActions.unbind,
         },
     ),

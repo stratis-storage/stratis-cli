@@ -119,10 +119,15 @@ def add_subcommand(subparser, cmd):
     help_text = info.get("help")
 
     if help_text is None:
-        parser = subparser.add_parser(name, aliases=info.get("aliases", []))
+        parser = subparser.add_parser(
+            name, aliases=info.get("aliases", []), epilog=info.get("epilog")
+        )
     else:
         parser = subparser.add_parser(
-            name, help=help_text, aliases=info.get("aliases", [])
+            name,
+            help=help_text,
+            aliases=info.get("aliases", []),
+            epilog=info.get("epilog"),
         )
 
     subcmds = info.get("subcmds")
