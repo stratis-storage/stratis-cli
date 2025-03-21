@@ -33,8 +33,8 @@ from .._constants import (
     YesOrNo,
 )
 from .._error_codes import PoolErrorCode
-from ._bind import BIND_SUBCMDS, REBIND_SUBCMDS
 from ._debug import POOL_DEBUG_SUBCMDS
+from ._encryption import BIND_SUBCMDS, REBIND_SUBCMDS
 from ._shared import DefaultAction, RejectAction, ensure_nat, parse_range
 
 
