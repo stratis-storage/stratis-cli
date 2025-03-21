@@ -122,7 +122,7 @@ def add_subcommand(subparser, cmd):
 
     subcmds = info.get("subcmds")
     if subcmds is not None:
-        subparsers = parser.add_subparsers(title="subcommands")
+        subparsers = parser.add_subparsers(title="subcommands", metavar="")
         for subcmd in subcmds:
             add_subcommand(subparsers, subcmd)
 
@@ -253,7 +253,7 @@ def gen_parser():
 
     _add_args(parser, GEN_ARGS)
 
-    subparsers = parser.add_subparsers(title="subcommands")
+    subparsers = parser.add_subparsers(title="subcommands", metavar="")
 
     for subcmd in ROOT_SUBCOMMANDS:
         add_subcommand(subparsers, subcmd)
