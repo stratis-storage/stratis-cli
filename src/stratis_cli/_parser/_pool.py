@@ -316,31 +316,11 @@ POOL_SUBCMDS = [
         },
     ),
     (
-        "stop",
+        "destroy",
         {
-            "help": (
-                "Stop a pool. Tear down the pool's storage stack "
-                "but do not erase any metadata."
-            ),
-            "mut_ex_args": [
-                (
-                    True,
-                    [
-                        (
-                            "--uuid",
-                            {
-                                "type": UUID,
-                                "help": "UUID of the pool to stop",
-                            },
-                        ),
-                        (
-                            "--name",
-                            {"help": "name of the pool to stop"},
-                        ),
-                    ],
-                )
-            ],
-            "func": PoolActions.stop_pool,
+            "help": "Destroy a pool",
+            "args": [("pool_name", {"help": "pool name"})],
+            "func": PoolActions.destroy_pool,
         },
     ),
     (
@@ -428,25 +408,31 @@ POOL_SUBCMDS = [
         },
     ),
     (
-        "init-cache",
+        "stop",
         {
-            "help": "Initialize the cache with block devices",
-            "args": [
+            "help": (
+                "Stop a pool. Tear down the pool's storage stack "
+                "but do not erase any metadata."
+            ),
+            "mut_ex_args": [
                 (
-                    "pool_name",
-                    {
-                        "help": "Name of the pool for which to initialize the cache",
-                    },
-                ),
-                (
-                    "blockdevs",
-                    {
-                        "help": "Initialize the pool cache using these block devs",
-                        "nargs": "+",
-                    },
-                ),
+                    True,
+                    [
+                        (
+                            "--uuid",
+                            {
+                                "type": UUID,
+                                "help": "UUID of the pool to stop",
+                            },
+                        ),
+                        (
+                            "--name",
+                            {"help": "name of the pool to stop"},
+                        ),
+                    ],
+                )
             ],
-            "func": PoolActions.init_cache,
+            "func": PoolActions.stop_pool,
         },
     ),
     (
@@ -487,14 +473,6 @@ POOL_SUBCMDS = [
         },
     ),
     (
-        "destroy",
-        {
-            "help": "Destroy a pool",
-            "args": [("pool_name", {"help": "pool name"})],
-            "func": PoolActions.destroy_pool,
-        },
-    ),
-    (
         "rename",
         {
             "help": "Rename a pool",
@@ -503,6 +481,28 @@ POOL_SUBCMDS = [
                 ("new", {"help": "New pool name"}),
             ],
             "func": PoolActions.rename_pool,
+        },
+    ),
+    (
+        "init-cache",
+        {
+            "help": "Initialize the cache with block devices",
+            "args": [
+                (
+                    "pool_name",
+                    {
+                        "help": "Name of the pool for which to initialize the cache",
+                    },
+                ),
+                (
+                    "blockdevs",
+                    {
+                        "help": "Initialize the pool cache using these block devs",
+                        "nargs": "+",
+                    },
+                ),
+            ],
+            "func": PoolActions.init_cache,
         },
     ),
     (
