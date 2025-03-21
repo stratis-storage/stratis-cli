@@ -581,24 +581,18 @@ POOL_SUBCMDS = [
     (
         "bind",
         {
-            "help": "Bind the given pool with an additional encryption facility",
             "subcmds": BIND_SUBCMDS,
         },
     ),
     (
         "rebind",
         {
-            "help": (
-                "Rebind the given pool with a currently in use encryption "
-                "facility but new credentials"
-            ),
             "subcmds": REBIND_SUBCMDS,
         },
     ),
     (
         "unbind",
         {
-            "help": "Unbind the given pool, removing use of the specified encryption method",
             "args": [
                 (
                     "method",
