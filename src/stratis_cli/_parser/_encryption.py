@@ -16,7 +16,7 @@ Encryption command-line parser for Stratis CLI.
 """
 
 from .._actions import BindActions, RebindActions
-from .._constants import Clevis
+from .._constants import Clevis, EncryptionMethod
 from ._shared import ensure_nat
 
 BIND_SUBCMDS = [
@@ -122,6 +122,54 @@ REBIND_SUBCMDS = [
                 ),
             ],
             "func": RebindActions.rebind_keyring,
+        },
+    ),
+]
+
+ENCRYPTION_SUBCMDS = [
+    (
+        "bind",
+        {
+            "help": "Bind the given pool with an additional encryption facility",
+            "subcmds": BIND_SUBCMDS,
+        },
+    ),
+    (
+        "rebind",
+        {
+            "help": (
+                "Rebind the given pool with a currently in use encryption "
+                "facility but new credentials"
+            ),
+            "subcmds": REBIND_SUBCMDS,
+        },
+    ),
+    (
+        "unbind",
+        {
+            "help": "Unbind the given pool, removing use of the specified encryption method",
+            "args": [
+                (
+                    "method",
+                    {
+                        "choices": list(EncryptionMethod),
+                        "help": "Encryption method to unbind",
+                        "type": EncryptionMethod,
+                    },
+                ),
+                ("pool_name", {"help": "Pool name"}),
+                (
+                    "--token-slot",
+                    {
+                        "help": (
+                            "token slot; must be specified if there is more "
+                            "than one binding with the specified method"
+                        ),
+                        "type": ensure_nat,
+                    },
+                ),
+            ],
+            "func": BindActions.unbind,
         },
     ),
 ]
