@@ -19,9 +19,10 @@ Encryption command-line parser for Stratis CLI.
 import copy
 from argparse import SUPPRESS, Namespace
 
-from .._actions import BindActions, RebindActions
+from .._actions import BindActions, CryptActions, RebindActions
 from .._constants import Clevis, EncryptionMethod
 from ._shared import (
+    CLEVIS_AND_KERNEL,
     TRUST_URL_OR_THUMBPRINT,
     UUID_OR_NAME,
     ClevisEncryptionOptions,
@@ -352,6 +353,85 @@ REBIND_SUBCMDS_ENCRYPTION = [
 ]
 
 ENCRYPTION_SUBCMDS = [
+    (
+        "on",
+        {
+            "help": "Make encrypted a previously unencrypted pool",
+            "args": [
+                (
+                    "--post-parser",
+                    {
+                        "action": RejectAction,
+                        "default": ClevisEncryptionOptions,
+                        "help": SUPPRESS,
+                        "nargs": "?",
+                    },
+                )
+            ],
+            "groups": [
+                (
+                    "Pool Identifier",
+                    {
+                        "description": "Choose one option to specify the pool",
+                        "mut_ex_args": [
+                            (True, UUID_OR_NAME),
+                        ],
+                    },
+                ),
+                (
+                    "Encryption",
+                    {
+                        "description": "Arguments controlling encryption",
+                        "args": CLEVIS_AND_KERNEL,
+                    },
+                ),
+                (
+                    "Tang Server Verification (only if --tang-url option is set)",
+                    {
+                        "description": "Choose one option",
+                        "mut_ex_args": [(False, TRUST_URL_OR_THUMBPRINT)],
+                    },
+                ),
+            ],
+            "func": CryptActions.encrypt,
+        },
+    ),
+    (
+        "off",
+        {
+            "help": "Make unencrypted a previously encrypted pool",
+            "groups": [
+                (
+                    "Pool Identifier",
+                    {
+                        "description": "Choose one option to specify the pool",
+                        "mut_ex_args": [
+                            (True, UUID_OR_NAME),
+                        ],
+                    },
+                )
+            ],
+            "func": CryptActions.unencrypt,
+        },
+    ),
+    (
+        "reencrypt",
+        {
+            "help": "Reencrypt an encrypted pool with a new master key",
+            "groups": [
+                (
+                    "Pool Identifier",
+                    {
+                        "description": "Choose one option to specify the pool",
+                        "mut_ex_args": [
+                            (True, UUID_OR_NAME),
+                        ],
+                    },
+                )
+            ],
+            "func": CryptActions.reencrypt,
+        },
+    ),
     (
         "bind",
         {
