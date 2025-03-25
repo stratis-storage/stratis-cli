@@ -17,6 +17,7 @@ Package mediating dbus actions.
 
 from ._bind import BindActions, RebindActions
 from ._constants import BLOCKDEV_INTERFACE, FILESYSTEM_INTERFACE, POOL_INTERFACE
+from ._crypt import CryptActions
 from ._debug import (
     BlockdevDebugActions,
     FilesystemDebugActions,
