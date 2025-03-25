@@ -424,3 +424,215 @@ class UnbindTestCase2(SimTestCase):
             "--token-slot=32",
         ]
         self.check_error(StratisCliNoChangeError, command_line, _ERROR)
+
+
+class OffTestCase(SimTestCase):
+    """
+    Test turning encryption off when pool is encrypted.
+    """
+
+    _MENU = ["--propagate", "pool", "encryption", "off"]
+    _POOLNAME = "poolname"
+    _KEY_DESC = "keydesc"
+
+    def setUp(self):
+        super().setUp()
+        with RandomKeyTmpFile() as fname:
+            command_line = [
+                "--propagate",
+                "key",
+                "set",
+                "--keyfile-path",
+                fname,
+                self._KEY_DESC,
+            ]
+            RUNNER(command_line)
+
+        command_line = [
+            "--propagate",
+            "pool",
+            "create",
+            "--key-desc",
+            self._KEY_DESC,
+            self._POOLNAME,
+        ] + _DEVICE_STRATEGY()
+        RUNNER(command_line)
+
+    def test_decrypt_with_name(self):
+        """
+        Decrypt an encrypted pool, specifying the pool by name.
+        """
+        command_line = self._MENU + [
+            f"--name={self._POOLNAME}",
+        ]
+        RUNNER(command_line)
+
+
+class OffTestCase2(SimTestCase):
+    """
+    Test turning encryption off when pool is not encrypted.
+    """
+
+    _MENU = ["--propagate", "pool", "encryption", "off"]
+    _POOLNAME = "poolname"
+
+    def setUp(self):
+        super().setUp()
+        command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
+        RUNNER(command_line)
+
+    def test_decrypt_with_name(self):
+        """
+        Decrypting when unencrypted should return an error.
+        """
+        command_line = self._MENU + [
+            f"--name={self._POOLNAME}",
+        ]
+        self.check_error(StratisCliNoChangeError, command_line, _ERROR)
+
+
+class ReencryptTestCase(SimTestCase):
+    """
+    Test re-encrypting when pool is encrypted.
+    """
+
+    _MENU = ["--propagate", "pool", "encryption", "reencrypt"]
+    _POOLNAME = "poolname"
+    _KEY_DESC = "keydesc"
+
+    def setUp(self):
+        super().setUp()
+        with RandomKeyTmpFile() as fname:
+            command_line = [
+                "--propagate",
+                "key",
+                "set",
+                "--keyfile-path",
+                fname,
+                self._KEY_DESC,
+            ]
+            RUNNER(command_line)
+
+        command_line = [
+            "--propagate",
+            "pool",
+            "create",
+            "--key-desc",
+            self._KEY_DESC,
+            self._POOLNAME,
+        ] + _DEVICE_STRATEGY()
+        RUNNER(command_line)
+
+    def test_reencrypt_with_name(self):
+        """
+        Re-encrypt an encrypted pool, specifying the pool by name.
+        """
+        command_line = self._MENU + [
+            f"--name={self._POOLNAME}",
+        ]
+        RUNNER(command_line)
+
+
+class ReencryptTestCase2(SimTestCase):
+    """
+    Test reencryption when pool is not encrypted.
+    """
+
+    _MENU = ["--propagate", "pool", "encryption", "reencrypt"]
+    _POOLNAME = "poolname"
+
+    def setUp(self):
+        super().setUp()
+        command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
+        RUNNER(command_line)
+
+    def test_reencrypt_with_name(self):
+        """
+        Reencrypting when unencrypted should return an error.
+        """
+        command_line = self._MENU + [
+            f"--name={self._POOLNAME}",
+        ]
+        self.check_error(StratisCliEngineError, command_line, _ERROR)
+
+
+class EncryptTestCase(SimTestCase):
+    """
+    Test encrypting when pool is already encrypted.
+    """
+
+    _MENU = ["--propagate", "pool", "encryption", "on"]
+    _POOLNAME = "poolname"
+    _KEY_DESC = "keydesc"
+
+    def setUp(self):
+        super().setUp()
+        with RandomKeyTmpFile() as fname:
+            command_line = [
+                "--propagate",
+                "key",
+                "set",
+                "--keyfile-path",
+                fname,
+                self._KEY_DESC,
+            ]
+            RUNNER(command_line)
+
+        command_line = [
+            "--propagate",
+            "pool",
+            "create",
+            "--key-desc",
+            self._KEY_DESC,
+            self._POOLNAME,
+        ] + _DEVICE_STRATEGY()
+        RUNNER(command_line)
+
+    def test_encrypt_with_name(self):
+        """
+        Encrypting when already encrypted should return an error.
+        """
+        command_line = self._MENU + [
+            f"--name={self._POOLNAME}",
+            "--clevis=tpm2",
+        ]
+        self.check_error(StratisCliNoChangeError, command_line, _ERROR)
+
+
+class EncryptTestCase2(SimTestCase):
+    """
+    Test encrypting when pool is not already encrypted.
+    """
+
+    _MENU = ["--propagate", "pool", "encryption", "on"]
+    _POOLNAME = "poolname"
+    _KEY_DESC = "keydesc"
+
+    def setUp(self):
+        super().setUp()
+        command_line = [
+            "--propagate",
+            "pool",
+            "create",
+            self._POOLNAME,
+        ] + _DEVICE_STRATEGY()
+        RUNNER(command_line)
+
+    def test_encrypt_with_name(self):
+        """
+        Encrypting when not already encrypted should succeed.
+        """
+        command_line = self._MENU + [
+            f"--name={self._POOLNAME}",
+            "--clevis=tpm2",
+        ]
+        TEST_RUNNER(command_line)
+
+    def test_encryption_with_no_encryption_params(self):
+        """
+        Encrypting without any encryption method fully specified should fail.
+        """
+        command_line = self._MENU + [
+            f"--name={self._POOLNAME}",
+        ]
+        self.check_error(StratisCliEngineError, command_line, _ERROR)

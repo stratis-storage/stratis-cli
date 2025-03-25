@@ -22,6 +22,7 @@ from ._constants import (
     MANAGER_0_INTERFACE,
     POOL_INTERFACE,
 )
+from ._crypt import CryptActions
 from ._debug import (
     BlockdevDebugActions,
     FilesystemDebugActions,
