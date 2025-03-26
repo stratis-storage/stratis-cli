@@ -1,3 +1,19 @@
+stratis-cli 3.8.1
+=================
+Required stratisd version: 3.8.0
+
+Recommended development environment: Fedora 40
+Lowest supported Python interpreter: 3.9.16
+
+- Begin moving "bind", "unbind", "rebind" to "encryption" subcommand:
+  https://github.com/stratis-storage/stratis-cli/issues/1136
+  https://github.com/stratis-storage/stratis-cli/pull/1137
+
+- Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/1140
+  https://github.com/stratis-storage/stratis-cli/pull/1135
+
+
 stratis-cli 3.8.0
 =================
 Required stratisd version: 3.8.0
