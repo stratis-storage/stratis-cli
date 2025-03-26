@@ -17,11 +17,10 @@ Definition of filesystem actions to display in the CLI.
 
 # isort: STDLIB
 from argparse import SUPPRESS
-from uuid import UUID
 
 from .._actions import LogicalActions
 from ._debug import FILESYSTEM_DEBUG_SUBCMDS
-from ._shared import RejectAction, parse_range
+from ._shared import UUID_OR_NAME, RejectAction, parse_range
 
 
 def parse_range_or_current(values):
@@ -106,24 +105,7 @@ LOGICAL_SUBCMDS = [
         {
             "help": "List filesystems",
             "mut_ex_args": [
-                (
-                    False,
-                    [
-                        (
-                            "--uuid",
-                            {
-                                "type": UUID,
-                                "help": "UUID of filesystem to list",
-                            },
-                        ),
-                        (
-                            "--name",
-                            {
-                                "help": "name of filesystem to list",
-                            },
-                        ),
-                    ],
-                ),
+                (False, UUID_OR_NAME),
             ],
             "args": [
                 (

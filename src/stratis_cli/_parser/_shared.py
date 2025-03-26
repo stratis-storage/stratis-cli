@@ -18,6 +18,7 @@ Shared parser operations.
 # isort: STDLIB
 import argparse
 import re
+from uuid import UUID
 
 # isort: THIRDPARTY
 from justbytes import B, GiB, KiB, MiB, PiB, Range, TiB
@@ -143,3 +144,20 @@ class MoveNotice:  # pylint: disable=too-few-public-methods
             "now is deprecated and will be removed in stratis "
             f"{self.version_completed}."
         )
+
+
+UUID_OR_NAME = [
+    (
+        "--name",
+        {
+            "help": "name",
+        },
+    ),
+    (
+        "--uuid",
+        {
+            "type": UUID,
+            "help": "UUID",
+        },
+    ),
+]
