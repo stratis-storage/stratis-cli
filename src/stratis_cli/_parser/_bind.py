@@ -17,7 +17,7 @@ Bind/Rebind command parser for Stratis CLI.
 
 from .._actions import BindActions, RebindActions
 from .._constants import Clevis
-from ._range import ensure_nat
+from ._shared import ensure_nat
 
 BIND_SUBCMDS = [
     (

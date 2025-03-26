@@ -21,7 +21,7 @@ from uuid import UUID
 
 from .._actions import LogicalActions
 from ._debug import FILESYSTEM_DEBUG_SUBCMDS
-from ._range import RejectAction, parse_range
+from ._shared import RejectAction, parse_range
 
 
 def parse_range_or_current(values):
