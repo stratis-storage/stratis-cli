@@ -104,8 +104,19 @@ LOGICAL_SUBCMDS = [
         "list",
         {
             "help": "List filesystems",
-            "mut_ex_args": [
-                (False, UUID_OR_NAME),
+            "groups": [
+                (
+                    "Optional Filesystem Identifier",
+                    {
+                        "description": (
+                            "Choose one option to display a detailed listing "
+                            "for a single filesystem"
+                        ),
+                        "mut_ex_args": [
+                            (False, UUID_OR_NAME),
+                        ],
+                    },
+                ),
             ],
             "args": [
                 (
