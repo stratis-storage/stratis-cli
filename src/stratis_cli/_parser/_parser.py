@@ -17,6 +17,7 @@ Top level parser for Stratis CLI.
 
 # isort: STDLIB
 import argparse
+import sys
 
 from .._actions import (
     LogicalActions,
@@ -33,7 +34,38 @@ from ._key import KEY_SUBCMDS
 from ._logical import LOGICAL_SUBCMDS
 from ._physical import PHYSICAL_SUBCMDS
 from ._pool import POOL_SUBCMDS
-from ._range import PrintHelpAction
+
+
+def gen_subparsers(parser, command_line):
+    """
+    Yield all subparser/command_lines pairs for this parser and this prefix
+    command line.
+
+    :param parser: an argparse parser
+    :param command_line: a prefix command line
+    :type command_line: list of str
+    """
+    yield (parser, command_line)
+    for action in (
+        action
+        for action in parser._actions  # pylint: disable=protected-access
+        if isinstance(
+            action, argparse._SubParsersAction  # pylint: disable=protected-access
+        )
+    ):
+        for name, subparser in sorted(action.choices.items(), key=lambda x: x[0]):
+            yield from gen_subparsers(subparser, command_line + [name])
+
+
+class PrintHelpAction(argparse.Action):
+    """
+    Print the help text for every subcommand.
+    """
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        for subparser, _ in gen_subparsers(parser, []):
+            subparser.print_help()
+        sys.exit(0)
 
 
 def print_help(parser):
