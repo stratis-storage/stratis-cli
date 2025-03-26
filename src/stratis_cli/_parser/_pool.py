@@ -33,9 +33,9 @@ from .._constants import (
     YesOrNo,
 )
 from .._error_codes import PoolErrorCode
-from ._bind import BIND_SUBCMDS, REBIND_SUBCMDS
 from ._debug import POOL_DEBUG_SUBCMDS
-from ._shared import DefaultAction, RejectAction, ensure_nat, parse_range
+from ._encryption import BIND_SUBCMDS, ENCRYPTION_SUBCMDS, REBIND_SUBCMDS
+from ._shared import DefaultAction, MoveNotice, RejectAction, ensure_nat, parse_range
 
 
 class ClevisEncryptionOptions:  # pylint: disable=too-few-public-methods
@@ -316,31 +316,11 @@ POOL_SUBCMDS = [
         },
     ),
     (
-        "stop",
+        "destroy",
         {
-            "help": (
-                "Stop a pool. Tear down the pool's storage stack "
-                "but do not erase any metadata."
-            ),
-            "mut_ex_args": [
-                (
-                    True,
-                    [
-                        (
-                            "--uuid",
-                            {
-                                "type": UUID,
-                                "help": "UUID of the pool to stop",
-                            },
-                        ),
-                        (
-                            "--name",
-                            {"help": "name of the pool to stop"},
-                        ),
-                    ],
-                )
-            ],
-            "func": PoolActions.stop_pool,
+            "help": "Destroy a pool",
+            "args": [("pool_name", {"help": "pool name"})],
+            "func": PoolActions.destroy_pool,
         },
     ),
     (
@@ -428,25 +408,31 @@ POOL_SUBCMDS = [
         },
     ),
     (
-        "init-cache",
+        "stop",
         {
-            "help": "Initialize the cache with block devices",
-            "args": [
+            "help": (
+                "Stop a pool. Tear down the pool's storage stack "
+                "but do not erase any metadata."
+            ),
+            "mut_ex_args": [
                 (
-                    "pool_name",
-                    {
-                        "help": "Name of the pool for which to initialize the cache",
-                    },
-                ),
-                (
-                    "blockdevs",
-                    {
-                        "help": "Initialize the pool cache using these block devs",
-                        "nargs": "+",
-                    },
-                ),
+                    True,
+                    [
+                        (
+                            "--uuid",
+                            {
+                                "type": UUID,
+                                "help": "UUID of the pool to stop",
+                            },
+                        ),
+                        (
+                            "--name",
+                            {"help": "name of the pool to stop"},
+                        ),
+                    ],
+                )
             ],
-            "func": PoolActions.init_cache,
+            "func": PoolActions.stop_pool,
         },
     ),
     (
@@ -487,14 +473,6 @@ POOL_SUBCMDS = [
         },
     ),
     (
-        "destroy",
-        {
-            "help": "Destroy a pool",
-            "args": [("pool_name", {"help": "pool name"})],
-            "func": PoolActions.destroy_pool,
-        },
-    ),
-    (
         "rename",
         {
             "help": "Rename a pool",
@@ -503,6 +481,36 @@ POOL_SUBCMDS = [
                 ("new", {"help": "New pool name"}),
             ],
             "func": PoolActions.rename_pool,
+        },
+    ),
+    (
+        "encryption",
+        {
+            "help": "Manage pool encryption operations",
+            "aliases": ["crypt"],
+            "subcmds": ENCRYPTION_SUBCMDS,
+        },
+    ),
+    (
+        "init-cache",
+        {
+            "help": "Initialize the cache with block devices",
+            "args": [
+                (
+                    "pool_name",
+                    {
+                        "help": "Name of the pool for which to initialize the cache",
+                    },
+                ),
+                (
+                    "blockdevs",
+                    {
+                        "help": "Initialize the pool cache using these block devs",
+                        "nargs": "+",
+                    },
+                ),
+            ],
+            "func": PoolActions.init_cache,
         },
     ),
     (
@@ -573,24 +581,20 @@ POOL_SUBCMDS = [
     (
         "bind",
         {
-            "help": "Bind the given pool with an additional encryption facility",
+            "epilog": str(MoveNotice("bind", "pool", "pool encryption", "3.10.0")),
             "subcmds": BIND_SUBCMDS,
         },
     ),
     (
         "rebind",
         {
-            "help": (
-                "Rebind the given pool with a currently in use encryption "
-                "facility but new credentials"
-            ),
+            "epilog": str(MoveNotice("rebind", "pool", "pool encryption", "3.10.0")),
             "subcmds": REBIND_SUBCMDS,
         },
     ),
     (
         "unbind",
         {
-            "help": "Unbind the given pool, removing use of the specified encryption method",
             "args": [
                 (
                     "method",
@@ -612,6 +616,7 @@ POOL_SUBCMDS = [
                     },
                 ),
             ],
+            "epilog": str(MoveNotice("unbind", "pool", "pool encryption", "3.10.0")),
             "func": BindActions.unbind,
         },
     ),
