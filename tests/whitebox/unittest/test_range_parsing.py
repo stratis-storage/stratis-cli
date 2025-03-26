@@ -22,7 +22,7 @@ import unittest
 import justbytes
 
 # isort: LOCAL
-from stratis_cli._parser._range import _unit_map
+from stratis_cli._parser._shared import _unit_map
 
 
 class TestUnitMap(unittest.TestCase):
