@@ -35,7 +35,14 @@ from .._constants import (
 from .._error_codes import PoolErrorCode
 from ._debug import POOL_DEBUG_SUBCMDS
 from ._encryption import BIND_SUBCMDS, ENCRYPTION_SUBCMDS, REBIND_SUBCMDS
-from ._shared import DefaultAction, MoveNotice, RejectAction, ensure_nat, parse_range
+from ._shared import (
+    UUID_OR_NAME,
+    DefaultAction,
+    MoveNotice,
+    RejectAction,
+    ensure_nat,
+    parse_range,
+)
 
 
 class ClevisEncryptionOptions:  # pylint: disable=too-few-public-methods
@@ -329,6 +336,17 @@ POOL_SUBCMDS = [
             "help": "Start a pool.",
             "groups": [
                 (
+                    "Pool Identifier",
+                    {
+                        "description": (
+                            "Choose one option to specify the pool to start"
+                        ),
+                        "mut_ex_args": [
+                            (True, UUID_OR_NAME),
+                        ],
+                    },
+                ),
+                (
                     "Unlock Method",
                     {
                         "description": (
@@ -386,24 +404,6 @@ POOL_SUBCMDS = [
                     },
                 ),
             ],
-            "mut_ex_args": [
-                (
-                    True,
-                    [
-                        (
-                            "--uuid",
-                            {
-                                "type": UUID,
-                                "help": "UUID of the pool to start",
-                            },
-                        ),
-                        (
-                            "--name",
-                            {"help": "name of the pool to start"},
-                        ),
-                    ],
-                ),
-            ],
             "func": PoolActions.start_pool,
         },
     ),
@@ -414,23 +414,18 @@ POOL_SUBCMDS = [
                 "Stop a pool. Tear down the pool's storage stack "
                 "but do not erase any metadata."
             ),
-            "mut_ex_args": [
+            "groups": [
                 (
-                    True,
-                    [
-                        (
-                            "--uuid",
-                            {
-                                "type": UUID,
-                                "help": "UUID of the pool to stop",
-                            },
+                    "Pool Identifier",
+                    {
+                        "description": (
+                            "Choose one option to specify the pool to stop"
                         ),
-                        (
-                            "--name",
-                            {"help": "name of the pool to stop"},
-                        ),
-                    ],
-                )
+                        "mut_ex_args": [
+                            (True, UUID_OR_NAME),
+                        ],
+                    },
+                ),
             ],
             "func": PoolActions.stop_pool,
         },
@@ -440,32 +435,26 @@ POOL_SUBCMDS = [
         {
             "help": "List pools",
             "description": "List Stratis pools",
-            "mut_ex_args": [
-                (
-                    False,
-                    [
-                        (
-                            "--uuid",
-                            {
-                                "type": UUID,
-                                "help": "UUID of pool to list",
-                            },
-                        ),
-                        (
-                            "--name",
-                            {
-                                "help": "name of pool to list",
-                            },
-                        ),
-                    ],
-                ),
-            ],
             "args": [
                 (
                     "--stopped",
                     {
                         "action": "store_true",
                         "help": "Display information about stopped pools only.",
+                    },
+                ),
+            ],
+            "groups": [
+                (
+                    "Optional Pool Identifier",
+                    {
+                        "description": (
+                            "Choose one option to display a detailed listing "
+                            "for a single pool"
+                        ),
+                        "mut_ex_args": [
+                            (False, UUID_OR_NAME),
+                        ],
                     },
                 ),
             ],

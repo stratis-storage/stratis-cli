@@ -15,15 +15,13 @@
 Debugging commands for pool
 """
 
-# isort: STDLIB
-from uuid import UUID
-
 from .._actions import (
     BlockdevDebugActions,
     FilesystemDebugActions,
     PoolDebugActions,
     TopDebugActions,
 )
+from ._shared import UUID_OR_NAME
 
 TOP_DEBUG_SUBCMDS = [
     (
@@ -48,25 +46,16 @@ POOL_DEBUG_SUBCMDS = [
         "get-object-path",
         {
             "help": "Get the object path for a pool name or UUID",
-            "mut_ex_args": [
+            "groups": [
                 (
-                    True,
-                    [
-                        (
-                            "--name",
-                            {
-                                "help": "Name of pool",
-                            },
-                        ),
-                        (
-                            "--uuid",
-                            {
-                                "help": "UUID of pool",
-                                "type": UUID,
-                            },
-                        ),
-                    ],
-                )
+                    "Pool Identifier",
+                    {
+                        "description": "Choose one option to specify the pool",
+                        "mut_ex_args": [
+                            (True, UUID_OR_NAME),
+                        ],
+                    },
+                ),
             ],
             "func": PoolDebugActions.get_object_path,
         },
@@ -90,24 +79,15 @@ POOL_DEBUG_SUBCMDS = [
                     },
                 ),
             ],
-            "mut_ex_args": [
+            "groups": [
                 (
-                    True,
-                    [
-                        (
-                            "--name",
-                            {
-                                "help": "Name of pool",
-                            },
-                        ),
-                        (
-                            "--uuid",
-                            {
-                                "help": "UUID of pool",
-                                "type": UUID,
-                            },
-                        ),
-                    ],
+                    "Pool Identifier",
+                    {
+                        "description": "Choose one option to specify the pool",
+                        "mut_ex_args": [
+                            (True, UUID_OR_NAME),
+                        ],
+                    },
                 ),
             ],
             "help": "Report the pool's metadata",
@@ -121,25 +101,16 @@ FILESYSTEM_DEBUG_SUBCMDS = [
         "get-object-path",
         {
             "help": "Get the object path for a filesystem name or UUID",
-            "mut_ex_args": [
+            "groups": [
                 (
-                    True,
-                    [
-                        (
-                            "--name",
-                            {
-                                "help": "Name of filesystem",
-                            },
-                        ),
-                        (
-                            "--uuid",
-                            {
-                                "help": "UUID of filesystem",
-                                "type": UUID,
-                            },
-                        ),
-                    ],
-                )
+                    "Filesystem Identifier",
+                    {
+                        "description": "Choose one option to specify the filesystem",
+                        "mut_ex_args": [
+                            (True, UUID_OR_NAME),
+                        ],
+                    },
+                ),
             ],
             "func": FilesystemDebugActions.get_object_path,
         },
@@ -179,19 +150,18 @@ BLOCKDEV_DEBUG_SUBCMDS = [
         "get-object-path",
         {
             "help": "Get the object path for a blockdev UUID",
-            "mut_ex_args": [
+            "groups": [
                 (
-                    True,
-                    [
-                        (
-                            "--uuid",
-                            {
-                                "help": "UUID of filesystem",
-                                "type": UUID,
-                            },
+                    "Block Device Identifier",
+                    {
+                        "description": (
+                            "Choose one option to specify the block device"
                         ),
-                    ],
-                )
+                        "mut_ex_args": [
+                            (True, UUID_OR_NAME),
+                        ],
+                    },
+                ),
             ],
             "func": BlockdevDebugActions.get_object_path,
         },
