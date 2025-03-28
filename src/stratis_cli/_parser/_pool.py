@@ -25,7 +25,6 @@ from justbytes import MiB, Range
 
 from .._actions import BindActions, PoolActions
 from .._constants import (
-    Clevis,
     EncryptionMethod,
     IntegrityOption,
     IntegrityTagSpec,
@@ -36,67 +35,17 @@ from .._error_codes import PoolErrorCode
 from ._debug import POOL_DEBUG_SUBCMDS
 from ._encryption import BIND_SUBCMDS, ENCRYPTION_SUBCMDS, REBIND_SUBCMDS
 from ._shared import (
+    ENCRYPTION,
     KEYFILE_PATH_OR_STDIN,
+    TRUST_URL_OR_THUMBPRINT,
     UUID_OR_NAME,
+    ClevisEncryptionOptions,
     DefaultAction,
     MoveNotice,
     RejectAction,
     ensure_nat,
     parse_range,
 )
-
-
-class ClevisEncryptionOptions:  # pylint: disable=too-few-public-methods
-    """
-    Gathers and verifies encryption options.
-    """
-
-    def __init__(self, namespace):
-        self.clevis = copy.copy(namespace.clevis)
-        del namespace.clevis
-
-        self.thumbprint = copy.copy(namespace.thumbprint)
-        del namespace.thumbprint
-
-        self.tang_url = copy.copy(namespace.tang_url)
-        del namespace.tang_url
-
-        self.trust_url = copy.copy(namespace.trust_url)
-        del namespace.trust_url
-
-    def verify(self, namespace, parser):
-        """
-        Do supplementary parsing of conditional arguments.
-        """
-        if self.clevis in (Clevis.NBDE, Clevis.TANG) and self.tang_url is None:
-            parser.error(
-                "Specified binding with Clevis Tang server, but URL was not "
-                "specified. Use --tang-url option to specify tang URL."
-            )
-
-        if self.tang_url is not None and (
-            not self.trust_url and self.thumbprint is None
-        ):
-            parser.error(
-                "Specified binding with Clevis Tang server, but neither "
-                "--thumbprint nor --trust-url option was specified."
-            )
-
-        if self.tang_url is not None and (
-            self.clevis not in (Clevis.NBDE, Clevis.TANG)
-        ):
-            parser.error(
-                "Specified --tang-url without specifying Clevis encryption "
-                "method. Use --clevis=tang to choose Clevis encryption."
-            )
-
-        if (self.trust_url or self.thumbprint is not None) and self.tang_url is None:
-            parser.error(
-                "Specified --trust-url or --thumbprint without specifying tang "
-                "URL. Use --tang-url to specify URL."
-            )
-
-        namespace.clevis = None if self.clevis is None else self
 
 
 class IntegrityOptions:  # pylint: disable=too-few-public-methods
@@ -162,79 +111,21 @@ POOL_SUBCMDS = [
             "help": "Create a pool",
             "groups": [
                 (
-                    "encryption",
+                    "Encryption",
                     {
                         "description": "Arguments controlling creation with encryption",
-                        "args": [
-                            (
-                                "--post-parser",
-                                {
-                                    "action": RejectAction,
-                                    "default": CreateOptions,
-                                    "help": SUPPRESS,
-                                    "nargs": "?",
-                                },
-                            ),
-                            (
-                                "--key-desc",
-                                {
-                                    "help": (
-                                        "Key description of key in kernel keyring to use "
-                                        "for encryption"
-                                    ),
-                                },
-                            ),
-                            (
-                                "--clevis",
-                                {
-                                    "type": Clevis,
-                                    "help": "Specification for binding with Clevis.",
-                                    "choices": list(Clevis),
-                                },
-                            ),
-                            (
-                                "--tang-url",
-                                {
-                                    "help": (
-                                        "URL of Clevis tang server "
-                                        "(--clevis=[tang|nbde] must be set)"
-                                    ),
-                                },
-                            ),
-                        ],
-                        "mut_ex_args": [
-                            (
-                                False,
-                                [
-                                    (
-                                        "--trust-url",
-                                        {
-                                            "action": "store_true",
-                                            "help": (
-                                                "Omit verification of tang "
-                                                "server credentials "
-                                                "(--tang-url option must be "
-                                                "set)"
-                                            ),
-                                        },
-                                    ),
-                                    (
-                                        "--thumbprint",
-                                        {
-                                            "help": (
-                                                "Thumbprint of tang server "
-                                                "(--tang-url option must be "
-                                                "set)"
-                                            ),
-                                        },
-                                    ),
-                                ],
-                            )
-                        ],
+                        "args": ENCRYPTION,
                     },
                 ),
                 (
-                    "integrity",
+                    "Tang Server Verification (only if --tang-url option is set)",
+                    {
+                        "description": "Choose one option",
+                        "mut_ex_args": [(False, TRUST_URL_OR_THUMBPRINT)],
+                    },
+                ),
+                (
+                    "Integrity",
                     {
                         "description": (
                             "Optional parameters for configuring integrity "
@@ -303,6 +194,15 @@ POOL_SUBCMDS = [
                 ),
             ],
             "args": [
+                (
+                    "--post-parser",
+                    {
+                        "action": RejectAction,
+                        "default": CreateOptions,
+                        "help": SUPPRESS,
+                        "nargs": "?",
+                    },
+                ),
                 ("pool_name", {"help": "Name of new pool"}),
                 (
                     "blockdevs",
