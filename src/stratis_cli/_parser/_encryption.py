@@ -28,7 +28,15 @@ BIND_SUBCMDS = [
                 ("pool_name", {"help": "Pool name"}),
                 ("url", {"help": "URL of tang server"}),
             ],
-            "mut_ex_args": [(True, TRUST_URL_OR_THUMBPRINT)],
+            "groups": [
+                (
+                    "Tang Server Verification",
+                    {
+                        "description": "Choose one option",
+                        "mut_ex_args": [(True, TRUST_URL_OR_THUMBPRINT)],
+                    },
+                )
+            ],
             "aliases": [str(Clevis.TANG)],
             "func": BindActions.bind_tang,
         },
