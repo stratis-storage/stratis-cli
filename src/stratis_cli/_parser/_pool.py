@@ -348,10 +348,11 @@ POOL_SUBCMDS = [
                     },
                 ),
                 (
-                    "Unlock Method",
+                    "Optional Unlock Method",
                     {
                         "description": (
-                            "Arguments to allow specifying an unlock method when pool is encrypted"
+                            "Choose one option to specify an unlock method if "
+                            "the pool is encrypted"
                         ),
                         "mut_ex_args": [
                             (
