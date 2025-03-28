@@ -36,6 +36,7 @@ from .._error_codes import PoolErrorCode
 from ._debug import POOL_DEBUG_SUBCMDS
 from ._encryption import BIND_SUBCMDS, ENCRYPTION_SUBCMDS, REBIND_SUBCMDS
 from ._shared import (
+    KEYFILE_PATH_OR_STDIN,
     UUID_OR_NAME,
     DefaultAction,
     MoveNotice,
@@ -384,22 +385,7 @@ POOL_SUBCMDS = [
                     {
                         "description": "Arguments to allow specifying a key",
                         "mut_ex_args": [
-                            (
-                                False,
-                                [
-                                    (
-                                        "--keyfile-path",
-                                        {"help": "Path to a key file containing a key"},
-                                    ),
-                                    (
-                                        "--capture-key",
-                                        {
-                                            "action": "store_true",
-                                            "help": "Read key from stdin",
-                                        },
-                                    ),
-                                ],
-                            ),
+                            (False, KEYFILE_PATH_OR_STDIN),
                         ],
                     },
                 ),
