@@ -163,7 +163,7 @@ POOL_SUBCMDS = [
             "help": "Create a pool",
             "groups": [
                 (
-                    "encryption",
+                    "Encryption",
                     {
                         "description": "Arguments controlling creation with encryption",
                         "args": [
@@ -213,7 +213,7 @@ POOL_SUBCMDS = [
                     },
                 ),
                 (
-                    "integrity",
+                    "Integrity",
                     {
                         "description": (
                             "Optional parameters for configuring integrity "
