@@ -24,7 +24,15 @@ KEY_SUBCMDS = [
         {
             "help": "Set a key in the kernel keyring",
             "args": [("keydesc", {"help": "key description"})],
-            "mut_ex_args": [(True, KEYFILE_PATH_OR_STDIN)],
+            "groups": [
+                (
+                    "Key Value Specification",
+                    {
+                        "description": "Choose one option to specify a key value",
+                        "mut_ex_args": [(True, KEYFILE_PATH_OR_STDIN)],
+                    },
+                )
+            ],
             "func": TopActions.set_key,
         },
     ),
@@ -33,7 +41,15 @@ KEY_SUBCMDS = [
         {
             "help": "Reset an existing key in the kernel keyring",
             "args": [("keydesc", {"help": "key description"})],
-            "mut_ex_args": [(True, KEYFILE_PATH_OR_STDIN)],
+            "groups": [
+                (
+                    "Key Value Specification",
+                    {
+                        "description": "Choose one option to specify a key value",
+                        "mut_ex_args": [(True, KEYFILE_PATH_OR_STDIN)],
+                    },
+                )
+            ],
             "func": TopActions.reset_key,
         },
     ),
