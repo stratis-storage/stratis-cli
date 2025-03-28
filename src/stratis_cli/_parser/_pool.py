@@ -381,9 +381,13 @@ POOL_SUBCMDS = [
                     },
                 ),
                 (
-                    "Key Specification",
+                    "Optional Key Value Specification",
                     {
-                        "description": "Arguments to allow specifying a key",
+                        "description": (
+                            "Choose one option to specify a key value if the "
+                            "pool is encrypted and no unattended decryption "
+                            "mechanism is available"
+                        ),
                         "mut_ex_args": [
                             (False, KEYFILE_PATH_OR_STDIN),
                         ],
