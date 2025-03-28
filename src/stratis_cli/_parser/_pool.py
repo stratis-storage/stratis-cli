@@ -37,6 +37,7 @@ from ._debug import POOL_DEBUG_SUBCMDS
 from ._encryption import BIND_SUBCMDS, ENCRYPTION_SUBCMDS, REBIND_SUBCMDS
 from ._shared import (
     KEYFILE_PATH_OR_STDIN,
+    TRUST_URL_OR_THUMBPRINT,
     UUID_OR_NAME,
     DefaultAction,
     MoveNotice,
@@ -202,35 +203,7 @@ POOL_SUBCMDS = [
                                 },
                             ),
                         ],
-                        "mut_ex_args": [
-                            (
-                                False,
-                                [
-                                    (
-                                        "--trust-url",
-                                        {
-                                            "action": "store_true",
-                                            "help": (
-                                                "Omit verification of tang "
-                                                "server credentials "
-                                                "(--tang-url option must be "
-                                                "set)"
-                                            ),
-                                        },
-                                    ),
-                                    (
-                                        "--thumbprint",
-                                        {
-                                            "help": (
-                                                "Thumbprint of tang server "
-                                                "(--tang-url option must be "
-                                                "set)"
-                                            ),
-                                        },
-                                    ),
-                                ],
-                            )
-                        ],
+                        "mut_ex_args": [(False, TRUST_URL_OR_THUMBPRINT)],
                     },
                 ),
                 (

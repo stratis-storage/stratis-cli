@@ -17,7 +17,7 @@ Encryption command-line parser for Stratis CLI.
 
 from .._actions import BindActions, RebindActions
 from .._constants import Clevis, EncryptionMethod
-from ._shared import ensure_nat
+from ._shared import TRUST_URL_OR_THUMBPRINT, ensure_nat
 
 BIND_SUBCMDS = [
     (
@@ -28,26 +28,7 @@ BIND_SUBCMDS = [
                 ("pool_name", {"help": "Pool name"}),
                 ("url", {"help": "URL of tang server"}),
             ],
-            "mut_ex_args": [
-                (
-                    True,
-                    [
-                        (
-                            "--trust-url",
-                            {
-                                "action": "store_true",
-                                "help": "Omit verification of tang server credentials",
-                            },
-                        ),
-                        (
-                            "--thumbprint",
-                            {
-                                "help": "Thumbprint of tang server at specified URL",
-                            },
-                        ),
-                    ],
-                )
-            ],
+            "mut_ex_args": [(True, TRUST_URL_OR_THUMBPRINT)],
             "aliases": [str(Clevis.TANG)],
             "func": BindActions.bind_tang,
         },
