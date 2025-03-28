@@ -161,3 +161,20 @@ UUID_OR_NAME = [
         },
     ),
 ]
+
+KEYFILE_PATH_OR_STDIN = [
+    (
+        "--keyfile-path",
+        {"help": "Path to a key file containing a key"},
+    ),
+    (
+        "--capture-key",
+        {
+            "action": "store_true",
+            "help": (
+                "Read key from stdin with no terminal echo or userspace "
+                "buffer storage"
+            ),
+        },
+    ),
+]
