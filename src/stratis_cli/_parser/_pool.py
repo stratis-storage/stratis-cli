@@ -168,15 +168,6 @@ POOL_SUBCMDS = [
                         "description": "Arguments controlling creation with encryption",
                         "args": [
                             (
-                                "--post-parser",
-                                {
-                                    "action": RejectAction,
-                                    "default": CreateOptions,
-                                    "help": SUPPRESS,
-                                    "nargs": "?",
-                                },
-                            ),
-                            (
                                 "--key-desc",
                                 {
                                     "help": (
@@ -282,6 +273,15 @@ POOL_SUBCMDS = [
                 ),
             ],
             "args": [
+                (
+                    "--post-parser",
+                    {
+                        "action": RejectAction,
+                        "default": CreateOptions,
+                        "help": SUPPRESS,
+                        "nargs": "?",
+                    },
+                ),
                 ("pool_name", {"help": "Name of new pool"}),
                 (
                     "blockdevs",
