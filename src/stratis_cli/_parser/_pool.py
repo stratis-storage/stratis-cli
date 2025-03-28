@@ -203,6 +203,12 @@ POOL_SUBCMDS = [
                                 },
                             ),
                         ],
+                    },
+                ),
+                (
+                    "Tang Server Verification (only if --tang-url option is set)",
+                    {
+                        "description": "Choose one option",
                         "mut_ex_args": [(False, TRUST_URL_OR_THUMBPRINT)],
                     },
                 ),
