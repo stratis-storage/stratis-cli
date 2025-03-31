@@ -115,12 +115,108 @@ REBIND_SUBCMDS = [
     ),
 ]
 
+BIND_SUBCMDS_ENCRYPTION = [
+    (
+        str(Clevis.NBDE),
+        {
+            "help": "Bind using NBDE via a tang server",
+            "args": [
+                ("pool_name", {"help": "Pool name"}),
+                ("url", {"help": "URL of tang server"}),
+            ],
+            "groups": [
+                (
+                    "Tang Server Verification",
+                    {
+                        "description": "Choose one option",
+                        "mut_ex_args": [(True, TRUST_URL_OR_THUMBPRINT)],
+                    },
+                )
+            ],
+            "aliases": [str(Clevis.TANG)],
+            "func": BindActions.bind_tang,
+        },
+    ),
+    (
+        str(Clevis.TPM2),
+        {
+            "help": "Bind using TPM2",
+            "args": [
+                ("pool_name", {"help": "Pool name"}),
+            ],
+            "func": BindActions.bind_tpm,
+        },
+    ),
+    (
+        "keyring",
+        {
+            "help": "Bind using the kernel keyring",
+            "args": [
+                ("pool_name", {"help": "Pool name"}),
+                ("keydesc", {"help": "key description"}),
+            ],
+            "func": BindActions.bind_keyring,
+        },
+    ),
+]
+
+REBIND_SUBCMDS_ENCRYPTION = [
+    (
+        "clevis",
+        {
+            "help": (
+                "Rebind the specified pool using the current Clevis configuration"
+            ),
+            "args": [
+                ("pool_name", {"help": "Pool name"}),
+                (
+                    "--token-slot",
+                    {
+                        "help": (
+                            "token slot; may be specified if there is more "
+                            "than one binding with the specified method; for "
+                            "V2 pools only"
+                        ),
+                        "type": ensure_nat,
+                    },
+                ),
+            ],
+            "func": RebindActions.rebind_clevis,
+        },
+    ),
+    (
+        "keyring",
+        {
+            "help": (
+                "Rebind the specified pool using the specified key in the "
+                "kernel keyring"
+            ),
+            "args": [
+                ("pool_name", {"help": "Pool name"}),
+                ("keydesc", {"help": "key description"}),
+                (
+                    "--token-slot",
+                    {
+                        "help": (
+                            "token slot; may be specified if there is more "
+                            "than one binding with the specified method; for "
+                            "V2 pools only"
+                        ),
+                        "type": ensure_nat,
+                    },
+                ),
+            ],
+            "func": RebindActions.rebind_keyring,
+        },
+    ),
+]
+
 ENCRYPTION_SUBCMDS = [
     (
         "bind",
         {
             "help": "Bind the given pool with an additional encryption facility",
-            "subcmds": BIND_SUBCMDS,
+            "subcmds": BIND_SUBCMDS_ENCRYPTION,
         },
     ),
     (
@@ -130,7 +226,7 @@ ENCRYPTION_SUBCMDS = [
                 "Rebind the given pool with a currently in use encryption "
                 "facility but new credentials"
             ),
-            "subcmds": REBIND_SUBCMDS,
+            "subcmds": REBIND_SUBCMDS_ENCRYPTION,
         },
     ),
     (
