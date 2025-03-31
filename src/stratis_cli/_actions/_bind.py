@@ -18,7 +18,7 @@ Miscellaneous pool-binding actions.
 # isort: STDLIB
 import json
 
-from .._constants import EncryptionMethod
+from .._constants import EncryptionMethod, Id, IdType
 from .._errors import StratisCliEngineError, StratisCliNoChangeError
 from .._stratisd_constants import (
     CLEVIS_KEY_TANG_TRUST_URL,
@@ -31,6 +31,24 @@ from .._stratisd_constants import (
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._utils import ClevisInfo
+
+
+def _get_pool_id(namespace):
+    """
+    Get id for pool, regardless of whether parser uses mandatory pool_name
+    argument or --name/--uuid alternative.
+
+    :return: Id representing how to lookup the pool
+    """
+    name = getattr(namespace, "pool_name", None)
+    if name is None:
+        return (
+            Id(IdType.UUID, namespace.uuid)
+            if namespace.name is None
+            else Id(IdType.NAME, namespace.name)
+        )
+
+    return Id(IdType.NAME, name)
 
 
 class BindActions:
@@ -52,9 +70,11 @@ class BindActions:
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        pool_name = namespace.pool_name
+
+        pool_id = _get_pool_id(namespace)
+
         (pool_object_path, _) = next(
-            pools(props={"Name": pool_name})
+            pools(props=pool_id.managed_objects_key())
             .require_unique_match(True)
             .search(managed_objects)
         )
@@ -74,7 +94,7 @@ class BindActions:
         # because there are multiple token slots, a new Clevis binding will
         # just find the next token slot.
         if not changed:  # pragma: no cover
-            raise StratisCliNoChangeError("bind", pool_name)
+            raise StratisCliNoChangeError("bind", pool_id.id_value)
 
     @staticmethod
     def bind_tang(namespace):
@@ -114,9 +134,11 @@ class BindActions:
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        pool_name = namespace.pool_name
+
+        pool_id = _get_pool_id(namespace)
+
         (pool_object_path, _) = next(
-            pools(props={"Name": pool_name})
+            pools(props=pool_id.managed_objects_key())
             .require_unique_match(True)
             .search(managed_objects)
         )
@@ -132,7 +154,7 @@ class BindActions:
             raise StratisCliEngineError(return_code, return_msg)
 
         if not changed:
-            raise StratisCliNoChangeError("bind", pool_name)
+            raise StratisCliNoChangeError("bind", pool_id.id_value)
 
     @staticmethod
     def unbind(namespace):
@@ -147,9 +169,11 @@ class BindActions:
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        pool_name = namespace.pool_name
+
+        pool_id = _get_pool_id(namespace)
+
         (pool_object_path, _) = next(
-            pools(props={"Name": pool_name})
+            pools(props=pool_id.managed_objects_key())
             .require_unique_match(True)
             .search(managed_objects)
         )
@@ -175,7 +199,7 @@ class BindActions:
             raise StratisCliEngineError(return_code, return_msg)
 
         if not changed:
-            raise StratisCliNoChangeError("unbind", pool_name)
+            raise StratisCliNoChangeError("unbind", pool_id.id_value)
 
 
 class RebindActions:
@@ -191,12 +215,12 @@ class RebindActions:
         # pylint: disable=import-outside-toplevel
         from ._data import ObjectManager, Pool, pools
 
-        pool_name = namespace.pool_name
+        pool_id = _get_pool_id(namespace)
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
         (pool_object_path, _) = next(
-            pools(props={"Name": pool_name})
+            pools(props=pool_id.managed_objects_key())
             .require_unique_match(True)
             .search(managed_objects)
         )
@@ -216,7 +240,9 @@ class RebindActions:
 
         if not changed:
             # The sim engine always returns true on a rebind with Clevis
-            raise StratisCliNoChangeError("rebind", pool_name)  # pragma: no cover
+            raise StratisCliNoChangeError(
+                "rebind", pool_id.id_value
+            )  # pragma: no cover
 
     @staticmethod
     def rebind_keyring(namespace):
@@ -226,13 +252,13 @@ class RebindActions:
         # pylint: disable=import-outside-toplevel
         from ._data import ObjectManager, Pool, pools
 
-        pool_name = namespace.pool_name
         keydesc = namespace.keydesc
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
+        pool_id = _get_pool_id(namespace)
         (pool_object_path, _) = next(
-            pools(props={"Name": pool_name})
+            pools(props=pool_id.managed_objects_key())
             .require_unique_match(True)
             .search(managed_objects)
         )
@@ -253,4 +279,4 @@ class RebindActions:
             raise StratisCliEngineError(return_code, return_msg)
 
         if not changed:
-            raise StratisCliNoChangeError("rebind", pool_name)
+            raise StratisCliNoChangeError("rebind", pool_id.id_value)
