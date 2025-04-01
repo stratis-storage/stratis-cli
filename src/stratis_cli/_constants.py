@@ -71,6 +71,16 @@ class Id(ABC):
             else {"Name": self.id_value}
         )
 
+    def dbus_args(self):
+        """
+        Specify an id, id_type D-Bus argument.
+        """
+        return (
+            {"id": self.id_value, "id_type": "name"}
+            if self.id_type is IdType.NAME
+            else {"id": self.id_value.hex, "id_type": "uuid"}
+        )
+
     @abstractmethod
     def __str__(self) -> str:  # pragma: no cover
         return ""
