@@ -151,3 +151,13 @@ class StartTestCase(SimTestCase):
             f"--unlock-method={UnlockMethod.KEYRING}",
         ]
         self.check_error(StratisCliResourceNotFoundError, command_line, _ERROR)
+
+    def test_method_keyring_good_uuid(self):
+        """
+        Test trying to start an unencrypted pool with unlock method keyring, no
+        token slot specified, and a UUID used to get the pool.
+        """
+        pool_uuid = stop_pool(self._POOLNAME)
+
+        command_line = self._MENU + [f"--uuid={pool_uuid}", "--unlock-method=keyring"]
+        self.check_error(StratisCliInvalidCommandLineOptionValue, command_line, _ERROR)

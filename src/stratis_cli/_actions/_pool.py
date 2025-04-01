@@ -269,7 +269,7 @@ class PoolActions:
             raise StratisCliNoChangeError("stop", pool_id)
 
     @staticmethod
-    def start_pool(namespace):  # pylint: disable=too-many-locals
+    def start_pool(namespace):
         """
         Start a pool.
 
@@ -281,10 +281,10 @@ class PoolActions:
 
         proxy = get_object(TOP_OBJECT)
 
-        (pool_id, id_type) = (
-            (namespace.uuid.hex, "uuid")
+        pool_id = (
+            PoolId(IdType.UUID, namespace.uuid)
             if namespace.name is None
-            else (namespace.name, "name")
+            else PoolId(IdType.NAME, namespace.name)
         )
 
         if namespace.token_slot is None:
@@ -297,7 +297,7 @@ class PoolActions:
                 unlock_method = (True, (False, 0))
             else:
                 stopped_pools = fetch_stopped_pools_property(proxy)
-                selection_func = PoolId(id_type, pool_id).stopped_pools_func()
+                selection_func = pool_id.stopped_pools_func()
                 stopped_pool = next(
                     (
                         (uuid, StoppedPool(info))
@@ -308,9 +308,7 @@ class PoolActions:
                 )
 
                 if stopped_pool is None:
-                    raise StratisCliResourceNotFoundError(
-                        "start", f"pool with {id_type}: {pool_id}"
-                    )
+                    raise StratisCliResourceNotFoundError("start", pool_id)
 
                 (_, stopped_pool) = stopped_pool
 
@@ -341,9 +339,8 @@ class PoolActions:
 
         ((started, _), return_code, message) = Manager.Methods.StartPool(
             proxy,
-            {
-                "id": pool_id,
-                "id_type": id_type,
+            pool_id.dbus_args()
+            | {
                 "unlock_method": unlock_method,
                 "key_fd": key_fd_arg,
             },
