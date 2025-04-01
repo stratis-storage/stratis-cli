@@ -65,13 +65,11 @@ class Id(ABC):
         Precondition: the D-Bus property that identifies the Name or the
         Uuid will always be the same.
         """
-        return {"Uuid" if self.id_type is IdType.UUID else "Name": self.dbus_value()}
-
-    def dbus_value(self):
-        """
-        Returns a string value for matching D-Bus things.
-        """
-        return self.id_value.hex if self.id_type is IdType.UUID else self.id_value
+        return (
+            {"Uuid": self.id_value.hex}
+            if self.id_type is IdType.UUID
+            else {"Name": self.id_value}
+        )
 
     @abstractmethod
     def __str__(self) -> str:  # pragma: no cover
@@ -90,7 +88,9 @@ class PoolId(Id):
         """
         Function for selecting a pool from stopped pools.
         """
-        selection_value = self.dbus_value()
+        selection_value = (
+            self.id_value.hex if self.id_type is IdType.UUID else self.id_value
+        )
 
         return (
             (lambda uuid, info: uuid == selection_value)
