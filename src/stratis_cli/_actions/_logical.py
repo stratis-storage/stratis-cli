@@ -18,7 +18,7 @@ Miscellaneous logical actions.
 # isort: THIRDPARTY
 from justbytes import Range
 
-from .._constants import Id, IdType
+from .._constants import FilesystemId, IdType
 from .._errors import (
     StratisCliEngineError,
     StratisCliIncoherenceError,
@@ -130,9 +130,9 @@ class LogicalActions:
         uuid_formatter = get_uuid_formatter(namespace.unhyphenated_uuids)
 
         fs_id = (
-            (None if fs_name is None else Id(IdType.NAME, fs_name))
+            (None if fs_name is None else FilesystemId(IdType.NAME, fs_name))
             if fs_uuid is None
-            else Id(IdType.UUID, fs_uuid)
+            else FilesystemId(IdType.UUID, fs_uuid)
         )
 
         return list_filesystems(uuid_formatter, pool_name=pool_name, fs_id=fs_id)

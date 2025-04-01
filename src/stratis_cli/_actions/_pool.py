@@ -25,7 +25,7 @@ from uuid import UUID
 # isort: THIRDPARTY
 from justbytes import Range
 
-from .._constants import Id, IdType, IntegrityOption, IntegrityTagSpec, UnlockMethod
+from .._constants import IdType, IntegrityOption, IntegrityTagSpec, PoolId, UnlockMethod
 from .._error_codes import PoolErrorCode
 from .._errors import (
     StratisCliEngineError,
@@ -47,7 +47,6 @@ from ._formatting import get_property, get_uuid_formatter
 from ._list_pool import list_pools
 from ._utils import (
     ClevisInfo,
-    PoolSelector,
     StoppedPool,
     fetch_stopped_pools_property,
     get_passphrase_fd,
@@ -298,7 +297,7 @@ class PoolActions:
                 unlock_method = (True, (False, 0))
             else:
                 stopped_pools = fetch_stopped_pools_property(proxy)
-                selection_func = PoolSelector(Id(id_type, pool_id)).stopped_pools_func()
+                selection_func = PoolId(id_type, pool_id).stopped_pools_func()
                 stopped_pool = next(
                     (
                         (uuid, StoppedPool(info))
@@ -432,9 +431,9 @@ class PoolActions:
         uuid_formatter = get_uuid_formatter(namespace.unhyphenated_uuids)
 
         selection = (
-            (None if pool_name is None else PoolSelector(Id(IdType.NAME, pool_name)))
+            (None if pool_name is None else PoolId(IdType.NAME, pool_name))
             if pool_uuid is None
-            else PoolSelector(Id(IdType.UUID, pool_uuid))
+            else PoolId(IdType.UUID, pool_uuid)
         )
 
         return list_pools(uuid_formatter, stopped=stopped, selection=selection)
