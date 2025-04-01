@@ -15,6 +15,7 @@
 General constants.
 """
 # isort: STDLIB
+from abc import ABC, abstractmethod
 from enum import Enum
 
 
@@ -45,7 +46,7 @@ class IdType(Enum):
         return self.value
 
 
-class Id:
+class Id(ABC):
     """
     Generic management of ids when either a UUID or name can be used.
     """
@@ -66,21 +67,47 @@ class Id:
         """
         return {"Uuid" if self.id_type is IdType.UUID else "Name": self.dbus_value()}
 
-    def is_uuid(self):
-        """
-        True if the id is a UUID, otherwise false.
-        """
-        return self.id_type == IdType.UUID
-
     def dbus_value(self):
         """
         Returns a string value for matching D-Bus things.
         """
         return self.id_value.hex if self.id_type is IdType.UUID else self.id_value
 
+    @abstractmethod
+    def __str__(self) -> str:
+        """
+        The usual __str__ method
+        """
+
+
+class PoolId(Id):
+    """
+    Pool id.
+    """
+
     def __str__(self):
-        pool_id_type_str = "UUID" if self.id_type is IdType.UUID else "name"
-        return f"{pool_id_type_str} {self.id_value}"
+        return f"pool with {self.id_type} {self.id_value}"
+
+    def stopped_pools_func(self):
+        """
+        Function for selecting a pool from stopped pools.
+        """
+        selection_value = self.dbus_value()
+
+        return (
+            (lambda uuid, info: uuid == selection_value)
+            if self.id_type is IdType.UUID
+            else (lambda uuid, info: info.get("name") == selection_value)
+        )
+
+
+class FilesystemId(Id):
+    """
+    Filesystem id.
+    """
+
+    def __str__(self):  # pragma: no cover
+        return f"filesystem with {self.id_type} {self.id_value}"
 
 
 class EncryptionMethod(Enum):

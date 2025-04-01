@@ -114,7 +114,7 @@ def list_pools(uuid_formatter, *, stopped=False, selection=None):
     :param uuid_formatter: how to format UUIDs
     :type uuid_formatter: (str or UUID) -> str
     :param bool stopped: True if stopped pools should be listed, else False
-    :param PoolSelector selection: how to select pools to list
+    :param PoolId selection: how to select pools to list
     """
     if stopped:
         if selection is None:
@@ -244,7 +244,7 @@ class DefaultDetail(Default):
         Initializer.
         :param uuid_formatter: function to format a UUID str or UUID
         :param uuid_formatter: str or UUID -> str
-        :param PoolSelector selection: how to select pools to list
+        :param PoolId selection: how to select pools to list
         """
         self.uuid_formatter = uuid_formatter
         self.selection = selection
@@ -536,7 +536,7 @@ class StoppedDetail(Stopped):  # pylint: disable=too-few-public-methods
         Initializer.
         :param uuid_formatter: function to format a UUID str or UUID
         :param uuid_formatter: str or UUID -> str
-        :param PoolSelector selection: how to select pools to list
+        :param PoolId selection: how to select pools to list
         """
         self.uuid_formatter = uuid_formatter
         self.selection = selection
