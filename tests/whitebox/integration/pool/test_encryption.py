@@ -45,7 +45,7 @@ class BindTestCase(SimTestCase):
         """
         command_line = self._MENU + [
             "nbde",
-            self._POOLNAME,
+            f"--name={self._POOLNAME}",
             "URL",
             "--thumbprint",
             "fake thumbprint",
@@ -58,7 +58,7 @@ class BindTestCase(SimTestCase):
         """
         command_line = self._MENU + [
             "nbde",
-            self._POOLNAME,
+            f"--name={self._POOLNAME}",
             "URL",
             "--trust-url",
         ]
@@ -70,7 +70,7 @@ class BindTestCase(SimTestCase):
         """
         command_line = self._MENU + [
             "tpm2",
-            self._POOLNAME,
+            f"--name={self._POOLNAME}",
         ]
         self.check_error(StratisCliEngineError, command_line, _ERROR)
 
@@ -78,7 +78,7 @@ class BindTestCase(SimTestCase):
         """
         Binding when unencrypted with keyring should return an error.
         """
-        command_line = self._MENU + ["keyring", self._POOLNAME, "keydesc"]
+        command_line = self._MENU + ["keyring", f"--name={self._POOLNAME}", "keydesc"]
         self.check_error(StratisCliEngineError, command_line, _ERROR)
 
 
@@ -121,7 +121,7 @@ class BindTestCase2(SimTestCase):
         """
         command_line = self._MENU + [
             "tpm2",
-            self._POOLNAME,
+            f"--name={self._POOLNAME}",
         ]
         RUNNER(command_line)
         TEST_RUNNER(command_line)
@@ -132,7 +132,7 @@ class BindTestCase2(SimTestCase):
         """
         command_line = self._MENU + [
             "keyring",
-            self._POOLNAME,
+            f"--name={self._POOLNAME}",
             self._KEY_DESC,
         ]
         self.check_error(StratisCliNoChangeError, command_line, _ERROR)
@@ -175,7 +175,7 @@ class BindTestCase3(SimTestCase):
         """
         command_line = self._MENU + [
             "keyring",
-            self._POOLNAME,
+            f"--name={self._POOLNAME}",
             self._KEY_DESC,
         ]
         TEST_RUNNER(command_line)
@@ -198,14 +198,14 @@ class RebindTestCase(SimTestCase):
         """
         Rebinding with Clevis when unencrypted should return an error.
         """
-        command_line = self._MENU + ["clevis", self._POOLNAME]
+        command_line = self._MENU + ["clevis", f"--name={self._POOLNAME}"]
         self.check_error(StratisCliEngineError, command_line, _ERROR)
 
     def test_rebind_with_key(self):
         """
         Rebinding with kernel keyring when unencrypted should return an error.
         """
-        command_line = self._MENU + ["keyring", self._POOLNAME, "keydesc"]
+        command_line = self._MENU + ["keyring", f"--name={self._POOLNAME}", "keydesc"]
         self.check_error(StratisCliEngineError, command_line, _ERROR)
 
 
@@ -245,14 +245,18 @@ class RebindTestCase2(SimTestCase):
         """
         Rebinding with Clevis when encrypted with key should return an error.
         """
-        command_line = self._MENU + ["clevis", self._POOLNAME]
+        command_line = self._MENU + ["clevis", f"--name={self._POOLNAME}"]
         self.check_error(StratisCliEngineError, command_line, _ERROR)
 
     def test_rebind_keyring(self):
         """
         Rebinding with kernel keyring with same key should return an error.
         """
-        command_line = self._MENU + ["keyring", self._POOLNAME, self._KEY_DESC]
+        command_line = self._MENU + [
+            "keyring",
+            f"--name={self._POOLNAME}",
+            self._KEY_DESC,
+        ]
         self.check_error(StratisCliNoChangeError, command_line, _ERROR)
 
     def test_rebind_keyring_new_key_description(self):
@@ -270,7 +274,11 @@ class RebindTestCase2(SimTestCase):
                 new_key_desc,
             ]
             RUNNER(command_line)
-        command_line = self._MENU + ["keyring", self._POOLNAME, new_key_desc]
+        command_line = self._MENU + [
+            "keyring",
+            f"--name={self._POOLNAME}",
+            new_key_desc,
+        ]
         TEST_RUNNER(command_line)
 
 
@@ -300,14 +308,18 @@ class RebindTestCase3(SimTestCase):
         """
         Rebinding with Clevis should succeed.
         """
-        command_line = self._MENU + ["clevis", self._POOLNAME]
+        command_line = self._MENU + ["clevis", f"--name={self._POOLNAME}"]
         TEST_RUNNER(command_line)
 
     def test_rebind_keyring(self):
         """
         Rebinding with kernel keyring should return an error.
         """
-        command_line = self._MENU + ["keyring", self._POOLNAME, self._KEY_DESC]
+        command_line = self._MENU + [
+            "keyring",
+            f"--name={self._POOLNAME}",
+            self._KEY_DESC,
+        ]
         self.check_error(StratisCliEngineError, command_line, _ERROR)
 
 
@@ -328,7 +340,7 @@ class UnbindTestCase(SimTestCase):
         """
         Unbinding when unencrypted should return an error.
         """
-        command_line = self._MENU + ["clevis", self._POOLNAME]
+        command_line = self._MENU + ["clevis", f"--name={self._POOLNAME}"]
         self.check_error(StratisCliEngineError, command_line, _ERROR)
 
 
@@ -370,7 +382,7 @@ class UnbindTestCase2(SimTestCase):
         an engine error, as removing the one remaining binding mechanism would
         make the pool unreadable as soon as it is stopped.
         """
-        command_line = self._MENU + ["clevis", self._POOLNAME]
+        command_line = self._MENU + ["clevis", f"--name={self._POOLNAME}"]
         self.check_error(StratisCliEngineError, command_line, _ERROR)
 
     def test_unbind_when_bound(self):
@@ -383,12 +395,12 @@ class UnbindTestCase2(SimTestCase):
             "encryption",
             "bind",
             "nbde",
-            self._POOLNAME,
+            f"--name={self._POOLNAME}",
             "URL",
             "--trust-url",
         ]
         RUNNER(command_line)
-        command_line = self._MENU + ["clevis", self._POOLNAME]
+        command_line = self._MENU + ["clevis", f"--name={self._POOLNAME}"]
         TEST_RUNNER(command_line)
 
     def test_unbind_with_unused_token_slot(self):
@@ -401,10 +413,14 @@ class UnbindTestCase2(SimTestCase):
             "encryption",
             "bind",
             "nbde",
-            self._POOLNAME,
+            f"--name={self._POOLNAME}",
             "URL",
             "--trust-url",
         ]
         RUNNER(command_line)
-        command_line = self._MENU + ["clevis", self._POOLNAME, "--token-slot=32"]
+        command_line = self._MENU + [
+            "clevis",
+            f"--name={self._POOLNAME}",
+            "--token-slot=32",
+        ]
         self.check_error(StratisCliNoChangeError, command_line, _ERROR)

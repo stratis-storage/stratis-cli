@@ -178,3 +178,19 @@ KEYFILE_PATH_OR_STDIN = [
         },
     ),
 ]
+
+TRUST_URL_OR_THUMBPRINT = [
+    (
+        "--trust-url",
+        {
+            "action": "store_true",
+            "help": "Omit verification of tang server credentials",
+        },
+    ),
+    (
+        "--thumbprint",
+        {
+            "help": "Thumbprint of tang server at specified URL",
+        },
+    ),
+]

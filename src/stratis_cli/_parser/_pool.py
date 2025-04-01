@@ -37,6 +37,7 @@ from ._debug import POOL_DEBUG_SUBCMDS
 from ._encryption import BIND_SUBCMDS, ENCRYPTION_SUBCMDS, REBIND_SUBCMDS
 from ._shared import (
     KEYFILE_PATH_OR_STDIN,
+    TRUST_URL_OR_THUMBPRINT,
     UUID_OR_NAME,
     DefaultAction,
     MoveNotice,
@@ -162,19 +163,10 @@ POOL_SUBCMDS = [
             "help": "Create a pool",
             "groups": [
                 (
-                    "encryption",
+                    "Encryption",
                     {
                         "description": "Arguments controlling creation with encryption",
                         "args": [
-                            (
-                                "--post-parser",
-                                {
-                                    "action": RejectAction,
-                                    "default": CreateOptions,
-                                    "help": SUPPRESS,
-                                    "nargs": "?",
-                                },
-                            ),
                             (
                                 "--key-desc",
                                 {
@@ -202,39 +194,17 @@ POOL_SUBCMDS = [
                                 },
                             ),
                         ],
-                        "mut_ex_args": [
-                            (
-                                False,
-                                [
-                                    (
-                                        "--trust-url",
-                                        {
-                                            "action": "store_true",
-                                            "help": (
-                                                "Omit verification of tang "
-                                                "server credentials "
-                                                "(--tang-url option must be "
-                                                "set)"
-                                            ),
-                                        },
-                                    ),
-                                    (
-                                        "--thumbprint",
-                                        {
-                                            "help": (
-                                                "Thumbprint of tang server "
-                                                "(--tang-url option must be "
-                                                "set)"
-                                            ),
-                                        },
-                                    ),
-                                ],
-                            )
-                        ],
                     },
                 ),
                 (
-                    "integrity",
+                    "Tang Server Verification (only if --tang-url option is set)",
+                    {
+                        "description": "Choose one option",
+                        "mut_ex_args": [(False, TRUST_URL_OR_THUMBPRINT)],
+                    },
+                ),
+                (
+                    "Integrity",
                     {
                         "description": (
                             "Optional parameters for configuring integrity "
@@ -303,6 +273,15 @@ POOL_SUBCMDS = [
                 ),
             ],
             "args": [
+                (
+                    "--post-parser",
+                    {
+                        "action": RejectAction,
+                        "default": CreateOptions,
+                        "help": SUPPRESS,
+                        "nargs": "?",
+                    },
+                ),
                 ("pool_name", {"help": "Name of new pool"}),
                 (
                     "blockdevs",

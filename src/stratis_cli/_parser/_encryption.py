@@ -17,7 +17,7 @@ Encryption command-line parser for Stratis CLI.
 
 from .._actions import BindActions, RebindActions
 from .._constants import Clevis, EncryptionMethod
-from ._shared import ensure_nat
+from ._shared import TRUST_URL_OR_THUMBPRINT, UUID_OR_NAME, MoveNotice, ensure_nat
 
 BIND_SUBCMDS = [
     (
@@ -28,27 +28,19 @@ BIND_SUBCMDS = [
                 ("pool_name", {"help": "Pool name"}),
                 ("url", {"help": "URL of tang server"}),
             ],
-            "mut_ex_args": [
+            "groups": [
                 (
-                    True,
-                    [
-                        (
-                            "--trust-url",
-                            {
-                                "action": "store_true",
-                                "help": "Omit verification of tang server credentials",
-                            },
-                        ),
-                        (
-                            "--thumbprint",
-                            {
-                                "help": "Thumbprint of tang server at specified URL",
-                            },
-                        ),
-                    ],
+                    "Tang Server Verification",
+                    {
+                        "description": "Choose one option",
+                        "mut_ex_args": [(True, TRUST_URL_OR_THUMBPRINT)],
+                    },
                 )
             ],
             "aliases": [str(Clevis.TANG)],
+            "epilog": str(
+                MoveNotice("nbde", "pool bind", "pool encryption bind", "3.10.0")
+            ),
             "func": BindActions.bind_tang,
         },
     ),
@@ -59,6 +51,9 @@ BIND_SUBCMDS = [
             "args": [
                 ("pool_name", {"help": "Pool name"}),
             ],
+            "epilog": str(
+                MoveNotice("tpm2", "pool bind", "pool encryption bind", "3.10.0")
+            ),
             "func": BindActions.bind_tpm,
         },
     ),
@@ -70,6 +65,9 @@ BIND_SUBCMDS = [
                 ("pool_name", {"help": "Pool name"}),
                 ("keydesc", {"help": "key description"}),
             ],
+            "epilog": str(
+                MoveNotice("keyring", "pool bind", "pool encryption bind", "3.10.0")
+            ),
             "func": BindActions.bind_keyring,
         },
     ),
@@ -96,6 +94,9 @@ REBIND_SUBCMDS = [
                     },
                 ),
             ],
+            "epilog": str(
+                MoveNotice("clevis", "pool rebind", "pool encryption rebind", "3.10.0")
+            ),
             "func": RebindActions.rebind_clevis,
         },
     ),
@@ -121,6 +122,151 @@ REBIND_SUBCMDS = [
                     },
                 ),
             ],
+            "epilog": str(
+                MoveNotice("keyring", "pool rebind", "pool encryption rebind", "3.10.0")
+            ),
+            "func": RebindActions.rebind_keyring,
+        },
+    ),
+]
+
+BIND_SUBCMDS_ENCRYPTION = [
+    (
+        str(Clevis.NBDE),
+        {
+            "help": "Bind using NBDE via a tang server",
+            "args": [
+                ("url", {"help": "URL of tang server"}),
+            ],
+            "groups": [
+                (
+                    "Pool Identifier",
+                    {
+                        "description": "Choose one option to specify the pool to bind",
+                        "mut_ex_args": [
+                            (True, UUID_OR_NAME),
+                        ],
+                    },
+                ),
+                (
+                    "Tang Server Verification",
+                    {
+                        "description": "Choose one option",
+                        "mut_ex_args": [(True, TRUST_URL_OR_THUMBPRINT)],
+                    },
+                ),
+            ],
+            "aliases": [str(Clevis.TANG)],
+            "func": BindActions.bind_tang,
+        },
+    ),
+    (
+        str(Clevis.TPM2),
+        {
+            "help": "Bind using TPM2",
+            "groups": [
+                (
+                    "Pool Identifier",
+                    {
+                        "description": "Choose one option to specify the pool to bind",
+                        "mut_ex_args": [
+                            (True, UUID_OR_NAME),
+                        ],
+                    },
+                )
+            ],
+            "func": BindActions.bind_tpm,
+        },
+    ),
+    (
+        "keyring",
+        {
+            "help": "Bind using the kernel keyring",
+            "groups": [
+                (
+                    "Pool Identifier",
+                    {
+                        "description": "Choose one option to specify the pool to bind",
+                        "mut_ex_args": [
+                            (True, UUID_OR_NAME),
+                        ],
+                    },
+                )
+            ],
+            "args": [
+                ("keydesc", {"help": "key description"}),
+            ],
+            "func": BindActions.bind_keyring,
+        },
+    ),
+]
+
+REBIND_SUBCMDS_ENCRYPTION = [
+    (
+        "clevis",
+        {
+            "help": (
+                "Rebind the specified pool using the current Clevis configuration"
+            ),
+            "groups": [
+                (
+                    "Pool Identifier",
+                    {
+                        "description": "Choose one option to specify the pool to rebind",
+                        "mut_ex_args": [
+                            (True, UUID_OR_NAME),
+                        ],
+                    },
+                )
+            ],
+            "args": [
+                (
+                    "--token-slot",
+                    {
+                        "help": (
+                            "token slot; may be specified if there is more "
+                            "than one binding with the specified method; for "
+                            "V2 pools only"
+                        ),
+                        "type": ensure_nat,
+                    },
+                ),
+            ],
+            "func": RebindActions.rebind_clevis,
+        },
+    ),
+    (
+        "keyring",
+        {
+            "help": (
+                "Rebind the specified pool using the specified key in the "
+                "kernel keyring"
+            ),
+            "groups": [
+                (
+                    "Pool Identifier",
+                    {
+                        "description": "Choose one option to specify the pool to rebind",
+                        "mut_ex_args": [
+                            (True, UUID_OR_NAME),
+                        ],
+                    },
+                )
+            ],
+            "args": [
+                ("keydesc", {"help": "key description"}),
+                (
+                    "--token-slot",
+                    {
+                        "help": (
+                            "token slot; may be specified if there is more "
+                            "than one binding with the specified method; for "
+                            "V2 pools only"
+                        ),
+                        "type": ensure_nat,
+                    },
+                ),
+            ],
             "func": RebindActions.rebind_keyring,
         },
     ),
@@ -131,7 +277,7 @@ ENCRYPTION_SUBCMDS = [
         "bind",
         {
             "help": "Bind the given pool with an additional encryption facility",
-            "subcmds": BIND_SUBCMDS,
+            "subcmds": BIND_SUBCMDS_ENCRYPTION,
         },
     ),
     (
@@ -141,13 +287,24 @@ ENCRYPTION_SUBCMDS = [
                 "Rebind the given pool with a currently in use encryption "
                 "facility but new credentials"
             ),
-            "subcmds": REBIND_SUBCMDS,
+            "subcmds": REBIND_SUBCMDS_ENCRYPTION,
         },
     ),
     (
         "unbind",
         {
             "help": "Unbind the given pool, removing use of the specified encryption method",
+            "groups": [
+                (
+                    "Pool Identifier",
+                    {
+                        "description": "Choose one option to specify the pool to unbind",
+                        "mut_ex_args": [
+                            (True, UUID_OR_NAME),
+                        ],
+                    },
+                )
+            ],
             "args": [
                 (
                     "method",
@@ -157,7 +314,6 @@ ENCRYPTION_SUBCMDS = [
                         "type": EncryptionMethod,
                     },
                 ),
-                ("pool_name", {"help": "Pool name"}),
                 (
                     "--token-slot",
                     {
