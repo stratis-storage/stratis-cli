@@ -277,11 +277,7 @@ class PoolActions:
 
         proxy = get_object(TOP_OBJECT)
 
-        pool_id = (
-            PoolId(IdType.UUID, namespace.uuid)
-            if namespace.name is None
-            else PoolId(IdType.NAME, namespace.name)
-        )
+        pool_id = namespace.ident
 
         if namespace.token_slot is None:
             if namespace.unlock_method is None:

@@ -91,6 +91,16 @@ class PoolId(Id):
     Pool id.
     """
 
+    def dbus_arg(self):
+        """
+        Returns a dict for D-Bus argument.
+        """
+        return (
+            {"id": self.id_value.hex, "id_type": "uuid"}
+            if self.id_type is IdType.UUID
+            else {"id": self.id_value, "id_type": "name"}
+        )
+
     def __str__(self):
         return f"pool with {self.id_type} {self.id_value}"
 

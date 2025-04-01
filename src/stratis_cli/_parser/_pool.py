@@ -40,6 +40,7 @@ from ._shared import (
     TRUST_URL_OR_THUMBPRINT,
     UUID_OR_NAME,
     DefaultAction,
+    IdOptions,
     MoveNotice,
     RejectAction,
     ensure_nat,
@@ -314,6 +315,17 @@ POOL_SUBCMDS = [
         "start",
         {
             "help": "Start a pool.",
+            "args": [
+                (
+                    "--post-parser",
+                    {
+                        "action": RejectAction,
+                        "default": IdOptions,
+                        "help": SUPPRESS,
+                        "nargs": "?",
+                    },
+                ),
+            ],
             "groups": [
                 (
                     "Pool Identifier",
