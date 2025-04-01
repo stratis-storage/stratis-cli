@@ -19,8 +19,9 @@ Definition of filesystem actions to display in the CLI.
 from argparse import SUPPRESS
 
 from .._actions import LogicalActions
+from .._constants import FilesystemId
 from ._debug import FILESYSTEM_DEBUG_SUBCMDS
-from ._shared import UUID_OR_NAME, RejectAction, parse_range
+from ._shared import UUID_OR_NAME, IdOptions, RejectAction, parse_range
 
 
 def parse_range_or_current(values):
@@ -39,20 +40,18 @@ class FilesystemListOptions:  # pylint: disable=too-few-public-methods
     Verifies filesystem list options.
     """
 
-    def __init__(self, _namespace):
-        pass
+    def __init__(self, namespace):
+        self.id_options = IdOptions(namespace, FilesystemId.__init__)
 
     def verify(self, namespace, parser):
         """
         Do supplementary parsing of conditional arguments.
         """
+        self.id_options.verify(namespace, parser)
 
-        if namespace.pool_name is None and (
-            namespace.uuid is not None or namespace.name is not None
-        ):
+        if namespace.pool_name is None and namespace.ident is not None:
             parser.error(
-                "If filesystem UUID or name is specified then pool "
-                "name must also be specified."
+                "If filesystem is specified then pool name must also be specified."
             )
 
 

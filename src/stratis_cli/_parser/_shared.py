@@ -23,6 +23,8 @@ from uuid import UUID
 # isort: THIRDPARTY
 from justbytes import B, GiB, KiB, MiB, PiB, Range, TiB
 
+from .._constants import IdType
+
 _RANGE_RE = re.compile(r"^(?P<magnitude>[0-9]+)(?P<units>([KMGTP]i)?B)$")
 
 _SIZE_SPECIFICATION = (
@@ -194,3 +196,27 @@ TRUST_URL_OR_THUMBPRINT = [
         },
     ),
 ]
+
+
+class IdOptions:  # pylint: disable=too-few-public-methods
+    """
+    Figures out ID type for UUID/NAME options.
+    """
+
+    def __init__(self, namespace, cstr):
+        namespace.ident = (
+            cstr(IdType.UUID, namespace.uuid)
+            if namespace.uuid is not None
+            else (
+                cstr(IdType.NAME, namespace.name)
+                if namespace.name is not None
+                else None
+            )
+        )
+        del namespace.uuid
+        del namespace.name
+
+    def verify(self, namespace, parser):
+        """
+        Do nothing.
+        """
