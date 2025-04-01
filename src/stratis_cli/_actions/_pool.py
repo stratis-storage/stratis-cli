@@ -248,18 +248,14 @@ class PoolActions:
 
         proxy = get_object(TOP_OBJECT)
 
-        (pool_id, id_type) = (
-            (namespace.uuid.hex, "uuid")
+        pool_id = (
+            PoolId(IdType.UUID, namespace.uuid)
             if namespace.name is None
-            else (namespace.name, "name")
+            else PoolId(IdType.NAME, namespace.name)
         )
 
         ((stopped, _), return_code, message) = Manager.Methods.StopPool(
-            proxy,
-            {
-                "id": pool_id,
-                "id_type": id_type,
-            },
+            proxy, pool_id.dbus_args()
         )
 
         if return_code != StratisdErrors.OK:  # pragma: no cover
