@@ -42,11 +42,9 @@ def _get_pool_id(namespace):
     """
     name = getattr(namespace, "pool_name", None)
     if name is None:
-        return (
-            PoolId(IdType.UUID, namespace.uuid)
-            if namespace.name is None
-            else PoolId(IdType.NAME, namespace.name)
-        )
+        result = PoolId.from_parser_namespace(namespace)
+        assert result is not None
+        return result
 
     return PoolId(IdType.NAME, name)
 

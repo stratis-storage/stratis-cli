@@ -87,6 +87,14 @@ class Id(ABC):
         The usual __str__ method
         """
 
+    @staticmethod
+    @abstractmethod
+    def from_parser_namespace(namespace, *, required=True):
+        """
+        Make an Id from a parser namespace.
+        :param bool required: True if --uuid/--name pair required by parser
+        """
+
 
 class PoolId(Id):
     """
@@ -95,6 +103,20 @@ class PoolId(Id):
 
     def __str__(self):
         return f"pool with {self.id_type} {self.id_value}"
+
+    @staticmethod
+    def from_parser_namespace(  # pyright: ignore [reportIncompatibleMethodOverride]
+        namespace, *, required=True
+    ):
+        assert hasattr(namespace, "name") and hasattr(namespace, "uuid")
+        if namespace.uuid is not None:
+            return PoolId(IdType.UUID, namespace.uuid)
+        if namespace.name is not None:
+            return PoolId(IdType.NAME, namespace.name)
+
+        assert not required
+
+        return None
 
     def stopped_pools_func(self):
         """
@@ -118,6 +140,20 @@ class FilesystemId(Id):
 
     def __str__(self):  # pragma: no cover
         return f"filesystem with {self.id_type} {self.id_value}"
+
+    @staticmethod
+    def from_parser_namespace(  # pyright: ignore [reportIncompatibleMethodOverride]
+        namespace, *, required=True
+    ):
+        assert hasattr(namespace, "name") and hasattr(namespace, "uuid")
+        if namespace.uuid is not None:
+            return FilesystemId(IdType.UUID, namespace.uuid)
+        if namespace.name is not None:
+            return FilesystemId(IdType.NAME, namespace.name)
+
+        assert not required
+
+        return None
 
 
 class EncryptionMethod(Enum):

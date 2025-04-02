@@ -19,7 +19,7 @@ Miscellaneous debugging actions.
 import json
 import os
 
-from .._constants import FilesystemId, IdType, PoolId
+from .._constants import FilesystemId, PoolId
 from .._errors import StratisCliEngineError, StratisCliSynthUeventError
 from .._stratisd_constants import StratisdErrors
 from ._connection import get_object
@@ -83,11 +83,8 @@ class PoolDebugActions:  # pylint: disable=too-few-public-methods
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        pool_id = (
-            PoolId(IdType.UUID, namespace.uuid)
-            if namespace.name is None
-            else PoolId(IdType.NAME, namespace.name)
-        )
+        pool_id = PoolId.from_parser_namespace(namespace)
+        assert pool_id is not None
         (pool_object_path, _) = next(
             pools(props=pool_id.managed_objects_key())
             .require_unique_match(True)
@@ -106,11 +103,8 @@ class PoolDebugActions:  # pylint: disable=too-few-public-methods
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
-        pool_id = (
-            PoolId(IdType.UUID, namespace.uuid)
-            if namespace.name is None
-            else PoolId(IdType.NAME, namespace.name)
-        )
+        pool_id = PoolId.from_parser_namespace(namespace)
+        assert pool_id is not None
         (pool_object_path, _) = next(
             pools(props=pool_id.managed_objects_key())
             .require_unique_match(True)
@@ -148,11 +142,8 @@ class FilesystemDebugActions:  # pylint: disable=too-few-public-methods
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        fs_id = (
-            FilesystemId(IdType.UUID, namespace.uuid)
-            if namespace.name is None
-            else FilesystemId(IdType.NAME, namespace.name)
-        )
+        fs_id = FilesystemId.from_parser_namespace(namespace)
+        assert fs_id is not None
         (fs_object_path, _) = next(
             filesystems(props=fs_id.managed_objects_key())
             .require_unique_match(True)
