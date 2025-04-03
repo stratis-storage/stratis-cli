@@ -25,7 +25,6 @@ from justbytes import MiB, Range
 
 from .._actions import BindActions, PoolActions
 from .._constants import (
-    Clevis,
     EncryptionMethod,
     IntegrityOption,
     IntegrityTagSpec,
@@ -36,6 +35,7 @@ from .._error_codes import PoolErrorCode
 from ._debug import POOL_DEBUG_SUBCMDS
 from ._encryption import BIND_SUBCMDS, ENCRYPTION_SUBCMDS, REBIND_SUBCMDS
 from ._shared import (
+    CLEVIS_AND_KERNEL,
     KEYFILE_PATH_OR_STDIN,
     TRUST_URL_OR_THUMBPRINT,
     UUID_OR_NAME,
@@ -114,34 +114,7 @@ POOL_SUBCMDS = [
                     "Encryption",
                     {
                         "description": "Arguments controlling creation with encryption",
-                        "args": [
-                            (
-                                "--key-desc",
-                                {
-                                    "help": (
-                                        "Key description of key in kernel keyring to use "
-                                        "for encryption"
-                                    ),
-                                },
-                            ),
-                            (
-                                "--clevis",
-                                {
-                                    "type": Clevis,
-                                    "help": "Specification for binding with Clevis.",
-                                    "choices": list(Clevis),
-                                },
-                            ),
-                            (
-                                "--tang-url",
-                                {
-                                    "help": (
-                                        "URL of Clevis tang server "
-                                        "(--clevis=[tang|nbde] must be set)"
-                                    ),
-                                },
-                            ),
-                        ],
+                        "args": CLEVIS_AND_KERNEL,
                     },
                 ),
                 (
