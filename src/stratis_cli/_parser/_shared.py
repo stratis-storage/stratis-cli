@@ -23,6 +23,8 @@ from uuid import UUID
 # isort: THIRDPARTY
 from justbytes import B, GiB, KiB, MiB, PiB, Range, TiB
 
+from .._constants import Clevis
+
 _RANGE_RE = re.compile(r"^(?P<magnitude>[0-9]+)(?P<units>([KMGTP]i)?B)$")
 
 _SIZE_SPECIFICATION = (
@@ -191,6 +193,29 @@ TRUST_URL_OR_THUMBPRINT = [
         "--thumbprint",
         {
             "help": "Thumbprint of tang server at specified URL",
+        },
+    ),
+]
+
+CLEVIS_AND_KERNEL = [
+    (
+        "--key-desc",
+        {
+            "help": ("Key description of key in kernel keyring"),
+        },
+    ),
+    (
+        "--clevis",
+        {
+            "type": Clevis,
+            "help": "Specification for binding with Clevis.",
+            "choices": list(Clevis),
+        },
+    ),
+    (
+        "--tang-url",
+        {
+            "help": "URL of Clevis tang server (--clevis=[tang|nbde] must be set)",
         },
     ),
 ]
