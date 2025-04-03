@@ -25,7 +25,7 @@ from uuid import UUID
 # isort: THIRDPARTY
 from justbytes import Range
 
-from .._constants import Id, IdType, IntegrityOption, IntegrityTagSpec, UnlockMethod
+from .._constants import IntegrityOption, IntegrityTagSpec, PoolId, UnlockMethod
 from .._error_codes import PoolErrorCode
 from .._errors import (
     StratisCliEngineError,
@@ -47,7 +47,6 @@ from ._formatting import get_property, get_uuid_formatter
 from ._list_pool import list_pools
 from ._utils import (
     ClevisInfo,
-    PoolSelector,
     StoppedPool,
     fetch_stopped_pools_property,
     get_passphrase_fd,
@@ -249,18 +248,11 @@ class PoolActions:
 
         proxy = get_object(TOP_OBJECT)
 
-        (pool_id, id_type) = (
-            (namespace.uuid.hex, "uuid")
-            if namespace.name is None
-            else (namespace.name, "name")
-        )
+        pool_id = PoolId.from_parser_namespace(namespace)
+        assert pool_id is not None
 
         ((stopped, _), return_code, message) = Manager.Methods.StopPool(
-            proxy,
-            {
-                "id": pool_id,
-                "id_type": id_type,
-            },
+            proxy, pool_id.dbus_args()
         )
 
         if return_code != StratisdErrors.OK:  # pragma: no cover
@@ -270,7 +262,7 @@ class PoolActions:
             raise StratisCliNoChangeError("stop", pool_id)
 
     @staticmethod
-    def start_pool(namespace):  # pylint: disable=too-many-locals
+    def start_pool(namespace):
         """
         Start a pool.
 
@@ -282,11 +274,8 @@ class PoolActions:
 
         proxy = get_object(TOP_OBJECT)
 
-        (pool_id, id_type) = (
-            (namespace.uuid.hex, "uuid")
-            if namespace.name is None
-            else (namespace.name, "name")
-        )
+        pool_id = PoolId.from_parser_namespace(namespace)
+        assert pool_id is not None
 
         if namespace.token_slot is None:
             if namespace.unlock_method is None:
@@ -298,7 +287,7 @@ class PoolActions:
                 unlock_method = (True, (False, 0))
             else:
                 stopped_pools = fetch_stopped_pools_property(proxy)
-                selection_func = PoolSelector(Id(id_type, pool_id)).stopped_pools_func()
+                selection_func = pool_id.stopped_pools_func()
                 stopped_pool = next(
                     (
                         (uuid, StoppedPool(info))
@@ -309,9 +298,7 @@ class PoolActions:
                 )
 
                 if stopped_pool is None:
-                    raise StratisCliResourceNotFoundError(
-                        "start", f"pool with {id_type}: {pool_id}"
-                    )
+                    raise StratisCliResourceNotFoundError("start", pool_id)
 
                 (_, stopped_pool) = stopped_pool
 
@@ -342,9 +329,8 @@ class PoolActions:
 
         ((started, _), return_code, message) = Manager.Methods.StartPool(
             proxy,
-            {
-                "id": pool_id,
-                "id_type": id_type,
+            pool_id.dbus_args()
+            | {
                 "unlock_method": unlock_method,
                 "key_fd": key_fd_arg,
             },
@@ -421,21 +407,19 @@ class PoolActions:
         List Stratis pools.
         """
         # This method may be invoked as a result of the command line argument
-        # "pool", without any options, in which case these attributes have not
-        # been set.
-        (stopped, pool_uuid, pool_name) = (
-            getattr(namespace, "stopped", False),
-            getattr(namespace, "uuid", None),
-            getattr(namespace, "name", None),
+        # "pool", without any options, in which case these namespace attributes
+        # do not exist. In addition, even if invoked via the pool list
+        # subcommand, the --uuid/--name option to display the detailed pool
+        # may not have been set, since it is optional.
+        stopped = getattr(namespace, "stopped", False)
+        assert hasattr(namespace, "uuid") == hasattr(namespace, "name")
+        selection = (
+            PoolId.from_parser_namespace(namespace, required=False)
+            if hasattr(namespace, "uuid")
+            else None
         )
 
         uuid_formatter = get_uuid_formatter(namespace.unhyphenated_uuids)
-
-        selection = (
-            (None if pool_name is None else PoolSelector(Id(IdType.NAME, pool_name)))
-            if pool_uuid is None
-            else PoolSelector(Id(IdType.UUID, pool_uuid))
-        )
 
         return list_pools(uuid_formatter, stopped=stopped, selection=selection)
 

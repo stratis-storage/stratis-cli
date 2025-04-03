@@ -18,7 +18,7 @@ Miscellaneous pool-binding actions.
 # isort: STDLIB
 import json
 
-from .._constants import EncryptionMethod, Id, IdType
+from .._constants import EncryptionMethod, IdType, PoolId
 from .._errors import StratisCliEngineError, StratisCliNoChangeError
 from .._stratisd_constants import (
     CLEVIS_KEY_TANG_TRUST_URL,
@@ -42,13 +42,11 @@ def _get_pool_id(namespace):
     """
     name = getattr(namespace, "pool_name", None)
     if name is None:
-        return (
-            Id(IdType.UUID, namespace.uuid)
-            if namespace.name is None
-            else Id(IdType.NAME, namespace.name)
-        )
+        result = PoolId.from_parser_namespace(namespace)
+        assert result is not None
+        return result
 
-    return Id(IdType.NAME, name)
+    return PoolId(IdType.NAME, name)
 
 
 class BindActions:

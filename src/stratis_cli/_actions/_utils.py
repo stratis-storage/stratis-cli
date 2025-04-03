@@ -221,45 +221,6 @@ class StoppedPool:  # pylint: disable=too-few-public-methods
         )
 
 
-class PoolSelector:
-    """
-    Methods to help locate a pool by one of its identifiers.
-    """
-
-    def __init__(self, pool_id):
-        """
-        Initializer.
-
-        :param Id pool_id: the id
-        """
-        self.pool_id = pool_id
-
-    def managed_objects_key(self):
-        """
-        Get the key for searching GetManagedObjects result.
-        :rtype: dict of str * object
-        :returns: a dict containing a correct configuration for pools() method
-        """
-        return self.pool_id.managed_objects_key()
-
-    def stopped_pools_func(self):
-        """
-        Get a function appropriate for searching StoppedPools D-Bus property.
-        :returns: a function for selecting from StoppedPools items
-        :rtype: (str * (dict of (str * object))) -> bool
-        """
-        selection_value = self.pool_id.dbus_value()
-
-        return (
-            (lambda uuid, info: uuid == selection_value)
-            if self.pool_id.is_uuid()
-            else (lambda uuid, info: info.get("name") == selection_value)
-        )
-
-    def __str__(self):
-        return f"pool with {self.pool_id}"
-
-
 def get_pass(prompt):
     """
     Prompt for a passphrase on stdin.

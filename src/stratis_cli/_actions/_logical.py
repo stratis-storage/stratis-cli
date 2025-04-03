@@ -18,7 +18,7 @@ Miscellaneous logical actions.
 # isort: THIRDPARTY
 from justbytes import Range
 
-from .._constants import Id, IdType
+from .._constants import FilesystemId
 from .._errors import (
     StratisCliEngineError,
     StratisCliIncoherenceError,
@@ -118,24 +118,23 @@ class LogicalActions:
         List the volumes in a pool.
         """
         # This method is invoked as the default for "stratis filesystem";
-        # these namespace fields may not have been set.
-        (pool_name, fs_uuid, fs_name) = (
-            getattr(namespace, "pool_name", None),
-            getattr(namespace, "uuid", None),
-            getattr(namespace, "name", None),
-        )
-
-        assert (fs_name is None and fs_uuid is None) or pool_name is not None
-
-        uuid_formatter = get_uuid_formatter(namespace.unhyphenated_uuids)
+        # these namespace fields may not exist. In addition, even if invoked
+        # via the filesystem list subcommand, the --uuid/--name option
+        # to display the detailed filesystem list may not have been set, since
+        # it is optional.
+        assert hasattr(namespace, "uuid") == hasattr(namespace, "name")
+        assert hasattr(namespace, "pool_name") or not hasattr(namespace, "uuid")
 
         fs_id = (
-            (None if fs_name is None else Id(IdType.NAME, fs_name))
-            if fs_uuid is None
-            else Id(IdType.UUID, fs_uuid)
+            FilesystemId.from_parser_namespace(namespace, required=False)
+            if hasattr(namespace, "uuid")
+            else None
         )
 
-        return list_filesystems(uuid_formatter, pool_name=pool_name, fs_id=fs_id)
+        uuid_formatter = get_uuid_formatter(namespace.unhyphenated_uuids)
+        return list_filesystems(
+            uuid_formatter, pool_name=getattr(namespace, "pool_name", None), fs_id=fs_id
+        )
 
     @staticmethod
     def destroy_volumes(namespace):

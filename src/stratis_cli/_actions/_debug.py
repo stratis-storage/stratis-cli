@@ -19,6 +19,7 @@ Miscellaneous debugging actions.
 import json
 import os
 
+from .._constants import FilesystemId, PoolId
 from .._errors import StratisCliEngineError, StratisCliSynthUeventError
 from .._stratisd_constants import StratisdErrors
 from ._connection import get_object
@@ -82,13 +83,12 @@ class PoolDebugActions:  # pylint: disable=too-few-public-methods
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        props = (
-            {"Uuid": namespace.uuid.hex}
-            if namespace.name is None
-            else {"Name": namespace.name}
-        )
+        pool_id = PoolId.from_parser_namespace(namespace)
+        assert pool_id is not None
         (pool_object_path, _) = next(
-            pools(props=props).require_unique_match(True).search(managed_objects)
+            pools(props=pool_id.managed_objects_key())
+            .require_unique_match(True)
+            .search(managed_objects)
         )
         print(pool_object_path)
 
@@ -103,13 +103,12 @@ class PoolDebugActions:  # pylint: disable=too-few-public-methods
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
-        props = (
-            {"Uuid": namespace.uuid.hex}
-            if namespace.name is None
-            else {"Name": namespace.name}
-        )
+        pool_id = PoolId.from_parser_namespace(namespace)
+        assert pool_id is not None
         (pool_object_path, _) = next(
-            pools(props=props).require_unique_match(True).search(managed_objects)
+            pools(props=pool_id.managed_objects_key())
+            .require_unique_match(True)
+            .search(managed_objects)
         )
 
         (metadata, return_code, message) = Pool.Methods.Metadata(
@@ -143,13 +142,12 @@ class FilesystemDebugActions:  # pylint: disable=too-few-public-methods
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
-        props = (
-            {"Uuid": namespace.uuid.hex}
-            if namespace.name is None
-            else {"Name": namespace.name}
-        )
+        fs_id = FilesystemId.from_parser_namespace(namespace)
+        assert fs_id is not None
         (fs_object_path, _) = next(
-            filesystems(props=props).require_unique_match(True).search(managed_objects)
+            filesystems(props=fs_id.managed_objects_key())
+            .require_unique_match(True)
+            .search(managed_objects)
         )
         print(fs_object_path)
 

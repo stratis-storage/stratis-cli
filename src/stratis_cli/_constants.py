@@ -15,6 +15,7 @@
 General constants.
 """
 # isort: STDLIB
+from abc import ABC, abstractmethod
 from enum import Enum
 
 
@@ -38,11 +39,14 @@ class IdType(Enum):
     Whether the pool identifier is a UUID or a name.
     """
 
-    UUID = 0
-    NAME = 1
+    UUID = "UUID"
+    NAME = "name"
+
+    def __str__(self):
+        return self.value
 
 
-class Id:
+class Id(ABC):
     """
     Generic management of ids when either a UUID or name can be used.
     """
@@ -61,23 +65,95 @@ class Id:
         Precondition: the D-Bus property that identifies the Name or the
         Uuid will always be the same.
         """
-        return {"Uuid" if self.id_type is IdType.UUID else "Name": self.dbus_value()}
+        return (
+            {"Uuid": self.id_value.hex}
+            if self.id_type is IdType.UUID
+            else {"Name": self.id_value}
+        )
 
-    def is_uuid(self):
+    def dbus_args(self):
         """
-        True if the id is a UUID, otherwise false.
+        Specify an id, id_type D-Bus argument.
         """
-        return self.id_type == IdType.UUID
+        return (
+            {"id": self.id_value, "id_type": "name"}
+            if self.id_type is IdType.NAME
+            else {"id": self.id_value.hex, "id_type": "uuid"}
+        )
 
-    def dbus_value(self):
+    @abstractmethod
+    def __str__(self) -> str:
         """
-        Returns a string value for matching D-Bus things.
+        The usual __str__ method
         """
-        return self.id_value.hex if self.id_type is IdType.UUID else self.id_value
+
+    @staticmethod
+    @abstractmethod
+    def from_parser_namespace(namespace, *, required=True):
+        """
+        Make an Id from a parser namespace.
+        :param bool required: True if --uuid/--name pair required by parser
+        """
+
+
+class PoolId(Id):
+    """
+    Pool id.
+    """
 
     def __str__(self):
-        pool_id_type_str = "UUID" if self.id_type is IdType.UUID else "name"
-        return f"{pool_id_type_str} {self.id_value}"
+        return f"pool with {self.id_type} {self.id_value}"
+
+    @staticmethod
+    def from_parser_namespace(  # pyright: ignore [reportIncompatibleMethodOverride]
+        namespace, *, required=True
+    ):
+        assert hasattr(namespace, "name") and hasattr(namespace, "uuid")
+        if namespace.uuid is not None:
+            return PoolId(IdType.UUID, namespace.uuid)
+        if namespace.name is not None:
+            return PoolId(IdType.NAME, namespace.name)
+
+        assert not required
+
+        return None
+
+    def stopped_pools_func(self):
+        """
+        Function for selecting a pool from stopped pools.
+        """
+        selection_value = (
+            self.id_value.hex if self.id_type is IdType.UUID else self.id_value
+        )
+
+        return (
+            (lambda uuid, info: uuid == selection_value)
+            if self.id_type is IdType.UUID
+            else (lambda uuid, info: info.get("name") == selection_value)
+        )
+
+
+class FilesystemId(Id):
+    """
+    Filesystem id.
+    """
+
+    def __str__(self):  # pragma: no cover
+        return f"filesystem with {self.id_type} {self.id_value}"
+
+    @staticmethod
+    def from_parser_namespace(  # pyright: ignore [reportIncompatibleMethodOverride]
+        namespace, *, required=True
+    ):
+        assert hasattr(namespace, "name") and hasattr(namespace, "uuid")
+        if namespace.uuid is not None:
+            return FilesystemId(IdType.UUID, namespace.uuid)
+        if namespace.name is not None:
+            return FilesystemId(IdType.NAME, namespace.name)
+
+        assert not required
+
+        return None
 
 
 class EncryptionMethod(Enum):
