@@ -5,6 +5,10 @@ Required stratisd version: 3.8.0
 Recommended development environment: Fedora 40
 Lowest supported Python interpreter: 3.9.16
 
+- Extend Id type and remove PoolSelector class;
+  also fix a bug in "pool start":
+  https://github.com/stratis-storage/stratis-cli/pull/1145
+
 - Improve help text via specification re-use and groups for related options;
   have all encryption subcommands use --uuid/--name options:
   https://github.com/stratis-storage/stratis-cli/pull/1143
