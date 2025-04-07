@@ -152,6 +152,7 @@ jobs:
         run: >
           ${{ matrix.rust_log }}
           STRATISD=/usr/libexec/stratisd
+          STRATIS_STRICT_POOL_FEATURES=1
           PYTHONPATH=./src
           ${{ matrix.task }}
         working-directory: stratis-cli
@@ -220,6 +221,7 @@ jobs:
         run: >
           ${{ matrix.rust_log }}
           STRATISD=/usr/libexec/stratisd
+          STRATIS_STRICT_POOL_FEATURES=1
           PYTHONPATH=./src
           ${{ matrix.task }}
         working-directory: stratis-cli

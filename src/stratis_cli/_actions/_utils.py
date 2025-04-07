@@ -32,6 +32,8 @@ from .._errors import (
 )
 from .._stratisd_constants import ClevisInfo, MetadataVersion
 
+_STRICT_POOL_FEATURES = bool(int(os.environ.get("STRATIS_STRICT_POOL_FEATURES", False)))
+
 
 class EncryptionInfo:  # pylint: disable=too-few-public-methods
     """
@@ -115,8 +117,18 @@ class PoolFeature(Enum):
     KEY_DESCRIPTION_PRESENT = "key_description_present"
     CLEVIS_PRESENT = "clevis_present"
 
+    UNRECOGNIZED = None
+
     def __str__(self):
+        if self is PoolFeature.UNRECOGNIZED:
+            return "<UNRECOGNIZED>"
         return self.value
+
+    @classmethod
+    def _missing_(cls, value):
+        if _STRICT_POOL_FEATURES:  # pragma: no cover
+            return None
+        return PoolFeature.UNRECOGNIZED  # pragma: no cover
 
 
 class StoppedPool:  # pylint: disable=too-few-public-methods
