@@ -40,6 +40,8 @@ from .._stratisd_constants import (
     MetadataVersion,
 )
 
+_STRICT_POOL_FEATURES = bool(int(os.environ.get("STRATIS_STRICT_POOL_FEATURES", False)))
+
 
 class ClevisInfo:
     """
@@ -173,8 +175,18 @@ class PoolFeature(Enum):
     INTEGRITY = "integrity"
     RAID = "raid"
 
+    UNRECOGNIZED = None
+
     def __str__(self):  # pragma: no cover
+        if self is PoolFeature.UNRECOGNIZED:
+            return "<UNRECOGNIZED>"
         return self.value
+
+    @classmethod
+    def _missing_(cls, value):  # pragma: no cover
+        if _STRICT_POOL_FEATURES:
+            return None
+        return PoolFeature.UNRECOGNIZED
 
 
 class StoppedPool:  # pylint: disable=too-few-public-methods
