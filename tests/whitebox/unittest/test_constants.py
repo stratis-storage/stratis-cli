@@ -19,6 +19,8 @@ Test 'constants'.
 import unittest
 
 # isort: LOCAL
+from stratis_cli._actions._utils import PoolFeature
+from stratis_cli._constants import FilesystemId, IdType
 from stratis_cli._error_codes import (
     PoolAllocSpaceErrorCode,
     PoolErrorCode,
@@ -68,3 +70,29 @@ class PoolErrorCodeTestCase(unittest.TestCase):
         """
         with self.assertRaises(StopIteration):
             PoolErrorCode.error_from_str("bogus")
+
+
+class FilesystemIdTestCase(unittest.TestCase):
+    """
+    Unit tests for FilesystemId.
+    """
+
+    def test_str_method(self):
+        """
+        Just exercise the __str__ method.
+        """
+        self.assertTrue("filesystem" in str(FilesystemId(IdType.NAME, "name")))
+
+
+class PoolFeatureTestCase(unittest.TestCase):
+    """
+    Unit test for PoolFeature
+    """
+
+    def test_str_method(self):
+        """
+        Just exercise the __str__ method
+        """
+
+        for feature in PoolFeature:
+            self.assertEqual(str(feature), feature.value)

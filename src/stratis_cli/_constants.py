@@ -138,7 +138,7 @@ class FilesystemId(Id):
     Filesystem id.
     """
 
-    def __str__(self):  # pragma: no cover
+    def __str__(self):
         return f"filesystem with {self.id_type} {self.id_value}"
 
     @staticmethod
