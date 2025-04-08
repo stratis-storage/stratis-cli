@@ -173,7 +173,7 @@ class PoolFeature(Enum):
     INTEGRITY = "integrity"
     RAID = "raid"
 
-    def __str__(self):  # pragma: no cover
+    def __str__(self):
         return self.value
 
 
