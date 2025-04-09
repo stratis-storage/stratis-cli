@@ -172,6 +172,7 @@ class PoolFeature(Enum):
     ENCRYPTION = "encryption"
     INTEGRITY = "integrity"
     RAID = "raid"
+    KEY_DESCRIPTION_PRESENT = "key_description_present"
 
     def __str__(self):
         return self.value
