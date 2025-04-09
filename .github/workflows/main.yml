@@ -135,7 +135,11 @@ jobs:
         with:
           repository: stratis-storage/stratisd
           path: stratisd
-          ref: master
+      - name: Switch to PR branch
+        run: |
+          git fetch origin +refs/pull/3811/head:refs/remotes/origin/pull/3811/head
+          git checkout origin/pull/3811/head
+        working-directory: stratisd
       - name: Print head commit
         run: git log --oneline -1
         working-directory: stratisd
@@ -203,7 +207,11 @@ jobs:
         with:
           repository: stratis-storage/stratisd
           path: stratisd
-          ref: master
+      - name: Switch to PR branch
+        run: |
+          git fetch origin +refs/pull/3811/head:refs/remotes/origin/pull/3811/head
+          git checkout origin/pull/3811/head
+        working-directory: stratisd
       - name: Print head commit
         run: git log --oneline -1
         working-directory: stratisd
