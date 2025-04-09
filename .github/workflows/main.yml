@@ -104,6 +104,8 @@ jobs:
       options: --privileged --userns=host --ipc=host -v /run/dbus/system_bus_socket:/run/dbus/system_bus_socket:ro -v /usr/share/dbus-1:/usr/share/dbus-1
     steps:
       - uses: actions/checkout@v4
+        with:
+          path: stratis-cli
       - name: Install dependencies
         run: >
           dnf install -y
@@ -129,25 +131,30 @@ jobs:
           components: cargo
           toolchain: 1.74.0  # LOWEST SUPPORTED RUST TOOLCHAIN
       - name: Check out stratisd
-        run: git clone https://github.com/stratis-storage/stratisd.git
+        uses: actions/checkout@v4
+        with:
+          repository: stratis-storage/stratisd
+          path: stratisd
+          ref: master
       - name: Print head commit
         run: git log --oneline -1
-        working-directory: ./stratisd
+        working-directory: stratisd
       - name: Build stratisd
         run: PROFILEDIR=debug make build-all
-        working-directory: ./stratisd
+        working-directory: stratisd
       - name: Install stratisd
         run: PROFILEDIR=debug make install
-        working-directory: ./stratisd
+        working-directory: stratisd
       - name: Workaround for D-Bus inotify
         run: cp stratisd.conf /usr/share/dbus-1/system.d
-        working-directory: ./stratisd
+        working-directory: stratisd
       - name: Run test
         run: >
           ${{ matrix.rust_log }}
           STRATISD=/usr/libexec/stratisd
           PYTHONPATH=./src
           ${{ matrix.task }}
+        working-directory: stratis-cli
 
   coverage-runs:
     needs: test-runs
@@ -164,6 +171,8 @@ jobs:
       options: --privileged --userns=host --ipc=host -v /run/dbus/system_bus_socket:/run/dbus/system_bus_socket:ro -v /usr/share/dbus-1:/usr/share/dbus-1
     steps:
       - uses: actions/checkout@v4
+        with:
+          path: stratis-cli
       - name: Install dependencies
         run: >
           dnf install -y
@@ -190,25 +199,30 @@ jobs:
           components: cargo
           toolchain: 1.74.0  # LOWEST SUPPORTED RUST TOOLCHAIN
       - name: Check out stratisd
-        run: git clone https://github.com/stratis-storage/stratisd.git
+        uses: actions/checkout@v4
+        with:
+          repository: stratis-storage/stratisd
+          path: stratisd
+          ref: master
       - name: Print head commit
         run: git log --oneline -1
-        working-directory: ./stratisd
+        working-directory: stratisd
       - name: Build stratisd
         run: PROFILEDIR=debug make build-all
-        working-directory: ./stratisd
+        working-directory: stratisd
       - name: Install stratisd
         run: PROFILEDIR=debug make install
-        working-directory: ./stratisd
+        working-directory: stratisd
       - name: Workaround for D-Bus inotify
         run: cp stratisd.conf /usr/share/dbus-1/system.d
-        working-directory: ./stratisd
+        working-directory: stratisd
       - name: Run test
         run: >
           ${{ matrix.rust_log }}
           STRATISD=/usr/libexec/stratisd
           PYTHONPATH=./src
           ${{ matrix.task }}
+        working-directory: stratis-cli
 
   lowest-environment-checks:
     strategy:
