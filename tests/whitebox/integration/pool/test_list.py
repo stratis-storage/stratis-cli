@@ -201,7 +201,7 @@ class List3TestCase(SimTestCase):
 
 class List4TestCase(SimTestCase):
     """
-    Test listing pools that have been encrypted.
+    Test listing pools that have been encrypted with a key.
     """
 
     _MENU = ["--propagate", "pool", "list"]
@@ -232,6 +232,60 @@ class List4TestCase(SimTestCase):
             "--key-desc",
             self._KEY_DESC,
             self._POOLNAME,
+        ] + _DEVICE_STRATEGY()
+        RUNNER(command_line)
+
+    def test_list_stopped(self):
+        """
+        Test listing all with a stopped pool.
+        """
+        command_line = ["pool", "stop", f"--name={self._POOLNAME}"]
+        RUNNER(command_line)
+        TEST_RUNNER(self._MENU + ["--stopped"])
+
+    def test_list_stopped_detail(self):
+        """
+        Test detailed view on a stopped pool.
+        """
+        command_line = ["pool", "stop", f"--name={self._POOLNAME}"]
+        RUNNER(command_line)
+        TEST_RUNNER(self._MENU + ["--stopped", f"--name={self._POOLNAME}"])
+
+    def test_list_running(self):
+        """
+        Test list all running pools.
+        """
+        TEST_RUNNER(self._MENU)
+
+    def test_list_detail(self):
+        """
+        Test detail view on running pool.
+        """
+        TEST_RUNNER(self._MENU + [f"--name={self._POOLNAME}"])
+
+
+class List5TestCase(SimTestCase):
+    """
+    Test listing pools that have been encrypted with clevis.
+    """
+
+    _MENU = ["--propagate", "pool", "list"]
+    _POOLNAME = "deadpool"
+
+    def setUp(self):
+        """
+        Start the stratisd daemon with the simulator. Create a pool.
+        """
+        super().setUp()
+
+        command_line = [
+            "--propagate",
+            "pool",
+            "create",
+            self._POOLNAME,
+            "--clevis=tang",
+            "--trust-url",
+            "--tang-url=http",
         ] + _DEVICE_STRATEGY()
         RUNNER(command_line)
 
