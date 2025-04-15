@@ -100,131 +100,6 @@ class ParserTestCase(RunTestCase):  # pylint: disable=too-many-public-methods
         for prefix in [[], ["--propagate"]]:
             self.check_system_exit(prefix + command_line, _PARSE_ERROR)
 
-    def test_create_with_clevis_1(self):
-        """
-        Test parsing when creating a pool w/ clevis tang but no URL.
-        """
-        command_line = [
-            "pool",
-            "create",
-            "pn",
-            "/dev/n",
-            "--clevis=tang",
-        ]
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
-
-    def test_create_with_clevis_2(self):
-        """
-        Test parsing when creating a pool w/ clevis tang, a URL, but no
-        thumbprint or trust-url.
-        """
-        command_line = [
-            "pool",
-            "create",
-            "pn",
-            "/dev/n",
-            "--clevis=tang",
-            "--tang-url=url",
-        ]
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
-
-    def test_create_with_clevis_3(self):
-        """
-        Test parsing when creating a pool w/ clevis tang, a URL, but both
-        thumbprint and --trust-url set.
-        """
-        command_line = [
-            "pool",
-            "create",
-            "pn",
-            "/dev/n",
-            "--clevis=tang",
-            "--tang-url=url",
-            "--thumbprint=jkj",
-            "--trust-url",
-        ]
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
-
-    def test_create_with_url_no_modifier(self):
-        """
-        Parser should exit if created with --tang-url specified but not
-        modifiers as that will result in a pool without encryption being
-        created.
-        """
-        command_line = [
-            "pool",
-            "create",
-            "pn",
-            "/dev/n",
-            "--tang-url=url",
-        ]
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
-
-    def test_create_with_thumbprint_no_url(self):
-        """
-        Parser should exit if --thumbprint option is set and no URL specified.
-        """
-        command_line = [
-            "pool",
-            "create",
-            "pn",
-            "/dev/n",
-            "--thumbprint=xyz",
-        ]
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
-
-    def test_create_with_trust_no_url(self):
-        """
-        Parser should exit if --trust-url option is set and no URL specified.
-        """
-        command_line = [
-            "pool",
-            "create",
-            "pn",
-            "/dev/n",
-            "--trust-url",
-        ]
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
-
-    def test_create_with_url_no_clevis(self):
-        """
-        Parser should exit if created with --tang-url specified but not
-        --clevis=tang as that will result in a pool without encryption being
-        created.
-        """
-        command_line = [
-            "pool",
-            "create",
-            "pn",
-            "/dev/n",
-            "--tang-url=url",
-            "--trust-url",
-        ]
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
-
-    def test_create_with_post_parser_set(self):
-        """
-        Verify that setting the --post-parser option will always result in
-        failure on pool creation.
-        """
-        command_line = [
-            "pool",
-            "create",
-            "pn",
-            "/dev/n",
-            "--clevis=tpm2",
-            "--post-parser=yes",
-        ]
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
-
     def test_create_with_bad_tag_value(self):
         """
         Verify that an unrecognized tag value causes an error.
@@ -449,3 +324,134 @@ class TestAllHelp(RunTestCase):
         """
         with mock.patch("sys.stdout", new=StringIO()):
             self.check_system_exit(["--print-all-help"], 0)
+
+
+class TestCreateEncryptionOptions(RunTestCase):
+    """
+    Verify that invalid encryption create options are detected.
+    """
+
+    def test_create_with_clevis_1(self):
+        """
+        Test parsing when creating a pool w/ clevis tang but no URL.
+        """
+        command_line = [
+            "pool",
+            "create",
+            "pn",
+            "/dev/n",
+            "--clevis=tang",
+        ]
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
+    def test_create_with_clevis_2(self):
+        """
+        Test parsing when creating a pool w/ clevis tang, a URL, but no
+        thumbprint or trust-url.
+        """
+        command_line = [
+            "pool",
+            "create",
+            "pn",
+            "/dev/n",
+            "--clevis=tang",
+            "--tang-url=url",
+        ]
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
+    def test_create_with_clevis_3(self):
+        """
+        Test parsing when creating a pool w/ clevis tang, a URL, but both
+        thumbprint and --trust-url set.
+        """
+        command_line = [
+            "pool",
+            "create",
+            "pn",
+            "/dev/n",
+            "--clevis=tang",
+            "--tang-url=url",
+            "--thumbprint=jkj",
+            "--trust-url",
+        ]
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
+    def test_create_with_url_no_modifier(self):
+        """
+        Parser should exit if created with --tang-url specified but not
+        modifiers as that will result in a pool without encryption being
+        created.
+        """
+        command_line = [
+            "pool",
+            "create",
+            "pn",
+            "/dev/n",
+            "--tang-url=url",
+        ]
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
+    def test_create_with_thumbprint_no_url(self):
+        """
+        Parser should exit if --thumbprint option is set and no URL specified.
+        """
+        command_line = [
+            "pool",
+            "create",
+            "pn",
+            "/dev/n",
+            "--thumbprint=xyz",
+        ]
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
+    def test_create_with_trust_no_url(self):
+        """
+        Parser should exit if --trust-url option is set and no URL specified.
+        """
+        command_line = [
+            "pool",
+            "create",
+            "pn",
+            "/dev/n",
+            "--trust-url",
+        ]
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
+    def test_create_with_url_no_clevis(self):
+        """
+        Parser should exit if created with --tang-url specified but not
+        --clevis=tang as that will result in a pool without encryption being
+        created.
+        """
+        command_line = [
+            "pool",
+            "create",
+            "pn",
+            "/dev/n",
+            "--tang-url=url",
+            "--trust-url",
+        ]
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
+    def test_create_with_post_parser_set(self):
+        """
+        Verify that setting the --post-parser option will always result in
+        failure on pool creation.
+        """
+        command_line = [
+            "pool",
+            "create",
+            "pn",
+            "/dev/n",
+            "--clevis=tpm2",
+            "--post-parser=yes",
+        ]
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
