@@ -36,6 +36,10 @@ class ParserTestCase(RunTestCase):  # pylint: disable=too-many-public-methods
     during an action.
     """
 
+    def _do_test(self, command_line):
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
     def test_stratis_no_subcommand(self):
         """
         If missing subcommand, or missing "daemon" subcommand return exit code
@@ -43,8 +47,7 @@ class ParserTestCase(RunTestCase):  # pylint: disable=too-many-public-methods
         "filesystem" subcommand, since these default to "list" if no subcommand.
         """
         for command_line in [[], ["daemon"]]:
-            for prefix in [[], ["--propagate"]]:
-                self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+            self._do_test(command_line)
 
     def test_stratis_bad_subcommand(self):
         """
@@ -57,73 +60,56 @@ class ParserTestCase(RunTestCase):  # pylint: disable=too-many-public-methods
             ["blockdev", "notasub"],
             ["filesystem", "notasub"],
         ]:
-            for prefix in [[], ["--propagate"]]:
-                self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+            self._do_test(command_line)
 
     def test_nonexistent_report(self):
         """
         Test getting nonexistent report.
         """
-        command_line = ["report", "notreport"]
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+        self._do_test(["report", "notreport"])
 
     def test_negative_filesystem_limit(self):
         """
         Verify that a negative integer filesystem limit is rejected.
         """
-        command_line = ["pool", "set-fs-limit", "thispool", "-1"]
-        for prefix in [[], ["-propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+        self._do_test(["pool", "set-fs-limit", "thispool", "-1"])
 
     def test_non_integer_filesystem_limit(self):
         """
         Verify that a non_integer filesystem limit is rejected.
         """
-        command_line = ["pool", "set-fs-limit", "thispool", "1.2"]
-        for prefix in [[], ["-propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+        self._do_test(["pool", "set-fs-limit", "thispool", "1.2"])
 
     def test_invalid_overprovision_value(self):
         """
         Overprovision command only accepts yes or no.
         """
-        command_line = ["pool", "overprovision", "thispool", "1.2"]
-        for prefix in [[], ["-propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+        self._do_test(["pool", "overprovision", "thispool", "1.2"])
 
     def test_explain_non_existent_code(self):
         """
         Verify parser error on bogus pool code.
         """
-        command_line = ["pool", "explain", "bogus"]
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+        self._do_test(["pool", "explain", "bogus"])
 
     def test_stratis_list_filesystem_with_name_no_pool(self):
         """
         We want to get a parse error if filesystem UUID is specified but no
         name.
         """
-        command_line = ["fs", "list", "--name=bogus"]
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+        self._do_test(["fs", "list", "--name=bogus"])
 
     def test_stratis_list_filesystem_with_post_parser_1(self):
         """
         Verify that parser error is returned if unsettable option is assigned.
         """
-        command_line = ["fs", "list", "--post-parser=no"]
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+        self._do_test(["fs", "list", "--post-parser=no"])
 
     def test_stratis_list_filesystem_with_post_parser_2(self):
         """
         Verify that parser error is returned if unsettable option is set.
         """
-        command_line = ["fs", "list", "--post-parser"]
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+        self._do_test(["fs", "list", "--post-parser"])
 
 
 class TestFilesystemSizeParsing(RunTestCase):
