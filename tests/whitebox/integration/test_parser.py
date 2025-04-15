@@ -112,62 +112,53 @@ class ParserTestCase(RunTestCase):  # pylint: disable=too-many-public-methods
         self._do_test(["fs", "list", "--post-parser"])
 
 
-class TestFilesystemSizeParsing(RunTestCase):
+class TestFilesystemSizeParsing(ParserTestCase):
     """
     Test that parser errors are properly returned on badly formatted sizes.
     """
+
+    def _do_filesystem_create_test(self, size_args):
+        self._do_test(["filesystem", "create", "pn", "fn"] + size_args)
 
     def test_integer_magnitude(self):
         """
         Verify that a parse error occurs if the size magnitude is not an
         integer.
         """
-        command_line = ["filesystem", "create", "pn", "fn", '--size="32.2GiB"']
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+        self._do_filesystem_create_test(['--size="32.2GiB"'])
 
     def test_gibberish_magnitude(self):
         """
         Verify that a parse error occurs if the size magnitude is not a number.
         """
-        command_line = ["filesystem", "create", "pn", "fn", '--size="carbonGiB"']
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+        self._do_filesystem_create_test(['--size="carbonGiB"'])
 
     def test_extra_space(self):
         """
         Verify no spaces allowed between magnitude and units.
         """
-        command_line = ["filesystem", "create", "pn", "fn", '--size="312 GiB"']
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+        self._do_filesystem_create_test(['--size="312 GiB"'])
 
     def test_funny_units(self):
         """
         Verify no funny units allowed.
         """
-        command_line = ["filesystem", "create", "pn", "fn", '--size="312WiB"']
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+        self._do_filesystem_create_test(['--size="312WiB"'])
 
     def test_decimal_units(self):
         """
         Verify no decimal units allowed.
         """
-        command_line = ["filesystem", "create", "pn", "fn", '--size="312GB"']
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+        self._do_filesystem_create_test(['--size="312GB"'])
 
     def test_empty_units(self):
         """
         Verify units specification is mandatory.
         """
-        command_line = ["filesystem", "create", "pn", "fn", '--size="312"']
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+        self._do_filesystem_create_test(['--size="312"'])
 
 
-class TestFilesystemSizeLimitParsing(RunTestCase):
+class TestFilesystemSizeLimitParsing(ParserTestCase):
     """
     Test that parser errors are properly returned on selected badly formatted
     size limits.
@@ -178,18 +169,10 @@ class TestFilesystemSizeLimitParsing(RunTestCase):
         Verify that a parse error occurs if the size limit is a string that is
         not "current".
         """
-        command_line = [
-            "filesystem",
-            "set-size-limit",
-            "pn",
-            "fn",
-            "buckle",
-        ]
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+        self._do_test(["filesystem", "set-size-limit", "pn", "fn", "buckle"])
 
 
-class TestBadlyFormattedUuid(RunTestCase):
+class TestBadlyFormattedUuid(ParserTestCase):
     """
     Test that parser errors are properly returned on badly formatted UUIDs.
     """
@@ -198,41 +181,31 @@ class TestBadlyFormattedUuid(RunTestCase):
         """
         Test badly formatted pool UUID.
         """
-        command_line = ["pool", "debug", "get-object-path", "--uuid=not"]
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+        self._do_test(["pool", "debug", "get-object-path", "--uuid=not"])
 
     def test_bad_uuid_filesystem(self):
         """
         Test badly formatted filesystem UUID.
         """
-        command_line = ["filesystem", "debug", "get-object-path", "--uuid=not"]
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+        self._do_test(["filesystem", "debug", "get-object-path", "--uuid=not"])
 
     def test_bad_uuid_blockdev(self):
         """
         Test badly formatted blockdev UUID.
         """
-        command_line = ["blockdev", "debug", "get-object-path", "--uuid=not"]
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+        self._do_test(["blockdev", "debug", "get-object-path", "--uuid=not"])
 
     def test_bad_uuid_blockdev_2(self):
         """
         Test badly formed UUID for blockdev on extend-data.
         """
-        command_line = ["pool", "extend-data", "poolname", "--device-uuid=not"]
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+        self._do_test(["pool", "extend-data", "poolname", "--device-uuid=not"])
 
     def test_bad_uuid_metadata(self):
         """
         Test badly formed UUID for get-metadata.
         """
-        command_line = ["pool", "debug", "get-metadata", "--uuid=not"]
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+        self._do_test(["pool", "debug", "get-metadata", "--uuid=not"])
 
 
 class ParserSimTestCase(SimTestCase):
@@ -266,58 +239,38 @@ class TestAllHelp(RunTestCase):
             self.check_system_exit(["--print-all-help"], 0)
 
 
-class TestCreateEncryptionOptions(RunTestCase):
+class TestClevisOptions(ParserTestCase):
     """
-    Verify that invalid encryption create options are detected.
+    Verify that invalid clevis encryption create options are detected.
     """
+
+    def _do_clevis_test(self, clevis_args):
+        """
+        Apply clevis args to create command_line and verify parser error.
+        """
+        self._do_test(["pool", "create", "pn", "/dev/n"] + clevis_args)
 
     def test_create_with_clevis_1(self):
         """
         Test parsing when creating a pool w/ clevis tang but no URL.
         """
-        command_line = [
-            "pool",
-            "create",
-            "pn",
-            "/dev/n",
-            "--clevis=tang",
-        ]
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+        self._do_clevis_test(["--clevis=tang"])
 
     def test_create_with_clevis_2(self):
         """
         Test parsing when creating a pool w/ clevis tang, a URL, but no
         thumbprint or trust-url.
         """
-        command_line = [
-            "pool",
-            "create",
-            "pn",
-            "/dev/n",
-            "--clevis=tang",
-            "--tang-url=url",
-        ]
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+        self._do_clevis_test(["--clevis=tang", "--tang-url=url"])
 
     def test_create_with_clevis_3(self):
         """
         Test parsing when creating a pool w/ clevis tang, a URL, but both
         thumbprint and --trust-url set.
         """
-        command_line = [
-            "pool",
-            "create",
-            "pn",
-            "/dev/n",
-            "--clevis=tang",
-            "--tang-url=url",
-            "--thumbprint=jkj",
-            "--trust-url",
-        ]
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+        self._do_clevis_test(
+            ["--clevis=tang", "--tang-url=url", "--thumbprint=jkj", "--trust-url"]
+        )
 
     def test_create_with_url_no_modifier(self):
         """
@@ -325,43 +278,19 @@ class TestCreateEncryptionOptions(RunTestCase):
         modifiers as that will result in a pool without encryption being
         created.
         """
-        command_line = [
-            "pool",
-            "create",
-            "pn",
-            "/dev/n",
-            "--tang-url=url",
-        ]
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+        self._do_clevis_test(["--tang-url=url"])
 
     def test_create_with_thumbprint_no_url(self):
         """
         Parser should exit if --thumbprint option is set and no URL specified.
         """
-        command_line = [
-            "pool",
-            "create",
-            "pn",
-            "/dev/n",
-            "--thumbprint=xyz",
-        ]
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+        self._do_clevis_test(["--thumbprint=xyz"])
 
     def test_create_with_trust_no_url(self):
         """
         Parser should exit if --trust-url option is set and no URL specified.
         """
-        command_line = [
-            "pool",
-            "create",
-            "pn",
-            "/dev/n",
-            "--trust-url",
-        ]
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+        self._do_clevis_test(["--trust-url"])
 
     def test_create_with_url_no_clevis(self):
         """
@@ -369,81 +298,43 @@ class TestCreateEncryptionOptions(RunTestCase):
         --clevis=tang as that will result in a pool without encryption being
         created.
         """
-        command_line = [
-            "pool",
-            "create",
-            "pn",
-            "/dev/n",
-            "--tang-url=url",
-            "--trust-url",
-        ]
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+        self._do_clevis_test(["--tang-url=url", "--trust-url"])
 
     def test_create_with_post_parser_set(self):
         """
         Verify that setting the --post-parser option will always result in
         failure on pool creation.
         """
-        command_line = [
-            "pool",
-            "create",
-            "pn",
-            "/dev/n",
-            "--clevis=tpm2",
-            "--post-parser=yes",
-        ]
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+        self._do_clevis_test(["--clevis=tpm2", "--post-parser=yes"])
 
 
-class TestCreateIntegrityOptions(RunTestCase):
+class TestCreateIntegrityOptions(ParserTestCase):
     """
     Verify that invalid integrity create options are detected.
     """
+
+    def _do_integrity_test(self, integrity_args):
+        """
+        Apply integrity args to create command_line and verify parser error.
+        """
+        self._do_test(["pool", "create", "pn", "/dev/n"] + integrity_args)
 
     def test_create_with_bad_tag_value(self):
         """
         Verify that an unrecognized tag value causes an error.
         """
-        command_line = [
-            "pool",
-            "create",
-            "pn",
-            "/dev/n",
-            "--tag-spec=512",
-        ]
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+        self._do_integrity_test(["--tag-spec=512"])
 
     def test_create_with_integrity_no_journal_size(self):
         """
         Verify that creating with integrity = no plus good journal-size
         results in a parse error.
         """
-        command_line = [
-            "pool",
-            "create",
-            "pn",
-            "/dev/n",
-            "--integrity=no",
-            "--journal-size=128MiB",
-        ]
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+        self._do_integrity_test(["--integrity=no", "--journal-size=128MiB"])
 
     def test_create_with_integrity_no_tag_spec(self):
         """
         Verify that creating with integrity = no plus good tag-size
         results in a parse error.
         """
-        command_line = [
-            "pool",
-            "create",
-            "pn",
-            "/dev/n",
-            "--integrity=no",
-            "--tag-spec=32b",
-        ]
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+        self._do_integrity_test(["--integrity=no", "--tag-spec=32b"])
