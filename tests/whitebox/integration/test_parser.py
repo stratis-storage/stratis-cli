@@ -100,52 +100,6 @@ class ParserTestCase(RunTestCase):  # pylint: disable=too-many-public-methods
         for prefix in [[], ["--propagate"]]:
             self.check_system_exit(prefix + command_line, _PARSE_ERROR)
 
-    def test_create_with_bad_tag_value(self):
-        """
-        Verify that an unrecognized tag value causes an error.
-        """
-        command_line = [
-            "pool",
-            "create",
-            "pn",
-            "/dev/n",
-            "--tag-spec=512",
-        ]
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
-
-    def test_create_with_integrity_no_journal_size(self):
-        """
-        Verify that creating with integrity = no plus good journal-size
-        results in a parse error.
-        """
-        command_line = [
-            "pool",
-            "create",
-            "pn",
-            "/dev/n",
-            "--integrity=no",
-            "--journal-size=128MiB",
-        ]
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
-
-    def test_create_with_integrity_no_tag_spec(self):
-        """
-        Verify that creating with integrity = no plus good tag-size
-        results in a parse error.
-        """
-        command_line = [
-            "pool",
-            "create",
-            "pn",
-            "/dev/n",
-            "--integrity=no",
-            "--tag-spec=32b",
-        ]
-        for prefix in [[], ["--propagate"]]:
-            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
-
     def test_stratis_list_filesystem_with_name_no_pool(self):
         """
         We want to get a parse error if filesystem UUID is specified but no
@@ -452,6 +406,58 @@ class TestCreateEncryptionOptions(RunTestCase):
             "/dev/n",
             "--clevis=tpm2",
             "--post-parser=yes",
+        ]
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
+
+class TestCreateIntegrityOptions(RunTestCase):
+    """
+    Verify that invalid integrity create options are detected.
+    """
+
+    def test_create_with_bad_tag_value(self):
+        """
+        Verify that an unrecognized tag value causes an error.
+        """
+        command_line = [
+            "pool",
+            "create",
+            "pn",
+            "/dev/n",
+            "--tag-spec=512",
+        ]
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
+    def test_create_with_integrity_no_journal_size(self):
+        """
+        Verify that creating with integrity = no plus good journal-size
+        results in a parse error.
+        """
+        command_line = [
+            "pool",
+            "create",
+            "pn",
+            "/dev/n",
+            "--integrity=no",
+            "--journal-size=128MiB",
+        ]
+        for prefix in [[], ["--propagate"]]:
+            self.check_system_exit(prefix + command_line, _PARSE_ERROR)
+
+    def test_create_with_integrity_no_tag_spec(self):
+        """
+        Verify that creating with integrity = no plus good tag-size
+        results in a parse error.
+        """
+        command_line = [
+            "pool",
+            "create",
+            "pn",
+            "/dev/n",
+            "--integrity=no",
+            "--tag-spec=32b",
         ]
         for prefix in [[], ["--propagate"]]:
             self.check_system_exit(prefix + command_line, _PARSE_ERROR)
