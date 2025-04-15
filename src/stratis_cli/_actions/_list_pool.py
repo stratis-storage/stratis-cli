@@ -330,6 +330,11 @@ class DefaultDetail(Default):
                     key=lambda x: x.token_slot,
                 )
 
+                free_valid, free = mopool.FreeTokenSlots()
+                print(
+                    f'    Free Token Slots Remaining: {int(free) if free_valid else "<UNKNOWN>"}'
+                )
+
                 for info in encryption_infos:
                     for line in str(info).split(os.linesep):
                         print(f"    {line}")
@@ -582,19 +587,10 @@ class StoppedDetail(Stopped):  # pylint: disable=too-few-public-methods
 
             elif PoolFeature.ENCRYPTION in pool.features:
                 print("Encryption Enabled: Yes")
-                key_description_present_str = (
-                    "Yes"
-                    if PoolFeature.KEY_DESCRIPTION_PRESENT in pool.features
-                    else "No"
-                )
-
                 print(
-                    "    Accepts User-Entered Passphrase to Unlock: "
-                    f"{key_description_present_str}"
-                )
-                print(
-                    "    Allows Unattended Unlock via Key in Kernel Keyring: "
-                    f"{key_description_present_str}"
+                    "    Allows Unlock via a Key in Kernel Keyring or "
+                    "a User-Entered Passphrase: "
+                    f'{"Yes" if PoolFeature.KEY_DESCRIPTION_PRESENT in pool.features else "No"}'
                 )
                 print(
                     "    Allows Unattended Unlock via Clevis: "
