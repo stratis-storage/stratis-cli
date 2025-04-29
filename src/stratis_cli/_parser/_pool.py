@@ -33,6 +33,14 @@ from .._constants import (
     YesOrNo,
 )
 from .._error_codes import PoolErrorCode
+from .._stratisd_constants import (
+    CLEVIS_KEY_TANG_TRUST_URL,
+    CLEVIS_KEY_THP,
+    CLEVIS_KEY_URL,
+    CLEVIS_PIN_TANG,
+    CLEVIS_PIN_TPM2,
+    ClevisInfo,
+)
 from ._debug import POOL_DEBUG_SUBCMDS
 from ._encryption import BIND_SUBCMDS, ENCRYPTION_SUBCMDS, REBIND_SUBCMDS
 from ._shared import (
@@ -97,7 +105,23 @@ class ClevisEncryptionOptions:  # pylint: disable=too-few-public-methods
                 "URL. Use --tang-url to specify URL."
             )
 
-        namespace.clevis = None if self.clevis is None else self
+        namespace.clevis = (
+            None
+            if self.clevis is None
+            else (
+                ClevisInfo(
+                    CLEVIS_PIN_TANG,
+                    {CLEVIS_KEY_URL: self.tang_url}
+                    | (
+                        {CLEVIS_KEY_TANG_TRUST_URL: True}
+                        if self.trust_url
+                        else {CLEVIS_KEY_THP: self.thumbprint}
+                    ),
+                )
+                if self.clevis in (Clevis.NBDE, Clevis.TANG)
+                else ClevisInfo(CLEVIS_PIN_TPM2, {})
+            )
+        )
 
 
 class IntegrityOptions:  # pylint: disable=too-few-public-methods

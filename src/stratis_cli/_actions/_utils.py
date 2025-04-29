@@ -25,72 +25,12 @@ import termios
 from enum import Enum
 from uuid import UUID
 
-from .._constants import Clevis
 from .._errors import (
     StratisCliKeyfileNotFoundError,
     StratisCliPassphraseEmptyError,
     StratisCliPassphraseMismatchError,
 )
-from .._stratisd_constants import (
-    CLEVIS_KEY_TANG_TRUST_URL,
-    CLEVIS_KEY_THP,
-    CLEVIS_KEY_URL,
-    CLEVIS_PIN_TANG,
-    CLEVIS_PIN_TPM2,
-    MetadataVersion,
-)
-
-
-class ClevisInfo:
-    """
-    Store a representation of Clevis encryption info
-    """
-
-    # pylint: disable=too-few-public-methods
-
-    def __init__(self, pin, config):
-        """
-        Initialize clevis information.
-
-        :param str pin: the Clevis "pin"
-        :param dict config: the JSON config corresponding to the pin
-        """
-        self.pin = pin
-        self.config = config
-
-    @staticmethod
-    def get_info(options):
-        """
-        Get clevis info from the clevis options.
-
-        :param options: ClevisEncryptionOptions
-
-        :returns: clevis info or None
-        :rtype: ClevisInfo or NoneType
-        """
-        if options.clevis in (Clevis.NBDE, Clevis.TANG):
-            assert options.tang_url is not None
-
-            assert options.trust_url or options.thumbprint is not None
-
-            clevis_config = {CLEVIS_KEY_URL: options.tang_url}
-            if options.trust_url:
-                clevis_config[CLEVIS_KEY_TANG_TRUST_URL] = True
-            else:
-                assert options.thumbprint is not None
-                clevis_config[CLEVIS_KEY_THP] = options.thumbprint
-
-            clevis_info = ClevisInfo(CLEVIS_PIN_TANG, clevis_config)
-
-        elif options.clevis is Clevis.TPM2:
-            clevis_info = ClevisInfo(CLEVIS_PIN_TPM2, {})
-
-        else:
-            raise AssertionError(
-                f"unexpected value {options.clevis} for clevis option"
-            )  # pragma: no cover
-
-        return clevis_info
+from .._stratisd_constants import ClevisInfo, MetadataVersion
 
 
 class EncryptionInfo:  # pylint: disable=too-few-public-methods

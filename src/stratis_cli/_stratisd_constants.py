@@ -104,3 +104,21 @@ class MetadataVersion(Enum):
 
     def __str__(self):
         return str(self.value)
+
+
+class ClevisInfo:
+    """
+    Store a representation of Clevis encryption info
+    """
+
+    # pylint: disable=too-few-public-methods
+
+    def __init__(self, pin, config):
+        """
+        Initialize clevis information.
+
+        :param str pin: the Clevis "pin"
+        :param dict config: the JSON config corresponding to the pin
+        """
+        self.pin = pin
+        self.config = config
