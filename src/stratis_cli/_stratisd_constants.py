@@ -17,6 +17,7 @@ Stratisd error classes.
 
 # isort: STDLIB
 from enum import Enum, IntEnum
+from typing import Any, Mapping
 
 from ._error_codes import PoolMaintenanceErrorCode
 
@@ -106,7 +107,7 @@ class ClevisInfo:
 
     # pylint: disable=too-few-public-methods
 
-    def __init__(self, pin, config):
+    def __init__(self, pin: str, config: Mapping[str, Any]):
         """
         Initialize clevis information.
 
