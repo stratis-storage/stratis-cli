@@ -45,13 +45,6 @@ class BlockDevTiers(IntEnum):
         return self.name
 
 
-CLEVIS_KEY_TANG_TRUST_URL = "stratis:tang:trust_url"
-CLEVIS_PIN_TANG = "tang"
-CLEVIS_PIN_TPM2 = "tpm2"
-CLEVIS_KEY_THP = "thp"
-CLEVIS_KEY_URL = "url"
-
-
 class ReportKey(Enum):
     """
     Report identifiers.

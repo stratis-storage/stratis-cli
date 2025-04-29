@@ -25,14 +25,13 @@ from uuid import UUID
 from justbytes import B, GiB, KiB, MiB, PiB, Range, TiB
 
 from .._constants import Clevis
-from .._stratisd_constants import (
-    CLEVIS_KEY_TANG_TRUST_URL,
-    CLEVIS_KEY_THP,
-    CLEVIS_KEY_URL,
-    CLEVIS_PIN_TANG,
-    CLEVIS_PIN_TPM2,
-    ClevisInfo,
-)
+from .._stratisd_constants import ClevisInfo
+
+CLEVIS_KEY_TANG_TRUST_URL = "stratis:tang:trust_url"
+CLEVIS_PIN_TANG = "tang"
+CLEVIS_PIN_TPM2 = "tpm2"
+CLEVIS_KEY_THP = "thp"
+CLEVIS_KEY_URL = "url"
 
 _RANGE_RE = re.compile(r"^(?P<magnitude>[0-9]+)(?P<units>([KMGTP]i)?B)$")
 
