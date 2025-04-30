@@ -17,6 +17,7 @@ Stratisd error classes.
 
 # isort: STDLIB
 from enum import Enum, IntEnum
+from typing import Any, Mapping
 
 from ._error_codes import PoolMaintenanceErrorCode
 
@@ -43,13 +44,6 @@ class BlockDevTiers(IntEnum):
 
     def __str__(self):
         return self.name
-
-
-CLEVIS_KEY_TANG_TRUST_URL = "stratis:tang:trust_url"
-CLEVIS_PIN_TANG = "tang"
-CLEVIS_PIN_TPM2 = "tpm2"
-CLEVIS_KEY_THP = "thp"
-CLEVIS_KEY_URL = "url"
 
 
 class ReportKey(Enum):
@@ -104,3 +98,21 @@ class MetadataVersion(Enum):
 
     def __str__(self):
         return str(self.value)
+
+
+class ClevisInfo:
+    """
+    Store a representation of Clevis encryption info
+    """
+
+    # pylint: disable=too-few-public-methods
+
+    def __init__(self, pin: str, config: Mapping[str, Any]):
+        """
+        Initialize clevis information.
+
+        :param str pin: the Clevis "pin"
+        :param dict config: the JSON config corresponding to the pin
+        """
+        self.pin = pin
+        self.config = config

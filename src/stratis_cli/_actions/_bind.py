@@ -20,17 +20,9 @@ import json
 
 from .._constants import EncryptionMethod, IdType, PoolId
 from .._errors import StratisCliEngineError, StratisCliNoChangeError
-from .._stratisd_constants import (
-    CLEVIS_KEY_TANG_TRUST_URL,
-    CLEVIS_KEY_THP,
-    CLEVIS_KEY_URL,
-    CLEVIS_PIN_TANG,
-    CLEVIS_PIN_TPM2,
-    StratisdErrors,
-)
+from .._stratisd_constants import StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
-from ._utils import ClevisInfo
 
 
 def _get_pool_id(namespace):
@@ -55,13 +47,11 @@ class BindActions:
     """
 
     @staticmethod
-    def _bind_clevis(namespace, clevis_info):
+    def bind_clevis(namespace):
         """
         Generic bind method. For further information about Clevis, and
         discussion of the pin and the configuration, consult Clevis
         documentation.
-
-        :param ClevisInfo clevis_info: Clevis info
         """
         # pylint: disable=import-outside-toplevel
         from ._data import ObjectManager, Pool, pools
@@ -79,8 +69,8 @@ class BindActions:
         (changed, return_code, return_msg) = Pool.Methods.BindClevis(
             get_object(pool_object_path),
             {
-                "pin": clevis_info.pin,
-                "json": json.dumps(clevis_info.config),
+                "pin": namespace.clevis.pin,
+                "json": json.dumps(namespace.clevis.config),
                 "token_slot": (False, 0),
             },
         )
@@ -93,34 +83,6 @@ class BindActions:
         # just find the next token slot.
         if not changed:  # pragma: no cover
             raise StratisCliNoChangeError("bind", pool_id.id_value)
-
-    @staticmethod
-    def bind_tang(namespace):
-        """
-        Bind all devices in an encrypted pool using the specified tang server.
-
-        :raises StratisCliNoChangeError:
-        :raises StratisCliEngineError:
-        """
-        clevis_config = {CLEVIS_KEY_URL: namespace.url}
-        if namespace.trust_url:
-            clevis_config[CLEVIS_KEY_TANG_TRUST_URL] = True
-        else:
-            assert namespace.thumbprint is not None
-            clevis_config[CLEVIS_KEY_THP] = namespace.thumbprint
-
-        BindActions._bind_clevis(namespace, ClevisInfo(CLEVIS_PIN_TANG, clevis_config))
-
-    @staticmethod
-    def bind_tpm(namespace):
-        """
-        Bind all devices in an encrypted pool using TPM.
-
-        :raises StratisCliNoChangeError:
-        :raises StratisCliEngineError:
-        """
-
-        BindActions._bind_clevis(namespace, ClevisInfo(CLEVIS_PIN_TPM2, {}))
 
     @staticmethod
     def bind_keyring(namespace):

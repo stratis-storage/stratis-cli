@@ -45,12 +45,7 @@ from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import get_property, get_uuid_formatter
 from ._list_pool import list_pools
-from ._utils import (
-    ClevisInfo,
-    StoppedPool,
-    fetch_stopped_pools_property,
-    get_passphrase_fd,
-)
+from ._utils import StoppedPool, fetch_stopped_pools_property, get_passphrase_fd
 
 
 def _generate_pools_to_blockdevs(managed_objects, to_be_added, tier):
@@ -182,10 +177,6 @@ class PoolActions:
 
         _check_same_tier(pool_name, managed_objects, blockdevs, BlockDevTiers.DATA)
 
-        clevis_info = (
-            None if namespace.clevis is None else ClevisInfo.get_info(namespace.clevis)
-        )
-
         (journal_size, tag_spec, allocate_superblock) = (
             ((True, 0), (True, IntegrityTagSpec.B0), (True, False))
             if namespace.integrity.integrity is IntegrityOption.NO
@@ -212,8 +203,14 @@ class PoolActions:
                 ),
                 "clevis_info": (
                     []
-                    if clevis_info is None
-                    else [((False, 0), clevis_info.pin, json.dumps(clevis_info.config))]
+                    if namespace.clevis is None
+                    else [
+                        (
+                            (False, 0),
+                            namespace.clevis.pin,
+                            json.dumps(namespace.clevis.config),
+                        )
+                    ]
                 ),
                 "journal_size": journal_size,
                 "tag_spec": tag_spec,

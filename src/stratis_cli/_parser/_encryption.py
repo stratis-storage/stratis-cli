@@ -15,9 +15,50 @@
 Encryption command-line parser for Stratis CLI.
 """
 
+# isort: STDLIB
+import copy
+from argparse import SUPPRESS
+
 from .._actions import BindActions, RebindActions
 from .._constants import Clevis, EncryptionMethod
-from ._shared import TRUST_URL_OR_THUMBPRINT, UUID_OR_NAME, MoveNotice, ensure_nat
+from ._shared import (
+    TRUST_URL_OR_THUMBPRINT,
+    UUID_OR_NAME,
+    ClevisEncryptionOptions,
+    MoveNotice,
+    RejectAction,
+    ensure_nat,
+)
+
+
+class ClevisEncryptionOptionsForTang(
+    ClevisEncryptionOptions
+):  # pylint: disable=too-few-public-methods
+    """
+    Class that verifies Clevis encryption options for bind subcommand.
+    """
+
+    def __init__(self, namespace):
+        namespace.clevis = Clevis.TANG
+        namespace.tang_url = copy.copy(namespace.url)
+        del namespace.url
+        super().__init__(namespace)
+
+
+class ClevisEncryptionOptionsForTpm2(
+    ClevisEncryptionOptions
+):  # pylint: disable=too-few-public-methods
+    """
+    Class that verifies Clevis encryption options for bind subcommand.
+    """
+
+    def __init__(self, namespace):
+        namespace.clevis = Clevis.TPM2
+        namespace.thumbprint = None
+        namespace.tang_url = None
+        namespace.trust_url = None
+        super().__init__(namespace)
+
 
 BIND_SUBCMDS = [
     (
@@ -25,6 +66,15 @@ BIND_SUBCMDS = [
         {
             "help": "Bind using NBDE via a tang server",
             "args": [
+                (
+                    "--post-parser",
+                    {
+                        "action": RejectAction,
+                        "default": ClevisEncryptionOptionsForTang,
+                        "help": SUPPRESS,
+                        "nargs": "?",
+                    },
+                ),
                 ("pool_name", {"help": "Pool name"}),
                 ("url", {"help": "URL of tang server"}),
             ],
@@ -41,7 +91,7 @@ BIND_SUBCMDS = [
             "epilog": str(
                 MoveNotice("nbde", "pool bind", "pool encryption bind", "3.10.0")
             ),
-            "func": BindActions.bind_tang,
+            "func": BindActions.bind_clevis,
         },
     ),
     (
@@ -49,12 +99,21 @@ BIND_SUBCMDS = [
         {
             "help": "Bind using TPM2",
             "args": [
+                (
+                    "--post-parser",
+                    {
+                        "action": RejectAction,
+                        "default": ClevisEncryptionOptionsForTpm2,
+                        "help": SUPPRESS,
+                        "nargs": "?",
+                    },
+                ),
                 ("pool_name", {"help": "Pool name"}),
             ],
             "epilog": str(
                 MoveNotice("tpm2", "pool bind", "pool encryption bind", "3.10.0")
             ),
-            "func": BindActions.bind_tpm,
+            "func": BindActions.bind_clevis,
         },
     ),
     (
@@ -136,6 +195,15 @@ BIND_SUBCMDS_ENCRYPTION = [
         {
             "help": "Bind using NBDE via a tang server",
             "args": [
+                (
+                    "--post-parser",
+                    {
+                        "action": RejectAction,
+                        "default": ClevisEncryptionOptionsForTang,
+                        "help": SUPPRESS,
+                        "nargs": "?",
+                    },
+                ),
                 ("url", {"help": "URL of tang server"}),
             ],
             "groups": [
@@ -157,13 +225,24 @@ BIND_SUBCMDS_ENCRYPTION = [
                 ),
             ],
             "aliases": [str(Clevis.TANG)],
-            "func": BindActions.bind_tang,
+            "func": BindActions.bind_clevis,
         },
     ),
     (
         str(Clevis.TPM2),
         {
             "help": "Bind using TPM2",
+            "args": [
+                (
+                    "--post-parser",
+                    {
+                        "action": RejectAction,
+                        "default": ClevisEncryptionOptionsForTpm2,
+                        "help": SUPPRESS,
+                        "nargs": "?",
+                    },
+                ),
+            ],
             "groups": [
                 (
                     "Pool Identifier",
@@ -175,7 +254,7 @@ BIND_SUBCMDS_ENCRYPTION = [
                     },
                 )
             ],
-            "func": BindActions.bind_tpm,
+            "func": BindActions.bind_clevis,
         },
     ),
     (
