@@ -148,3 +148,14 @@ class Destroy5TestCase(SimTestCase):
 
         command_line = self._MENU + [self._POOLNAME, self._VOLNAME]
         self.check_error(StratisCliEngineError, command_line, _ERROR)
+
+    def test_destroy_snapshot(self):
+        """
+        Once a merge has been scheduled, the to-be-merged snapshot can not be
+        destroyed.
+        """
+        command_line = ["filesystem", "schedule-revert", self._POOLNAME, self._SNAPSHOT]
+        RUNNER(command_line)
+
+        command_line = self._MENU + [self._POOLNAME, self._SNAPSHOT]
+        self.check_error(StratisCliEngineError, command_line, _ERROR)
