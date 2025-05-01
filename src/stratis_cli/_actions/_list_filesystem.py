@@ -173,7 +173,7 @@ class Detail(List):  # pylint: disable=too-few-public-methods
         used = get_property(fs.Used(), Range, None)
         limit = get_property(fs.SizeLimit(), Range, None)
         created = (
-            date_parser.parse(fs.Created()).astimezone().strftime("%b %d %Y %H:%M")
+            date_parser.isoparse(fs.Created()).astimezone().strftime("%b %d %Y %H:%M")
         )
 
         origin = get_property(fs.Origin(), self.uuid_formatter, None)
