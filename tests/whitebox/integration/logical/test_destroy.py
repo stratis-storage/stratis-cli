@@ -17,7 +17,7 @@ Test 'destroy'.
 
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
-from stratis_cli._errors import StratisCliPartialChangeError
+from stratis_cli._errors import StratisCliEngineError, StratisCliPartialChangeError
 
 from .._misc import RUNNER, SimTestCase, device_name_list
 
@@ -106,3 +106,45 @@ class Create5TestCase(SimTestCase):
         """
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES[0:4]
         self.check_error(StratisCliPartialChangeError, command_line, _ERROR)
+
+
+class Destroy5TestCase(SimTestCase):
+    """
+    Test destroying filesystem, when a merge of a snapshot has been requested.
+    """
+
+    _MENU = ["--propagate", "filesystem", "destroy"]
+    _POOLNAME = "deadpool"
+    _VOLNAME = "oubliette"
+    _SNAPSHOT = "snapshot"
+
+    def setUp(self):
+        """
+        Start the stratisd daemon with the simulator.
+        """
+        super().setUp()
+        command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
+        RUNNER(command_line)
+
+        command_line = ["filesystem", "create", self._POOLNAME, self._VOLNAME]
+        RUNNER(command_line)
+
+        command_line = [
+            "filesystem",
+            "snapshot",
+            self._POOLNAME,
+            self._VOLNAME,
+            self._SNAPSHOT,
+        ]
+        RUNNER(command_line)
+
+    def test_destroy_origin(self):
+        """
+        Once a merge has been scheduled, the target of that merge can not be
+        destroyed.
+        """
+        command_line = ["filesystem", "schedule-revert", self._POOLNAME, self._SNAPSHOT]
+        RUNNER(command_line)
+
+        command_line = self._MENU + [self._POOLNAME, self._VOLNAME]
+        self.check_error(StratisCliEngineError, command_line, _ERROR)

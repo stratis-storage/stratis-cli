@@ -186,7 +186,7 @@ class LogicalActions:
             get_object(pool_object_path), {"filesystems": fs_object_paths}
         )
 
-        if return_code != StratisdErrors.OK:  # pragma: no cover
+        if return_code != StratisdErrors.OK:
             raise StratisCliEngineError(return_code, message)
 
         if not destroyed or len(list_destroyed) < len(
