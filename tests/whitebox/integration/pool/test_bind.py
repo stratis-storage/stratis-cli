@@ -179,3 +179,27 @@ class BindTestCase3(SimTestCase):
             self._KEY_DESC,
         ]
         TEST_RUNNER(command_line)
+
+    def test_maxxing_out_slots(self):
+        """
+        Run out of token slots to bind to.
+        """
+
+        for index in range(15):
+            key_desc = f"key-{index}"
+            with RandomKeyTmpFile() as fname:
+                command_line = [
+                    "--propagate",
+                    "key",
+                    "set",
+                    "--keyfile-path",
+                    fname,
+                    key_desc,
+                ]
+                RUNNER(command_line)
+
+            command_line = self._MENU + ["keyring", self._POOLNAME, key_desc]
+            if index < 14:
+                RUNNER(command_line)
+            else:
+                self.check_error(StratisCliEngineError, command_line, _ERROR)

@@ -330,6 +330,11 @@ class DefaultDetail(Default):
                     key=lambda x: x.token_slot,
                 )
 
+                free_valid, free = mopool.FreeTokenSlots()
+                print(
+                    f'    Free Token Slots Remaining: {int(free) if free_valid else "<UNKNOWN>"}'
+                )
+
                 for info in encryption_infos:
                     for line in str(info).split(os.linesep):
                         print(f"    {line}")
@@ -576,12 +581,23 @@ class StoppedDetail(Stopped):  # pylint: disable=too-few-public-methods
                 print(f"    Clevis Configuration: {clevis_info_str}")
 
         elif pool.metadata_version is MetadataVersion.V2:
-            encryption_str = (
-                "Unknown"
-                if pool.features is None
-                else ("Yes" if PoolFeature.ENCRYPTION in pool.features else "No")
-            )
-            print(f"Encryption Enabled: {encryption_str}")
+            # This condition only happens when pool metadata is not available
+            if pool.features is None:  # pragma: no cover
+                print("Encryption Enabled: Unknown")
+
+            elif PoolFeature.ENCRYPTION in pool.features:
+                print("Encryption Enabled: Yes")
+                print(
+                    "    Allows Unlock via a Key in Kernel Keyring or "
+                    "a User-Entered Passphrase: "
+                    f'{"Yes" if PoolFeature.KEY_DESCRIPTION_PRESENT in pool.features else "No"}'
+                )
+                print(
+                    "    Allows Unattended Unlock via Clevis: "
+                    f'{"Yes" if PoolFeature.CLEVIS_PRESENT in pool.features else "No"}'
+                )
+            else:
+                print("Encryption Enabled: No")
 
         else:  # pragma: no cover
             print("Encryption Enabled: <UNAVAILABLE>")
@@ -643,7 +659,11 @@ class StoppedTable(Stopped):  # pylint: disable=too-few-public-methods
                     "<UNKNOWN>"
                     if features is None
                     else (
-                        "<UNAVAILABLE>"
+                        (
+                            "<PRESENT>"
+                            if PoolFeature.CLEVIS_PRESENT in features
+                            else "N/A"
+                        )
                         if PoolFeature.ENCRYPTION in features
                         else "<UNENCRYPTED>"
                     )
@@ -663,7 +683,11 @@ class StoppedTable(Stopped):  # pylint: disable=too-few-public-methods
                     "<UNKNOWN>"
                     if features is None
                     else (
-                        "<UNAVAILABLE>"
+                        (
+                            "<PRESENT>"
+                            if PoolFeature.KEY_DESCRIPTION_PRESENT in features
+                            else "N/A"
+                        )
                         if PoolFeature.ENCRYPTION in features
                         else "<UNENCRYPTED>"
                     )
