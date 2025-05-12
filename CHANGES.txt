@@ -18,8 +18,10 @@ Lowest supported Python interpreter: 3.9.16
   https://github.com/stratis-storage/stratis-cli/pull/1142
   https://github.com/stratis-storage/stratis-cli/pull/1141
 
-- Begin moving "bind", "unbind", "rebind" to "encryption" subcommand:
+- Begin moving "bind", "unbind", "rebind" to "encryption" subcommand;
+  then undo the move:
   https://github.com/stratis-storage/stratis-cli/issues/1136
+  https://github.com/stratis-storage/stratis-cli/pull/1146
   https://github.com/stratis-storage/stratis-cli/pull/1137
 
 - Use isoparse specifically to parse Created property:
