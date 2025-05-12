@@ -91,8 +91,14 @@ class PoolFeatureTestCase(unittest.TestCase):
 
     def test_str_method(self):
         """
-        Just exercise the __str__ method
+        Test __str__ method's result and parsing.
         """
 
         for feature in PoolFeature:
-            self.assertEqual(str(feature), feature.value)
+            if feature is PoolFeature.UNRECOGNIZED:
+                self.assertIsInstance(str(feature), str)
+                with self.assertRaises(ValueError):
+                    PoolFeature("unknown")
+            else:
+                self.assertEqual(str(feature), feature.value)
+                self.assertEqual(PoolFeature(feature.value), feature)
