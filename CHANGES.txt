@@ -1,3 +1,48 @@
+stratis-cli 3.8.1
+=================
+Required stratisd version: 3.8.0
+
+Recommended development environment: Fedora 40
+Lowest supported Python interpreter: 3.9.16
+
+- Extend Id type and remove PoolSelector class;
+  also fix a bug in "pool start":
+  https://github.com/stratis-storage/stratis-cli/pull/1145
+
+- Add support for additional pool features in stopped pools property:
+  https://github.com/stratis-storage/stratis-cli/pull/1151
+  https://github.com/stratis-storage/stratis-cli/pull/1148
+
+- Improve help text via specification re-use and groups for related options;
+  have all encryption subcommands use --uuid/--name options:
+  https://github.com/stratis-storage/stratis-cli/pull/1143
+  https://github.com/stratis-storage/stratis-cli/pull/1142
+  https://github.com/stratis-storage/stratis-cli/pull/1141
+
+- Begin moving "bind", "unbind", "rebind" to "encryption" subcommand;
+  then undo the move:
+  https://github.com/stratis-storage/stratis-cli/issues/1136
+  https://github.com/stratis-storage/stratis-cli/pull/1146
+  https://github.com/stratis-storage/stratis-cli/pull/1137
+
+- Use isoparse specifically to parse Created property:
+  https://github.com/stratis-storage/stratis-cli/pull/1158
+
+- Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/1157
+  https://github.com/stratis-storage/stratis-cli/pull/1156
+  https://github.com/stratis-storage/stratis-cli/pull/1155
+  https://github.com/stratis-storage/stratis-cli/pull/1154
+  https://github.com/stratis-storage/stratis-cli/pull/1153
+  https://github.com/stratis-storage/stratis-cli/pull/1152
+  https://github.com/stratis-storage/stratis-cli/pull/1150
+  https://github.com/stratis-storage/stratis-cli/pull/1149
+  https://github.com/stratis-storage/stratis-cli/pull/1147
+  https://github.com/stratis-storage/stratis-cli/pull/1140
+  https://github.com/stratis-storage/stratis-cli/pull/1135
+  https://github.com/stratis-storage/stratis-cli/pull/1114
+
+
 stratis-cli 3.8.0
 =================
 Required stratisd version: 3.8.0
