@@ -21,6 +21,7 @@ actions:
 srpm_build_deps:
   - python3-pip
   - git
+  - python3-semantic_version
 
 jobs:
   - job: copr_build
