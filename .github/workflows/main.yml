@@ -91,18 +91,32 @@ jobs:
     strategy:
       matrix:
         include:
-          - task: make -f Makefile all-tests
-            rust_log: RUST_LOG=stratisd=debug
-            image: fedora:41  # CURRENT DEVELOPMENT ENVIRONMENT
-          - task: make -f Makefile all-tests
-            rust_log: RUST_LOG=stratisd=debug
-            image: fedora:35  # LOWEST DEVELOPMENT ENVIRONMENT
+          - python: "3.13"  # CURRENT DEVELOPMENT PYTHON TOOLCHAIN
+          - python: "3.9"  # LOWEST SUPPORTED PYTHON TOOLCHAIN
     runs-on: ubuntu-latest
     container:
-      image: ${{ matrix.image }}
+      image: fedora:41  # CURRENT DEVELOPMENT ENVIRONMENT
       # yamllint disable rule:line-length
       options: --privileged --userns=host --ipc=host -v /run/dbus/system_bus_socket:/run/dbus/system_bus_socket:ro -v /usr/share/dbus-1:/usr/share/dbus-1
     steps:
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          components: cargo
+          toolchain: 1.77.0  # LOWEST SUPPORTED RUST TOOLCHAIN
+      - name: Install python prerequisites
+        run: >
+          dnf install -y
+          alternatives
+          python${{ matrix.python }}
+      - name: Set python3 to python${{ matrix.python }}
+        run: >
+          alternatives
+          --install /usr/bin/python3
+          python3
+          /usr/bin/python${{ matrix.python }}
+          10
+      - name: Display Python version
+        run: python3 --version
       - uses: actions/checkout@v4
         with:
           path: stratis-cli
@@ -126,10 +140,6 @@ jobs:
           python3-psutil
           python3-wcwidth
           systemd-devel
-      - uses: dtolnay/rust-toolchain@master
-        with:
-          components: cargo
-          toolchain: 1.77.0  # LOWEST SUPPORTED RUST TOOLCHAIN
       - name: Check out stratisd
         uses: actions/checkout@v4
         with:
@@ -150,24 +160,18 @@ jobs:
         working-directory: stratisd
       - name: Run test
         run: >
-          ${{ matrix.rust_log }}
+          RUST_LOG=stratisd=debug
           STRATISD=/usr/libexec/stratisd
           STRATIS_STRICT_POOL_FEATURES=1
           PYTHONPATH=./src
-          ${{ matrix.task }}
+          make -f Makefile all-tests
         working-directory: stratis-cli
 
   coverage-runs:
     needs: test-runs
-    strategy:
-      matrix:
-        include:
-          - task: make -f Makefile coverage-no-html
-            rust_log:
-            image: fedora:41  # CURRENT DEVELOPMENT ENVIRONMENT
     runs-on: ubuntu-latest
     container:
-      image: ${{ matrix.image }}
+      image: fedora:41  # CURRENT DEVELOPMENT ENVIRONMENT
       # yamllint disable rule:line-length
       options: --privileged --userns=host --ipc=host -v /run/dbus/system_bus_socket:/run/dbus/system_bus_socket:ro -v /usr/share/dbus-1:/usr/share/dbus-1
     steps:
@@ -219,30 +223,28 @@ jobs:
         working-directory: stratisd
       - name: Run test
         run: >
-          ${{ matrix.rust_log }}
           STRATISD=/usr/libexec/stratisd
           STRATIS_STRICT_POOL_FEATURES=1
           PYTHONPATH=./src
-          ${{ matrix.task }}
+          make -f Makefile coverage-no-html
         working-directory: stratis-cli
 
   lowest-environment-checks:
-    strategy:
-      matrix:
-        include:
-          - dependencies: >
-              python-setuptools
-              python3-dbus-client-gen
-              python3-dbus-python-client-gen
-              python3-justbytes
-              python3-dateutil
-              python3-packaging
-              python3-psutil
-              python3-wcwidth
-            task: make -f Makefile legacy-package
     runs-on: ubuntu-latest
-    container: fedora:35  # LOWEST DEVELOPMENT ENVIRONMENT
+    container: fedora:41  # CURRENT DEVELOPMENT ENVIRONMENT
     steps:
+      - name: Install python3.9
+        run: >
+          dnf install -y
+          alternatives
+          python3.9
+      - name: Set python3 to python3.9
+        run: >
+          alternatives
+          --install /usr/bin/python3
+          python3
+          /usr/bin/python3.9
+          10
       - name: Display Python version
         run: python3 --version
       - uses: actions/checkout@v4
@@ -250,6 +252,13 @@ jobs:
         run: >
           dnf install -y
           make
-          ${{ matrix.dependencies }}
-      - name: ${{ matrix.task }}
-        run: ${{ matrix.task }}
+          python-setuptools
+          python3-dbus-client-gen
+          python3-dbus-python-client-gen
+          python3-justbytes
+          python3-dateutil
+          python3-packaging
+          python3-psutil
+          python3-wcwidth
+      - name: Make legacy package
+        run: make -f Makefile legacy-package
