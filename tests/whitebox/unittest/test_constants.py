@@ -16,6 +16,7 @@ Test 'constants'.
 """
 
 # isort: STDLIB
+import os
 import unittest
 
 # isort: LOCAL
@@ -97,8 +98,9 @@ class PoolFeatureTestCase(unittest.TestCase):
         for feature in PoolFeature:
             if feature is PoolFeature.UNRECOGNIZED:
                 self.assertIsInstance(str(feature), str)
-                with self.assertRaises(ValueError):
-                    PoolFeature("unknown")
+                if bool(int(os.environ.get("STRATIS_STRICT_POOL_FEATURES", False))):
+                    with self.assertRaises(ValueError):
+                        PoolFeature("unknown")
             else:
                 self.assertEqual(str(feature), feature.value)
                 self.assertEqual(PoolFeature(feature.value), feature)
