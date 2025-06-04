@@ -17,11 +17,12 @@ Highest level runner.
 
 # isort: THIRDPARTY
 import justbytes as jb
-import monkeytype
 
 from ._error_reporting import handle_error
 from ._errors import StratisCliActionError, StratisCliEnvironmentError
 from ._parser import gen_parser
+
+# import monkeytype
 
 
 def run():
@@ -46,8 +47,8 @@ def run():
 
         try:
             try:
-                with monkeytype.trace():
-                    namespace.func(namespace)
+                # with monkeytype.trace():
+                namespace.func(namespace)
 
             # Keyboard Interrupt is recaught at the outermost possible layer.
             # It is outside the regular execution of the program, so it is
