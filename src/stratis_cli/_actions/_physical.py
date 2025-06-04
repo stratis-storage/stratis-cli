@@ -15,6 +15,9 @@
 Miscellaneous physical actions.
 """
 
+# isort: STDLIB
+from argparse import Namespace
+
 # isort: THIRDPARTY
 from justbytes import Range
 
@@ -37,7 +40,7 @@ class PhysicalActions:
     # pylint: disable=too-few-public-methods
 
     @staticmethod
-    def list_devices(namespace):  # pylint: disable=too-many-locals
+    def list_devices(namespace: Namespace):  # pylint: disable=too-many-locals
         """
         List devices. If a pool is specified in the namespace, list devices
         for that pool. Otherwise, list all devices for all pools.
