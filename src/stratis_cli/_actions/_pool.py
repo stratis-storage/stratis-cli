@@ -418,7 +418,7 @@ class PoolActions:
 
         uuid_formatter = get_uuid_formatter(namespace.unhyphenated_uuids)
 
-        return list_pools(uuid_formatter, stopped=stopped, selection=selection)
+        list_pools(uuid_formatter, stopped=stopped, selection=selection)
 
     @staticmethod
     def destroy_pool(namespace):
