@@ -1,3 +1,36 @@
+stratis-cli 3.8.2
+=================
+Required stratisd version: 3.8.2
+
+Recommended development environment: Fedora 41
+Lowest supported Python interpreter: 3.9
+
+- Display alert if volume key missing or status unknown:
+  https://github.com/stratis-storage/stratis-cli/pull/1177
+  https://github.com/stratis-storage/stratis-cli/pull/1176
+  https://github.com/stratis-storage/stratis-cli/pull/1175
+  https://github.com/stratis-storage/stratis-cli/pull/1174
+  https://github.com/stratis-storage/stratis-cli/pull/1172
+
+- Revert "Remove "pool encryption" subcommand":
+  https://github.com/stratis-storage/stratis-cli/pull/1161
+
+- Require stratisd 3.8.2 for operation:
+  https://github.com/stratis-storage/stratis-cli/pull/1173
+
+- Remove license classifier deprecated by PEP 639:
+  https://github.com/stratis-storage/stratis-cli/pull/1160
+
+- Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/1171
+  https://github.com/stratis-storage/stratis-cli/pull/1169
+  https://github.com/stratis-storage/stratis-cli/pull/1168
+  https://github.com/stratis-storage/stratis-cli/pull/1166
+  https://github.com/stratis-storage/stratis-cli/pull/1165
+  https://github.com/stratis-storage/stratis-cli/pull/1164
+  https://github.com/stratis-storage/stratis-cli/pull/1163
+
+
 stratis-cli 3.8.1
 =================
 Required stratisd version: 3.8.0
