@@ -145,7 +145,7 @@ jobs:
         with:
           repository: stratis-storage/stratisd
           path: stratisd
-          ref: master
+          ref: refs/pull/3651/head
       - name: Print head commit
         run: git log --oneline -1
         working-directory: stratisd
@@ -208,7 +208,7 @@ jobs:
         with:
           repository: stratis-storage/stratisd
           path: stratisd
-          ref: master
+          ref: refs/pull/3651/head
       - name: Print head commit
         run: git log --oneline -1
         working-directory: stratisd
