@@ -203,12 +203,3 @@ class PoolErrorCode:
                 if code is not None
             )
         )
-
-    @staticmethod
-    def explain(error_code: str) -> str:
-        """
-        Return explanation for error code, else None.
-
-        :param str error_code:
-        """
-        return PoolErrorCode.error_from_str(error_code).explain()
