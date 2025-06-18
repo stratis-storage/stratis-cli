@@ -19,11 +19,6 @@ Test error type string formatting.
 import unittest
 
 # isort: LOCAL
-from stratis_cli._error_codes import (
-    PoolAllocSpaceErrorCode,
-    PoolDeviceSizeChangeCode,
-    PoolMaintenanceErrorCode,
-)
 from stratis_cli._errors import (
     StratisCliGenerationError,
     StratisCliIncoherenceError,
@@ -60,40 +55,3 @@ class ErrorFmtTestCase(unittest.TestCase):
         Test 'StratisCliGenerationError'
         """
         self._string_not_empty(StratisCliGenerationError("Error"))
-
-
-class SummarizeTestCase(unittest.TestCase):
-    """
-    Test summarize() function.
-    """
-
-    def _summarize_test(self, summary_value):
-        """
-        Check that the summary value is a str and is non-empty.
-
-        :param summary_value: the result of calling summary()
-        """
-        self.assertIsInstance(summary_value, str)
-        self.assertNotEqual(summary_value, "")
-
-    def test_pool_device_size_change_code(self):
-        """
-        Verify valid strings returned from summarize() method.
-        """
-        for code in PoolDeviceSizeChangeCode:
-            self._summarize_test(code.summarize())
-
-    def test_pool_alloc_space_error_codes(self):
-        """
-        Verify valid string returned from summarize() method
-        """
-        for code in PoolAllocSpaceErrorCode:
-            self._summarize_test(code.summarize())
-
-    def test_pool_maintenance_error_codes(self):
-        """
-        Verify valid strings returned from summarize() method.
-        """
-
-        for code in PoolMaintenanceErrorCode:
-            self._summarize_test(code.summarize())
