@@ -385,19 +385,6 @@ class DefaultTable(Default):
         """
         self.uuid_formatter = uuid_formatter
 
-    @staticmethod
-    def alert_string(codes):
-        """
-        Alert information to display, if any
-
-        :param codes: list of error codes to display
-        :type codes: list of PoolErrorCode
-
-        :returns: string w/ alert information, "" if no alert
-        :rtype: str
-        """
-        return ", ".join(sorted(str(code) for code in codes))
-
     def display(self):
         """
         List pools in table view.
@@ -474,9 +461,14 @@ class DefaultTable(Default):
                 physical_size_triple(mopool),
                 properties_string(mopool),
                 self.uuid_formatter(mopool.Uuid()),
-                self.alert_string(
-                    self.alert_codes(mopool)
-                    + self._from_sets(pool_object_path, increased, decreased)
+                ", ".join(
+                    sorted(
+                        str(code)
+                        for code in (
+                            self.alert_codes(mopool)
+                            + self._from_sets(pool_object_path, increased, decreased)
+                        )
+                    )
                 ),
             )
             for (pool_object_path, mopool) in pools_with_props
