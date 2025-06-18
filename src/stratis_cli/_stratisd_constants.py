@@ -17,7 +17,7 @@ Stratisd error classes.
 
 # isort: STDLIB
 from enum import Enum, IntEnum
-from typing import Any, Mapping
+from typing import Any, List, Mapping
 
 from ._error_codes import PoolMaintenanceErrorCode
 
@@ -72,7 +72,7 @@ class PoolActionAvailability(IntEnum):
     no_ipc_requests = 1  # pylint: disable=invalid-name
     no_pool_changes = 2  # pylint: disable=invalid-name
 
-    def pool_maintenance_error_codes(self):
+    def pool_maintenance_error_codes(self) -> List[PoolMaintenanceErrorCode]:
         """
         Return the list of PoolMaintenanceErrorCodes for this availability.
 
