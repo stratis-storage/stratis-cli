@@ -43,18 +43,6 @@ class PoolMaintenanceErrorCode(IntEnum):
     def __str__(self):
         return f"{Level.ERROR}M{str(self.value).zfill(3)}"
 
-    @staticmethod
-    def from_str(code_str):
-        """
-        Discover the code, if any, from the code string.
-
-        :returns: the code if it finds a match, otherwise None
-        :rtype: PoolMaintenanceErrorCode or NoneType
-        """
-        return next(
-            (code for code in PoolMaintenanceErrorCode if code_str == str(code)), None
-        )
-
     def explain(self):
         """
         Return an explanation of the error return code.
@@ -121,18 +109,6 @@ class PoolAllocSpaceErrorCode(IntEnum):
 
         assert False, "impossible error code reached"  # pragma: no cover
 
-    @staticmethod
-    def from_str(code_str):
-        """
-        Discover the code, if any, from the code string.
-
-        :returns: the code if it finds a match, otherwise None
-        :rtype: PoolAllocSpaceErrorCode or NoneType
-        """
-        return next(
-            (code for code in PoolAllocSpaceErrorCode if code_str == str(code)), None
-        )
-
 
 class PoolDeviceSizeChangeCode(IntEnum):
     """
@@ -182,18 +158,6 @@ class PoolDeviceSizeChangeCode(IntEnum):
 
         assert False, "impossible error code reached"  # pragma: no cover
 
-    @staticmethod
-    def from_str(code_str):
-        """
-        Discover the code, if any, from the code string.
-
-        :returns: the code if it finds a match, otherwise None
-        :rtype: PoolAllocSpaceErrorCode or NoneType
-        """
-        return next(
-            (code for code in PoolDeviceSizeChangeCode if code_str == str(code)), None
-        )
-
 
 type PoolErrorCodeType = Union[
     PoolAllocSpaceErrorCode, PoolDeviceSizeChangeCode, PoolMaintenanceErrorCode
@@ -232,7 +196,10 @@ class PoolErrorCode:
         return next(
             (
                 code
-                for code in (c.from_str(error_code) for c in PoolErrorCode.CLASSES)
+                for code in (
+                    next((code for code in c if error_code == str(code)), None)
+                    for c in PoolErrorCode.CLASSES
+                )
                 if code is not None
             )
         )
