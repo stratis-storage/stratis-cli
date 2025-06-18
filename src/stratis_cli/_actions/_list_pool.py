@@ -143,7 +143,7 @@ def _clevis_to_str(clevis_info):  # pragma: no cover
     return f"{clevis_info.pin}   {config_string}"
 
 
-class List(ABC):  # pylint:disable=too-few-public-methods
+class ListPool(ABC):  # pylint:disable=too-few-public-methods
     """
     Handle listing a pool or pools.
     """
@@ -155,7 +155,7 @@ class List(ABC):  # pylint:disable=too-few-public-methods
         """
 
 
-class Default(List):
+class Default(ListPool):
     """
     Handle listing the pools that are listed by default.
     """
@@ -487,7 +487,7 @@ class DefaultTable(Default):
         )
 
 
-class Stopped(List):  # pylint: disable=too-few-public-methods
+class Stopped(ListPool):  # pylint: disable=too-few-public-methods
     """
     Support for listing stopped pools.
     """
