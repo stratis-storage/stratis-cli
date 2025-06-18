@@ -19,11 +19,16 @@ Pool actions.
 import json
 import os
 from abc import ABC, abstractmethod
+from typing import List, Union
 
 # isort: THIRDPARTY
 from justbytes import Range
 
-from .._error_codes import PoolAllocSpaceErrorCode, PoolDeviceSizeChangeCode
+from .._error_codes import (
+    PoolAllocSpaceErrorCode,
+    PoolDeviceSizeChangeCode,
+    PoolMaintenanceErrorCode,
+)
 from .._errors import StratisCliResourceNotFoundError
 from .._stratisd_constants import MetadataVersion, PoolActionAvailability
 from ._connection import get_object
@@ -143,7 +148,7 @@ def _clevis_to_str(clevis_info):  # pragma: no cover
     return f"{clevis_info.pin}   {config_string}"
 
 
-class List(ABC):  # pylint:disable=too-few-public-methods
+class ListPool(ABC):  # pylint:disable=too-few-public-methods
     """
     Handle listing a pool or pools.
     """
@@ -155,13 +160,15 @@ class List(ABC):  # pylint:disable=too-few-public-methods
         """
 
 
-class Default(List):
+class Default(ListPool):
     """
     Handle listing the pools that are listed by default.
     """
 
     @staticmethod
-    def alert_codes(mopool):
+    def alert_codes(
+        mopool,
+    ) -> List[Union[PoolAllocSpaceErrorCode, PoolMaintenanceErrorCode]]:
         """
         Return error code objects for a pool.
 
@@ -208,7 +215,9 @@ class Default(List):
         return (increased, decreased)
 
     @staticmethod
-    def _from_sets(pool_object_path, increased, decreased):
+    def _from_sets(
+        pool_object_path, increased, decreased
+    ) -> List[PoolDeviceSizeChangeCode]:
         """
         Get the code from sets and one pool object path.
 
@@ -249,7 +258,9 @@ class DefaultDetail(Default):
         self.uuid_formatter = uuid_formatter
         self.selection = selection
 
-    def _print_detail_view(self, mopool, size_change_codes):
+    def _print_detail_view(
+        self, mopool, size_change_codes: List[PoolDeviceSizeChangeCode]
+    ):
         """
         Print the detailed view for a single pool.
 
@@ -487,7 +498,7 @@ class DefaultTable(Default):
         )
 
 
-class Stopped(List):  # pylint: disable=too-few-public-methods
+class Stopped(ListPool):  # pylint: disable=too-few-public-methods
     """
     Support for listing stopped pools.
     """

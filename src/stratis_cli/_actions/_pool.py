@@ -774,4 +774,4 @@ class PoolActions:
         """
         Print an explanation of pool error code.
         """
-        print(PoolErrorCode.explain(namespace.code))
+        print(PoolErrorCode.error_from_str(namespace.code).explain())
