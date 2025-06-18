@@ -16,6 +16,7 @@ Error codes
 """
 # isort: STDLIB
 from enum import Enum, IntEnum
+from typing import List, Union
 
 
 class Level(Enum):
@@ -194,26 +195,33 @@ class PoolDeviceSizeChangeCode(IntEnum):
         )
 
 
+type PoolErrorCodeType = Union[
+    PoolAllocSpaceErrorCode, PoolDeviceSizeChangeCode, PoolMaintenanceErrorCode
+]
+
+
 class PoolErrorCode:
     """
     Summary class for all pool error codes.
     """
 
     CLASSES = [
-        PoolMaintenanceErrorCode,
         PoolAllocSpaceErrorCode,
         PoolDeviceSizeChangeCode,
+        PoolMaintenanceErrorCode,
     ]
 
     @staticmethod
-    def codes():
+    def codes() -> List[PoolErrorCodeType]:
         """
         Return all pool error codes.
         """
         return [code for c in PoolErrorCode.CLASSES for code in list(c)]
 
     @staticmethod
-    def error_from_str(error_code):
+    def error_from_str(
+        error_code: str,
+    ) -> PoolErrorCodeType:
         """
         Obtain an error object from a distinguishing error string.
 
@@ -230,7 +238,7 @@ class PoolErrorCode:
         )
 
     @staticmethod
-    def explain(error_code):
+    def explain(error_code: str) -> str:
         """
         Return explanation for error code, else None.
 
