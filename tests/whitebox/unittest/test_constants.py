@@ -22,42 +22,7 @@ import unittest
 # isort: LOCAL
 from stratis_cli._actions._utils import PoolFeature
 from stratis_cli._constants import FilesystemId, IdType
-from stratis_cli._error_codes import (
-    PoolAllocSpaceErrorCode,
-    PoolErrorCode,
-    PoolMaintenanceErrorCode,
-)
-
-
-class PoolMaintenanceErrorCodeTestCase(unittest.TestCase):
-    """
-    Test properties of PoolMaintenanceErrorCode
-    """
-
-    def test_parsing_str(self):
-        """
-        Parsing a known string returns the correct value.
-        """
-        for item in list(PoolMaintenanceErrorCode):
-            self.assertEqual(PoolMaintenanceErrorCode.from_str(str(item)), item)
-
-    def test_parsing_bogus_str(self):
-        """
-        Parsing a string that does not correspond to any value returns None.
-        """
-        self.assertIsNone(PoolMaintenanceErrorCode.from_str("totally super"))
-
-
-class PoolAllocSpaceErrorCodeTestCase(unittest.TestCase):
-    """
-    Tests for PoolAllocSpaceErrorCode methods.
-    """
-
-    def test_parsing_bogus_str(self):
-        """
-        Parsing a string that does not correspond to any value returns None.
-        """
-        self.assertIsNone(PoolAllocSpaceErrorCode.from_str("totally super"))
+from stratis_cli._error_codes import PoolErrorCode
 
 
 class PoolErrorCodeTestCase(unittest.TestCase):
@@ -71,6 +36,13 @@ class PoolErrorCodeTestCase(unittest.TestCase):
         """
         with self.assertRaises(StopIteration):
             PoolErrorCode.error_from_str("bogus")
+
+    def test_parsing_all_non_bogus_str(self):
+        """
+        Just generate all non bogus strings and parse them.
+        """
+        for code in PoolErrorCode.codes():
+            self.assertEqual(PoolErrorCode.error_from_str(str(code)), code)
 
     def test_summarize(self):
         """
