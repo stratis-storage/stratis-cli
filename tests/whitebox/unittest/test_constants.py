@@ -72,6 +72,15 @@ class PoolErrorCodeTestCase(unittest.TestCase):
         with self.assertRaises(StopIteration):
             PoolErrorCode.error_from_str("bogus")
 
+    def test_summarize(self):
+        """
+        Verify valid strings returned from summarize() method.
+        """
+        for code in PoolErrorCode.codes():
+            summary_value = code.summarize()
+            self.assertIsInstance(summary_value, str)
+            self.assertNotEqual(summary_value, "")
+
 
 class FilesystemIdTestCase(unittest.TestCase):
     """
