@@ -187,6 +187,13 @@ class PoolErrorCode:
         return list(PoolErrorCode.CODE_MAP.values())
 
     @staticmethod
+    def code_strs() -> List[str]:
+        """
+        Return str representations of all pool error codes.
+        """
+        return list(PoolErrorCode.CODE_MAP.keys())
+
+    @staticmethod
     def error_from_str(
         error_code: str,
     ) -> Optional[PoolErrorCodeType]:
