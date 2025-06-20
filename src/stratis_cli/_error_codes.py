@@ -16,7 +16,7 @@ Error codes
 """
 # isort: STDLIB
 from enum import Enum, IntEnum
-from typing import List, Union
+from typing import Dict, List, Union
 
 
 class Level(Enum):
@@ -159,6 +159,12 @@ class PoolDeviceSizeChangeCode(IntEnum):
         assert False, "impossible error code reached"  # pragma: no cover
 
 
+CLASSES = [
+    PoolAllocSpaceErrorCode,
+    PoolDeviceSizeChangeCode,
+    PoolMaintenanceErrorCode,
+]
+
 type PoolErrorCodeType = Union[
     PoolAllocSpaceErrorCode, PoolDeviceSizeChangeCode, PoolMaintenanceErrorCode
 ]
@@ -169,18 +175,16 @@ class PoolErrorCode:
     Summary class for all pool error codes.
     """
 
-    CLASSES = [
-        PoolAllocSpaceErrorCode,
-        PoolDeviceSizeChangeCode,
-        PoolMaintenanceErrorCode,
-    ]
+    CODE_MAP: Dict[str, PoolErrorCodeType] = dict(
+        (str(code), code) for c in CLASSES for code in list(c)
+    )
 
     @staticmethod
     def codes() -> List[PoolErrorCodeType]:
         """
         Return all pool error codes.
         """
-        return [code for c in PoolErrorCode.CLASSES for code in list(c)]
+        return [code for c in CLASSES for code in list(c)]
 
     @staticmethod
     def error_from_str(
@@ -198,7 +202,7 @@ class PoolErrorCode:
                 code
                 for code in (
                     next((code for code in c if error_code == str(code)), None)
-                    for c in PoolErrorCode.CLASSES
+                    for c in CLASSES
                 )
                 if code is not None
             )
