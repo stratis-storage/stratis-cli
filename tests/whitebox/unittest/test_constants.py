@@ -34,8 +34,7 @@ class PoolErrorCodeTestCase(unittest.TestCase):
         """
         Test parsing a string that does not correspond to any value.
         """
-        with self.assertRaises(StopIteration):
-            PoolErrorCode.error_from_str("bogus")
+        self.assertIsNone(PoolErrorCode.error_from_str("bogus"))
 
     def test_parsing_all_non_bogus_str(self):
         """

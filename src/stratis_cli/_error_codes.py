@@ -16,7 +16,7 @@ Error codes
 """
 # isort: STDLIB
 from enum import Enum, IntEnum
-from typing import Dict, List, Union
+from typing import Dict, List, Optional, Union
 
 
 class Level(Enum):
@@ -184,26 +184,17 @@ class PoolErrorCode:
         """
         Return all pool error codes.
         """
-        return [code for c in CLASSES for code in list(c)]
+        return list(PoolErrorCode.CODE_MAP.values())
 
     @staticmethod
     def error_from_str(
         error_code: str,
-    ) -> PoolErrorCodeType:
+    ) -> Optional[PoolErrorCodeType]:
         """
         Obtain an error object from a distinguishing error string.
 
         :param str error_code:
         :returns: error object
-        :raises: StopIteration if no match found
         """
-        return next(
-            (
-                code
-                for code in (
-                    next((code for code in c if error_code == str(code)), None)
-                    for c in CLASSES
-                )
-                if code is not None
-            )
-        )
+
+        return PoolErrorCode.CODE_MAP.get(error_code)
