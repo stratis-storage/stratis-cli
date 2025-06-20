@@ -570,7 +570,7 @@ POOL_SUBCMDS = [
                 (
                     "code",
                     {
-                        "choices": [str(x) for x in PoolErrorCode.codes()],
+                        "choices": PoolErrorCode.code_strs(),
                         "help": "Error code to explain",
                     },
                 )
