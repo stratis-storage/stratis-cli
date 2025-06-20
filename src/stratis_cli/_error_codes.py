@@ -28,7 +28,7 @@ class Level(Enum):
     WARNING = "W"
     INFO = "I"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.value
 
 
@@ -40,10 +40,10 @@ class PoolMaintenanceErrorCode(IntEnum):
     NO_IPC_REQUESTS = 1
     NO_POOL_CHANGES = 2
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{Level.ERROR}M{str(self.value).zfill(3)}"
 
-    def explain(self):
+    def explain(self) -> str:
         """
         Return an explanation of the error return code.
         """
@@ -64,7 +64,7 @@ class PoolMaintenanceErrorCode(IntEnum):
 
         assert False, "impossible error code reached"  # pragma: no cover
 
-    def summarize(self):
+    def summarize(self) -> str:
         """
         Return a short summary of the return code.
         """
@@ -84,10 +84,10 @@ class PoolAllocSpaceErrorCode(IntEnum):
 
     NO_ALLOC_SPACE = 1
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{Level.WARNING}S{str(self.value).zfill(3)}"
 
-    def explain(self):
+    def explain(self) -> str:
         """
         Return an explanation of the return code.
         """
@@ -100,7 +100,7 @@ class PoolAllocSpaceErrorCode(IntEnum):
 
         assert False, "impossible error code reached"  # pragma: no cover
 
-    def summarize(self):
+    def summarize(self) -> str:
         """
         Return a short summary of the return code.
         """
@@ -119,7 +119,7 @@ class PoolDeviceSizeChangeCode(IntEnum):
     DEVICE_SIZE_INCREASED = 1
     DEVICE_SIZE_DECREASED = 2
 
-    def __str__(self):
+    def __str__(self) -> str:
         if self is PoolDeviceSizeChangeCode.DEVICE_SIZE_INCREASED:
             return f"{Level.INFO}DS{str(self.value).zfill(3)}"
 
@@ -128,7 +128,7 @@ class PoolDeviceSizeChangeCode(IntEnum):
 
         assert False, "impossible error code reached"  # pragma: no cover
 
-    def explain(self):
+    def explain(self) -> str:
         """
         Return an explanation of the return code.
         """
@@ -146,7 +146,7 @@ class PoolDeviceSizeChangeCode(IntEnum):
 
         assert False, "impossible error code reached"  # pragma: no cover
 
-    def summarize(self):
+    def summarize(self) -> str:
         """
         Return a short summary of the return code.
         """
