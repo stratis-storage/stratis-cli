@@ -159,14 +159,50 @@ class PoolDeviceSizeChangeCode(IntEnum):
         assert False, "impossible error code reached"  # pragma: no cover
 
 
+class PoolEncryptionErrorCode(IntEnum):
+    """
+    Codes for encryption problems.
+    """
+
+    VOLUME_KEY_NOT_LOADED = 1
+
+    def __str__(self) -> str:
+        return f"{Level.WARNING}C{str(self.value).zfill(3)}"
+
+    def explain(self) -> str:
+        """
+        Return an explanation of the return code.
+        """
+        if self is PoolEncryptionErrorCode.VOLUME_KEY_NOT_LOADED:
+            return (
+                "The pool's volume key is not loaded. This may result in an "
+                "error if the pool's encryption layer needs to be modified."
+            )
+
+        assert False, "impossible error code reached"  # pragma: no cover
+
+    def summarize(self) -> str:
+        """
+        Return a short summary of the return code.
+        """
+        if self is PoolEncryptionErrorCode.VOLUME_KEY_NOT_LOADED:
+            return "Volume key not loaded"
+
+        assert False, "impossible error code reached"  # pragma: no cover
+
+
 CLASSES = [
     PoolAllocSpaceErrorCode,
     PoolDeviceSizeChangeCode,
+    PoolEncryptionErrorCode,
     PoolMaintenanceErrorCode,
 ]
 
 type PoolErrorCodeType = Union[
-    PoolAllocSpaceErrorCode, PoolDeviceSizeChangeCode, PoolMaintenanceErrorCode
+    PoolAllocSpaceErrorCode,
+    PoolDeviceSizeChangeCode,
+    PoolEncryptionErrorCode,
+    PoolMaintenanceErrorCode,
 ]
 
 
