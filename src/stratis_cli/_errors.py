@@ -15,6 +15,16 @@
 Error hierarchy for stratis cli.
 """
 
+# isort: STDLIB
+from typing import Dict, Union
+
+# isort: THIRDPARTY
+from dbus import String, UInt16
+
+# isort: LOCAL
+from stratis_cli._constants import PoolId
+from stratis_cli._stratisd_constants import BlockDevTiers
+
 from ._stratisd_constants import BlockDevTiers, StratisdErrors
 
 
@@ -68,7 +78,7 @@ class StratisCliResourceNotFoundError(StratisCliUserError):
     that was expected to exist but was not found.
     """
 
-    def __init__(self, command, resource):
+    def __init__(self, command: str, resource: Union[str, PoolId]):
         """
         Initializer.
 
@@ -94,7 +104,9 @@ class StratisCliPartialChangeError(StratisCliUserError):
     Invariant: self.unchanged_resources != frozenset()
     """
 
-    def __init__(self, command, changed_resources, unchanged_resources):
+    def __init__(
+        self, command: str, changed_resources: frozenset, unchanged_resources: frozenset
+    ):
         """
         Initializer.
 
@@ -140,7 +152,7 @@ class StratisCliNoChangeError(StratisCliPartialChangeError):
     is so simple that it can only succeed or fail.
     """
 
-    def __init__(self, command, resource):
+    def __init__(self, command: str, resource: Union[PoolId, str]):
         """
         Initializer.
 
@@ -157,7 +169,7 @@ class StratisCliNameConflictError(StratisCliUserError):
     Raised if an item of the same name already exists.
     """
 
-    def __init__(self, object_type, name):
+    def __init__(self, object_type: str, name: str):
         """
         Initializer.
 
@@ -202,7 +214,9 @@ class StratisCliInUseOtherTierError(StratisCliInUseError):
     included in both data and cache tiers.
     """
 
-    def __init__(self, pools_to_blockdevs, added_as):
+    def __init__(
+        self, pools_to_blockdevs: Dict[str, frozenset], added_as: BlockDevTiers
+    ):
         """
         Initializer.
 
@@ -256,7 +270,9 @@ class StratisCliInUseSameTierError(StratisCliInUseError):
     included in the same tier in two different pools.
     """
 
-    def __init__(self, pools_to_blockdevs, added_as):
+    def __init__(
+        self, pools_to_blockdevs: Dict[str, frozenset], added_as: BlockDevTiers
+    ):
         """
         Initializer.
 
@@ -301,7 +317,7 @@ class StratisCliKeyfileNotFoundError(StratisCliUserError):
     setting or unsetting a key.
     """
 
-    def __init__(self, keyfile_path):
+    def __init__(self, keyfile_path: str):
         """
         Initializer.
 
@@ -337,7 +353,7 @@ class StratisCliEngineError(StratisCliRuntimeError):
     Raised if there was a failure due to an error in stratisd's engine.
     """
 
-    def __init__(self, rc, message):
+    def __init__(self, rc: UInt16, message: String):
         """
         Initializer.
 
@@ -399,7 +415,7 @@ class StratisCliStratisdVersionError(StratisCliRuntimeError):
     Raised if stratisd version does not meet CLI version requirements.
     """
 
-    def __init__(self, actual_version, minimum_version, maximum_version):
+    def __init__(self, actual_version: str, minimum_version: str, maximum_version: str):
         """
         Initializer.
         :param tuple actual_version: stratisd's actual version
@@ -449,7 +465,7 @@ class StratisCliInvalidCommandLineOptionValue(StratisCliUserError):
     parse time.
     """
 
-    def __init__(self, msg):
+    def __init__(self, msg: str):
         self.msg = msg
 
     def __str__(self):

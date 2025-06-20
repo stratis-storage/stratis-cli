@@ -17,6 +17,10 @@ Miscellaneous pool-binding actions.
 
 # isort: STDLIB
 import json
+from argparse import Namespace
+
+# isort: LOCAL
+from stratis_cli._constants import PoolId
 
 from .._constants import EncryptionMethod, IdType, PoolId
 from .._errors import StratisCliEngineError, StratisCliNoChangeError
@@ -25,7 +29,7 @@ from ._connection import get_object
 from ._constants import TOP_OBJECT
 
 
-def _get_pool_id(namespace):
+def _get_pool_id(namespace: Namespace) -> PoolId:
     """
     Get id for pool, regardless of whether parser uses mandatory pool_name
     argument or --name/--uuid alternative.
@@ -47,7 +51,7 @@ class BindActions:
     """
 
     @staticmethod
-    def bind_clevis(namespace):
+    def bind_clevis(namespace: Namespace):
         """
         Generic bind method. For further information about Clevis, and
         discussion of the pin and the configuration, consult Clevis
@@ -85,7 +89,7 @@ class BindActions:
             raise StratisCliNoChangeError("bind", pool_id.id_value)
 
     @staticmethod
-    def bind_keyring(namespace):
+    def bind_keyring(namespace: Namespace):
         """
         Bind all devices in an encrypted pool using the kernel keyring.
         """
@@ -117,7 +121,7 @@ class BindActions:
             raise StratisCliNoChangeError("bind", pool_id.id_value)
 
     @staticmethod
-    def unbind(namespace):
+    def unbind(namespace: Namespace):
         """
         Unbind all devices in an encrypted pool.
 
@@ -168,7 +172,7 @@ class RebindActions:
     """
 
     @staticmethod
-    def rebind_clevis(namespace):
+    def rebind_clevis(namespace: Namespace):
         """
         Rebind with Clevis nbde/tang
         """
@@ -205,7 +209,7 @@ class RebindActions:
             )  # pragma: no cover
 
     @staticmethod
-    def rebind_keyring(namespace):
+    def rebind_keyring(namespace: Namespace):
         """
         Rebind with a kernel keyring
         """

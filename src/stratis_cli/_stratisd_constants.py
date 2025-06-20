@@ -17,7 +17,7 @@ Stratisd error classes.
 
 # isort: STDLIB
 from enum import Enum, IntEnum
-from typing import Any, Mapping
+from typing import Any, List, Mapping
 
 from ._error_codes import PoolMaintenanceErrorCode
 
@@ -42,7 +42,7 @@ class BlockDevTiers(IntEnum):
     DATA = 0
     CACHE = 1
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
@@ -59,7 +59,7 @@ class ReportKey(Enum):
     MANAGED_OBJECTS = "managed_objects_report"
     STOPPED_POOLS = "stopped_pools"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.value
 
 
@@ -72,7 +72,7 @@ class PoolActionAvailability(IntEnum):
     no_ipc_requests = 1  # pylint: disable=invalid-name
     no_pool_changes = 2  # pylint: disable=invalid-name
 
-    def pool_maintenance_error_codes(self):
+    def pool_maintenance_error_codes(self) -> List[Any]:
         """
         Return the list of PoolMaintenanceErrorCodes for this availability.
 
@@ -96,7 +96,7 @@ class MetadataVersion(Enum):
     V1 = 1
     V2 = 2
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.value)
 
 
