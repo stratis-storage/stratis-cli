@@ -27,7 +27,8 @@ from justbytes import Range
 from .._error_codes import (
     PoolAllocSpaceErrorCode,
     PoolDeviceSizeChangeCode,
-    PoolMaintenanceErrorCode,
+    PoolEncryptionErrorCode,
+    PoolErrorCodeType,
 )
 from .._errors import StratisCliResourceNotFoundError
 from .._stratisd_constants import MetadataVersion, PoolActionAvailability
@@ -54,6 +55,17 @@ def _metadata_version(mopool) -> Optional[MetadataVersion]:
         return MetadataVersion(int(mopool.MetadataVersion()))
     except ValueError:  # pragma: no cover
         return None
+
+
+def _volume_key_loaded(mopool) -> Union[tuple[bool, bool], tuple[bool, str]]:
+    """
+    The string result is an error message indicating that the volume key
+    state is unknown.
+    """
+    result = mopool.VolumeKeyLoaded()
+    if isinstance(result, int):
+        return (True, bool(result))
+    return (False, str(result))  # pragma: no cover
 
 
 # This method is only used with legacy pools
@@ -133,13 +145,7 @@ class DefaultAlerts:  # pylint: disable=too-few-public-methods
         """
         (self.increased, self.decreased) = DefaultAlerts._pools_with_changed_devs(devs)
 
-    def alert_codes(
-        self, pool_object_path, mopool
-    ) -> List[
-        Union[
-            PoolAllocSpaceErrorCode, PoolDeviceSizeChangeCode, PoolMaintenanceErrorCode
-        ]
-    ]:
+    def alert_codes(self, pool_object_path, mopool) -> List[PoolErrorCodeType]:
         """
         Return error code objects for a pool.
 
@@ -158,10 +164,30 @@ class DefaultAlerts:  # pylint: disable=too-few-public-methods
             pool_object_path, self.increased, self.decreased
         )
 
+        metadata_version = _metadata_version(mopool)
+
+        (vkl_is_bool, volume_key_loaded) = _volume_key_loaded(mopool)
+
+        pool_encryption_error_codes = (
+            [PoolEncryptionErrorCode.VOLUME_KEY_NOT_LOADED]
+            if metadata_version is MetadataVersion.V2
+            and mopool.Encrypted()
+            and vkl_is_bool
+            and not volume_key_loaded
+            else []
+        ) + (
+            [PoolEncryptionErrorCode.VOLUME_KEY_STATUS_UNKNOWN]
+            if metadata_version is MetadataVersion.V2
+            and mopool.Encrypted()
+            and not vkl_is_bool
+            else []
+        )
+
         return (
             availability_error_codes
             + no_alloc_space_error_codes
             + device_size_changed_codes
+            + pool_encryption_error_codes
         )
 
     @staticmethod
