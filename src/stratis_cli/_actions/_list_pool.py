@@ -118,10 +118,21 @@ class DefaultAlerts:  # pylint: disable=too-few-public-methods
     Alerts to display for a started pool.
     """
 
-    @staticmethod
+    def __init__(self, devs):
+        """
+        The initializer.
+
+        :param devs: result of GetManagedObjects
+        """
+        (self.increased, self.decreased) = DefaultAlerts._pools_with_changed_devs(devs)
+
     def alert_codes(
-        mopool,
-    ) -> List[Union[PoolAllocSpaceErrorCode, PoolMaintenanceErrorCode]]:
+        self, pool_object_path, mopool
+    ) -> List[
+        Union[
+            PoolAllocSpaceErrorCode, PoolDeviceSizeChangeCode, PoolMaintenanceErrorCode
+        ]
+    ]:
         """
         Return error code objects for a pool.
 
@@ -136,10 +147,18 @@ class DefaultAlerts:  # pylint: disable=too-few-public-methods
             [PoolAllocSpaceErrorCode.NO_ALLOC_SPACE] if mopool.NoAllocSpace() else []
         )
 
-        return availability_error_codes + no_alloc_space_error_codes
+        device_size_changed_codes = DefaultAlerts._from_sets(
+            pool_object_path, self.increased, self.decreased
+        )
+
+        return (
+            availability_error_codes
+            + no_alloc_space_error_codes
+            + device_size_changed_codes
+        )
 
     @staticmethod
-    def pools_with_changed_devs(devs_to_search):
+    def _pools_with_changed_devs(devs_to_search):
         """
         Returns a tuple of sets containing (1) pools that have a device that
         has increased in size and (2) pools that have a device that has
@@ -168,7 +187,7 @@ class DefaultAlerts:  # pylint: disable=too-few-public-methods
         return (increased, decreased)
 
     @staticmethod
-    def from_sets(
+    def _from_sets(
         pool_object_path, increased, decreased
     ) -> List[PoolDeviceSizeChangeCode]:
         """
@@ -265,15 +284,15 @@ class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
         self.selection = selection
 
     def _print_detail_view(
-        self, mopool, size_change_codes: List[PoolDeviceSizeChangeCode]
-    ):
+        self, pool_object_path, mopool, alerts: DefaultAlerts
+    ):  # pylint: disable=too-many-locals
         """
         Print the detailed view for a single pool.
 
         :param UUID uuid: the pool uuid
+        :param pool_object_path: object path of the pool
         :param MOPool mopool: properties of the pool
-        :param size_change_codes: size change codes
-        :type size_change_codes: list of PoolDeviceSizeChangeCode
+        :param DefaultAlerts alerts: pool alerts
         """
         encrypted = mopool.Encrypted()
 
@@ -282,7 +301,7 @@ class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
 
         alert_summary = [
             f"{code}: {code.summarize()}"
-            for code in (DefaultAlerts.alert_codes(mopool) + size_change_codes)
+            for code in alerts.alert_codes(pool_object_path, mopool)
         ]
         print(f"Alerts: {len(alert_summary)}")
         for line in alert_summary:  # pragma: no cover
@@ -380,15 +399,11 @@ class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
             .search(managed_objects)
         )
 
-        (increased, decreased) = DefaultAlerts.pools_with_changed_devs(
+        alerts = DefaultAlerts(
             devs(props={"Pool": pool_object_path}).search(managed_objects)
         )
 
-        device_change_codes = DefaultAlerts.from_sets(
-            pool_object_path, increased, decreased
-        )
-
-        self._print_detail_view(MOPool(mopool), device_change_codes)
+        self._print_detail_view(pool_object_path, MOPool(mopool), alerts)
 
 
 class DefaultTable(Default):  # pylint: disable=too-few-public-methods
@@ -466,9 +481,7 @@ class DefaultTable(Default):  # pylint: disable=too-few-public-methods
 
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
-        (increased, decreased) = DefaultAlerts.pools_with_changed_devs(
-            devs().search(managed_objects)
-        )
+        alerts = DefaultAlerts(devs().search(managed_objects))
 
         pools_with_props = [
             (objpath, MOPool(info)) for objpath, info in pools().search(managed_objects)
@@ -483,12 +496,7 @@ class DefaultTable(Default):  # pylint: disable=too-few-public-methods
                 ", ".join(
                     sorted(
                         str(code)
-                        for code in (
-                            DefaultAlerts.alert_codes(mopool)
-                            + DefaultAlerts.from_sets(
-                                pool_object_path, increased, decreased
-                            )
-                        )
+                        for code in alerts.alert_codes(pool_object_path, mopool)
                     )
                 ),
             )
