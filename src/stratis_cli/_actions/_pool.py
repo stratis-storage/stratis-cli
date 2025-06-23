@@ -774,4 +774,6 @@ class PoolActions:
         """
         Print an explanation of pool error code.
         """
-        print(PoolErrorCode.explain(namespace.code))
+        code = PoolErrorCode.error_from_str(namespace.code)
+        assert code is not None, "parser ensures legal code"
+        print(code.explain())

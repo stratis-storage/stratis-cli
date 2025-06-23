@@ -16,6 +16,7 @@ Error codes
 """
 # isort: STDLIB
 from enum import Enum, IntEnum
+from typing import Dict, List, Optional, Union
 
 
 class Level(Enum):
@@ -27,7 +28,7 @@ class Level(Enum):
     WARNING = "W"
     INFO = "I"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.value
 
 
@@ -39,22 +40,10 @@ class PoolMaintenanceErrorCode(IntEnum):
     NO_IPC_REQUESTS = 1
     NO_POOL_CHANGES = 2
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{Level.ERROR}M{str(self.value).zfill(3)}"
 
-    @staticmethod
-    def from_str(code_str):
-        """
-        Discover the code, if any, from the code string.
-
-        :returns: the code if it finds a match, otherwise None
-        :rtype: PoolMaintenanceErrorCode or NoneType
-        """
-        return next(
-            (code for code in PoolMaintenanceErrorCode if code_str == str(code)), None
-        )
-
-    def explain(self):
+    def explain(self) -> str:
         """
         Return an explanation of the error return code.
         """
@@ -75,7 +64,7 @@ class PoolMaintenanceErrorCode(IntEnum):
 
         assert False, "impossible error code reached"  # pragma: no cover
 
-    def summarize(self):
+    def summarize(self) -> str:
         """
         Return a short summary of the return code.
         """
@@ -95,10 +84,10 @@ class PoolAllocSpaceErrorCode(IntEnum):
 
     NO_ALLOC_SPACE = 1
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{Level.WARNING}S{str(self.value).zfill(3)}"
 
-    def explain(self):
+    def explain(self) -> str:
         """
         Return an explanation of the return code.
         """
@@ -111,7 +100,7 @@ class PoolAllocSpaceErrorCode(IntEnum):
 
         assert False, "impossible error code reached"  # pragma: no cover
 
-    def summarize(self):
+    def summarize(self) -> str:
         """
         Return a short summary of the return code.
         """
@@ -119,18 +108,6 @@ class PoolAllocSpaceErrorCode(IntEnum):
             return "All devices fully allocated"
 
         assert False, "impossible error code reached"  # pragma: no cover
-
-    @staticmethod
-    def from_str(code_str):
-        """
-        Discover the code, if any, from the code string.
-
-        :returns: the code if it finds a match, otherwise None
-        :rtype: PoolAllocSpaceErrorCode or NoneType
-        """
-        return next(
-            (code for code in PoolAllocSpaceErrorCode if code_str == str(code)), None
-        )
 
 
 class PoolDeviceSizeChangeCode(IntEnum):
@@ -142,7 +119,7 @@ class PoolDeviceSizeChangeCode(IntEnum):
     DEVICE_SIZE_INCREASED = 1
     DEVICE_SIZE_DECREASED = 2
 
-    def __str__(self):
+    def __str__(self) -> str:
         if self is PoolDeviceSizeChangeCode.DEVICE_SIZE_INCREASED:
             return f"{Level.INFO}DS{str(self.value).zfill(3)}"
 
@@ -151,7 +128,7 @@ class PoolDeviceSizeChangeCode(IntEnum):
 
         assert False, "impossible error code reached"  # pragma: no cover
 
-    def explain(self):
+    def explain(self) -> str:
         """
         Return an explanation of the return code.
         """
@@ -169,7 +146,7 @@ class PoolDeviceSizeChangeCode(IntEnum):
 
         assert False, "impossible error code reached"  # pragma: no cover
 
-    def summarize(self):
+    def summarize(self) -> str:
         """
         Return a short summary of the return code.
         """
@@ -181,17 +158,16 @@ class PoolDeviceSizeChangeCode(IntEnum):
 
         assert False, "impossible error code reached"  # pragma: no cover
 
-    @staticmethod
-    def from_str(code_str):
-        """
-        Discover the code, if any, from the code string.
 
-        :returns: the code if it finds a match, otherwise None
-        :rtype: PoolAllocSpaceErrorCode or NoneType
-        """
-        return next(
-            (code for code in PoolDeviceSizeChangeCode if code_str == str(code)), None
-        )
+CLASSES = [
+    PoolAllocSpaceErrorCode,
+    PoolDeviceSizeChangeCode,
+    PoolMaintenanceErrorCode,
+]
+
+type PoolErrorCodeType = Union[
+    PoolAllocSpaceErrorCode, PoolDeviceSizeChangeCode, PoolMaintenanceErrorCode
+]
 
 
 class PoolErrorCode:
@@ -199,41 +175,33 @@ class PoolErrorCode:
     Summary class for all pool error codes.
     """
 
-    CLASSES = [
-        PoolMaintenanceErrorCode,
-        PoolAllocSpaceErrorCode,
-        PoolDeviceSizeChangeCode,
-    ]
+    CODE_MAP: Dict[str, PoolErrorCodeType] = dict(
+        (str(code), code) for c in CLASSES for code in list(c)
+    )
 
     @staticmethod
-    def codes():
+    def codes() -> List[PoolErrorCodeType]:
         """
         Return all pool error codes.
         """
-        return [code for c in PoolErrorCode.CLASSES for code in list(c)]
+        return list(PoolErrorCode.CODE_MAP.values())
 
     @staticmethod
-    def error_from_str(error_code):
+    def code_strs() -> List[str]:
+        """
+        Return str representations of all pool error codes.
+        """
+        return list(PoolErrorCode.CODE_MAP.keys())
+
+    @staticmethod
+    def error_from_str(
+        error_code: str,
+    ) -> Optional[PoolErrorCodeType]:
         """
         Obtain an error object from a distinguishing error string.
 
         :param str error_code:
         :returns: error object
-        :raises: StopIteration if no match found
         """
-        return next(
-            (
-                code
-                for code in (c.from_str(error_code) for c in PoolErrorCode.CLASSES)
-                if code is not None
-            )
-        )
 
-    @staticmethod
-    def explain(error_code):
-        """
-        Return explanation for error code, else None.
-
-        :param str error_code:
-        """
-        return PoolErrorCode.error_from_str(error_code).explain()
+        return PoolErrorCode.CODE_MAP.get(error_code)
