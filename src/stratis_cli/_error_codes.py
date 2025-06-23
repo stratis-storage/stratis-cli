@@ -165,6 +165,7 @@ class PoolEncryptionErrorCode(IntEnum):
     """
 
     VOLUME_KEY_NOT_LOADED = 1
+    VOLUME_KEY_STATUS_UNKNOWN = 2
 
     def __str__(self) -> str:
         return f"{Level.WARNING}C{str(self.value).zfill(3)}"
@@ -178,6 +179,12 @@ class PoolEncryptionErrorCode(IntEnum):
                 "The pool's volume key is not loaded. This may result in an "
                 "error if the pool's encryption layer needs to be modified."
             )
+        if self is PoolEncryptionErrorCode.VOLUME_KEY_STATUS_UNKNOWN:
+            return (
+                "The pool's volume key may or may not be loaded. If the volume "
+                "key is not loaded, there may an error if the pool's "
+                "encryption layer needs to be modified."
+            )
 
         assert False, "impossible error code reached"  # pragma: no cover
 
@@ -187,6 +194,8 @@ class PoolEncryptionErrorCode(IntEnum):
         """
         if self is PoolEncryptionErrorCode.VOLUME_KEY_NOT_LOADED:
             return "Volume key not loaded"
+        if self is PoolEncryptionErrorCode.VOLUME_KEY_STATUS_UNKNOWN:
+            return "Volume key status unknown"
 
         assert False, "impossible error code reached"  # pragma: no cover
 
