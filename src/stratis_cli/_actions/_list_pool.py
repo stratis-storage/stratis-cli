@@ -19,7 +19,7 @@ Pool actions.
 import json
 import os
 from abc import ABC, abstractmethod
-from typing import List, Union
+from typing import List, Optional, Union
 
 # isort: THIRDPARTY
 from justbytes import Range
@@ -47,6 +47,13 @@ from ._utils import (
     StoppedPool,
     fetch_stopped_pools_property,
 )
+
+
+def _metadata_version(mopool) -> Optional[MetadataVersion]:
+    try:
+        return MetadataVersion(int(mopool.MetadataVersion()))
+    except ValueError:  # pragma: no cover
+        return None
 
 
 # This method is only used with legacy pools
@@ -307,10 +314,7 @@ class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
         for line in alert_summary:  # pragma: no cover
             print(f"     {line}")
 
-        try:
-            metadata_version = MetadataVersion(int(mopool.MetadataVersion()))
-        except ValueError:  # pragma: no cover
-            metadata_version = None
+        metadata_version = _metadata_version(mopool)
 
         print(
             f'Metadata Version: {"none" if metadata_version is None else metadata_version}'
@@ -466,10 +470,7 @@ class DefaultTable(Default):  # pylint: disable=too-few-public-methods
                 """
                 return (" " if has_property else "~") + code
 
-            try:
-                metadata_version = MetadataVersion(int(mopool.MetadataVersion()))
-            except ValueError:  # pragma: no cover
-                metadata_version = None
+            metadata_version = _metadata_version(mopool)
 
             props_list = [
                 (metadata_version in (MetadataVersion.V1, None), "Le"),
