@@ -113,6 +113,89 @@ class TokenSlotInfo:  # pylint: disable=too-few-public-methods
         )
 
 
+class DefaultAlerts:  # pylint: disable=too-few-public-methods
+    """
+    Alerts to display for a started pool.
+    """
+
+    @staticmethod
+    def alert_codes(
+        mopool,
+    ) -> List[Union[PoolAllocSpaceErrorCode, PoolMaintenanceErrorCode]]:
+        """
+        Return error code objects for a pool.
+
+        :param mopool: object to access pool properties
+
+        :returns: list of PoolErrorCode
+        """
+        action_availability = PoolActionAvailability[str(mopool.AvailableActions())]
+        availability_error_codes = action_availability.pool_maintenance_error_codes()
+
+        no_alloc_space_error_codes = (
+            [PoolAllocSpaceErrorCode.NO_ALLOC_SPACE] if mopool.NoAllocSpace() else []
+        )
+
+        return availability_error_codes + no_alloc_space_error_codes
+
+    @staticmethod
+    def pools_with_changed_devs(devs_to_search):
+        """
+        Returns a tuple of sets containing (1) pools that have a device that
+        has increased in size and (2) pools that have a device that has
+        decreased in size.
+
+        A pool may occupy both sets if one device has increased and one has
+        decreased.
+
+        :param devs_to_search: an iterable of device objects
+        :returns: a pair of sets
+        :rtype: tuple of (set of ObjectPath)
+        """
+        # pylint: disable=import-outside-toplevel
+        from ._data import MODev
+
+        (increased, decreased) = (set(), set())
+        for _, info in devs_to_search:
+            modev = MODev(info)
+            size = Range(modev.TotalPhysicalSize())
+            observed_size = get_property(modev.NewPhysicalSize(), Range, size)
+            if observed_size > size:  # pragma: no cover
+                increased.add(modev.Pool())
+            if observed_size < size:  # pragma: no cover
+                decreased.add(modev.Pool())
+
+        return (increased, decreased)
+
+    @staticmethod
+    def from_sets(
+        pool_object_path, increased, decreased
+    ) -> List[PoolDeviceSizeChangeCode]:
+        """
+        Get the code from sets and one pool object path.
+
+        :param pool_object_path: the pool object path
+        :param increased: pools that have devices that have increased in size
+        :type increased: set of object path
+        :param decreased: pools that have devices that have decrease in size
+        :type increased: set of object path
+
+        :returns: the codes
+        """
+        if (
+            pool_object_path in increased and pool_object_path in decreased
+        ):  # pragma: no cover
+            return [
+                PoolDeviceSizeChangeCode.DEVICE_SIZE_INCREASED,
+                PoolDeviceSizeChangeCode.DEVICE_SIZE_DECREASED,
+            ]
+        if pool_object_path in increased:  # pragma: no cover
+            return [PoolDeviceSizeChangeCode.DEVICE_SIZE_INCREASED]
+        if pool_object_path in decreased:  # pragma: no cover
+            return [PoolDeviceSizeChangeCode.DEVICE_SIZE_DECREASED]
+        return []
+
+
 def list_pools(uuid_formatter, *, stopped=False, selection=None):
     """
     List the specified information about pools.
@@ -160,90 +243,13 @@ class ListPool(ABC):  # pylint:disable=too-few-public-methods
         """
 
 
-class Default(ListPool):
+class Default(ListPool):  # pylint: disable=too-few-public-methods
     """
     Handle listing the pools that are listed by default.
     """
 
-    @staticmethod
-    def alert_codes(
-        mopool,
-    ) -> List[Union[PoolAllocSpaceErrorCode, PoolMaintenanceErrorCode]]:
-        """
-        Return error code objects for a pool.
 
-        :param mopool: object to access pool properties
-
-        :returns: list of PoolErrorCode
-        """
-        action_availability = PoolActionAvailability[str(mopool.AvailableActions())]
-        availability_error_codes = action_availability.pool_maintenance_error_codes()
-
-        no_alloc_space_error_codes = (
-            [PoolAllocSpaceErrorCode.NO_ALLOC_SPACE] if mopool.NoAllocSpace() else []
-        )
-
-        return availability_error_codes + no_alloc_space_error_codes
-
-    @staticmethod
-    def _pools_with_changed_devs(devs_to_search):
-        """
-        Returns a tuple of sets containing (1) pools that have a device that
-        has increased in size and (2) pools that have a device that has
-        decreased in size.
-
-        A pool may occupy both sets if one device has increased and one has
-        decreased.
-
-        :param devs_to_search: an iterable of device objects
-        :returns: a pair of sets
-        :rtype: tuple of (set of ObjectPath)
-        """
-        # pylint: disable=import-outside-toplevel
-        from ._data import MODev
-
-        (increased, decreased) = (set(), set())
-        for _, info in devs_to_search:
-            modev = MODev(info)
-            size = Range(modev.TotalPhysicalSize())
-            observed_size = get_property(modev.NewPhysicalSize(), Range, size)
-            if observed_size > size:  # pragma: no cover
-                increased.add(modev.Pool())
-            if observed_size < size:  # pragma: no cover
-                decreased.add(modev.Pool())
-
-        return (increased, decreased)
-
-    @staticmethod
-    def _from_sets(
-        pool_object_path, increased, decreased
-    ) -> List[PoolDeviceSizeChangeCode]:
-        """
-        Get the code from sets and one pool object path.
-
-        :param pool_object_path: the pool object path
-        :param increased: pools that have devices that have increased in size
-        :type increased: set of object path
-        :param decreased: pools that have devices that have decrease in size
-        :type increased: set of object path
-
-        :returns: the codes
-        """
-        if (
-            pool_object_path in increased and pool_object_path in decreased
-        ):  # pragma: no cover
-            return [
-                PoolDeviceSizeChangeCode.DEVICE_SIZE_INCREASED,
-                PoolDeviceSizeChangeCode.DEVICE_SIZE_DECREASED,
-            ]
-        if pool_object_path in increased:  # pragma: no cover
-            return [PoolDeviceSizeChangeCode.DEVICE_SIZE_INCREASED]
-        if pool_object_path in decreased:  # pragma: no cover
-            return [PoolDeviceSizeChangeCode.DEVICE_SIZE_DECREASED]
-        return []
-
-
-class DefaultDetail(Default):
+class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
     """
     List one pool with a detail view.
     """
@@ -276,7 +282,7 @@ class DefaultDetail(Default):
 
         alert_summary = [
             f"{code}: {code.summarize()}"
-            for code in (self.alert_codes(mopool) + size_change_codes)
+            for code in (DefaultAlerts.alert_codes(mopool) + size_change_codes)
         ]
         print(f"Alerts: {len(alert_summary)}")
         for line in alert_summary:  # pragma: no cover
@@ -374,16 +380,18 @@ class DefaultDetail(Default):
             .search(managed_objects)
         )
 
-        (increased, decreased) = self._pools_with_changed_devs(
+        (increased, decreased) = DefaultAlerts.pools_with_changed_devs(
             devs(props={"Pool": pool_object_path}).search(managed_objects)
         )
 
-        device_change_codes = self._from_sets(pool_object_path, increased, decreased)
+        device_change_codes = DefaultAlerts.from_sets(
+            pool_object_path, increased, decreased
+        )
 
         self._print_detail_view(MOPool(mopool), device_change_codes)
 
 
-class DefaultTable(Default):
+class DefaultTable(Default):  # pylint: disable=too-few-public-methods
     """
     List several pools with a table view.
     """
@@ -458,7 +466,7 @@ class DefaultTable(Default):
 
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
-        (increased, decreased) = self._pools_with_changed_devs(
+        (increased, decreased) = DefaultAlerts.pools_with_changed_devs(
             devs().search(managed_objects)
         )
 
@@ -476,8 +484,10 @@ class DefaultTable(Default):
                     sorted(
                         str(code)
                         for code in (
-                            self.alert_codes(mopool)
-                            + self._from_sets(pool_object_path, increased, decreased)
+                            DefaultAlerts.alert_codes(mopool)
+                            + DefaultAlerts.from_sets(
+                                pool_object_path, increased, decreased
+                            )
                         )
                     )
                 ),
