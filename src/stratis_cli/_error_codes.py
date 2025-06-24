@@ -177,7 +177,9 @@ class PoolEncryptionErrorCode(IntEnum):
         if self is PoolEncryptionErrorCode.VOLUME_KEY_NOT_LOADED:
             return (
                 "The pool's volume key is not loaded. This may result in an "
-                "error if the pool's encryption layer needs to be modified."
+                "error if the pool's encryption layer needs to be modified. "
+                "If the pool is encrypted with a key in the kernel keyring "
+                "then setting that key may resolve the problem."
             )
         if self is PoolEncryptionErrorCode.VOLUME_KEY_STATUS_UNKNOWN:
             return (
