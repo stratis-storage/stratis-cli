@@ -159,14 +159,61 @@ class PoolDeviceSizeChangeCode(IntEnum):
         assert False, "impossible error code reached"  # pragma: no cover
 
 
+class PoolEncryptionErrorCode(IntEnum):
+    """
+    Codes for encryption problems.
+    """
+
+    VOLUME_KEY_NOT_LOADED = 1
+    VOLUME_KEY_STATUS_UNKNOWN = 2
+
+    def __str__(self) -> str:
+        return f"{Level.WARNING}C{str(self.value).zfill(3)}"
+
+    def explain(self) -> str:
+        """
+        Return an explanation of the return code.
+        """
+        if self is PoolEncryptionErrorCode.VOLUME_KEY_NOT_LOADED:
+            return (
+                "The pool's volume key is not loaded. This may result in an "
+                "error if the pool's encryption layer needs to be modified. "
+                "If the pool is encrypted with a key in the kernel keyring "
+                "then setting that key may resolve the problem."
+            )
+        if self is PoolEncryptionErrorCode.VOLUME_KEY_STATUS_UNKNOWN:
+            return (
+                "The pool's volume key may or may not be loaded. If the volume "
+                "key is not loaded, there may an error if the pool's "
+                "encryption layer needs to be modified."
+            )
+
+        assert False, "impossible error code reached"  # pragma: no cover
+
+    def summarize(self) -> str:
+        """
+        Return a short summary of the return code.
+        """
+        if self is PoolEncryptionErrorCode.VOLUME_KEY_NOT_LOADED:
+            return "Volume key not loaded"
+        if self is PoolEncryptionErrorCode.VOLUME_KEY_STATUS_UNKNOWN:
+            return "Volume key status unknown"
+
+        assert False, "impossible error code reached"  # pragma: no cover
+
+
 CLASSES = [
     PoolAllocSpaceErrorCode,
     PoolDeviceSizeChangeCode,
+    PoolEncryptionErrorCode,
     PoolMaintenanceErrorCode,
 ]
 
 type PoolErrorCodeType = Union[
-    PoolAllocSpaceErrorCode, PoolDeviceSizeChangeCode, PoolMaintenanceErrorCode
+    PoolAllocSpaceErrorCode,
+    PoolDeviceSizeChangeCode,
+    PoolEncryptionErrorCode,
+    PoolMaintenanceErrorCode,
 ]
 
 
