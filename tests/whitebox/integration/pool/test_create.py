@@ -21,6 +21,7 @@ from stratis_cli._errors import (
     StratisCliEngineError,
     StratisCliInUseSameTierError,
     StratisCliNameConflictError,
+    StratisCliUserError,
 )
 
 from .._misc import RUNNER, TEST_RUNNER, SimTestCase, device_name_list
@@ -185,3 +186,15 @@ class Create7TestCase(SimTestCase):
             self._MENU + [self._POOLNAME] + self._DEVICES + ["--journal-size=131079KiB"]
         )
         self.check_error(StratisCliEngineError, command_line, _ERROR)
+
+    def test_too_large_journal_size(self):
+        """
+        Test creating with a journal size that is too large for its D-Bus type.
+        """
+        command_line = (
+            self._MENU
+            + [self._POOLNAME]
+            + self._DEVICES
+            + ["--journal-size=18446744073709551616B"]
+        )
+        self.check_error(StratisCliUserError, command_line, _ERROR)
