@@ -25,6 +25,9 @@ from uuid import UUID
 # isort: THIRDPARTY
 from justbytes import Range
 
+# isort: FIRSTPARTY
+from dbus_python_client_gen import DPClientMarshallingError
+
 from .._constants import IntegrityOption, IntegrityTagSpec, PoolId, UnlockMethod
 from .._error_codes import PoolErrorCode
 from .._errors import (
@@ -187,36 +190,45 @@ class PoolActions:
             )
         )
 
-        (
-            (changed, (pool_object_path, _)),
-            return_code,
-            message,
-        ) = Manager.Methods.CreatePool(
-            proxy,
-            {
-                "name": pool_name,
-                "devices": blockdevs,
-                "key_desc": (
-                    []
-                    if namespace.key_desc is None
-                    else [((False, 0), namespace.key_desc)]
-                ),
-                "clevis_info": (
-                    []
-                    if namespace.clevis is None
-                    else [
-                        (
-                            (False, 0),
-                            namespace.clevis.pin,
-                            json.dumps(namespace.clevis.config),
-                        )
-                    ]
-                ),
-                "journal_size": journal_size,
-                "tag_spec": tag_spec,
-                "allocate_superblock": allocate_superblock,
-            },
-        )
+        try:
+            (
+                (changed, (pool_object_path, _)),
+                return_code,
+                message,
+            ) = Manager.Methods.CreatePool(
+                proxy,
+                {
+                    "name": pool_name,
+                    "devices": blockdevs,
+                    "key_desc": (
+                        []
+                        if namespace.key_desc is None
+                        else [((False, 0), namespace.key_desc)]
+                    ),
+                    "clevis_info": (
+                        []
+                        if namespace.clevis is None
+                        else [
+                            (
+                                (False, 0),
+                                namespace.clevis.pin,
+                                json.dumps(namespace.clevis.config),
+                            )
+                        ]
+                    ),
+                    "journal_size": journal_size,
+                    "tag_spec": tag_spec,
+                    "allocate_superblock": allocate_superblock,
+                },
+            )
+        except DPClientMarshallingError as err:
+            u64max = 0xFFFFFFFFFFFFFFFF
+            if journal_size[1] > u64max:
+                raise StratisCliInvalidCommandLineOptionValue(
+                    "--journal-size value is too large; it must be no greater "
+                    f"than {u64max} bytes."
+                ) from err
+            raise err  # pragma: no cover
 
         if return_code != StratisdErrors.OK:
             raise StratisCliEngineError(return_code, message)
