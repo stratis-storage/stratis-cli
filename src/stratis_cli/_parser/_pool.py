@@ -262,6 +262,12 @@ POOL_SUBCMDS = [
         "start",
         {
             "help": "Start a pool.",
+            "args": [
+                (
+                    "--skip-cache",
+                    {"action": "store_true", "help": "Do not set up the pool's cache"},
+                )
+            ],
             "groups": [
                 (
                     "Pool Identifier",
