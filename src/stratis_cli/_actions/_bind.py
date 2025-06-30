@@ -27,9 +27,18 @@ from ._constants import TOP_OBJECT
 
 def _get_pool_id(namespace):
     """
+    Get id for pool, regardless of whether parser uses mandatory pool_name
+    argument or --name/--uuid alternative.
+
     :return: Id representing how to lookup the pool
     """
-    return PoolId(IdType.NAME, namespace.pool_name)
+    name = getattr(namespace, "pool_name", None)
+    if name is None:
+        result = PoolId.from_parser_namespace(namespace)
+        assert result is not None
+        return result
+
+    return PoolId(IdType.NAME, name)
 
 
 class BindActions:
