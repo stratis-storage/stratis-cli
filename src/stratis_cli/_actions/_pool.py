@@ -342,6 +342,7 @@ class PoolActions:
             | {
                 "unlock_method": unlock_method,
                 "key_fd": key_fd_arg,
+                "remove_cache": False,
             },
         )
 
