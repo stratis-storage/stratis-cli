@@ -147,20 +147,20 @@ class DefaultAlerts:  # pylint: disable=too-few-public-methods
 
     def alert_codes(self, pool_object_path, mopool) -> List[PoolAlertType]:
         """
-        Return error code objects for a pool.
+        Return alert code objects for a pool.
 
         :param mopool: object to access pool properties
 
-        :returns: list of PoolAlert
+        :returns: list of PoolAlertType
         """
         action_availability = PoolActionAvailability[str(mopool.AvailableActions())]
-        availability_error_codes = action_availability.pool_maintenance_error_codes()
+        availability_alerts = action_availability.pool_maintenance_alerts()
 
-        no_alloc_space_error_codes = (
+        no_alloc_space_alerts = (
             [PoolAllocSpaceAlert.NO_ALLOC_SPACE] if mopool.NoAllocSpace() else []
         )
 
-        device_size_changed_codes = DefaultAlerts._from_sets(
+        device_size_changed_alerts = DefaultAlerts._from_sets(
             pool_object_path, self.increased, self.decreased
         )
 
@@ -168,7 +168,7 @@ class DefaultAlerts:  # pylint: disable=too-few-public-methods
 
         (vkl_is_bool, volume_key_loaded) = _volume_key_loaded(mopool)
 
-        pool_encryption_error_codes = (
+        pool_encryption_alerts = (
             [PoolEncryptionAlert.VOLUME_KEY_NOT_LOADED]
             if metadata_version is MetadataVersion.V2
             and mopool.Encrypted()
@@ -184,10 +184,10 @@ class DefaultAlerts:  # pylint: disable=too-few-public-methods
         )
 
         return (
-            availability_error_codes
-            + no_alloc_space_error_codes
-            + device_size_changed_codes
-            + pool_encryption_error_codes
+            availability_alerts
+            + no_alloc_space_alerts
+            + device_size_changed_alerts
+            + pool_encryption_alerts
         )
 
     @staticmethod

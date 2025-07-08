@@ -784,8 +784,8 @@ class PoolActions:
     @staticmethod
     def explain_code(namespace):
         """
-        Print an explanation of pool error code.
+        Print an explanation of pool alert code.
         """
-        code = PoolAlert.error_from_str(namespace.code)
+        code = PoolAlert.from_str(namespace.code)
         assert code is not None, "parser ensures legal code"
         print(code.explain())

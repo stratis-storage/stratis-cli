@@ -34,14 +34,14 @@ class PoolAlertTestCase(unittest.TestCase):
         """
         Test parsing a string that does not correspond to any value.
         """
-        self.assertIsNone(PoolAlert.error_from_str("bogus"))
+        self.assertIsNone(PoolAlert.from_str("bogus"))
 
     def test_parsing_all_non_bogus_str(self):
         """
         Just generate all non bogus strings and parse them.
         """
         for code in PoolAlert.codes():
-            self.assertEqual(PoolAlert.error_from_str(str(code)), code)
+            self.assertEqual(PoolAlert.from_str(str(code)), code)
 
     def test_summarize(self):
         """

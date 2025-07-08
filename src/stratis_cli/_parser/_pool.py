@@ -571,7 +571,7 @@ POOL_SUBCMDS = [
                     "code",
                     {
                         "choices": PoolAlert.code_strs(),
-                        "help": "Error code to explain",
+                        "help": "Alert code to explain",
                     },
                 )
             ],

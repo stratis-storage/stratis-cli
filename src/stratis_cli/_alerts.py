@@ -34,7 +34,7 @@ class Level(Enum):
 
 class PoolMaintenanceAlert(IntEnum):
     """
-    Maintenance error codes for the pool.
+    Maintenance alerts for the pool.
     """
 
     NO_IPC_REQUESTS = 1
@@ -45,7 +45,7 @@ class PoolMaintenanceAlert(IntEnum):
 
     def explain(self) -> str:
         """
-        Return an explanation of the error return code.
+        Return an explanation of the alert code.
         """
         if self is PoolMaintenanceAlert.NO_IPC_REQUESTS:
             return (
@@ -62,11 +62,11 @@ class PoolMaintenanceAlert(IntEnum):
                 "any maintenance operations."
             )
 
-        assert False, "impossible error code reached"  # pragma: no cover
+        assert False, "impossible code reached"  # pragma: no cover
 
     def summarize(self) -> str:
         """
-        Return a short summary of the return code.
+        Return a short summary of the alert.
         """
         if self is PoolMaintenanceAlert.NO_IPC_REQUESTS:
             return "Pool state changes not possible"
@@ -74,7 +74,7 @@ class PoolMaintenanceAlert(IntEnum):
         if self is PoolMaintenanceAlert.NO_POOL_CHANGES:
             return "Pool maintenance operations not possible"
 
-        assert False, "impossible error code reached"  # pragma: no cover
+        assert False, "impossible code reached"  # pragma: no cover
 
 
 class PoolAllocSpaceAlert(IntEnum):
@@ -89,7 +89,7 @@ class PoolAllocSpaceAlert(IntEnum):
 
     def explain(self) -> str:
         """
-        Return an explanation of the return code.
+        Return an explanation of the alert.
         """
         if self is PoolAllocSpaceAlert.NO_ALLOC_SPACE:
             return (
@@ -98,16 +98,16 @@ class PoolAllocSpaceAlert(IntEnum):
                 "to the pool."
             )
 
-        assert False, "impossible error code reached"  # pragma: no cover
+        assert False, "impossible code reached"  # pragma: no cover
 
     def summarize(self) -> str:
         """
-        Return a short summary of the return code.
+        Return a short summary of the alert.
         """
         if self is PoolAllocSpaceAlert.NO_ALLOC_SPACE:
             return "All devices fully allocated"
 
-        assert False, "impossible error code reached"  # pragma: no cover
+        assert False, "impossible code reached"  # pragma: no cover
 
 
 class PoolDeviceSizeChangeAlert(IntEnum):
@@ -126,11 +126,11 @@ class PoolDeviceSizeChangeAlert(IntEnum):
         if self is PoolDeviceSizeChangeAlert.DEVICE_SIZE_DECREASED:
             return f"{Level.WARNING}DS{str(self.value).zfill(3)}"
 
-        assert False, "impossible error code reached"  # pragma: no cover
+        assert False, "impossible code reached"  # pragma: no cover
 
     def explain(self) -> str:
         """
-        Return an explanation of the return code.
+        Return an explanation of the alert.
         """
         if self is PoolDeviceSizeChangeAlert.DEVICE_SIZE_INCREASED:
             return (
@@ -144,11 +144,11 @@ class PoolDeviceSizeChangeAlert(IntEnum):
                 "decreased in size."
             )
 
-        assert False, "impossible error code reached"  # pragma: no cover
+        assert False, "impossible code reached"  # pragma: no cover
 
     def summarize(self) -> str:
         """
-        Return a short summary of the return code.
+        Return a short summary of the alert.
         """
         if self is PoolDeviceSizeChangeAlert.DEVICE_SIZE_INCREASED:
             return "A device in this pool has increased in size."
@@ -156,7 +156,7 @@ class PoolDeviceSizeChangeAlert(IntEnum):
         if self is PoolDeviceSizeChangeAlert.DEVICE_SIZE_DECREASED:
             return "A device in this pool has decreased in size."
 
-        assert False, "impossible error code reached"  # pragma: no cover
+        assert False, "impossible code reached"  # pragma: no cover
 
 
 class PoolEncryptionAlert(IntEnum):
@@ -172,7 +172,7 @@ class PoolEncryptionAlert(IntEnum):
 
     def explain(self) -> str:
         """
-        Return an explanation of the return code.
+        Return an explanation of the alert.
         """
         if self is PoolEncryptionAlert.VOLUME_KEY_NOT_LOADED:
             return (
@@ -188,18 +188,18 @@ class PoolEncryptionAlert(IntEnum):
                 "encryption layer needs to be modified."
             )
 
-        assert False, "impossible error code reached"  # pragma: no cover
+        assert False, "impossible code reached"  # pragma: no cover
 
     def summarize(self) -> str:
         """
-        Return a short summary of the return code.
+        Return a short summary of the alert.
         """
         if self is PoolEncryptionAlert.VOLUME_KEY_NOT_LOADED:
             return "Volume key not loaded"
         if self is PoolEncryptionAlert.VOLUME_KEY_STATUS_UNKNOWN:
             return "Volume key status unknown"
 
-        assert False, "impossible error code reached"  # pragma: no cover
+        assert False, "impossible code reached"  # pragma: no cover
 
 
 CLASSES = [
@@ -219,7 +219,7 @@ type PoolAlertType = Union[
 
 class PoolAlert:
     """
-    Summary class for all pool error codes.
+    Summary class for all pool alerts.
     """
 
     CODE_MAP: Dict[str, PoolAlertType] = dict(
@@ -229,26 +229,26 @@ class PoolAlert:
     @staticmethod
     def codes() -> List[PoolAlertType]:
         """
-        Return all pool error codes.
+        Return all pool alerts.
         """
         return list(PoolAlert.CODE_MAP.values())
 
     @staticmethod
     def code_strs() -> List[str]:
         """
-        Return str representations of all pool error codes.
+        Return str representations of all pool alerts.
         """
         return list(PoolAlert.CODE_MAP.keys())
 
     @staticmethod
-    def error_from_str(
-        error_code: str,
+    def from_str(
+        code: str,
     ) -> Optional[PoolAlertType]:
         """
-        Obtain an error object from a distinguishing error string.
+        Obtain an alert object from a distinguishing error string.
 
-        :param str error_code:
-        :returns: error object
+        :param str code:
+        :returns: PoolAlertType
         """
 
-        return PoolAlert.CODE_MAP.get(error_code)
+        return PoolAlert.CODE_MAP.get(code)
