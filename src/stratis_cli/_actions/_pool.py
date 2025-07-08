@@ -28,8 +28,8 @@ from justbytes import Range
 # isort: FIRSTPARTY
 from dbus_python_client_gen import DPClientMarshallingError
 
+from .._alerts import PoolErrorCode
 from .._constants import IntegrityOption, IntegrityTagSpec, PoolId, UnlockMethod
-from .._error_codes import PoolErrorCode
 from .._errors import (
     StratisCliEngineError,
     StratisCliIncoherenceError,

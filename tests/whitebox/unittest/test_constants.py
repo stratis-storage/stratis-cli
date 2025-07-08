@@ -21,8 +21,8 @@ import unittest
 
 # isort: LOCAL
 from stratis_cli._actions._utils import PoolFeature
+from stratis_cli._alerts import PoolErrorCode
 from stratis_cli._constants import FilesystemId, IdType
-from stratis_cli._error_codes import PoolErrorCode
 
 
 class PoolErrorCodeTestCase(unittest.TestCase):

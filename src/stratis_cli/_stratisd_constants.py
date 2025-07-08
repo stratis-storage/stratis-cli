@@ -19,7 +19,7 @@ Stratisd error classes.
 from enum import Enum, IntEnum
 from typing import Any, List, Mapping
 
-from ._error_codes import PoolMaintenanceErrorCode
+from ._alerts import PoolMaintenanceErrorCode
 
 
 class StratisdErrors(IntEnum):

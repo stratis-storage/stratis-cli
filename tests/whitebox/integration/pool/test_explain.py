@@ -15,7 +15,7 @@
 Test 'explain'.
 """
 # isort: LOCAL
-from stratis_cli._error_codes import PoolErrorCode
+from stratis_cli._alerts import PoolErrorCode
 
 from .._misc import TEST_RUNNER, SimTestCase, device_name_list
 

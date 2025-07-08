@@ -19,7 +19,7 @@ Test 'stratisd_constants'.
 import unittest
 
 # isort: LOCAL
-from stratis_cli._error_codes import PoolMaintenanceErrorCode
+from stratis_cli._alerts import PoolMaintenanceErrorCode
 from stratis_cli._stratisd_constants import PoolActionAvailability
 
 

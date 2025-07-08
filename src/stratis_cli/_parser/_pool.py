@@ -24,6 +24,7 @@ from uuid import UUID
 from justbytes import MiB, Range
 
 from .._actions import BindActions, PoolActions
+from .._alerts import PoolErrorCode
 from .._constants import (
     Clevis,
     EncryptionMethod,
@@ -32,7 +33,6 @@ from .._constants import (
     UnlockMethod,
     YesOrNo,
 )
-from .._error_codes import PoolErrorCode
 from ._debug import POOL_DEBUG_SUBCMDS
 from ._encryption import BIND_SUBCMDS, ENCRYPTION_SUBCMDS, REBIND_SUBCMDS
 from ._shared import (

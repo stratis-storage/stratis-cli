@@ -24,7 +24,7 @@ from typing import List, Optional, Union
 # isort: THIRDPARTY
 from justbytes import Range
 
-from .._error_codes import (
+from .._alerts import (
     PoolAllocSpaceErrorCode,
     PoolDeviceSizeChangeCode,
     PoolEncryptionErrorCode,
