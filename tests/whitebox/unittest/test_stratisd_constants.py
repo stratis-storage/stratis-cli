@@ -19,7 +19,7 @@ Test 'stratisd_constants'.
 import unittest
 
 # isort: LOCAL
-from stratis_cli._alerts import PoolMaintenanceErrorCode
+from stratis_cli._alerts import PoolMaintenanceAlert
 from stratis_cli._stratisd_constants import PoolActionAvailability
 
 
@@ -37,9 +37,9 @@ class PoolActionAvailabilityTestCase(unittest.TestCase):
         )
 
         result = PoolActionAvailability.no_ipc_requests.pool_maintenance_error_codes()
-        self.assertEqual(result, [PoolMaintenanceErrorCode.NO_IPC_REQUESTS])
+        self.assertEqual(result, [PoolMaintenanceAlert.NO_IPC_REQUESTS])
 
         result = PoolActionAvailability.no_pool_changes.pool_maintenance_error_codes()
         self.assertEqual(len(result), 2)
-        self.assertIn(PoolMaintenanceErrorCode.NO_IPC_REQUESTS, result)
-        self.assertIn(PoolMaintenanceErrorCode.NO_POOL_CHANGES, result)
+        self.assertIn(PoolMaintenanceAlert.NO_IPC_REQUESTS, result)
+        self.assertIn(PoolMaintenanceAlert.NO_POOL_CHANGES, result)

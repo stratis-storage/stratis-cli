@@ -28,7 +28,7 @@ from justbytes import Range
 # isort: FIRSTPARTY
 from dbus_python_client_gen import DPClientMarshallingError
 
-from .._alerts import PoolErrorCode
+from .._alerts import PoolAlert
 from .._constants import IntegrityOption, IntegrityTagSpec, PoolId, UnlockMethod
 from .._errors import (
     StratisCliEngineError,
@@ -786,6 +786,6 @@ class PoolActions:
         """
         Print an explanation of pool error code.
         """
-        code = PoolErrorCode.error_from_str(namespace.code)
+        code = PoolAlert.error_from_str(namespace.code)
         assert code is not None, "parser ensures legal code"
         print(code.explain())

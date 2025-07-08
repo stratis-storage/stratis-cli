@@ -19,7 +19,7 @@ Stratisd error classes.
 from enum import Enum, IntEnum
 from typing import Any, List, Mapping
 
-from ._alerts import PoolMaintenanceErrorCode
+from ._alerts import PoolMaintenanceAlert
 
 
 class StratisdErrors(IntEnum):
@@ -72,18 +72,18 @@ class PoolActionAvailability(IntEnum):
     no_ipc_requests = 1  # pylint: disable=invalid-name
     no_pool_changes = 2  # pylint: disable=invalid-name
 
-    def pool_maintenance_error_codes(self) -> List[PoolMaintenanceErrorCode]:
+    def pool_maintenance_error_codes(self) -> List[PoolMaintenanceAlert]:
         """
-        Return the list of PoolMaintenanceErrorCodes for this availability.
+        Return the list of PoolMaintenanceAlerts for this availability.
 
-        :rtype: list of PoolMaintenanceErrorCode
+        :rtype: list of PoolMaintenanceAlert
         """
         codes = []
         if self >= PoolActionAvailability.no_ipc_requests:
-            codes.append(PoolMaintenanceErrorCode.NO_IPC_REQUESTS)
+            codes.append(PoolMaintenanceAlert.NO_IPC_REQUESTS)
 
         if self >= PoolActionAvailability.no_pool_changes:
-            codes.append(PoolMaintenanceErrorCode.NO_POOL_CHANGES)
+            codes.append(PoolMaintenanceAlert.NO_POOL_CHANGES)
 
         return codes
 

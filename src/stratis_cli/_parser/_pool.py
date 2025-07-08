@@ -24,7 +24,7 @@ from uuid import UUID
 from justbytes import MiB, Range
 
 from .._actions import BindActions, PoolActions
-from .._alerts import PoolErrorCode
+from .._alerts import PoolAlert
 from .._constants import (
     Clevis,
     EncryptionMethod,
@@ -570,7 +570,7 @@ POOL_SUBCMDS = [
                 (
                     "code",
                     {
-                        "choices": PoolErrorCode.code_strs(),
+                        "choices": PoolAlert.code_strs(),
                         "help": "Error code to explain",
                     },
                 )

@@ -21,33 +21,33 @@ import unittest
 
 # isort: LOCAL
 from stratis_cli._actions._utils import PoolFeature
-from stratis_cli._alerts import PoolErrorCode
+from stratis_cli._alerts import PoolAlert
 from stratis_cli._constants import FilesystemId, IdType
 
 
-class PoolErrorCodeTestCase(unittest.TestCase):
+class PoolAlertTestCase(unittest.TestCase):
     """
-    Tests for PoolErrorCode methods.
+    Tests for PoolAlert methods.
     """
 
     def test_parsing_bogus_str(self):
         """
         Test parsing a string that does not correspond to any value.
         """
-        self.assertIsNone(PoolErrorCode.error_from_str("bogus"))
+        self.assertIsNone(PoolAlert.error_from_str("bogus"))
 
     def test_parsing_all_non_bogus_str(self):
         """
         Just generate all non bogus strings and parse them.
         """
-        for code in PoolErrorCode.codes():
-            self.assertEqual(PoolErrorCode.error_from_str(str(code)), code)
+        for code in PoolAlert.codes():
+            self.assertEqual(PoolAlert.error_from_str(str(code)), code)
 
     def test_summarize(self):
         """
         Verify valid strings returned from summarize() method.
         """
-        for code in PoolErrorCode.codes():
+        for code in PoolAlert.codes():
             summary_value = code.summarize()
             self.assertIsInstance(summary_value, str)
             self.assertNotEqual(summary_value, "")
