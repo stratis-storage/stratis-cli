@@ -32,9 +32,9 @@ class Level(Enum):
         return self.value
 
 
-class PoolMaintenanceErrorCode(IntEnum):
+class PoolMaintenanceAlert(IntEnum):
     """
-    Maintenance error codes for the pool.
+    Maintenance alerts for the pool.
     """
 
     NO_IPC_REQUESTS = 1
@@ -45,9 +45,9 @@ class PoolMaintenanceErrorCode(IntEnum):
 
     def explain(self) -> str:
         """
-        Return an explanation of the error return code.
+        Return an explanation of the alert code.
         """
-        if self is PoolMaintenanceErrorCode.NO_IPC_REQUESTS:
+        if self is PoolMaintenanceAlert.NO_IPC_REQUESTS:
             return (
                 "The pool will return an error on any IPC request that could "
                 "cause a change in the pool state, for example, a request to "
@@ -55,29 +55,29 @@ class PoolMaintenanceErrorCode(IntEnum):
                 "purely informational requests."
             )
 
-        if self is PoolMaintenanceErrorCode.NO_POOL_CHANGES:
+        if self is PoolMaintenanceAlert.NO_POOL_CHANGES:
             return (
                 "The pool is unable to manage itself by reacting to events, "
                 "such as devicemapper events, that might require it to take "
                 "any maintenance operations."
             )
 
-        assert False, "impossible error code reached"  # pragma: no cover
+        assert False, "impossible code reached"  # pragma: no cover
 
     def summarize(self) -> str:
         """
-        Return a short summary of the return code.
+        Return a short summary of the alert.
         """
-        if self is PoolMaintenanceErrorCode.NO_IPC_REQUESTS:
+        if self is PoolMaintenanceAlert.NO_IPC_REQUESTS:
             return "Pool state changes not possible"
 
-        if self is PoolMaintenanceErrorCode.NO_POOL_CHANGES:
+        if self is PoolMaintenanceAlert.NO_POOL_CHANGES:
             return "Pool maintenance operations not possible"
 
-        assert False, "impossible error code reached"  # pragma: no cover
+        assert False, "impossible code reached"  # pragma: no cover
 
 
-class PoolAllocSpaceErrorCode(IntEnum):
+class PoolAllocSpaceAlert(IntEnum):
     """
     Code if the pool has run out of space to allocate.
     """
@@ -89,28 +89,28 @@ class PoolAllocSpaceErrorCode(IntEnum):
 
     def explain(self) -> str:
         """
-        Return an explanation of the return code.
+        Return an explanation of the alert.
         """
-        if self is PoolAllocSpaceErrorCode.NO_ALLOC_SPACE:
+        if self is PoolAllocSpaceAlert.NO_ALLOC_SPACE:
             return (
                 "Every device belonging to the pool has been fully allocated. "
                 "To increase the allocable space, add additional data devices "
                 "to the pool."
             )
 
-        assert False, "impossible error code reached"  # pragma: no cover
+        assert False, "impossible code reached"  # pragma: no cover
 
     def summarize(self) -> str:
         """
-        Return a short summary of the return code.
+        Return a short summary of the alert.
         """
-        if self is PoolAllocSpaceErrorCode.NO_ALLOC_SPACE:
+        if self is PoolAllocSpaceAlert.NO_ALLOC_SPACE:
             return "All devices fully allocated"
 
-        assert False, "impossible error code reached"  # pragma: no cover
+        assert False, "impossible code reached"  # pragma: no cover
 
 
-class PoolDeviceSizeChangeCode(IntEnum):
+class PoolDeviceSizeChangeAlert(IntEnum):
     """
     Codes for identifying for a pool if a device that belongs to the pool has
     been detected to have increased or reduced in size.
@@ -120,46 +120,46 @@ class PoolDeviceSizeChangeCode(IntEnum):
     DEVICE_SIZE_DECREASED = 2
 
     def __str__(self) -> str:
-        if self is PoolDeviceSizeChangeCode.DEVICE_SIZE_INCREASED:
+        if self is PoolDeviceSizeChangeAlert.DEVICE_SIZE_INCREASED:
             return f"{Level.INFO}DS{str(self.value).zfill(3)}"
 
-        if self is PoolDeviceSizeChangeCode.DEVICE_SIZE_DECREASED:
+        if self is PoolDeviceSizeChangeAlert.DEVICE_SIZE_DECREASED:
             return f"{Level.WARNING}DS{str(self.value).zfill(3)}"
 
-        assert False, "impossible error code reached"  # pragma: no cover
+        assert False, "impossible code reached"  # pragma: no cover
 
     def explain(self) -> str:
         """
-        Return an explanation of the return code.
+        Return an explanation of the alert.
         """
-        if self is PoolDeviceSizeChangeCode.DEVICE_SIZE_INCREASED:
+        if self is PoolDeviceSizeChangeAlert.DEVICE_SIZE_INCREASED:
             return (
                 "At least one device belonging to this pool appears to have "
                 "increased in size."
             )
 
-        if self is PoolDeviceSizeChangeCode.DEVICE_SIZE_DECREASED:
+        if self is PoolDeviceSizeChangeAlert.DEVICE_SIZE_DECREASED:
             return (
                 "At least one device belonging to this pool appears to have "
                 "decreased in size."
             )
 
-        assert False, "impossible error code reached"  # pragma: no cover
+        assert False, "impossible code reached"  # pragma: no cover
 
     def summarize(self) -> str:
         """
-        Return a short summary of the return code.
+        Return a short summary of the alert.
         """
-        if self is PoolDeviceSizeChangeCode.DEVICE_SIZE_INCREASED:
+        if self is PoolDeviceSizeChangeAlert.DEVICE_SIZE_INCREASED:
             return "A device in this pool has increased in size."
 
-        if self is PoolDeviceSizeChangeCode.DEVICE_SIZE_DECREASED:
+        if self is PoolDeviceSizeChangeAlert.DEVICE_SIZE_DECREASED:
             return "A device in this pool has decreased in size."
 
-        assert False, "impossible error code reached"  # pragma: no cover
+        assert False, "impossible code reached"  # pragma: no cover
 
 
-class PoolEncryptionErrorCode(IntEnum):
+class PoolEncryptionAlert(IntEnum):
     """
     Codes for encryption problems.
     """
@@ -172,83 +172,83 @@ class PoolEncryptionErrorCode(IntEnum):
 
     def explain(self) -> str:
         """
-        Return an explanation of the return code.
+        Return an explanation of the alert.
         """
-        if self is PoolEncryptionErrorCode.VOLUME_KEY_NOT_LOADED:
+        if self is PoolEncryptionAlert.VOLUME_KEY_NOT_LOADED:
             return (
                 "The pool's volume key is not loaded. This may result in an "
                 "error if the pool's encryption layer needs to be modified. "
                 "If the pool is encrypted with a key in the kernel keyring "
                 "then setting that key may resolve the problem."
             )
-        if self is PoolEncryptionErrorCode.VOLUME_KEY_STATUS_UNKNOWN:
+        if self is PoolEncryptionAlert.VOLUME_KEY_STATUS_UNKNOWN:
             return (
                 "The pool's volume key may or may not be loaded. If the volume "
                 "key is not loaded, there may an error if the pool's "
                 "encryption layer needs to be modified."
             )
 
-        assert False, "impossible error code reached"  # pragma: no cover
+        assert False, "impossible code reached"  # pragma: no cover
 
     def summarize(self) -> str:
         """
-        Return a short summary of the return code.
+        Return a short summary of the alert.
         """
-        if self is PoolEncryptionErrorCode.VOLUME_KEY_NOT_LOADED:
+        if self is PoolEncryptionAlert.VOLUME_KEY_NOT_LOADED:
             return "Volume key not loaded"
-        if self is PoolEncryptionErrorCode.VOLUME_KEY_STATUS_UNKNOWN:
+        if self is PoolEncryptionAlert.VOLUME_KEY_STATUS_UNKNOWN:
             return "Volume key status unknown"
 
-        assert False, "impossible error code reached"  # pragma: no cover
+        assert False, "impossible code reached"  # pragma: no cover
 
 
 CLASSES = [
-    PoolAllocSpaceErrorCode,
-    PoolDeviceSizeChangeCode,
-    PoolEncryptionErrorCode,
-    PoolMaintenanceErrorCode,
+    PoolAllocSpaceAlert,
+    PoolDeviceSizeChangeAlert,
+    PoolEncryptionAlert,
+    PoolMaintenanceAlert,
 ]
 
-type PoolErrorCodeType = Union[
-    PoolAllocSpaceErrorCode,
-    PoolDeviceSizeChangeCode,
-    PoolEncryptionErrorCode,
-    PoolMaintenanceErrorCode,
+type PoolAlertType = Union[
+    PoolAllocSpaceAlert,
+    PoolDeviceSizeChangeAlert,
+    PoolEncryptionAlert,
+    PoolMaintenanceAlert,
 ]
 
 
-class PoolErrorCode:
+class PoolAlert:
     """
-    Summary class for all pool error codes.
+    Summary class for all pool alerts.
     """
 
-    CODE_MAP: Dict[str, PoolErrorCodeType] = dict(
+    CODE_MAP: Dict[str, PoolAlertType] = dict(
         (str(code), code) for c in CLASSES for code in list(c)
     )
 
     @staticmethod
-    def codes() -> List[PoolErrorCodeType]:
+    def codes() -> List[PoolAlertType]:
         """
-        Return all pool error codes.
+        Return all pool alerts.
         """
-        return list(PoolErrorCode.CODE_MAP.values())
+        return list(PoolAlert.CODE_MAP.values())
 
     @staticmethod
     def code_strs() -> List[str]:
         """
-        Return str representations of all pool error codes.
+        Return str representations of all pool alerts.
         """
-        return list(PoolErrorCode.CODE_MAP.keys())
+        return list(PoolAlert.CODE_MAP.keys())
 
     @staticmethod
-    def error_from_str(
-        error_code: str,
-    ) -> Optional[PoolErrorCodeType]:
+    def from_str(
+        code: str,
+    ) -> Optional[PoolAlertType]:
         """
-        Obtain an error object from a distinguishing error string.
+        Obtain an alert object from a distinguishing error string.
 
-        :param str error_code:
-        :returns: error object
+        :param str code:
+        :returns: PoolAlertType
         """
 
-        return PoolErrorCode.CODE_MAP.get(error_code)
+        return PoolAlert.CODE_MAP.get(code)

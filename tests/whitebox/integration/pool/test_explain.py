@@ -15,7 +15,7 @@
 Test 'explain'.
 """
 # isort: LOCAL
-from stratis_cli._error_codes import PoolErrorCode
+from stratis_cli._alerts import PoolAlert
 
 from .._misc import TEST_RUNNER, SimTestCase, device_name_list
 
@@ -33,6 +33,6 @@ class ExplainTestCase(SimTestCase):
         """
         Test that every valid code works.
         """
-        for item in PoolErrorCode.codes():
+        for item in PoolAlert.codes():
             command_line = self._MENU + [str(item)]
             TEST_RUNNER(command_line)

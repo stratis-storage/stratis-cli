@@ -24,11 +24,11 @@ from typing import List, Optional, Union
 # isort: THIRDPARTY
 from justbytes import Range
 
-from .._error_codes import (
-    PoolAllocSpaceErrorCode,
-    PoolDeviceSizeChangeCode,
-    PoolEncryptionErrorCode,
-    PoolErrorCodeType,
+from .._alerts import (
+    PoolAlertType,
+    PoolAllocSpaceAlert,
+    PoolDeviceSizeChangeAlert,
+    PoolEncryptionAlert,
 )
 from .._errors import StratisCliResourceNotFoundError
 from .._stratisd_constants import MetadataVersion, PoolActionAvailability
@@ -145,22 +145,22 @@ class DefaultAlerts:  # pylint: disable=too-few-public-methods
         """
         (self.increased, self.decreased) = DefaultAlerts._pools_with_changed_devs(devs)
 
-    def alert_codes(self, pool_object_path, mopool) -> List[PoolErrorCodeType]:
+    def alert_codes(self, pool_object_path, mopool) -> List[PoolAlertType]:
         """
-        Return error code objects for a pool.
+        Return alert code objects for a pool.
 
         :param mopool: object to access pool properties
 
-        :returns: list of PoolErrorCode
+        :returns: list of PoolAlertType
         """
         action_availability = PoolActionAvailability[str(mopool.AvailableActions())]
-        availability_error_codes = action_availability.pool_maintenance_error_codes()
+        availability_alerts = action_availability.pool_maintenance_alerts()
 
-        no_alloc_space_error_codes = (
-            [PoolAllocSpaceErrorCode.NO_ALLOC_SPACE] if mopool.NoAllocSpace() else []
+        no_alloc_space_alerts = (
+            [PoolAllocSpaceAlert.NO_ALLOC_SPACE] if mopool.NoAllocSpace() else []
         )
 
-        device_size_changed_codes = DefaultAlerts._from_sets(
+        device_size_changed_alerts = DefaultAlerts._from_sets(
             pool_object_path, self.increased, self.decreased
         )
 
@@ -168,15 +168,15 @@ class DefaultAlerts:  # pylint: disable=too-few-public-methods
 
         (vkl_is_bool, volume_key_loaded) = _volume_key_loaded(mopool)
 
-        pool_encryption_error_codes = (
-            [PoolEncryptionErrorCode.VOLUME_KEY_NOT_LOADED]
+        pool_encryption_alerts = (
+            [PoolEncryptionAlert.VOLUME_KEY_NOT_LOADED]
             if metadata_version is MetadataVersion.V2
             and mopool.Encrypted()
             and vkl_is_bool
             and not volume_key_loaded
             else []
         ) + (
-            [PoolEncryptionErrorCode.VOLUME_KEY_STATUS_UNKNOWN]
+            [PoolEncryptionAlert.VOLUME_KEY_STATUS_UNKNOWN]
             if metadata_version is MetadataVersion.V2
             and mopool.Encrypted()
             and not vkl_is_bool
@@ -184,10 +184,10 @@ class DefaultAlerts:  # pylint: disable=too-few-public-methods
         )
 
         return (
-            availability_error_codes
-            + no_alloc_space_error_codes
-            + device_size_changed_codes
-            + pool_encryption_error_codes
+            availability_alerts
+            + no_alloc_space_alerts
+            + device_size_changed_alerts
+            + pool_encryption_alerts
         )
 
     @staticmethod
@@ -222,7 +222,7 @@ class DefaultAlerts:  # pylint: disable=too-few-public-methods
     @staticmethod
     def _from_sets(
         pool_object_path, increased, decreased
-    ) -> List[PoolDeviceSizeChangeCode]:
+    ) -> List[PoolDeviceSizeChangeAlert]:
         """
         Get the code from sets and one pool object path.
 
@@ -238,13 +238,13 @@ class DefaultAlerts:  # pylint: disable=too-few-public-methods
             pool_object_path in increased and pool_object_path in decreased
         ):  # pragma: no cover
             return [
-                PoolDeviceSizeChangeCode.DEVICE_SIZE_INCREASED,
-                PoolDeviceSizeChangeCode.DEVICE_SIZE_DECREASED,
+                PoolDeviceSizeChangeAlert.DEVICE_SIZE_INCREASED,
+                PoolDeviceSizeChangeAlert.DEVICE_SIZE_DECREASED,
             ]
         if pool_object_path in increased:  # pragma: no cover
-            return [PoolDeviceSizeChangeCode.DEVICE_SIZE_INCREASED]
+            return [PoolDeviceSizeChangeAlert.DEVICE_SIZE_INCREASED]
         if pool_object_path in decreased:  # pragma: no cover
-            return [PoolDeviceSizeChangeCode.DEVICE_SIZE_DECREASED]
+            return [PoolDeviceSizeChangeAlert.DEVICE_SIZE_DECREASED]
         return []
 
 
