@@ -179,6 +179,10 @@ jobs:
       - name: Print head commit
         run: git log --oneline -1
         working-directory: stratisd
+      - name: Overwrite stratisd dependencies as necessary
+        uses: stratis-storage/github-actions/stratisd-modify@HEAD
+        with:
+          working-directory: stratisd
       - name: Build stratisd
         run: PROFILEDIR=debug make build-all
         working-directory: stratisd
@@ -272,6 +276,10 @@ jobs:
       - name: Print head commit
         run: git log --oneline -1
         working-directory: stratisd
+      - name: Overwrite stratisd dependencies as necessary
+        uses: stratis-storage/github-actions/stratisd-modify@HEAD
+        with:
+          working-directory: stratisd
       - name: Build stratisd
         run: PROFILEDIR=debug make build-all
         working-directory: stratisd
