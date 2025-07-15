@@ -19,6 +19,7 @@ Test 'encryption'.
 from stratis_cli import StratisCliErrorCodes
 from stratis_cli._errors import (
     StratisCliEngineError,
+    StratisCliInPlaceNotSpecified,
     StratisCliNoChangeError,
 )
 
@@ -434,7 +435,7 @@ class OffTestCase(SimTestCase):
     Test turning encryption off when pool is encrypted.
     """
 
-    _MENU = ["--propagate", "pool", "encryption", "off"]
+    _MENU = ["--propagate", "pool", "encryption", "off", "--in-place"]
     _POOLNAME = "poolname"
     _KEY_DESC = "keydesc"
 
@@ -476,7 +477,7 @@ class OffTestCase2(SimTestCase):
     Test turning encryption off when pool is not encrypted.
     """
 
-    _MENU = ["--propagate", "pool", "encryption", "off"]
+    _MENU = ["--propagate", "pool", "encryption", "off", "--in-place"]
     _POOLNAME = "poolname"
 
     def setUp(self):
@@ -499,7 +500,7 @@ class ReencryptTestCase(SimTestCase):
     Test re-encrypting when pool is encrypted.
     """
 
-    _MENU = ["--propagate", "pool", "encryption", "reencrypt"]
+    _MENU = ["--propagate", "pool", "encryption", "reencrypt", "--in-place"]
     _POOLNAME = "poolname"
     _KEY_DESC = "keydesc"
 
@@ -541,7 +542,7 @@ class ReencryptTestCase2(SimTestCase):
     Test reencryption when pool is not encrypted.
     """
 
-    _MENU = ["--propagate", "pool", "encryption", "reencrypt"]
+    _MENU = ["--propagate", "pool", "encryption", "reencrypt", "--in-place"]
     _POOLNAME = "poolname"
 
     def setUp(self):
@@ -564,7 +565,7 @@ class EncryptTestCase(SimTestCase):
     Test encrypting when pool is already encrypted.
     """
 
-    _MENU = ["--propagate", "pool", "encryption", "on"]
+    _MENU = ["--propagate", "pool", "encryption", "on", "--in-place"]
     _POOLNAME = "poolname"
     _KEY_DESC = "keydesc"
 
@@ -607,7 +608,7 @@ class EncryptTestCase2(SimTestCase):
     Test encrypting when pool is not already encrypted.
     """
 
-    _MENU = ["--propagate", "pool", "encryption", "on"]
+    _MENU = ["--propagate", "pool", "encryption", "on", "--in-place"]
     _POOLNAME = "poolname"
     _KEY_DESC = "keydesc"
 
@@ -639,3 +640,62 @@ class EncryptTestCase2(SimTestCase):
             f"--name={self._POOLNAME}",
         ]
         self.check_error(StratisCliEngineError, command_line, _ERROR)
+
+
+class NoInPlaceTestCase(SimTestCase):
+    """
+    Test encrypting when pool is not already encrypted.
+    """
+
+    _POOLNAME = "poolname"
+    _KEY_DESC = "keydesc"
+
+    def setUp(self):
+        super().setUp()
+        command_line = [
+            "--propagate",
+            "pool",
+            "create",
+            self._POOLNAME,
+        ] + _DEVICE_STRATEGY()
+        RUNNER(command_line)
+
+    def test_on(self):
+        """
+        In place must be specified for on.
+        """
+        command_line = [
+            "--propagate",
+            "pool",
+            "encryption",
+            "on",
+            f"--name={self._POOLNAME}",
+            "--clevis=tpm2",
+        ]
+        self.check_error(StratisCliInPlaceNotSpecified, command_line, _ERROR)
+
+    def test_off(self):
+        """
+        In place must be specified for off.
+        """
+        command_line = [
+            "--propagate",
+            "pool",
+            "encryption",
+            "off",
+            f"--name={self._POOLNAME}",
+        ]
+        self.check_error(StratisCliInPlaceNotSpecified, command_line, _ERROR)
+
+    def test_reencrypt(self):
+        """
+        In place must be specified for reencrypt.
+        """
+        command_line = [
+            "--propagate",
+            "pool",
+            "encryption",
+            "reencrypt",
+            f"--name={self._POOLNAME}",
+        ]
+        self.check_error(StratisCliInPlaceNotSpecified, command_line, _ERROR)
