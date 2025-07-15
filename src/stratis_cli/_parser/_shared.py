@@ -297,3 +297,17 @@ CLEVIS_AND_KERNEL = [
         },
     ),
 ]
+
+IN_PLACE = [
+    (
+        "--in-place",
+        {
+            "action": "store_true",
+            "help": (
+                "Perform the operation in place; requires no additional "
+                "devices; this operation can not in general be rolled back on "
+                "failure"
+            ),
+        },
+    )
+]

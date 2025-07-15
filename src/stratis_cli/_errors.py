@@ -454,3 +454,21 @@ class StratisCliInvalidCommandLineOptionValue(StratisCliUserError):
 
     def __str__(self):
         return self.msg
+
+
+class StratisCliInPlaceNotSpecified(StratisCliUserError):
+    """
+    Raised if the user requested in place encryption but did not use the
+    --in-place option.
+    """
+
+    def __str__(self) -> str:
+        return (
+            "Please specify the --in-place option for this command.There is "
+            "some risk of placing your pool in an unrecoverable state with "
+            "the in-place method. We ask that you specify the --in-place "
+            "option to demonstrate that you are willing to accept this risk. "
+            "In addition, this command initiates a long-running operation. "
+            "The operation will not complete within the standard D-Bus "
+            "timeout period."
+        )
