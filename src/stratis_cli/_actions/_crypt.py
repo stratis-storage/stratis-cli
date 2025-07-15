@@ -23,6 +23,7 @@ from .._constants import PoolId
 from .._errors import (
     StratisCliEngineError,
     StratisCliIncoherenceError,
+    StratisCliInPlaceNotSpecified,
     StratisCliNoChangeError,
     StratisCliResourceNotFoundError,
     StratisdErrors,
@@ -41,6 +42,9 @@ class CryptActions:
         """
         Encrypt a previously unencrypted pool.
         """
+
+        if not namespace.in_place:
+            raise StratisCliInPlaceNotSpecified()
 
         # pylint: disable=import-outside-toplevel
         from ._data import MOPool, ObjectManager, Pool, pools
@@ -98,6 +102,9 @@ class CryptActions:
         """
         Unencrypt a previously encrypted pool.
         """
+        if not namespace.in_place:
+            raise StratisCliInPlaceNotSpecified()
+
         # pylint: disable=import-outside-toplevel
         from ._data import MOPool, ObjectManager, Pool, pools
 
@@ -136,6 +143,9 @@ class CryptActions:
         """
         Reencrypt an already encrypted pool with a new key.
         """
+        if not namespace.in_place:
+            raise StratisCliInPlaceNotSpecified()
+
         # pylint: disable=import-outside-toplevel
         from ._data import MOPool, ObjectManager, Pool, pools
 
