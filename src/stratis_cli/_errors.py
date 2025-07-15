@@ -454,3 +454,19 @@ class StratisCliInvalidCommandLineOptionValue(StratisCliUserError):
 
     def __str__(self):
         return self.msg
+
+
+class StratisCliInPlaceNotSpecified(StratisCliUserError):
+    """
+    Raised if the user requested in-place encryption but did not use the
+    --in-place option.
+    """
+
+    def __str__(self) -> str:
+        return (
+            "Specify the --in-place option to demonstrate that you "
+            "understand the special nature of the procedure that you are "
+            "about to initiate. Please refer to the discussion of the "
+            '"--in-place" option in the man pages for further '
+            "information."
+        )
