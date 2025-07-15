@@ -23,6 +23,7 @@ from .._actions import BindActions, CryptActions, RebindActions
 from .._constants import Clevis, EncryptionMethod
 from ._shared import (
     CLEVIS_AND_KERNEL,
+    IN_PLACE,
     TRUST_URL_OR_THUMBPRINT,
     UUID_OR_NAME,
     ClevisEncryptionOptions,
@@ -367,7 +368,8 @@ ENCRYPTION_SUBCMDS = [
                         "nargs": "?",
                     },
                 )
-            ],
+            ]
+            + IN_PLACE,
             "groups": [
                 (
                     "Pool Identifier",
@@ -400,6 +402,7 @@ ENCRYPTION_SUBCMDS = [
         "off",
         {
             "help": "Make unencrypted a previously encrypted pool",
+            "args": IN_PLACE,
             "groups": [
                 (
                     "Pool Identifier",
@@ -418,6 +421,7 @@ ENCRYPTION_SUBCMDS = [
         "reencrypt",
         {
             "help": "Reencrypt an encrypted pool with a new master key",
+            "args": IN_PLACE,
             "groups": [
                 (
                     "Pool Identifier",
