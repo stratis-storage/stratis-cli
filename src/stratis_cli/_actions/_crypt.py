@@ -29,6 +29,7 @@ from .._errors import (
 )
 from ._connection import get_object
 from ._constants import TOP_OBJECT
+from ._utils import long_running_operation
 
 
 class CryptActions:
@@ -37,6 +38,7 @@ class CryptActions:
     """
 
     @staticmethod
+    @long_running_operation
     def encrypt(namespace: Namespace):
         """
         Encrypt a previously unencrypted pool.
@@ -97,6 +99,7 @@ class CryptActions:
             )
 
     @staticmethod
+    @long_running_operation
     def unencrypt(namespace: Namespace):
         """
         Unencrypt a previously encrypted pool.
@@ -138,6 +141,7 @@ class CryptActions:
             )
 
     @staticmethod
+    @long_running_operation
     def reencrypt(namespace: Namespace):
         """
         Reencrypt an already encrypted pool with a new key.
