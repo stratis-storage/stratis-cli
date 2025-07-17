@@ -17,7 +17,6 @@ Facilities for managing and reporting errors.
 # isort: STDLIB
 import os
 import sys
-from collections.abc import Iterator
 
 # isort: THIRDPARTY
 import dbus
@@ -34,7 +33,12 @@ from dbus_python_client_gen import (
     DPClientSetPropertyContext,
 )
 
-from ._actions import BLOCKDEV_INTERFACE, FILESYSTEM_INTERFACE, POOL_INTERFACE
+from ._actions import (
+    BLOCKDEV_INTERFACE,
+    FILESYSTEM_INTERFACE,
+    POOL_INTERFACE,
+    get_errors,
+)
 from ._errors import (
     StratisCliActionError,
     StratisCliEngineError,
@@ -78,17 +82,6 @@ def _interface_name_to_common_name(interface_name):
 
     # This is a permanent no cover. There should never be an unknown interface.
     raise StratisCliUnknownInterfaceError(interface_name)  # pragma: no cover
-
-
-def get_errors(exc: BaseException) -> Iterator[BaseException]:
-    """
-    Generates a sequence of exceptions starting with exc and following the chain
-    of causes.
-    """
-    yield exc
-    while exc.__cause__ is not None:
-        yield exc.__cause__
-        exc = exc.__cause__
 
 
 def _interpret_errors_0(
