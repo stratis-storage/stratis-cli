@@ -22,14 +22,21 @@ import json
 import os
 import sys
 import termios
+from argparse import Namespace
+from collections.abc import Iterator
 from enum import Enum
-from typing import Any, Optional, Tuple
+from functools import wraps
+from typing import Any, Callable, Optional, Tuple
 from uuid import UUID
 
 # isort: THIRDPARTY
 from dbus import Dictionary, Struct
+from dbus.exceptions import DBusException
 from dbus.proxies import ProxyObject
 from justbytes import Range
+
+# isort: FIRSTPARTY
+from dbus_python_client_gen import DPClientInvocationError
 
 from .._errors import (
     StratisCliKeyfileNotFoundError,
@@ -295,3 +302,37 @@ class SizeTriple:
         Total - used.
         """
         return None if self._used is None else self._total - self._used
+
+
+def get_errors(exc: BaseException) -> Iterator[BaseException]:
+    """
+    Generates a sequence of exceptions starting with exc and following the chain
+    of causes.
+    """
+    yield exc
+    while exc.__cause__ is not None:
+        yield exc.__cause__
+        exc = exc.__cause__
+
+
+def long_running_operation(func: Callable) -> Callable:
+    """
+    Mark a function as a long running operation and catch and ignore NoReply
+    D-Bus exception.
+    """
+
+    @wraps(func)
+    def wrapper(namespace: Namespace):
+        try:
+            func(namespace)
+        except DPClientInvocationError as err:
+            # sim engine completes all operations rapidly
+            if not any(
+                isinstance(e, DBusException)
+                and e.get_dbus_name() == "org.freedesktop.DBus.Error.NoReply"
+                for e in get_errors(err)
+            ):  # pragma: no cover
+                raise err
+            print("Operation initiated", file=sys.stderr)
+
+    return wrapper
