@@ -43,7 +43,7 @@ assert hasattr(sys.modules.get("stratis_cli"), "run"), (
     "deferred until after the stratis_cli module has been fully loaded."
 )
 
-DBUS_TIMEOUT_SECONDS = 120
+DBUS_TIMEOUT_SECONDS = 60
 
 
 try:
