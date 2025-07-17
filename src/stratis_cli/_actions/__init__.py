@@ -35,3 +35,4 @@ from ._pool import PoolActions
 from ._stratis import StratisActions
 from ._stratisd_version import check_stratisd_version
 from ._top import TopActions
+from ._utils import get_errors
