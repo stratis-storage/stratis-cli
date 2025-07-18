@@ -26,7 +26,6 @@ srpm_build_deps:
 jobs:
   - job: copr_build
     trigger: pull_request
-    manual_trigger: true
     targets:
       - fedora-all
 
