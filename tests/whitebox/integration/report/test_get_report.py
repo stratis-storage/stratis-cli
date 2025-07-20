@@ -16,14 +16,13 @@ Test 'stratis report'.
 """
 
 # isort: STDLIB
-import os
 import unittest
 
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
 from stratis_cli._stratisd_constants import ReportKey
 
-from .._misc import TEST_RUNNER, SimTestCase
+from .._misc import TEST_RUNNER, SimTestCase, skip_if_requested
 
 _ERROR = StratisCliErrorCodes.ERROR
 
@@ -35,30 +34,35 @@ class ReportTestCase(SimTestCase):
 
     _MENU = ["--propagate", "report"]
 
-    @unittest.skipIf(
-        os.getenv("STRATIS_SKIP_UNSTABLE_TEST") is not None,
-        "This test relies on the Report interface's GetReport method which "
-        "does not guarantee the stability, between minor versions of stratisd, "
-        "of the report key arguments that it supports.",
-    )
+    @unittest.skipIf(skip_if_requested("ReportTestCase.test_report"), "skip requested")
     def test_report(self):
         """
         Test getting stopped pool report.
         """
         TEST_RUNNER(self._MENU + [ReportKey.STOPPED_POOLS.value])
 
+    @unittest.skipIf(
+        skip_if_requested("ReportTestCase.test_report_no_name"), "skip requested"
+    )
     def test_report_no_name(self):
         """
         Test getting engine state report when no name specified.
         """
         TEST_RUNNER(self._MENU)
 
+    @unittest.skipIf(
+        skip_if_requested("ReportTestCase.test_engine_state_report"), "skip requested"
+    )
     def test_engine_state_report(self):
         """
         Test getting engine state report.
         """
         TEST_RUNNER(self._MENU + [ReportKey.ENGINE_STATE.value])
 
+    @unittest.skipIf(
+        skip_if_requested("ReportTestCase.test_managed_objects_report"),
+        "skip requested",
+    )
     def test_managed_objects_report(self):
         """
         Test getting managed_objects report.
