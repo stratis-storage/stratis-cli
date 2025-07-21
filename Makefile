@@ -1,3 +1,9 @@
+ifeq ($(origin MONKEYTYPE), undefined)
+  PYTHON = python3
+else
+  PYTHON = MONKEYTYPE_TRACE_MODULES=into_dbus_python monkeytype run
+endif
+
 UNITTEST_OPTS = --verbose
 #
 # Ignore bandit B404 errors. Any import of the subprocess module causes this
@@ -63,10 +69,10 @@ api-docs:
 	sphinx-build-3 -b html api api/_build/html
 
 dbus-tests:
-	python3 -m unittest discover ${UNITTEST_OPTS} --top-level-directory ./tests/whitebox --start-directory ./tests/whitebox/integration
+	${PYTHON} -m unittest discover ${UNITTEST_OPTS} --top-level-directory ./tests/whitebox --start-directory ./tests/whitebox/integration
 
 unittest-tests:
-	python3 -m unittest discover ${UNITTEST_OPTS} --start-directory ./tests/whitebox/unittest
+	${PYTHON} -m unittest discover ${UNITTEST_OPTS} --start-directory ./tests/whitebox/unittest
 
 .PHONY: coverage-no-html
 coverage-no-html:
