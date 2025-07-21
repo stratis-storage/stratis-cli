@@ -536,6 +536,10 @@ class ReencryptTestCase(SimTestCase):
         ]
         RUNNER(command_line)
 
+        # Exercise detail view with last reencryption time set
+        command_line = ["--propagate", "pool", "list", f"--name={self._POOLNAME}"]
+        RUNNER(command_line)
+
 
 class ReencryptTestCase2(SimTestCase):
     """
