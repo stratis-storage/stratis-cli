@@ -4,6 +4,8 @@ else
   PYTHON = MONKEYTYPE_TRACE_MODULES=into_dbus_python monkeytype run
 endif
 
+MONKEYTYPE_MODULES =
+
 UNITTEST_OPTS = --verbose
 #
 # Ignore bandit B404 errors. Any import of the subprocess module causes this
@@ -100,3 +102,12 @@ legacy-package:
 .PHONY: package
 package:
 	(umask 0022; python -m build; python -m twine check --strict ./dist/*)
+
+.PHONY: apply
+apply:
+	@echo "Modules traced:"
+	@monkeytype list-modules
+	@echo "Annotating:"
+	@for module in ${MONKEYTYPE_MODULES}; do \
+	  monkeytype --verbose apply  --sample-count --ignore-existing-annotations $${module} > /dev/null; \
+	done
