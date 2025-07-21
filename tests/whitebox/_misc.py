@@ -179,13 +179,12 @@ class RunTestCase(unittest.TestCase):
             RUNNER(command_line, stdin)
 
         exception = context.exception
-        cause = exception.__cause__
         self.assertIsInstance(
-            cause,
+            exception.__cause__,
             expected_cause,
             msg=(
-                "Additional causes: "
-                f'{", ".join((str(e) for e in list(get_errors(cause))[1:])) or "none"}'
+                "All causes: "
+                f'{", ".join((str(e) for e in list(get_errors(exception))))}'
             ),
         )
 
