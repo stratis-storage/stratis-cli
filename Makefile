@@ -4,7 +4,8 @@ else
   PYTHON = MONKEYTYPE_TRACE_MODULES=stratis-cli monkeytype run
 endif
 
-MONKEYTYPE_MODULES =
+MONKEYTYPE_MODULES = stratis_cli._parser._encryption \
+                     stratis_cli._parser._pool
 
 UNITTEST_OPTS = --verbose
 #
