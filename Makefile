@@ -1,7 +1,7 @@
 ifeq ($(origin MONKEYTYPE), undefined)
   PYTHON = python3
 else
-  PYTHON = MONKEYTYPE_TRACE_MODULES=into_dbus_python monkeytype run
+  PYTHON = MONKEYTYPE_TRACE_MODULES=stratis-cli monkeytype run
 endif
 
 MONKEYTYPE_MODULES =

@@ -1,0 +1,96 @@
+---
+name: on push
+
+# yamllint disable-line rule:truthy
+on:
+  push:
+    branches: [master]
+
+  workflow_dispatch:
+
+jobs:
+  monkeytype:
+    runs-on: ubuntu-24.04
+    container:
+      image: fedora:41  # CURRENT DEVELOPMENT ENVIRONMENT
+      # yamllint disable rule:line-length
+      options: --privileged --userns=host --ipc=host -v /run/dbus/system_bus_socket:/run/dbus/system_bus_socket:ro -v /usr/share/dbus-1:/usr/share/dbus-1
+    steps:
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          components: cargo
+          toolchain: 1.77.0  # LOWEST SUPPORTED RUST TOOLCHAIN
+      - name: Install dependencies for Fedora
+        run: >
+          dnf install -y
+          asciidoc
+          bandit
+          black
+          clang
+          cryptsetup-devel
+          device-mapper-devel
+          dbus-devel
+          git
+          glibc-static
+          libblkid-devel
+          make
+          monkeytype
+          pip
+          pylint
+          python3-dateutil
+          python3-dbus-client-gen
+          python3-dbus-python-client-gen
+          python3-isort
+          python3-justbytes
+          python3-packaging
+          python3-psutil
+          python3-wcwidth
+          systemd-devel
+      - uses: actions/checkout@v4
+        with:
+          path: stratis-cli
+      - uses: stratis-storage/github-actions/github-modify@HEAD
+        with:
+          repo: stratisd
+      - name: Print head commit
+        run: git log --oneline -1
+        working-directory: stratisd
+      - name: Overwrite stratisd dependencies as necessary
+        uses: stratis-storage/github-actions/stratisd-modify@HEAD
+        with:
+          working-directory: stratisd
+      - name: Build stratisd
+        run: PROFILEDIR=debug make build-all
+        working-directory: stratisd
+      - name: Install stratisd
+        run: PROFILEDIR=debug make install
+        working-directory: stratisd
+      - name: Workaround for D-Bus inotify
+        run: cp stratisd.conf /usr/share/dbus-1/system.d
+        working-directory: stratisd
+      - name: Run test
+        run: >
+          MONKEYTYPE=1
+          RUST_LOG=stratisd=debug
+          STRATISD=/usr/libexec/stratisd
+          STRATIS_STRICT_POOL_FEATURES=1
+          PYTHONPATH=./src
+          make -f Makefile all-tests
+        working-directory: stratis-cli
+      - name: Apply annotations
+        run: PYTHONPATH=./src make apply
+        working-directory: stratis-cli
+      - name: Format result
+        run: make fmt
+        working-directory: stratis-cli
+      - name: Install pyright
+        run: pip install --user pyright
+      - name: Lint result
+        run: >
+          PATH=${PATH}:/github/home/.local/bin
+          PYTHONPATH=./src make -f Makefile lint
+        working-directory: stratis-cli
+        continue-on-error: true
+      - name: Diff the result
+        run: git diff --exit-code
+        working-directory: stratis-cli
