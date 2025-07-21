@@ -1,3 +1,11 @@
+ifeq ($(origin MONKEYTYPE), undefined)
+  PYTHON = python3
+else
+  PYTHON = MONKEYTYPE_TRACE_MODULES=stratis-cli monkeytype run
+endif
+
+MONKEYTYPE_MODULES =
+
 UNITTEST_OPTS = --verbose
 #
 # Ignore bandit B404 errors. Any import of the subprocess module causes this
@@ -63,10 +71,10 @@ api-docs:
 	sphinx-build-3 -b html api api/_build/html
 
 dbus-tests:
-	python3 -m unittest discover ${UNITTEST_OPTS} --top-level-directory ./tests/whitebox --start-directory ./tests/whitebox/integration
+	${PYTHON} -m unittest discover ${UNITTEST_OPTS} --top-level-directory ./tests/whitebox --start-directory ./tests/whitebox/integration
 
 unittest-tests:
-	python3 -m unittest discover ${UNITTEST_OPTS} --start-directory ./tests/whitebox/unittest
+	${PYTHON} -m unittest discover ${UNITTEST_OPTS} --start-directory ./tests/whitebox/unittest
 
 .PHONY: coverage-no-html
 coverage-no-html:
@@ -94,3 +102,12 @@ legacy-package:
 .PHONY: package
 package:
 	(umask 0022; python -m build; python -m twine check --strict ./dist/*)
+
+.PHONY: apply
+apply:
+	@echo "Modules traced:"
+	@monkeytype list-modules
+	@echo "Annotating:"
+	@for module in ${MONKEYTYPE_MODULES}; do \
+	  monkeytype --verbose apply  --sample-count --ignore-existing-annotations $${module} > /dev/null; \
+	done

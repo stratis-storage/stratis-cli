@@ -73,3 +73,6 @@ _pyreverse
 
 # Packit
 *.rpm
+
+# monkeytype output
+monkeytype.sqlite3
