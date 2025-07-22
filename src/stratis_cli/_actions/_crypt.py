@@ -25,7 +25,6 @@ from .._errors import (
     StratisCliIncoherenceError,
     StratisCliInPlaceNotSpecified,
     StratisCliNoChangeError,
-    StratisCliResourceNotFoundError,
     StratisdErrors,
 )
 from ._connection import get_object
@@ -151,7 +150,7 @@ class CryptActions:
             raise StratisCliInPlaceNotSpecified()
 
         # pylint: disable=import-outside-toplevel
-        from ._data import MOPool, ObjectManager, Pool, pools
+        from ._data import ObjectManager, Pool, pools
 
         pool_id = PoolId.from_parser_namespace(namespace)
         assert pool_id is not None
@@ -160,14 +159,11 @@ class CryptActions:
 
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
-        (pool_object_path, mopool) = next(
+        (pool_object_path, _) = next(
             pools(props=pool_id.managed_objects_key())
             .require_unique_match(True)
             .search(managed_objects)
         )
-
-        if not bool(MOPool(mopool).Encrypted()):
-            raise StratisCliResourceNotFoundError("reencrypt", "encryption")
 
         (changed, return_code, message) = Pool.Methods.ReencryptPool(
             get_object(pool_object_path), {}
