@@ -21,7 +21,6 @@ from stratis_cli._errors import (
     StratisCliEngineError,
     StratisCliInPlaceNotSpecified,
     StratisCliNoChangeError,
-    StratisCliResourceNotFoundError,
 )
 
 from .._keyutils import RandomKeyTmpFile
@@ -562,7 +561,7 @@ class ReencryptTestCase2(SimTestCase):
         command_line = self._MENU + [
             f"--name={self._POOLNAME}",
         ]
-        self.check_error(StratisCliResourceNotFoundError, command_line, _ERROR)
+        self.check_error(StratisCliEngineError, command_line, _ERROR)
 
 
 class EncryptTestCase(SimTestCase):
