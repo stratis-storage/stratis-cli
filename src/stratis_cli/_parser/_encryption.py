@@ -17,7 +17,7 @@ Encryption command-line parser for Stratis CLI.
 
 # isort: STDLIB
 import copy
-from argparse import SUPPRESS
+from argparse import SUPPRESS, Namespace
 
 from .._actions import BindActions, RebindActions
 from .._constants import Clevis, EncryptionMethod
@@ -38,10 +38,10 @@ class ClevisEncryptionOptionsForTang(
     Class that verifies Clevis encryption options for bind subcommand.
     """
 
-    def __init__(self, namespace):
+    def __init__(self, namespace: Namespace):
         namespace.clevis = Clevis.TANG
         namespace.tang_url = copy.copy(namespace.url)
-        del namespace.url
+        del namespace.url  # pyright: ignore [reportAttributeAccessIssue]
         super().__init__(namespace)
 
 
@@ -52,7 +52,7 @@ class ClevisEncryptionOptionsForTpm2(
     Class that verifies Clevis encryption options for bind subcommand.
     """
 
-    def __init__(self, namespace):
+    def __init__(self, namespace: Namespace):
         namespace.clevis = Clevis.TPM2
         namespace.thumbprint = None
         namespace.tang_url = None

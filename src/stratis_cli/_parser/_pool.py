@@ -17,7 +17,7 @@ Definition of pool actions to display in the CLI.
 
 # isort: STDLIB
 import copy
-from argparse import SUPPRESS
+from argparse import SUPPRESS, ArgumentParser, Namespace
 from uuid import UUID
 
 # isort: THIRDPARTY
@@ -53,21 +53,21 @@ class IntegrityOptions:  # pylint: disable=too-few-public-methods
     Gathers and verifies integrity options.
     """
 
-    def __init__(self, namespace):
+    def __init__(self, namespace: Namespace):
         self.integrity = copy.copy(namespace.integrity)
-        del namespace.integrity
+        del namespace.integrity  # pyright: ignore [reportAttributeAccessIssue]
 
         self.journal_size = copy.copy(namespace.journal_size)
-        del namespace.journal_size
+        del namespace.journal_size  # pyright: ignore [reportAttributeAccessIssue]
 
         self.journal_size_default = getattr(namespace, "journal_size_default", True)
 
         self.tag_spec = copy.copy(namespace.tag_spec)
-        del namespace.tag_spec
+        del namespace.tag_spec  # pyright: ignore [reportAttributeAccessIssue]
 
         self.tag_spec_default = getattr(namespace, "tag_spec_default", True)
 
-    def verify(self, namespace, parser):
+    def verify(self, namespace: Namespace, parser: ArgumentParser):
         """
         Do supplementary parsing of conditional arguments.
         """
@@ -92,11 +92,11 @@ class CreateOptions:  # pylint: disable=too-few-public-methods
     Gathers and verifies options specified on pool create.
     """
 
-    def __init__(self, namespace):
+    def __init__(self, namespace: Namespace):
         self.clevis_encryption_options = ClevisEncryptionOptions(namespace)
         self.integrity_options = IntegrityOptions(namespace)
 
-    def verify(self, namespace, parser):
+    def verify(self, namespace: Namespace, parser: ArgumentParser):
         """
         Verify that create command-line is formed correctly.
         """
