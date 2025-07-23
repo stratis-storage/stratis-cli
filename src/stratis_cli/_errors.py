@@ -466,9 +466,13 @@ class StratisCliInPlaceNotSpecified(StratisCliUserError):
         return (
             "Please specify the --in-place option for this command.There is "
             "some risk of placing your pool in an unrecoverable state with "
-            "the in-place method. We ask that you specify the --in-place "
-            "option to demonstrate that you are willing to accept this risk. "
-            "In addition, this command initiates a long-running operation. "
-            "The operation will not complete within the standard D-Bus "
-            "timeout period."
+            "the in-place method.  In addition, this command initiates a "
+            "long-running operation. The time required for the operation is "
+            "proportional to the size of the pool. During the operation "
+            "pool administrative operations, for example, extending a "
+            "filesystem, will be impossible and all I/O operations to "
+            "filesystems in the pool will be blocked until the operation is "
+            "completed.  We ask that you specify the --in-place option to "
+            "demonstrate that you understand and are willing to accept the "
+            "associated risks."
         )
