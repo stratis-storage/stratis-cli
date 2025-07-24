@@ -4,8 +4,24 @@ else
   PYTHON = MONKEYTYPE_TRACE_MODULES=stratis-cli monkeytype run
 endif
 
-MONKEYTYPE_MODULES = stratis_cli._parser._encryption \
-                     stratis_cli._parser._pool
+MONKEYTYPE_MODULES = stratis_cli._actions._bind \
+                     stratis_cli._actions._constants \
+                     stratis_cli._actions._data \
+                     stratis_cli._actions._debug \
+                     stratis_cli._actions._list_filesystem \
+                     stratis_cli._actions._logical \
+                     stratis_cli._actions._physical \
+                     stratis_cli._actions._pool \
+                     stratis_cli._actions._stratisd_version \
+                     stratis_cli._actions._stratis \
+                     stratis_cli._actions._top \
+                     stratis_cli._exit \
+                     stratis_cli._main \
+                     stratis_cli._parser._debug \
+                     stratis_cli._parser._encryption \
+                     stratis_cli._parser._key \
+                     stratis_cli._parser._pool \
+                     stratis_cli._version
 
 UNITTEST_OPTS = --verbose
 #

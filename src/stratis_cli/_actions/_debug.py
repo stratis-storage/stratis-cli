@@ -18,6 +18,7 @@ Miscellaneous debugging actions.
 # isort: STDLIB
 import json
 import os
+from argparse import Namespace
 
 from .._constants import FilesystemId, PoolId
 from .._errors import StratisCliEngineError, StratisCliSynthUeventError
@@ -32,7 +33,7 @@ class TopDebugActions:  # pylint: disable=too-few-public-methods
     """
 
     @staticmethod
-    def refresh_state(_namespace):
+    def refresh_state(_namespace: Namespace):
         """
         Refresh pools from their metadata up.
         """
@@ -45,7 +46,7 @@ class TopDebugActions:  # pylint: disable=too-few-public-methods
             raise StratisCliEngineError(return_code, message)
 
     @staticmethod
-    def send_uevent(namespace):
+    def send_uevent(namespace: Namespace):
         """
         Issue a synthetic uevent from the CLI.
         """
@@ -71,7 +72,7 @@ class PoolDebugActions:  # pylint: disable=too-few-public-methods
     """
 
     @staticmethod
-    def get_object_path(namespace):
+    def get_object_path(namespace: Namespace):
         """
         Get object path corresponding to a pool.
 
@@ -93,7 +94,7 @@ class PoolDebugActions:  # pylint: disable=too-few-public-methods
         print(pool_object_path)
 
     @staticmethod
-    def get_metadata(namespace):
+    def get_metadata(namespace: Namespace):
         """
         Get some information about the pool-level metadata.
         """
@@ -130,7 +131,7 @@ class FilesystemDebugActions:  # pylint: disable=too-few-public-methods
     """
 
     @staticmethod
-    def get_object_path(namespace):
+    def get_object_path(namespace: Namespace):
         """
         Get object path corresponding to a pool.
 
@@ -152,7 +153,7 @@ class FilesystemDebugActions:  # pylint: disable=too-few-public-methods
         print(fs_object_path)
 
     @staticmethod
-    def get_metadata(namespace):
+    def get_metadata(namespace: Namespace):
         """
         Get filesystem medatada. If a specific filesystem is not specified,
         get metadata for all filesystems in the pool.
@@ -199,7 +200,7 @@ class BlockdevDebugActions:  # pylint: disable=too-few-public-methods
     """
 
     @staticmethod
-    def get_object_path(namespace):
+    def get_object_path(namespace: Namespace):
         """
         Get object path corresponding to a pool.
 

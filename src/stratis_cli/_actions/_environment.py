@@ -23,7 +23,7 @@ def get_timeout(value):
     Turn an input str or int (milliseconds) into an int timeout value (secs).
 
     :param value: the input str or int
-    :type value: str or int
+    :type value: str or int or float
     :raises StratisCliEnvironmentError:
     :returns: int
     """

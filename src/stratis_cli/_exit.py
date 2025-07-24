@@ -30,7 +30,7 @@ class StratisCliErrorCodes(IntEnum):
     PARSE_ERROR = 2
 
 
-def exit_(code, msg):
+def exit_(code: StratisCliErrorCodes, msg: str):
     """
     Exits program with a given exit code and error message.
     """

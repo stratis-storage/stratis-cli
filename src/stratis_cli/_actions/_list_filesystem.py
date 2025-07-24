@@ -17,9 +17,11 @@ Filesystem listing.
 
 # isort: STDLIB
 from abc import ABC, abstractmethod
+from typing import Any, Callable, Dict, List
 
 # isort: THIRDPARTY
 from dateutil import parser as date_parser
+from dbus import ObjectPath, String
 from justbytes import Range
 
 from ._connection import get_object
@@ -28,7 +30,7 @@ from ._formatting import TOTAL_USED_FREE, get_property, print_table, size_triple
 
 
 def list_filesystems(
-    uuid_formatter, *, pool_name=None, fs_id=None
+    uuid_formatter: Callable, *, pool_name=None, fs_id=None
 ):  # pylint: disable=too-many-locals
     """
     List the specified information about filesystems.
@@ -84,12 +86,17 @@ def list_filesystems(
     klass.display()
 
 
-class List(ABC):  # pylint: disable=too-few-public-methods
+class ListFilesystem(ABC):  # pylint: disable=too-few-public-methods
     """
     Handle listing a filesystem or filesystems.
     """
 
-    def __init__(self, uuid_formatter, filesystems_with_props, path_to_name):
+    def __init__(
+        self,
+        uuid_formatter: Callable,
+        filesystems_with_props: List[Any],
+        path_to_name: Dict[ObjectPath, String],
+    ):
         """
         Initialize a List object.
         :param uuid_formatter: function to format a UUID str or UUID
@@ -107,7 +114,7 @@ class List(ABC):  # pylint: disable=too-few-public-methods
         """
 
 
-class Table(List):  # pylint: disable=too-few-public-methods
+class Table(ListFilesystem):  # pylint: disable=too-few-public-methods
     """
     List filesystems using table format.
     """
@@ -156,7 +163,7 @@ class Table(List):  # pylint: disable=too-few-public-methods
         )
 
 
-class Detail(List):  # pylint: disable=too-few-public-methods
+class Detail(ListFilesystem):  # pylint: disable=too-few-public-methods
     """
     Do a detailed listing of filesystems.
     """
