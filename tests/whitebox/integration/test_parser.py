@@ -241,14 +241,18 @@ class TestAllHelp(RunTestCase):
 
 class TestClevisOptions(ParserTestCase):
     """
-    Verify that invalid clevis encryption create options are detected.
+    Verify that invalid clevis encryption options are detected.
     """
 
     def _do_clevis_test(self, clevis_args):
         """
         Apply clevis args to create command_line and verify parser error.
         """
-        self._do_test(["pool", "create", "pn", "/dev/n"] + clevis_args)
+        for subcommand in [
+            ["pool", "create", "pn", "/dev/n"],
+            ["pool", "encryption", "on", "--name=pn"],
+        ]:
+            self._do_test(subcommand + clevis_args)
 
     def test_create_with_clevis_1(self):
         """
