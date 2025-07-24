@@ -18,15 +18,21 @@ Pool actions.
 # isort: STDLIB
 import json
 import os
+from argparse import Namespace
 from collections import defaultdict
 from itertools import tee
+from typing import Dict
 from uuid import UUID
 
 # isort: THIRDPARTY
+from dbus import Dictionary
 from justbytes import Range
 
 # isort: FIRSTPARTY
 from dbus_python_client_gen import DPClientMarshallingError
+
+# isort: LOCAL
+from stratis_cli._stratisd_constants import BlockDevTiers
 
 from .._alerts import PoolAlert
 from .._constants import IntegrityOption, IntegrityTagSpec, PoolId, UnlockMethod
@@ -51,7 +57,9 @@ from ._list_pool import list_pools
 from ._utils import StoppedPool, fetch_stopped_pools_property, get_passphrase_fd
 
 
-def _generate_pools_to_blockdevs(managed_objects, to_be_added, tier):
+def _generate_pools_to_blockdevs(
+    managed_objects: Dictionary, to_be_added: frozenset, tier: BlockDevTiers
+) -> Dict[str, frozenset]:
     """
     Generate a map of pools to which block devices they own
     :param managed_objects: the result of a GetManagedObjects call
@@ -87,7 +95,9 @@ def _generate_pools_to_blockdevs(managed_objects, to_be_added, tier):
     )
 
 
-def _check_opposite_tier(managed_objects, to_be_added, other_tier):
+def _check_opposite_tier(
+    managed_objects: Dictionary, to_be_added: frozenset, other_tier: BlockDevTiers
+):
     """
     Check whether specified blockdevs are already in the other tier.
 
@@ -115,7 +125,12 @@ def _check_opposite_tier(managed_objects, to_be_added, other_tier):
         )
 
 
-def _check_same_tier(pool_name, managed_objects, to_be_added, this_tier):
+def _check_same_tier(
+    pool_name: str,
+    managed_objects: Dictionary,
+    to_be_added: frozenset,
+    this_tier: BlockDevTiers,
+):
     """
     Check whether specified blockdevs are already in the tier to which they
     are to be added.
@@ -156,7 +171,7 @@ class PoolActions:
     """
 
     @staticmethod
-    def create_pool(namespace):  # pylint: disable=too-many-locals
+    def create_pool(namespace: Namespace):  # pylint: disable=too-many-locals
         """
         Create a stratis pool.
 
@@ -245,7 +260,7 @@ class PoolActions:
             Pool.Properties.Overprovisioning.Set(get_object(pool_object_path), False)
 
     @staticmethod
-    def stop_pool(namespace):
+    def stop_pool(namespace: Namespace):
         """
         Stop a pool.
 
@@ -271,7 +286,7 @@ class PoolActions:
             raise StratisCliNoChangeError("stop", pool_id)
 
     @staticmethod
-    def start_pool(namespace):
+    def start_pool(namespace: Namespace):
         """
         Start a pool.
 
@@ -356,7 +371,7 @@ class PoolActions:
             raise StratisCliNoChangeError("start", pool_id)
 
     @staticmethod
-    def init_cache(namespace):  # pylint: disable=too-many-locals
+    def init_cache(namespace: Namespace):  # pylint: disable=too-many-locals
         """
         Initialize the cache of an existing stratis pool.
 
@@ -412,7 +427,7 @@ class PoolActions:
             )
 
     @staticmethod
-    def list_pools(namespace):
+    def list_pools(namespace: Namespace):
         """
         List Stratis pools.
         """
@@ -434,7 +449,7 @@ class PoolActions:
         list_pools(uuid_formatter, stopped=stopped, selection=selection)
 
     @staticmethod
-    def destroy_pool(namespace):
+    def destroy_pool(namespace: Namespace):
         """
         Destroy a stratis pool.
 
@@ -473,7 +488,7 @@ class PoolActions:
             )
 
     @staticmethod
-    def rename_pool(namespace):
+    def rename_pool(namespace: Namespace):
         """
         Rename a pool.
 
@@ -502,7 +517,7 @@ class PoolActions:
             raise StratisCliNoChangeError("rename", namespace.new)
 
     @staticmethod
-    def add_data_devices(namespace):  # pylint: disable=too-many-locals
+    def add_data_devices(namespace: Namespace):  # pylint: disable=too-many-locals
         """
         Add specified data devices to a pool.
 
@@ -557,7 +572,7 @@ class PoolActions:
             )
 
     @staticmethod
-    def add_cache_devices(namespace):  # pylint: disable=too-many-locals
+    def add_cache_devices(namespace: Namespace):  # pylint: disable=too-many-locals
         """
         Add specified cache devices to a pool.
 
@@ -612,7 +627,7 @@ class PoolActions:
             )
 
     @staticmethod
-    def extend_data(namespace):  # pylint: disable=too-many-locals
+    def extend_data(namespace: Namespace):  # pylint: disable=too-many-locals
         """
         Extend the pool making use of the additional space offered by component
         devices. Exit immediately if something unexpected happens.
@@ -735,7 +750,7 @@ class PoolActions:
             expand(pool_proxy, modev)
 
     @staticmethod
-    def set_fs_limit(namespace):
+    def set_fs_limit(namespace: Namespace):
         """
         Set the filesystem limit.
         """
@@ -758,7 +773,7 @@ class PoolActions:
         Pool.Properties.FsLimit.Set(get_object(pool_object_path), namespace.amount)
 
     @staticmethod
-    def set_overprovisioning_mode(namespace):
+    def set_overprovisioning_mode(namespace: Namespace):
         """
         Set the overprovisioning mode.
         """
@@ -783,7 +798,7 @@ class PoolActions:
         Pool.Properties.Overprovisioning.Set(get_object(pool_object_path), decision)
 
     @staticmethod
-    def explain_code(namespace):
+    def explain_code(namespace: Namespace):
         """
         Print an explanation of pool alert code.
         """

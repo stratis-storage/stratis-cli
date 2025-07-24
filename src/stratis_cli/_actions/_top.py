@@ -19,6 +19,12 @@ Miscellaneous top-level actions.
 import json
 import os
 import sys
+from argparse import Namespace
+from typing import Tuple
+
+# isort: THIRDPARTY
+from dbus import Array, String, Struct, UInt16
+from dbus.proxies import ProxyObject
 
 from .._errors import (
     StratisCliEngineError,
@@ -34,7 +40,7 @@ from ._formatting import print_table
 from ._utils import get_passphrase_fd
 
 
-def _fetch_keylist(proxy):
+def _fetch_keylist(proxy: ProxyObject) -> Array:
     """
     Fetch the list of Stratis keys from stratisd.
     :param proxy: proxy to the top object in stratisd
@@ -51,7 +57,9 @@ def _fetch_keylist(proxy):
     return keys
 
 
-def _add_update_key(proxy, key_desc, capture_key, *, keyfile_path):
+def _add_update_key(
+    proxy: ProxyObject, key_desc: str, capture_key: bool, *, keyfile_path
+) -> Tuple[Struct, UInt16, String]:
     """
     Issue a command to set or reset a key in the kernel keyring with the option
     to set it interactively or from a keyfile.
@@ -87,7 +95,7 @@ class TopActions:
     """
 
     @staticmethod
-    def get_report(namespace):
+    def get_report(namespace: Namespace):
         """
         Get the requested report from stratisd.
 
@@ -133,7 +141,7 @@ class TopActions:
         print(file=sys.stdout)
 
     @staticmethod
-    def set_key(namespace):
+    def set_key(namespace: Namespace):
         """
         Set a key in the kernel keyring.
 
@@ -175,7 +183,7 @@ class TopActions:
             )
 
     @staticmethod
-    def reset_key(namespace):
+    def reset_key(namespace: Namespace):
         """
         Reset the key data for an existing key in the kernel keyring.
 
@@ -213,7 +221,7 @@ class TopActions:
             )
 
     @staticmethod
-    def unset_key(namespace):
+    def unset_key(namespace: Namespace):
         """
         Unset a key in kernel keyring.
 
@@ -246,7 +254,7 @@ class TopActions:
             )
 
     @staticmethod
-    def list_keys(_):
+    def list_keys(_: Namespace):
         """
         List keys in kernel keyring.
 

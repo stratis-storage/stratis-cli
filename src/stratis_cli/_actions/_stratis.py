@@ -15,6 +15,9 @@
 Miscellaneous actions about stratis.
 """
 
+# isort: STDLIB
+from argparse import Namespace
+
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 
@@ -25,7 +28,7 @@ class StratisActions:  # pylint: disable=too-few-public-methods
     """
 
     @staticmethod
-    def list_stratisd_version(_namespace):
+    def list_stratisd_version(_namespace: Namespace):
         """
         List the stratisd version.
         """

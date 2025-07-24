@@ -15,6 +15,9 @@
 Miscellaneous logical actions.
 """
 
+# isort: STDLIB
+from argparse import Namespace
+
 # isort: THIRDPARTY
 from justbytes import Range
 
@@ -39,7 +42,7 @@ class LogicalActions:
     """
 
     @staticmethod
-    def create_volumes(namespace):
+    def create_volumes(namespace: Namespace):
         """
         Create volumes in a pool.
 
@@ -113,7 +116,7 @@ class LogicalActions:
             )
 
     @staticmethod
-    def list_volumes(namespace):
+    def list_volumes(namespace: Namespace):
         """
         List the volumes in a pool.
         """
@@ -137,7 +140,7 @@ class LogicalActions:
         )
 
     @staticmethod
-    def destroy_volumes(namespace):
+    def destroy_volumes(namespace: Namespace):
         """
         Destroy volumes in a pool.
 
@@ -202,7 +205,7 @@ class LogicalActions:
             )
 
     @staticmethod
-    def snapshot_filesystem(namespace):
+    def snapshot_filesystem(namespace: Namespace):
         """
         Snapshot filesystem in a pool.
 
@@ -238,7 +241,7 @@ class LogicalActions:
             raise StratisCliNoChangeError("snapshot", namespace.snapshot_name)
 
     @staticmethod
-    def rename_fs(namespace):
+    def rename_fs(namespace: Namespace):
         """
         Rename a filesystem.
 
@@ -272,7 +275,7 @@ class LogicalActions:
             raise StratisCliNoChangeError("rename", namespace.new_name)
 
     @staticmethod
-    def set_size_limit(namespace):  # pylint: disable=too-many-locals
+    def set_size_limit(namespace: Namespace):  # pylint: disable=too-many-locals
         """
         Set an upper limit on the size of the filesystem.
         """
@@ -310,7 +313,7 @@ class LogicalActions:
         )
 
     @staticmethod
-    def unset_size_limit(namespace):
+    def unset_size_limit(namespace: Namespace):
         """
         Unset upper limit on the size of the filesystem.
         """
@@ -338,7 +341,7 @@ class LogicalActions:
         Filesystem.Properties.SizeLimit.Set(get_object(fs_object_path), (False, ""))
 
     @staticmethod
-    def schedule_revert(namespace):
+    def schedule_revert(namespace: Namespace):
         """
         Schedule reverting a snapshot into its origin.
         """
@@ -370,7 +373,7 @@ class LogicalActions:
         Filesystem.Properties.MergeScheduled.Set(get_object(fs_object_path), True)
 
     @staticmethod
-    def cancel_revert(namespace):
+    def cancel_revert(namespace: Namespace):
         """
         Cancel reverting a snapshot into its origin.
         """

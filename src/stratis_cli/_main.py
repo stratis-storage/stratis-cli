@@ -15,6 +15,9 @@
 Highest level runner.
 """
 
+# isort: STDLIB
+from typing import Callable
+
 # isort: THIRDPARTY
 import justbytes as jb
 
@@ -23,7 +26,7 @@ from ._errors import StratisCliActionError, StratisCliEnvironmentError
 from ._parser import gen_parser
 
 
-def run():
+def run() -> Callable:
     """
     Generate a function that parses arguments and executes.
     """
