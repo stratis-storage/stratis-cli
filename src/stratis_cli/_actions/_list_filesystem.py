@@ -84,7 +84,7 @@ def list_filesystems(
     klass.display()
 
 
-class List(ABC):  # pylint: disable=too-few-public-methods
+class ListFilesystem(ABC):  # pylint: disable=too-few-public-methods
     """
     Handle listing a filesystem or filesystems.
     """
@@ -107,7 +107,7 @@ class List(ABC):  # pylint: disable=too-few-public-methods
         """
 
 
-class Table(List):  # pylint: disable=too-few-public-methods
+class Table(ListFilesystem):  # pylint: disable=too-few-public-methods
     """
     List filesystems using table format.
     """
@@ -156,7 +156,7 @@ class Table(List):  # pylint: disable=too-few-public-methods
         )
 
 
-class Detail(List):  # pylint: disable=too-few-public-methods
+class Detail(ListFilesystem):  # pylint: disable=too-few-public-methods
     """
     Do a detailed listing of filesystems.
     """
