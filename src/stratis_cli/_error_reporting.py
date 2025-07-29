@@ -33,7 +33,12 @@ from dbus_python_client_gen import (
     DPClientSetPropertyContext,
 )
 
-from ._actions import BLOCKDEV_INTERFACE, FILESYSTEM_INTERFACE, POOL_INTERFACE
+from ._actions import (
+    BLOCKDEV_INTERFACE,
+    FILESYSTEM_INTERFACE,
+    POOL_INTERFACE,
+    get_errors,
+)
 from ._errors import (
     StratisCliActionError,
     StratisCliEngineError,
@@ -77,18 +82,6 @@ def _interface_name_to_common_name(interface_name):
 
     # This is a permanent no cover. There should never be an unknown interface.
     raise StratisCliUnknownInterfaceError(interface_name)  # pragma: no cover
-
-
-def get_errors(exc: Exception):
-    """
-    Generates a sequence of exceptions starting with exc and following the chain
-    of causes.
-    """
-    while True:
-        yield exc
-        exc = getattr(exc, "__cause__") or getattr(exc, "__context__")
-        if exc is None:
-            return
 
 
 def _interpret_errors_0(error):
