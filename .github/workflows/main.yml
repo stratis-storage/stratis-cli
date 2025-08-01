@@ -45,7 +45,9 @@ jobs:
               PATH=${PATH}:/github/home/.local/bin PYTHONPATH=./src
               make -f Makefile lint
           - dependencies: black python3-isort
-            task: make -f Makefile fmt-ci
+            task:
+              PATH=${PATH}:/github/home/.local/bin PYTHONPATH=./src
+              make -f Makefile fmt-ci
           - dependencies: shfmt
             task: make -f Makefile fmt-shell-ci
     runs-on: ubuntu-latest
@@ -63,6 +65,8 @@ jobs:
         run: python --version
       - name: Install pyright
         run: pip install --user pyright
+      - name: Install abs2rel
+        run: pip install --user abs2rel
       - name: Run test
         run: ${{ matrix.task }}
 

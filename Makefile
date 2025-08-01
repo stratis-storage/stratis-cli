@@ -49,6 +49,7 @@ lint:
 
 .PHONY: fmt
 fmt:
+	(cd src; yes | abs2rel)
 	isort setup.py bin/stratis src tests
 	black ./bin/stratis .
 

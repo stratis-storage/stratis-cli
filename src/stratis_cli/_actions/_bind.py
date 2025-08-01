@@ -19,9 +19,6 @@ Miscellaneous pool-binding actions.
 import json
 from argparse import Namespace
 
-# isort: LOCAL
-from stratis_cli._constants import PoolId
-
 from .._constants import EncryptionMethod, IdType, PoolId
 from .._errors import StratisCliEngineError, StratisCliNoChangeError
 from .._stratisd_constants import StratisdErrors
