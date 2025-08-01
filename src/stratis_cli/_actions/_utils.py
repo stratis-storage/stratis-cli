@@ -23,7 +23,12 @@ import os
 import sys
 import termios
 from enum import Enum
+from typing import Tuple
 from uuid import UUID
+
+# isort: THIRDPARTY
+from dbus import Dictionary, Struct
+from dbus.proxies import ProxyObject
 
 from .._errors import (
     StratisCliKeyfileNotFoundError,
@@ -40,7 +45,7 @@ class EncryptionInfo:  # pylint: disable=too-few-public-methods
     Generic information about a single encryption method.
     """
 
-    def __init__(self, info):
+    def __init__(self, info: Struct):
         """
         Initializer.
         :param info: info about an encryption method, as a dbus-python type
@@ -66,7 +71,7 @@ class EncryptionInfoClevis(EncryptionInfo):  # pylint: disable=too-few-public-me
     Encryption info for Clevis
     """
 
-    def __init__(self, info):
+    def __init__(self, info: Struct):
         super().__init__(info)
 
         # We don't test with Clevis for coverage
@@ -84,7 +89,7 @@ class EncryptionInfoKeyDescription(
     Encryption info for kernel keyring
     """
 
-    def __init__(self, info):
+    def __init__(self, info: Struct):
         super().__init__(info)
 
         # Our listing code excludes creating an object of this class without
@@ -100,7 +105,7 @@ class Device:  # pylint: disable=too-few-public-methods
     A representation of a device in a stopped pool.
     """
 
-    def __init__(self, mapping):
+    def __init__(self, mapping: Dictionary):
         self.uuid = UUID(mapping["uuid"])
         self.devnode = str(mapping["devnode"])
 
@@ -119,7 +124,7 @@ class PoolFeature(Enum):
 
     UNRECOGNIZED = None
 
-    def __str__(self):
+    def __str__(self) -> str:
         if self is PoolFeature.UNRECOGNIZED:
             return "<UNRECOGNIZED>"
         return self.value
@@ -136,7 +141,7 @@ class StoppedPool:  # pylint: disable=too-few-public-methods
     A representation of a single stopped pool.
     """
 
-    def __init__(self, pool_info):
+    def __init__(self, pool_info: Dictionary):
         """
         Initializer.
         :param pool_info: a D-Bus structure
@@ -175,7 +180,7 @@ class StoppedPool:  # pylint: disable=too-few-public-methods
         )
 
 
-def get_pass(prompt):
+def get_pass(prompt: str) -> str:
     """
     Prompt for a passphrase on stdin.
 
@@ -214,7 +219,7 @@ def get_pass(prompt):
     return password.rstrip("\n")
 
 
-def get_passphrase_fd(*, keyfile_path=None, verify=True):
+def get_passphrase_fd(*, keyfile_path=None, verify=True) -> Tuple[int, int]:
     """
     Get a passphrase either from stdin or from a file.
 
@@ -248,7 +253,7 @@ def get_passphrase_fd(*, keyfile_path=None, verify=True):
     return (file_desc, fd_to_close)
 
 
-def fetch_stopped_pools_property(proxy):
+def fetch_stopped_pools_property(proxy: ProxyObject) -> Dictionary:
     """
     Fetch the StoppedPools property from stratisd.
     :param proxy: proxy to the top object in stratisd
