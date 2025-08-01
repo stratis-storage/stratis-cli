@@ -33,6 +33,7 @@ jobs:
           # MANDATORY CHECKS USING CURRENT DEVELOPMENT INTERPRETER
           - dependencies: >
               bandit
+              monkeytype
               pylint
               python3-dateutil
               python3-dbus-client-gen
