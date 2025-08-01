@@ -80,8 +80,12 @@ jobs:
       - name: Apply annotations
         run: PYTHONPATH=./src make apply
         working-directory: stratis-cli
+      - name: Install abs2rel
+        run: pip install --user abs2rel
       - name: Format result
-        run: make fmt
+        run:
+          PATH=${PATH}:/github/home/.local/bin
+          make fmt
         working-directory: stratis-cli
       - name: Install pyright
         run: pip install --user pyright

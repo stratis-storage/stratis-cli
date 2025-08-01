@@ -31,9 +31,6 @@ from justbytes import Range
 # isort: FIRSTPARTY
 from dbus_python_client_gen import DPClientMarshallingError
 
-# isort: LOCAL
-from stratis_cli._stratisd_constants import BlockDevTiers
-
 from .._alerts import PoolAlert
 from .._constants import IntegrityOption, IntegrityTagSpec, PoolId, UnlockMethod
 from .._errors import (
