@@ -8,6 +8,7 @@ MONKEYTYPE_MODULES = stratis_cli._actions._bind \
                      stratis_cli._actions._constants \
                      stratis_cli._actions._data \
                      stratis_cli._actions._debug \
+                     stratis_cli._actions._environment \
                      stratis_cli._actions._list_filesystem \
                      stratis_cli._actions._logical \
                      stratis_cli._actions._physical \
@@ -15,6 +16,7 @@ MONKEYTYPE_MODULES = stratis_cli._actions._bind \
                      stratis_cli._actions._stratisd_version \
                      stratis_cli._actions._stratis \
                      stratis_cli._actions._top \
+                     stratis_cli._actions._utils \
                      stratis_cli._exit \
                      stratis_cli._main \
                      stratis_cli._parser._debug \
@@ -34,10 +36,12 @@ PYLINT_DISABLE = --disable=fixme
 
 .PHONY: lint
 lint:
+	pylint monkeytype_config.py ${PYLINT_DISABLE}
 	pylint setup.py ${PYLINT_DISABLE}
 	pylint bin/stratis ${PYLINT_DISABLE}
 	pylint src/stratis_cli --disable=duplicate-code ${PYLINT_DISABLE} --ignore=_introspect.py
 	pylint tests/whitebox --disable=duplicate-code ${PYLINT_DISABLE}
+	bandit monkeytype_config.py ${BANDIT_SKIP}
 	bandit setup.py ${BANDIT_SKIP}
 	bandit bin/stratis ${BANDIT_SKIP}
 	# Ignore B101 errors. We do not distribute optimized code, i.e., .pyo

@@ -15,10 +15,13 @@
 Environment functions.
 """
 
+# isort: STDLIB
+from typing import Union
+
 from .._errors import StratisCliEnvironmentError
 
 
-def get_timeout(value):
+def get_timeout(value: Union[float, int, str]) -> int:
     """
     Turn an input str or int (milliseconds) into an int timeout value (secs).
 
