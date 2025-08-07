@@ -1,3 +1,35 @@
+stratis-cli 3.9.0
+=================
+Required stratisd version: 3.9.0
+
+Recommended development environment: Fedora 41
+Lowest supported Python interpreter: 3.9
+
+- Support starting a pool without its cache:
+  https://github.com/stratis-storage/stratis-cli/pull/1185
+
+- Increase version to 3.9.0:
+  https://github.com/stratis-storage/stratis-cli/pull/1184
+
+- Revert "Reapply "Remove "pool encryption" subcommand"";
+  Add MOVE notices for moved subcommands in the man pages:
+  https://github.com/stratis-storage/stratis-cli/pull/1191
+  https://github.com/stratis-storage/stratis-cli/pull/1183
+
+- Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/1197
+  https://github.com/stratis-storage/stratis-cli/pull/1196
+  https://github.com/stratis-storage/stratis-cli/pull/1195
+  https://github.com/stratis-storage/stratis-cli/pull/1194
+  https://github.com/stratis-storage/stratis-cli/pull/1193
+  https://github.com/stratis-storage/stratis-cli/pull/1192
+  https://github.com/stratis-storage/stratis-cli/pull/1190
+  https://github.com/stratis-storage/stratis-cli/pull/1189
+  https://github.com/stratis-storage/stratis-cli/pull/1188
+  https://github.com/stratis-storage/stratis-cli/pull/1187
+  https://github.com/stratis-storage/stratis-cli/pull/1167
+
+
 stratis-cli 3.8.2
 =================
 Required stratisd version: 3.8.2
@@ -11,6 +43,10 @@ Lowest supported Python interpreter: 3.9
   https://github.com/stratis-storage/stratis-cli/pull/1175
   https://github.com/stratis-storage/stratis-cli/pull/1174
   https://github.com/stratis-storage/stratis-cli/pull/1172
+
+- Catch error in case journal-size value is too large:
+  https://github.com/stratis-storage/stratis-cli/issues/1178
+  https://github.com/stratis-storage/stratis-cli/pull/1180
 
 - Revert "Remove "pool encryption" subcommand":
   https://github.com/stratis-storage/stratis-cli/pull/1161
