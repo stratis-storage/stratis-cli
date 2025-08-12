@@ -97,7 +97,7 @@ jobs:
       matrix:
         include:
           - python: "3.13"  # CURRENT DEVELOPMENT PYTHON TOOLCHAIN
-          - python: "3.9"  # LOWEST SUPPORTED PYTHON TOOLCHAIN
+          - python: "3.12"  # LOWEST SUPPORTED PYTHON TOOLCHAIN
     runs-on: ubuntu-latest
     container:
       image: fedora:41  # CURRENT DEVELOPMENT ENVIRONMENT
@@ -235,37 +235,3 @@ jobs:
           PYTHONPATH=./src
           make -f Makefile coverage-no-html
         working-directory: stratis-cli
-
-  lowest-environment-checks:
-    runs-on: ubuntu-latest
-    container: fedora:41  # CURRENT DEVELOPMENT ENVIRONMENT
-    steps:
-      - name: Install python3.9
-        run: >
-          dnf install -y
-          alternatives
-          python3.9
-      - name: Set python3 to python3.9
-        run: >
-          alternatives
-          --install /usr/bin/python3
-          python3
-          /usr/bin/python3.9
-          10
-      - name: Display Python version
-        run: python3 --version
-      - uses: actions/checkout@v4
-      - name: Install dependencies
-        run: >
-          dnf install -y
-          make
-          python-setuptools
-          python3-dbus-client-gen
-          python3-dbus-python-client-gen
-          python3-justbytes
-          python3-dateutil
-          python3-packaging
-          python3-psutil
-          python3-wcwidth
-      - name: Make legacy package
-        run: make -f Makefile legacy-package
