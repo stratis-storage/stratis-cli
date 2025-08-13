@@ -53,7 +53,7 @@ jobs:
           - dependencies: shfmt
             task: make -f Makefile fmt-shell-ci
     runs-on: ubuntu-latest
-    container: fedora:41  # CURRENT DEVELOPMENT ENVIRONMENT
+    container: fedora:42  # CURRENT DEVELOPMENT ENVIRONMENT
     steps:
       - uses: actions/checkout@v5
         with:
@@ -76,7 +76,7 @@ jobs:
 
   check-typos:
     runs-on: ubuntu-latest
-    container: fedora:41  # CURRENT DEVELOPMENT ENVIRONMENT
+    container: fedora:42  # CURRENT DEVELOPMENT ENVIRONMENT
     steps:
       - name: Install dependencies
         run: >
@@ -105,7 +105,7 @@ jobs:
           - python: "3.12"  # LOWEST SUPPORTED PYTHON TOOLCHAIN
     runs-on: ubuntu-latest
     container:
-      image: fedora:41  # CURRENT DEVELOPMENT ENVIRONMENT
+      image: fedora:42  # CURRENT DEVELOPMENT ENVIRONMENT
       # yamllint disable rule:line-length
       options: --privileged --userns=host --ipc=host -v /run/dbus/system_bus_socket:/run/dbus/system_bus_socket:ro -v /usr/share/dbus-1:/usr/share/dbus-1
     steps:
@@ -183,7 +183,7 @@ jobs:
     needs: test-runs
     runs-on: ubuntu-latest
     container:
-      image: fedora:41  # CURRENT DEVELOPMENT ENVIRONMENT
+      image: fedora:42  # CURRENT DEVELOPMENT ENVIRONMENT
       # yamllint disable rule:line-length
       options: --privileged --userns=host --ipc=host -v /run/dbus/system_bus_socket:/run/dbus/system_bus_socket:ro -v /usr/share/dbus-1:/usr/share/dbus-1
     steps:
