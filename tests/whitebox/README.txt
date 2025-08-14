@@ -1,7 +1,7 @@
 This directory contains tests of the CLI functionality.
 
 There are three directories containing three types of tests:
-* unittest - strict unit tests which require no setup of the environment
+* unit - strict unit tests which require no setup of the environment
 * monkey_patching - tests that use monkey_patching to mock some behavior
 * integration - straightforward tests of functionality
 
@@ -11,7 +11,7 @@ of tests.
 As is usual with Python projects, it is essential to set the PYTHONPATH
 environment variable correctly when running the tests.
 
-With the exception of the tests in the unittest directory, all tests
+With the exception of the tests in the unit directory, all tests
 require a stratisd executable. To run the tests, it is necessary to
 set the value of the environment variable STRATISD to the path of the
 stratisd executable. The tests start and stop stratisd regularly; the
