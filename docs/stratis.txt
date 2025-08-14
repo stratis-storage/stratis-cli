@@ -117,6 +117,25 @@ pool unbind <(clevis|keyring)> <pool name> [--token-slot <token slot>]::
      mechanism. MOVE NOTICE: The "unbind" subcommand can also be found under
      the "pool encryption" subcommand. The "pool unbind" subcommand that you
      are using now is deprecated and will be removed in stratis 3.10.0.
+pool encryption bind <(nbde|tang)> <(--uuid <uuid> |--name <name>)> <(--thumbprint <thp> | --trust-url)> <url>::
+     Bind the devices in the specified pool to a supplementary encryption
+     mechanism that uses NBDE (Network-Bound Disc Encryption). *tang* is
+     an alias for *nbde*.
+pool encryption bind tpm2 <(--uuid <uuid> |--name <name>)>::
+     Bind the devices in the specified pool to a supplementary encryption
+     mechanism that uses TPM 2.0 (Trusted Platform Module).
+pool encryption bind keyring <(--uuid <uuid> |--name <name>)> <keydesc>::
+     Bind the devices in the specified pool to a supplementary encryption
+     mechanism using a key in the kernel keyring.
+pool encryption rebind clevis <(--uuid <uuid> |--name <name>)> [--token-slot <token slot>]::
+     Rebind the devices in the specified pool using the Clevis configuration
+     with which the devices in the pool were previously bound.
+pool encryption rebind keyring <(--uuid <uuid> |--name <name>)> <keydesc> [--token-slot <token slot>]::
+     Rebind the devices in the specified pool using the specified key
+     description.
+pool encryption unbind <(clevis|keyring)> <(--uuid <uuid> |--name <name>)> [--token-slot <token slot>]::
+     Unbind the devices in the specified pool from the specified encryption
+     mechanism.
 pool set-fs-limit <pool name> <amount> ::
      Set the limit on the number of file systems allowed per-pool. This number
      may only be increased from its current value.
