@@ -382,6 +382,14 @@ Encryption Enabled: Clevis Configuration::
 	The Clevis configuration, if the pool is encrypted via Clevis. Only
         displayed if metadata version is 1 and encryption is enabled.
 
+Encryption Enabled: Allows Unlock via a Key in Kernel Keyring or a User-Entered Passphrase::
+        Whether or not the pool can be unlocked via a key in the kernel
+        keyring or a user-entered passphrase. Only displayed if metadata
+        version is 2 and encryption is enabled.
+
+Encryption Enabled: Allows Unattended Unlock via Clevis::
+        Whether or not the pool can be unlocked via Clevis. Only displayed
+        if metadata version is 2 and encryption is enabled.
 
 FIELDS for stratis filesystem list
 
