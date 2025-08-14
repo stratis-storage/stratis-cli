@@ -329,18 +329,20 @@ Allows Overprovisioning::
 Encryption Enabled:
 	Whether or not encryption is enabled for this pool.
 
-Encryption Enabled: Key Description (V1 only)::
+Encryption Enabled: Key Description::
 	The key description, if the pool is encrypted using a key in the
-	kernel keyring. Only displayed if encryption is enabled.
+	kernel keyring. Only displayed if metadata version is 1 and
+        encryption is enabled.
 
-Encryption Enabled: Clevis Configuration (V1 only)::
+Encryption Enabled: Clevis Configuration::
 	The Clevis configuration, if the pool is encrypted via Clevis. Only
-        displayed if encryption is enabled.
+        displayed if metadata version is 1 and encryption is enabled.
 
-Encryption Enabled: Free Token Slots Remaining (V2 only)::
+Encryption Enabled: Free Token Slots Remaining::
         The number of token slots remaining that can accommodate new
         bindings, followed by a list of binding descriptions, ordered by
-        token slot. Only displayed if encryption is enabled.
+        token slot. Only displayed if metadata version is 2 and encryption
+        is enabled.
 
 Space Usage: Fully Allocated::
 	Whether or not all the space on a pool's devices has been allocated
