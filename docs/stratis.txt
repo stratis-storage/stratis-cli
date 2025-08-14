@@ -100,19 +100,19 @@ pool bind keyring <pool name> <keydesc>::
      subcommand can also be found under the "pool encryption bind" subcommand.
      The "pool bind keyring" subcommand that you are using now is deprecated
      and will be removed in stratis 3.10.0.
-pool rebind clevis <pool name>::
+pool rebind clevis <pool name> [--token-slot <token slot>]::
      Rebind the devices in the specified pool using the Clevis configuration
      with which the devices in the pool were previously bound. MOVE NOTICE:
-     The "clevis" subcommand can also be found under the
-     "pool encryption rebind" subcommand. The "pool rebind clevis" subcommand
-     that you are using now is deprecated and will be removed in stratis 3.10.0.
-pool rebind keyring <pool_name> <keydesc>::
+     The "clevis" subcommand can also be found under the "pool encryption
+     rebind" subcommand. The "pool rebind clevis" subcommand that you are
+     using now is deprecated and will be removed in stratis 3.10.0.
+pool rebind keyring <pool name> <keydesc> [--token-slot <token slot>]::
      Rebind the devices in the specified pool using the specified key
      description. MOVE NOTICE: The "keyring" subcommand can also be found
      under the "pool encryption rebind" subcommand. The "pool rebind keyring"
      subcommand that you are using now is deprecated and will be removed in
      stratis 3.10.0.
-pool unbind <(clevis|keyring)> <pool name> ::
+pool unbind <(clevis|keyring)> <pool name> [--token-slot <token slot>]::
      Unbind the devices in the specified pool from the specified encryption
      mechanism. MOVE NOTICE: The "unbind" subcommand can also be found under
      the "pool encryption" subcommand. The "pool unbind" subcommand that you
@@ -240,6 +240,9 @@ OPTIONS
         Used to specify the size of, e.g., a filesystem. The specification
         format must follow the standard size specification format for input
         (see below).
+--token-slot <token slot> ::
+        For V2 pools only. Use the token slot number to select among
+        different bindings that use the same encryption method.
 
 
 SIZE SPECIFICATION FORMAT FOR INPUT
