@@ -383,6 +383,11 @@ Encryption Enabled: Clevis Configuration::
 	The Clevis configuration, if the pool is encrypted via Clevis. Only
         displayed if metadata version is 1 and encryption is enabled.
 
+Encryption Enabled: Last Time Reencrypted::
+        The last time the pool was re-encrypted. If the pool has never been
+        re-encrypted, the value is "Never". Only displayed if metadata
+        version is 2 and encryption is enabled.
+
 Encryption Enabled: Free Token Slots Remaining::
         The number of token slots remaining that can accommodate new
         bindings, followed by a list of binding descriptions, ordered by
