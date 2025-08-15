@@ -22,13 +22,19 @@ import json
 import os
 import sys
 import termios
+from argparse import Namespace
 from enum import Enum
-from typing import Tuple
+from functools import wraps
+from typing import Callable, Tuple
 from uuid import UUID
 
 # isort: THIRDPARTY
 from dbus import Dictionary, Struct
+from dbus.exceptions import DBusException
 from dbus.proxies import ProxyObject
+
+# isort: FIRSTPARTY
+from dbus_python_client_gen import DPClientInvocationError
 
 from .._errors import (
     StratisCliKeyfileNotFoundError,
@@ -266,3 +272,37 @@ def fetch_stopped_pools_property(proxy: ProxyObject) -> Dictionary:
     from ._data import Manager
 
     return Manager.Properties.StoppedPools.Get(proxy)
+
+
+def get_errors(exc: Exception):
+    """
+    Generates a sequence of exceptions starting with exc and following the chain
+    of causes.
+    """
+    while True:
+        yield exc
+        exc = getattr(exc, "__cause__") or getattr(exc, "__context__")
+        if exc is None:
+            return
+
+
+def long_running_operation(func: Callable) -> Callable:
+    """
+    Mark a function as a long running operation and catch and ignore NoReply
+    D-Bus exception.
+    """
+
+    @wraps(func)
+    def wrapper(namespace: Namespace):
+        try:
+            func(namespace)
+        except DPClientInvocationError as err:
+            # sim engine completes all operations rapidly
+            if not any(
+                isinstance(e, DBusException)
+                and e.get_dbus_name() == "org.freedesktop.DBus.Error.NoReply"
+                for e in get_errors(err)
+            ):  # pragma: no cover
+                raise err
+
+    return wrapper
