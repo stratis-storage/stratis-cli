@@ -470,9 +470,7 @@ class StratisCliInPlaceNotSpecified(StratisCliUserError):
             "long-running operation. The time required for the operation is "
             "proportional to the size of the pool. During the operation "
             "administrative operations for this pool, for example, extending a "
-            "filesystem, will be impossible and all I/O operations to "
-            "filesystems in the pool will be blocked until the operation is "
-            "completed.  We ask that you specify the --in-place option to "
-            "demonstrate that you understand and are willing to accept the "
-            "associated risks."
+            "filesystem, will be impossible.  We ask that you specify the "
+            "--in-place option to demonstrate that you understand and are "
+            "willing to accept the associated risks."
         )
