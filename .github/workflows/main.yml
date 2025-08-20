@@ -234,10 +234,19 @@ jobs:
       - name: Workaround for D-Bus inotify
         run: cp stratisd.conf /usr/share/dbus-1/system.d
         working-directory: stratisd
-      - name: Run test
+      - name: Run tests
         run: >
           STRATISD=/usr/libexec/stratisd
           STRATIS_STRICT_POOL_FEATURES=1
           PYTHONPATH=./src
-          make -f Makefile coverage-no-html
+          make -f Makefile coverage
+        working-directory: stratis-cli
+      - name: Run tests without strict pool features enabled
+        run: >
+          STRATISD=/usr/libexec/stratisd
+          PYTHONPATH=./src
+          make -f Makefile coverage
+        working-directory: stratis-cli
+      - name: Run coverage report
+        run: make -f Makefile coverage-report
         working-directory: stratis-cli

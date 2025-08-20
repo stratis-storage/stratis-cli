@@ -98,15 +98,19 @@ dbus-tests:
 unit-tests:
 	${PYTHON} -m unittest discover ${UNITTEST_OPTS} --start-directory ./tests/whitebox/unit
 
-.PHONY: coverage-no-html
-coverage-no-html:
-	python3 -m coverage --version
-	python3 -m coverage run --timid --branch -m unittest discover --quiet --top-level-directory ./tests/whitebox --start-directory ./tests/whitebox/integration >& /dev/null
-	python3 -m coverage run --timid --branch -a -m unittest discover --quiet --start-directory ./tests/whitebox/unit
+.PHONY: coverage
+coverage:
+	python3 -m coverage run -p --timid --branch -m unittest discover --quiet --top-level-directory ./tests/whitebox --start-directory ./tests/whitebox/integration >& /dev/null
+	python3 -m coverage run -p --timid --branch -m unittest discover --quiet --start-directory ./tests/whitebox/unit
+
+.PHONY: coverage-report
+coverage-report:
+	python3 -m coverage combine
 	python3 -m coverage report -m --fail-under=100 --show-missing --include="./src/*"
 
-.PHONY: coverage
-coverage: coverage-no-html
+.PHONY: coverage-html
+coverage-html:
+	python3 -m coverage combine
 	python3 -m coverage html --include="./src/*"
 
 .PHONY: all-tests
