@@ -54,7 +54,9 @@ def gen_subparsers(parser, command_line):
         )
     ):
         for name, subparser in sorted(action.choices.items(), key=lambda x: x[0]):
-            yield from gen_subparsers(subparser, command_line + [name])
+            # if name is an alias then in it is not the name used in prog
+            if name == subparser.prog.split(" ")[-1]:
+                yield from gen_subparsers(subparser, command_line + [name])
 
 
 class PrintHelpAction(argparse.Action):
