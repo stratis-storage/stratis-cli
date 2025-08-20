@@ -49,6 +49,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           path: stratis-cli
+          persist-credentials: false
       - uses: stratis-storage/github-actions/github-modify@HEAD
         with:
           repo: stratisd
