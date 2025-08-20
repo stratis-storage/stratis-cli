@@ -78,6 +78,14 @@ jobs:
           PYTHONPATH=./src
           make -f Makefile all-tests
         working-directory: stratis-cli
+      - name: Run tests without strict pool features enabled
+        run: >
+          MONKEYTYPE=1
+          RUST_LOG=stratisd=debug
+          STRATISD=/usr/libexec/stratisd
+          PYTHONPATH=./src
+          make -f Makefile all-tests
+        working-directory: stratis-cli
       - name: Apply annotations
         run: PYTHONPATH=./src make apply
         working-directory: stratis-cli
