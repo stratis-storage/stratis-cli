@@ -131,9 +131,9 @@ class PoolFeature(Enum):
 
     @classmethod
     def _missing_(cls, value):
-        if _STRICT_POOL_FEATURES:  # pragma: no cover
+        if _STRICT_POOL_FEATURES:
             return None
-        return PoolFeature.UNRECOGNIZED  # pragma: no cover
+        return PoolFeature.UNRECOGNIZED
 
 
 class StoppedPool:  # pylint: disable=too-few-public-methods
