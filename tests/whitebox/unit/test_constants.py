@@ -84,3 +84,28 @@ class PoolFeatureTestCase(unittest.TestCase):
             else:
                 self.assertEqual(str(feature), feature.value)
                 self.assertEqual(PoolFeature(feature.value), feature)
+
+    def test_many_types_missing(self):
+        """
+        Test the _missing_ method by passing many types of argument. This is
+        mostly to help monkeytype realize that the type of _missing_'s
+        value parameter is not just str.
+        """
+        if bool(int(os.environ.get("STRATIS_STRICT_POOL_FEATURES", 0))):
+
+            def test_func(val):
+                self.assertIsNone(
+                    PoolFeature._missing_(val)  # pylint: disable=protected-access
+                )
+
+        else:
+
+            def test_func(val):
+                self.assertEqual(
+                    PoolFeature._missing_(val),  # pylint: disable=protected-access
+                    PoolFeature.UNRECOGNIZED,
+                )
+
+        for val in [1, 0.347, ["a"], {"b": 32}, lambda x: 32]:
+            with self.subTest(val=val):
+                test_func(val)
