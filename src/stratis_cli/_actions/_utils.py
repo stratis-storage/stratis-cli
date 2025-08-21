@@ -326,12 +326,11 @@ def long_running_operation(func: Callable) -> Callable:
         try:
             func(namespace)
         except DPClientInvocationError as err:
-            # sim engine completes all operations rapidly
             if not any(
                 isinstance(e, DBusException)
                 and e.get_dbus_name() == "org.freedesktop.DBus.Error.NoReply"
                 for e in get_errors(err)
-            ):  # pragma: no cover
+            ):
                 raise err
             print("Operation initiated", file=sys.stderr)
 
