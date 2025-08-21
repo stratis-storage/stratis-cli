@@ -464,13 +464,14 @@ class StratisCliInPlaceNotSpecified(StratisCliUserError):
 
     def __str__(self) -> str:
         return (
-            "Please specify the --in-place option for this command.There is "
-            "some risk of placing your pool in an unrecoverable state with "
-            "the in-place method.  In addition, this command initiates a "
-            "long-running operation. The time required for the operation is "
+            "Specify the --in-place option to demonstrate that you "
+            "understand the special nature of the procedure that you are "
+            "about to initiate. This command initiates a long-running "
+            "operation. The time required for the operation is "
             "proportional to the size of the pool. During the operation "
-            "administrative operations for this pool, for example, extending a "
-            "filesystem, will be impossible.  We ask that you specify the "
-            "--in-place option to demonstrate that you understand and are "
-            "willing to accept the associated risks."
+            "administrative operations for this pool, for example, "
+            "automatically extending a filesystem or adding a device, will "
+            "be impossible. Please refer to the discussion of the "
+            '"--in-place" option in the man pages for further '
+            "information."
         )
