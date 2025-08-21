@@ -280,13 +280,13 @@ OPTIONS
         a kind that must read and write every block in the pool. Hence these
         operations take a time that is linear in the size of the pool.
         Additionally, these operations are run in place, that is, the
-        pool's data blocks are directly modified while it is in use. It is
-        therefore possible that the pool may be put in an unrecoverable
-        condition. Additionally, while the operation is taking place,
-        automatic administrative actions, for example, extending
-        filesystems, can not be taken on the pool. The pool administrator
-        should ensure that any such administrative operations will not
-        become urgently necessary while the encryption operation is running.
+        pool's data blocks are directly modified while it is in use. While
+        the operation is taking place, automatic administrative actions,
+        for example, extending filesystems, can not be taken on the pool.
+        Furthermore, user-initiated actions, such as adding a new device to
+        a pool are also disabled. The pool administrator should therefore
+        ensure that no administrative operations will become urgently
+        necessary while the encryption operation is running.
 
 
 SIZE SPECIFICATION FORMAT FOR INPUT
