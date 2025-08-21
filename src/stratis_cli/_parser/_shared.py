@@ -305,8 +305,8 @@ IN_PLACE = [
             "action": "store_true",
             "help": (
                 "Perform the operation in place; requires no additional "
-                "devices; this operation can not in general be rolled back on "
-                "failure"
+                "devices; see man page entry for this option for more "
+                "information"
             ),
         },
     )
