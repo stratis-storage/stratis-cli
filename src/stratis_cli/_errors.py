@@ -458,7 +458,7 @@ class StratisCliInvalidCommandLineOptionValue(StratisCliUserError):
 
 class StratisCliInPlaceNotSpecified(StratisCliUserError):
     """
-    Raised if the user requested in place encryption but did not use the
+    Raised if the user requested in-place encryption but did not use the
     --in-place option.
     """
 
