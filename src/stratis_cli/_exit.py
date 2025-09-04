@@ -15,7 +15,6 @@
 Exit codes and methods.
 """
 # isort: STDLIB
-import os
 import sys
 from enum import IntEnum
 
@@ -34,5 +33,5 @@ def exit_(code: StratisCliErrorCodes, msg: str):
     """
     Exits program with a given exit code and error message.
     """
-    print(msg, os.linesep, file=sys.stderr, flush=True)
+    print(msg, file=sys.stderr, flush=True)
     raise SystemExit(code)

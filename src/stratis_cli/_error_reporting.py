@@ -360,7 +360,7 @@ def handle_error(err):
             "Please report the error and include in your report the stack "
             "trace shown below."
         )
-        print(exit_msg, os.linesep, file=sys.stderr, flush=True)
+        print(exit_msg, file=sys.stderr, flush=True)
         raise err
 
     exit_msg = f"Execution failed:{os.linesep}{explanation}"
