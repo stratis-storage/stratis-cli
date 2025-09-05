@@ -466,12 +466,7 @@ class StratisCliInPlaceNotSpecified(StratisCliUserError):
         return (
             "Specify the --in-place option to demonstrate that you "
             "understand the special nature of the procedure that you are "
-            "about to initiate. This command initiates a long-running "
-            "operation. The time required for the operation is "
-            "proportional to the size of the pool. During the operation "
-            "administrative operations for this pool, for example, "
-            "automatically extending a filesystem or adding a device, will "
-            "be impossible. Please refer to the discussion of the "
+            "about to initiate. Please refer to the discussion of the "
             '"--in-place" option in the man pages for further '
             "information."
         )
