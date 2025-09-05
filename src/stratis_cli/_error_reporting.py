@@ -79,16 +79,15 @@ def _interface_name_to_common_name(interface_name):
     raise StratisCliUnknownInterfaceError(interface_name)  # pragma: no cover
 
 
-def get_errors(exc: Exception):
+def get_errors(exc: BaseException):
     """
     Generates a sequence of exceptions starting with exc and following the chain
     of causes.
     """
-    while True:
-        yield exc
-        exc = getattr(exc, "__cause__") or getattr(exc, "__context__")
-        if exc is None:
-            return
+    yield exc
+    while exc.__cause__ is not None:
+        yield exc.__cause__
+        exc = exc.__cause__
 
 
 def _interpret_errors_0(
