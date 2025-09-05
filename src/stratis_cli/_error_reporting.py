@@ -91,7 +91,9 @@ def get_errors(exc: Exception):
             return
 
 
-def _interpret_errors_0(error):
+def _interpret_errors_0(
+    error: dbus.exceptions.DBusException,
+):
     """
     Handle match on SCAE .*  DBE
       where:
@@ -121,7 +123,10 @@ def _interpret_errors_0(error):
     # running with a new major version and is supplying a different name on the
     # D-Bus than stratis is attempting to use. The second and third
     # possibilities are both covered by a single error message.
-    if error.get_dbus_name() == "org.freedesktop.DBus.Error.NameHasNoOwner":
+    if error.get_dbus_name() in (
+        "org.freedesktop.DBus.Error.NameHasNoOwner",
+        "org.freedesktop.DBus.Error.ServiceUnknown",
+    ):
         try:
             # pylint: disable=import-outside-toplevel
             # isort: THIRDPARTY
