@@ -286,7 +286,8 @@ OPTIONS
         Furthermore, user-initiated actions, such as adding a new device to
         a pool are also disabled. The pool administrator should therefore
         ensure that no administrative operations will become urgently
-        necessary while the encryption operation is running.
+        necessary while the encryption operation is running. Consider
+        backing up you data before initiating this operation.
 
 
 SIZE SPECIFICATION FORMAT FOR INPUT
