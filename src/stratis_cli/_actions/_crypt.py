@@ -25,8 +25,8 @@ from .._errors import (
     StratisCliIncoherenceError,
     StratisCliInPlaceNotSpecified,
     StratisCliNoChangeError,
-    StratisdErrors,
 )
+from .._stratisd_constants import StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._utils import long_running_operation
