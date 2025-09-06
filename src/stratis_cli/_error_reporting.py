@@ -17,6 +17,7 @@ Facilities for managing and reporting errors.
 # isort: STDLIB
 import os
 import sys
+from collections.abc import Iterator
 
 # isort: THIRDPARTY
 import dbus
@@ -79,7 +80,7 @@ def _interface_name_to_common_name(interface_name):
     raise StratisCliUnknownInterfaceError(interface_name)  # pragma: no cover
 
 
-def get_errors(exc: BaseException):
+def get_errors(exc: BaseException) -> Iterator[BaseException]:
     """
     Generates a sequence of exceptions starting with exc and following the chain
     of causes.
