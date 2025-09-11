@@ -23,7 +23,7 @@ from argparse import Namespace
 from typing import Tuple
 
 # isort: THIRDPARTY
-from dbus import Array, String, Struct, UInt16
+from dbus import Array, Dictionary, String, Struct, UInt16
 from dbus.proxies import ProxyObject
 
 from .._errors import (
@@ -106,22 +106,30 @@ class TopActions:
         if namespace.report_name is ReportKey.MANAGED_OBJECTS:
             from ._data import ObjectManager
 
-            json_report = ObjectManager.Methods.GetManagedObjects(
+            dbus_report: Dictionary = ObjectManager.Methods.GetManagedObjects(
                 get_object(TOP_OBJECT), {}
+            )
+
+            # unlike pprint, json.dump prints GetManagedObjects result nicely
+            json.dump(
+                dbus_report,
+                sys.stdout,
+                indent=4,
+                sort_keys=(not namespace.no_sort_keys),
             )
 
         else:
             if namespace.report_name is ReportKey.ENGINE_STATE:
                 from ._data import Manager
 
-                (report, return_code, message) = Manager.Methods.EngineStateReport(
+                (json_report, return_code, message) = Manager.Methods.EngineStateReport(
                     get_object(TOP_OBJECT), {}
                 )
 
             else:
                 from ._data import Report
 
-                (report, return_code, message) = Report.Methods.GetReport(
+                (json_report, return_code, message) = Report.Methods.GetReport(
                     get_object(TOP_OBJECT), {"name": str(namespace.report_name)}
                 )
 
@@ -133,11 +141,13 @@ class TopActions:
             if return_code != StratisdErrors.OK:  # pragma: no cover
                 raise StratisCliEngineError(return_code, message)
 
-            json_report = json.loads(report)
+            json.dump(
+                json.loads(json_report),
+                sys.stdout,
+                indent=4,
+                sort_keys=(not namespace.no_sort_keys),
+            )
 
-        json.dump(
-            json_report, sys.stdout, indent=4, sort_keys=(not namespace.no_sort_keys)
-        )
         print(file=sys.stdout)
 
     @staticmethod
