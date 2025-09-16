@@ -3,7 +3,9 @@ Monkeytype Configuration File
 """
 
 # isort: STDLIB
+import os
 from typing import Any, Union
+from types import CodeType
 
 # isort: THIRDPARTY
 from monkeytype.config import DefaultConfig
@@ -59,10 +61,24 @@ class CanonicalizeUnionElementOrder(TypeRewriter):
         ]
 
 
+def _filter(code: CodeType) -> bool:
+    """
+    Return False if information about this function should not be
+    recorded, otherwise return True.
+    """
+    return not (
+        all("stratis-cli" != x for x in code.co_filename.split(os.path.sep))
+        or code.co_qualname == "PoolFeature._missing_"
+    )
+
+
 class MyConfig(DefaultConfig):
     """
     Monkeytype configuration for this project
     """
+
+    def code_filter(self):
+        return _filter
 
     def type_rewriter(self):
         return ChainedRewriter(

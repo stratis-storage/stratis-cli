@@ -23,7 +23,7 @@ import os
 import sys
 import termios
 from enum import Enum
-from typing import Tuple
+from typing import Any, Tuple
 from uuid import UUID
 
 # isort: THIRDPARTY
@@ -130,7 +130,7 @@ class PoolFeature(Enum):
         return self.value
 
     @classmethod
-    def _missing_(cls, value):
+    def _missing_(cls, value: Any):
         if _STRICT_POOL_FEATURES:
             return None
         return PoolFeature.UNRECOGNIZED
