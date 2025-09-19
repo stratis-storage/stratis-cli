@@ -29,6 +29,7 @@ from dbus_client_gen import (
     DbusClientUniqueResultError,
 )
 from dbus_python_client_gen import (
+    DPClientGetPropertyContext,
     DPClientInvocationError,
     DPClientMethodCallContext,
     DPClientSetPropertyContext,
@@ -146,19 +147,6 @@ def _interpret_errors_0(
 
         except ImportError:  # pragma: no cover
             return "Most likely there is no stratisd process running."
-
-    # Due to the uncertain behavior with which libdbus
-    # treats a timeout value of 0, it proves difficult to test this case,
-    # as seen here: https://github.com/stratis-storage/stratis-cli/pull/476
-    # Additional information may be found in the issue filed against libdbus
-    # here: https://gitlab.freedesktop.org/dbus/dbus/issues/293
-    if (
-        error.get_dbus_name() == "org.freedesktop.DBus.Error.NoReply"
-    ):  # pragma: no cover
-        return (
-            "stratis attempted communication with the daemon, stratisd, "
-            "over the D-Bus, but stratisd did not respond in the allowed time."
-        )
 
     # The goal is to have an explanation for every type of D-Bus error that
     # is encountered. If there is none, then this will rapidly be fixed, so it
@@ -306,7 +294,9 @@ def _interpret_errors_2(errors):
                         "and the command will succeed if run again."
                     )
 
-                if isinstance(context, DPClientSetPropertyContext):
+                if isinstance(
+                    context, DPClientSetPropertyContext
+                ):  # pragma: no context
                     return (
                         f"stratisd failed to perform the operation that you "
                         f"requested, because it could not set the D-Bus "
@@ -315,6 +305,26 @@ def _interpret_errors_2(errors):
                         f"It returned the following error: "
                         f"{next_error.get_dbus_message()}."
                     )
+
+            if next_error.get_dbus_name() == "org.freedesktop.DBus.Error.NoReply":
+                context = error.context
+
+                if (
+                    isinstance(context, DPClientGetPropertyContext)
+                    and context.property_name == "Version"
+                ):
+                    return (
+                        "stratis was unable to send the requested command "
+                        "to stratisd. stratis attempted communication with "
+                        "the daemon, stratisd, over the D-Bus, but stratisd "
+                        "did not respond in the allowed time."
+                    )
+
+                return (
+                    "stratis attempted communication with the daemon, "
+                    "stratisd, over the D-Bus, but stratisd did not respond "
+                    "in the allowed time."
+                )
 
     return None  # pragma: no cover
 
