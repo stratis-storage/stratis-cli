@@ -31,6 +31,7 @@ from .._errors import StratisCliGenerationError
 from ._constants import (
     BLOCKDEV_INTERFACE,
     FILESYSTEM_INTERFACE,
+    MANAGER_0_INTERFACE,
     MANAGER_INTERFACE,
     POOL_INTERFACE,
     REPORT_INTERFACE,
@@ -44,6 +45,24 @@ assert hasattr(sys.modules.get("stratis_cli"), "run"), (
 )
 
 DBUS_TIMEOUT_SECONDS = 120
+
+# Specification for the lowest manager interface supported by the major
+# version of stratisd on which this version of the CLI depends.
+# This minimal specification includes only the specification for the
+# Version property.
+SPECS |= (
+    {}
+    if MANAGER_0_INTERFACE == MANAGER_INTERFACE
+    else {
+        MANAGER_0_INTERFACE: """
+    <interface name="org.storage.stratis3.Manager.r0">
+        <property access="read" name="Version" type="s">
+            <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const" />
+        </property>
+    </interface>
+    """
+    }
+)
 
 
 try:
@@ -80,19 +99,8 @@ try:
         timeout,
     )
 
-    # Specification for the lowest manager interface supported by the major
-    # version of stratisd on which this version of the CLI depends.
-    # This minimal specification includes only the specification for the
-    # Version property.
-    manager_spec = """
-    <interface name="org.storage.stratis3.Manager.r0">
-        <property access="read" name="Version" type="s">
-            <annotation name="org.freedesktop.DBus.Property.EmitsChangedSignal" value="const" />
-        </property>
-    </interface>
-    """
     Manager0 = make_class(
-        "Manager0", ET.fromstring(manager_spec), timeout  # nosec B314
+        "Manager0", ET.fromstring(SPECS[MANAGER_0_INTERFACE]), timeout  # nosec B314
     )
 
 # Do not expect to get coverage on Generation errors.

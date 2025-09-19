@@ -33,3 +33,5 @@ FILESYSTEM_INTERFACE = f"org.storage.stratis3.filesystem.{REVISION}"
 MANAGER_INTERFACE = f"org.storage.stratis3.Manager.{REVISION}"
 POOL_INTERFACE = f"org.storage.stratis3.pool.{REVISION}"
 REPORT_INTERFACE = f"org.storage.stratis3.Report.{REVISION}"
+
+MANAGER_0_INTERFACE = "org.storage.stratis3.Manager.r0"
