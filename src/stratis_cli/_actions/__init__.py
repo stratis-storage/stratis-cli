@@ -16,7 +16,12 @@ Package mediating dbus actions.
 """
 
 from ._bind import BindActions, RebindActions
-from ._constants import BLOCKDEV_INTERFACE, FILESYSTEM_INTERFACE, POOL_INTERFACE
+from ._constants import (
+    BLOCKDEV_INTERFACE,
+    FILESYSTEM_INTERFACE,
+    MANAGER_0_INTERFACE,
+    POOL_INTERFACE,
+)
 from ._debug import (
     BlockdevDebugActions,
     FilesystemDebugActions,
