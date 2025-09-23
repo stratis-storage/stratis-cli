@@ -220,7 +220,7 @@ def _interpret_errors_1(
 
     if isinstance(error, StratisCliSynthUeventError):
         return (
-            f"stratis reported an error in generating a synethetic "
+            f"stratis reported an error in generating a synthetic "
             f"udev event: {error}"
         )  # pragma: no cover
 
