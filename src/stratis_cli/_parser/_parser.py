@@ -273,3 +273,6 @@ def gen_parser():
     parser.set_defaults(func=print_help(parser))
 
     return parser
+
+
+PARSER = gen_parser()

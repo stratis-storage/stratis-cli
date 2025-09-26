@@ -23,15 +23,13 @@ import justbytes as jb
 
 from ._error_reporting import handle_error
 from ._errors import StratisCliActionError, StratisCliEnvironmentError
-from ._parser import gen_parser
+from ._parser import PARSER
 
 
 def run() -> Callable:
     """
     Generate a function that parses arguments and executes.
     """
-    parser = gen_parser()
-
     # Set default configuration parameters for display of sizes, i.e., values
     # that are generally given in bytes or some multiple thereof.
     jb.Config.set_display_config(jb.DisplayConfig(show_approx_str=False))
@@ -40,11 +38,11 @@ def run() -> Callable:
         """
         Run according to the arguments passed.
         """
-        namespace = parser.parse_args(command_line_args)
+        namespace = PARSER.parse_args(command_line_args)
 
         post_parser = getattr(namespace, "post_parser", None)
         if post_parser is not None:
-            post_parser(namespace).verify(namespace, parser)
+            post_parser(namespace).verify(namespace, PARSER)
 
         try:
             try:
