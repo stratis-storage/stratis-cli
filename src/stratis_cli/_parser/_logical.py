@@ -139,6 +139,16 @@ LOGICAL_SUBCMDS = [
                         "help": "Pool name",
                     },
                 ),
+                (
+                    "--use-dev-dir",
+                    {
+                        "action": "store_true",
+                        "help": (
+                            'Use links in "/dev/stratis" to identify what '
+                            "filesystems are present."
+                        ),
+                    },
+                ),
             ],
             "func": LogicalActions.list_volumes,
         },

@@ -136,7 +136,10 @@ class LogicalActions:
 
         uuid_formatter = get_uuid_formatter(namespace.unhyphenated_uuids)
         list_filesystems(
-            uuid_formatter, pool_name=getattr(namespace, "pool_name", None), fs_id=fs_id
+            uuid_formatter,
+            pool_name=getattr(namespace, "pool_name", None),
+            fs_id=fs_id,
+            use_dev_dir=getattr(namespace, "use_dev_dir", False),
         )
 
     @staticmethod
