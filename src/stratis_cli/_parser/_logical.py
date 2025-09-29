@@ -16,14 +16,18 @@ Definition of filesystem actions to display in the CLI.
 """
 
 # isort: STDLIB
-from argparse import SUPPRESS
+from argparse import SUPPRESS, ArgumentParser, Namespace
+from typing import Optional, Tuple
+
+# isort: THIRDPARTY
+from justbytes import Range
 
 from .._actions import LogicalActions
 from ._debug import FILESYSTEM_DEBUG_SUBCMDS
 from ._shared import UUID_OR_NAME, RejectAction, parse_range
 
 
-def parse_range_or_current(values):
+def parse_range_or_current(values: str) -> Tuple[Optional[Range], str]:
     """
     Allow specifying a Range or the value "current". Include the original
     value specified by the user as well as the Range result if the user
@@ -39,10 +43,10 @@ class FilesystemListOptions:  # pylint: disable=too-few-public-methods
     Verifies filesystem list options.
     """
 
-    def __init__(self, _namespace):
+    def __init__(self, _namespace: Namespace):
         pass
 
-    def verify(self, namespace, parser):
+    def verify(self, namespace: Namespace, parser: ArgumentParser):
         """
         Do supplementary parsing of conditional arguments.
         """
