@@ -16,7 +16,10 @@ General constants.
 """
 # isort: STDLIB
 from abc import ABC, abstractmethod
+from argparse import Namespace
 from enum import Enum
+from typing import Callable, Dict, Union
+from uuid import UUID
 
 
 class YesOrNo(Enum):
@@ -27,10 +30,10 @@ class YesOrNo(Enum):
     YES = "yes"
     NO = "no"
 
-    def __bool__(self):
+    def __bool__(self) -> bool:
         return self is YesOrNo.YES
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.value
 
 
@@ -42,7 +45,7 @@ class IdType(Enum):
     UUID = "UUID"
     NAME = "name"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.value
 
 
@@ -51,14 +54,18 @@ class Id(ABC):
     Generic management of ids when either a UUID or name can be used.
     """
 
-    def __init__(self, id_type, id_value):
+    def __init__(self, id_type: IdType, id_value: Union[UUID, str]):
         """
         Initialize the object.
         """
+        assert (id_type is IdType.UUID) == isinstance(id_value, UUID)
+
         self.id_type = id_type
         self.id_value = id_value
 
-    def managed_objects_key(self):
+    def managed_objects_key(
+        self,
+    ):
         """
         Return key for managed objects.
 
@@ -66,7 +73,7 @@ class Id(ABC):
         Uuid will always be the same.
         """
         return (
-            {"Uuid": self.id_value.hex}
+            {"Uuid": self.id_value.hex}  # pyright: ignore [ reportAttributeAccessIssue]
             if self.id_type is IdType.UUID
             else {"Name": self.id_value}
         )
@@ -78,7 +85,10 @@ class Id(ABC):
         return (
             {"id": self.id_value, "id_type": "name"}
             if self.id_type is IdType.NAME
-            else {"id": self.id_value.hex, "id_type": "uuid"}
+            else {
+                "id": self.id_value.hex,  # pyright: ignore [ reportAttributeAccessIssue]
+                "id_type": "uuid",
+            }
         )
 
     @abstractmethod
@@ -101,12 +111,12 @@ class PoolId(Id):
     Pool id.
     """
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"pool with {self.id_type} {self.id_value}"
 
     @staticmethod
     def from_parser_namespace(  # pyright: ignore [reportIncompatibleMethodOverride]
-        namespace, *, required=True
+        namespace: Namespace, *, required=True
     ):
         assert hasattr(namespace, "name") and hasattr(namespace, "uuid")
         if namespace.uuid is not None:
@@ -118,12 +128,14 @@ class PoolId(Id):
 
         return None
 
-    def stopped_pools_func(self):
+    def stopped_pools_func(self) -> Callable[[str, Dict], bool]:
         """
         Function for selecting a pool from stopped pools.
         """
         selection_value = (
-            self.id_value.hex if self.id_type is IdType.UUID else self.id_value
+            self.id_value.hex  # pyright: ignore [reportAttributeAccessIssue]
+            if self.id_type is IdType.UUID
+            else self.id_value
         )
 
         return (
@@ -138,12 +150,12 @@ class FilesystemId(Id):
     Filesystem id.
     """
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"filesystem with {self.id_type} {self.id_value}"
 
     @staticmethod
     def from_parser_namespace(  # pyright: ignore [reportIncompatibleMethodOverride]
-        namespace, *, required=True
+        namespace: Namespace, *, required=True
     ):
         assert hasattr(namespace, "name") and hasattr(namespace, "uuid")
         if namespace.uuid is not None:
@@ -164,7 +176,7 @@ class EncryptionMethod(Enum):
     KEYRING = "keyring"
     CLEVIS = "clevis"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.value
 
 
@@ -177,7 +189,7 @@ class UnlockMethod(Enum):
     CLEVIS = "clevis"
     KEYRING = "keyring"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.value
 
     def legacy_token_slot(self):  # pragma: no cover
@@ -199,7 +211,7 @@ class Clevis(Enum):
     TANG = "tang"
     TPM2 = "tpm2"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.value
 
 
@@ -212,7 +224,7 @@ class IntegrityTagSpec(Enum):
     B32 = "32b"
     B512 = "512b"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.value
 
 
@@ -224,5 +236,5 @@ class IntegrityOption(Enum):
     NO = "no"
     PRE_ALLOCATE = "pre-allocate"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.value
