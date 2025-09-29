@@ -58,7 +58,7 @@ def list_filesystems(
         )
         requires_unique = fs_id is not None
 
-    path_to_name = dict(
+    pool_object_path_to_pool_name = dict(
         (path, MOPool(info).Name())
         for path, info in pools(props=props).search(managed_objects)
     )
@@ -74,13 +74,13 @@ def list_filesystems(
         klass = Table(
             uuid_formatter,
             filesystems_with_props,
-            path_to_name,
+            pool_object_path_to_pool_name,
         )
     else:
         klass = Detail(
             uuid_formatter,
             filesystems_with_props,
-            path_to_name,
+            pool_object_path_to_pool_name,
         )
 
     klass.display()
@@ -95,7 +95,7 @@ class ListFilesystem(ABC):  # pylint: disable=too-few-public-methods
         self,
         uuid_formatter: Callable,
         filesystems_with_props: List[Any],
-        path_to_name: Dict[ObjectPath, String],
+        pool_object_path_to_pool_name: Dict[ObjectPath, String],
     ):
         """
         Initialize a List object.
@@ -105,7 +105,7 @@ class ListFilesystem(ABC):  # pylint: disable=too-few-public-methods
         """
         self.uuid_formatter = uuid_formatter
         self.filesystems_with_props = filesystems_with_props
-        self.path_to_name = path_to_name
+        self.pool_object_path_to_pool_name = pool_object_path_to_pool_name
 
     @abstractmethod
     def display(self):
@@ -141,7 +141,7 @@ class Table(ListFilesystem):  # pylint: disable=too-few-public-methods
 
         tables = [
             (
-                self.path_to_name[mofilesystem.Pool()],
+                self.pool_object_path_to_pool_name[mofilesystem.Pool()],
                 mofilesystem.Name(),
                 filesystem_size_quartet(mofilesystem),
                 mofilesystem.Devnode(),
@@ -187,7 +187,7 @@ class Detail(ListFilesystem):  # pylint: disable=too-few-public-methods
 
         print(f"UUID: {self.uuid_formatter(fs.Uuid())}")
         print(f"Name: {fs.Name()}")
-        print(f"Pool: {self.path_to_name[fs.Pool()]}")
+        print(f"Pool: {self.pool_object_path_to_pool_name[fs.Pool()]}")
         print()
         print(f"Device: {fs.Devnode()}")
         print()
