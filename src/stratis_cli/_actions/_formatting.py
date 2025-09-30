@@ -36,7 +36,7 @@ TABLE_UNKNOWN_STRING = "???"
 TOTAL_USED_FREE = "Total / Used / Free"
 
 
-def size_triple(size: Optional[Range], used: Optional[Range]) -> str:
+def size_triple(size: Range, used: Optional[Range]) -> str:
     """
     Given size and used, return a properly formatted string Total/ Used / Free
 
@@ -47,10 +47,10 @@ def size_triple(size: Optional[Range], used: Optional[Range]) -> str:
     :rtype: str
     :returns: formatted string for display
     """
-    free = None if size is None or used is None else size - used
+    free = None if used is None else size - used
 
     return (
-        f"{TABLE_FAILURE_STRING if size is None else size} / "
+        f"{size} / "
         f"{TABLE_FAILURE_STRING if used is None else used} / "
         f"{TABLE_FAILURE_STRING if free is None else free}"
     )
