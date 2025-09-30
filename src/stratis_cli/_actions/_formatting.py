@@ -17,9 +17,12 @@ Formatting for tables.
 
 # isort: STDLIB
 import sys
+from typing import Any, Callable, List, Optional
 from uuid import UUID
 
 # isort: THIRDPARTY
+from dbus import Struct
+from justbytes import Range
 from wcwidth import wcswidth
 
 # placeholder for tables where a desired value was not obtained from stratisd
@@ -33,7 +36,7 @@ TABLE_UNKNOWN_STRING = "???"
 TOTAL_USED_FREE = "Total / Used / Free"
 
 
-def size_triple(size, used):
+def size_triple(size: Optional[Range], used: Optional[Range]) -> str:
     """
     Given size and used, return a properly formatted string Total/ Used / Free
 
@@ -53,7 +56,7 @@ def size_triple(size, used):
     )
 
 
-def get_property(prop, to_repr, default):
+def get_property(prop: Struct, to_repr: Callable, default: Optional[Any]):
     """
     Get a representation of an optional D-Bus property. An optional
     D-Bus property is one that may be unknown to stratisd.
@@ -70,7 +73,7 @@ def get_property(prop, to_repr, default):
     return to_repr(value) if valid else default
 
 
-def _get_column_len(column_width, entry_len, entry_width):
+def _get_column_len(column_width: int, entry_len: int, entry_width: int) -> int:
     """
     From the desired column width in cells and the item to be printed,
     calculate the required number of characters to pass to the format method.
@@ -94,7 +97,13 @@ def _get_column_len(column_width, entry_len, entry_width):
     return column_width - (entry_width - entry_len)
 
 
-def _print_row(file, row, row_widths, column_widths, column_alignments):
+def _print_row(
+    file: Any,
+    row: Any,
+    row_widths: List[int],
+    column_widths: List[int],
+    column_alignments: List[str],
+):
     """
     Print a single row in a table. The row might be the header row, or
     a row of data items.
@@ -117,7 +126,12 @@ def _print_row(file, row, row_widths, column_widths, column_alignments):
     print("   ".join(entries), end="", file=file)
 
 
-def print_table(column_headings, row_entries, alignment, file=sys.stdout):
+def print_table(
+    column_headings: List[str],
+    row_entries: List[Any],
+    alignment: List[str],
+    file=sys.stdout,
+):
     """
     Given the column headings and the row_entries, print a table.
     Align according to alignment specification and always pad with 2 spaces.
@@ -156,7 +170,7 @@ def print_table(column_headings, row_entries, alignment, file=sys.stdout):
         print(file=file)
 
 
-def get_uuid_formatter(unhyphenated):
+def get_uuid_formatter(unhyphenated: bool) -> Callable:
     """
     Get a function to format UUIDs.
 
