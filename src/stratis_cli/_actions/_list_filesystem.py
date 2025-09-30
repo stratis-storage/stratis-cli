@@ -17,7 +17,7 @@ Filesystem listing.
 
 # isort: STDLIB
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, List
+from typing import Any, Callable, Dict, List, Optional
 
 # isort: THIRDPARTY
 from dateutil import parser as date_parser
@@ -124,26 +124,26 @@ class Table(ListFilesystem):  # pylint: disable=too-few-public-methods
         List the filesystems.
         """
 
-        def filesystem_size_quartet(dbus_props):
+        def filesystem_size_quartet(
+            total: Range, used: Optional[Range], limit: Optional[Range]
+        ) -> str:
             """
             Calculate the triple to display for filesystem size.
-
-            :param dbus_props: filesystem D-Bus properties
-            :type dbus_props: MOFilesystem
 
             :returns: a string a formatted string showing all three values
             :rtype: str
             """
-            total = Range(dbus_props.Size())
-            used = get_property(dbus_props.Used(), Range, None)
-            limit = get_property(dbus_props.SizeLimit(), Range, None)
             return f'{size_triple(total, used)} / {"None" if limit is None else limit}'
 
         tables = [
             (
                 self.pool_object_path_to_pool_name[mofilesystem.Pool()],
                 mofilesystem.Name(),
-                filesystem_size_quartet(mofilesystem),
+                filesystem_size_quartet(
+                    Range(mofilesystem.Size()),
+                    get_property(mofilesystem.Used(), Range, None),
+                    get_property(mofilesystem.SizeLimit(), Range, None),
+                ),
                 mofilesystem.Devnode(),
                 self.uuid_formatter(mofilesystem.Uuid()),
             )
