@@ -26,7 +26,13 @@ from justbytes import Range
 
 from ._connection import get_object
 from ._constants import TOP_OBJECT
-from ._formatting import TOTAL_USED_FREE, get_property, print_table, size_triple
+from ._formatting import (
+    TABLE_FAILURE_STRING,
+    TOTAL_USED_FREE,
+    get_property,
+    print_table,
+)
+from ._utils import SizeTriple
 
 
 def list_filesystems(
@@ -133,7 +139,18 @@ class Table(ListFilesystem):  # pylint: disable=too-few-public-methods
             :returns: a string a formatted string showing all three values
             :rtype: str
             """
-            return f'{size_triple(total, used)} / {"None" if limit is None else limit}'
+            size_triple = SizeTriple(total, used)
+            triple_str = " / ".join(
+                (
+                    TABLE_FAILURE_STRING if x is None else str(x)
+                    for x in (
+                        size_triple.total(),
+                        size_triple.used(),
+                        size_triple.free(),
+                    )
+                )
+            )
+            return f'{triple_str} / {"None" if limit is None else limit}'
 
         tables = [
             (
@@ -176,8 +193,7 @@ class Detail(ListFilesystem):  # pylint: disable=too-few-public-methods
 
         fs = self.filesystems_with_props[0]
 
-        total = Range(fs.Size())
-        used = get_property(fs.Used(), Range, None)
+        size_triple = SizeTriple(Range(fs.Size()), get_property(fs.Used(), Range, None))
         limit = get_property(fs.SizeLimit(), Range, None)
         created = (
             date_parser.isoparse(fs.Created()).astimezone().strftime("%b %d %Y %H:%M")
@@ -199,8 +215,14 @@ class Detail(ListFilesystem):  # pylint: disable=too-few-public-methods
             print(f"    Revert scheduled: {scheduled}")
         print()
         print("Sizes:")
-        print(f"  Logical size of thin device: {total}")
-        print(f"  Total used (including XFS metadata): {used}")
-        print(f"  Free: {total - used}")
+        print(f"  Logical size of thin device: {size_triple.total()}")
+        print(
+            "  Total used (including XFS metadata): "
+            f"{TABLE_FAILURE_STRING if size_triple.used() is None else size_triple.used()}"
+        )
+        print(
+            "  Free: "
+            f"{TABLE_FAILURE_STRING if size_triple.free() is None else size_triple.free()}"
+        )
         print()
         print(f"  Size Limit: {'None' if limit is None else limit}")

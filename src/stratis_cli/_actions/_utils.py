@@ -23,12 +23,13 @@ import os
 import sys
 import termios
 from enum import Enum
-from typing import Any, Tuple
+from typing import Any, Optional, Tuple
 from uuid import UUID
 
 # isort: THIRDPARTY
 from dbus import Dictionary, Struct
 from dbus.proxies import ProxyObject
+from justbytes import Range
 
 from .._errors import (
     StratisCliKeyfileNotFoundError,
@@ -266,3 +267,31 @@ def fetch_stopped_pools_property(proxy: ProxyObject) -> Dictionary:
     from ._data import Manager
 
     return Manager.Properties.StoppedPools.Get(proxy)
+
+
+class SizeTriple:
+    """
+    Manage values in a size triple.
+    """
+
+    def __init__(self, total: Range, used: Optional[Range]):
+        self._total = total
+        self._used = used
+
+    def total(self) -> Range:
+        """
+        Total.
+        """
+        return self._total
+
+    def used(self) -> Optional[Range]:
+        """
+        Used.
+        """
+        return self._used
+
+    def free(self) -> Optional[Range]:
+        """
+        Total - used.
+        """
+        return None if self._used is None else self._total - self._used
