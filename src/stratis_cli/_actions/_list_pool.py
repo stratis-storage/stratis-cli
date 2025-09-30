@@ -39,12 +39,12 @@ from ._formatting import (
     TOTAL_USED_FREE,
     get_property,
     print_table,
-    size_triple,
 )
 from ._utils import (
     EncryptionInfoClevis,
     EncryptionInfoKeyDescription,
     PoolFeature,
+    SizeTriple,
     StoppedPool,
     fetch_stopped_pools_property,
 )
@@ -399,18 +399,18 @@ class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
         else:
             print("Encryption Enabled: No")
 
-        total_physical_used = get_property(mopool.TotalPhysicalUsed(), Range, None)
-
-        print(f"Fully Allocated: {'Yes' if mopool.NoAllocSpace() else 'No'}")
-        print(f"    Size: {Range(mopool.TotalPhysicalSize())}")
-        print(f"    Allocated: {Range(mopool.AllocatedSize())}")
-
-        total_physical_used = get_property(mopool.TotalPhysicalUsed(), Range, None)
-        total_physical_used_str = (
-            TABLE_FAILURE_STRING if total_physical_used is None else total_physical_used
+        size_triple = SizeTriple(
+            Range(mopool.TotalPhysicalSize()),
+            get_property(mopool.TotalPhysicalUsed(), Range, None),
         )
 
-        print(f"    Used: {total_physical_used_str}")
+        print(f"Fully Allocated: {'Yes' if mopool.NoAllocSpace() else 'No'}")
+        print(f"    Size: {size_triple.total()}")
+        print(f"    Allocated: {Range(mopool.AllocatedSize())}")
+        print(
+            "    Used: "
+            f"{TABLE_FAILURE_STRING if size_triple.used() is None else size_triple.used()}"
+        )
 
     def display(self):
         """
@@ -471,9 +471,21 @@ class DefaultTable(Default):  # pylint: disable=too-few-public-methods
             :returns: a string to display in the resulting list output
             :rtype: str
             """
-            total_physical_size = Range(mopool.TotalPhysicalSize())
-            total_physical_used = get_property(mopool.TotalPhysicalUsed(), Range, None)
-            return size_triple(total_physical_size, total_physical_used)
+            size_triple = SizeTriple(
+                Range(mopool.TotalPhysicalSize()),
+                get_property(mopool.TotalPhysicalUsed(), Range, None),
+            )
+
+            return " / ".join(
+                (
+                    TABLE_FAILURE_STRING if x is None else str(x)
+                    for x in (
+                        size_triple.total(),
+                        size_triple.used(),
+                        size_triple.free(),
+                    )
+                )
+            )
 
         def properties_string(mopool):
             """

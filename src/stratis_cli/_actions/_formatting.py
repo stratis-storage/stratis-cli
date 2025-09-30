@@ -22,7 +22,6 @@ from uuid import UUID
 
 # isort: THIRDPARTY
 from dbus import Struct
-from justbytes import Range
 from wcwidth import wcswidth
 
 # placeholder for tables where a desired value was not obtained from stratisd
@@ -34,26 +33,6 @@ TABLE_FAILURE_STRING = "FAILURE"
 TABLE_UNKNOWN_STRING = "???"
 
 TOTAL_USED_FREE = "Total / Used / Free"
-
-
-def size_triple(size: Range, used: Optional[Range]) -> str:
-    """
-    Given size and used, return a properly formatted string Total/ Used / Free
-
-    :param size: total size
-    :type size: Range or NoneType
-    :param used: total amount used
-    :type used: Range or NoneType
-    :rtype: str
-    :returns: formatted string for display
-    """
-    free = None if used is None else size - used
-
-    return (
-        f"{size} / "
-        f"{TABLE_FAILURE_STRING if used is None else used} / "
-        f"{TABLE_FAILURE_STRING if free is None else free}"
-    )
 
 
 def get_property(prop: Struct, to_repr: Callable, default: Optional[Any]):
