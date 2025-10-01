@@ -135,7 +135,7 @@ class Create5TestCase(SimTestCase):
 
 class Create6TestCase(SimTestCase):
     """
-    Test creating a filesyste, specifying a non-standard size.
+    Test creating a filesystem, specifying a non-standard size.
     """
 
     _MENU = ["--propagate", "filesystem", "create"]
