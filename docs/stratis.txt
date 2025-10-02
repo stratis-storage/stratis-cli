@@ -117,6 +117,37 @@ pool unbind <(clevis|keyring)> <pool name> [--token-slot <token slot>]::
      mechanism. MOVE NOTICE: The "unbind" subcommand can also be found under
      the "pool encryption" subcommand. The "pool unbind" subcommand that you
      are using now is deprecated and will be removed in stratis 3.10.0.
+pool encryption on --in-place <(--uuid <uuid> |--name <name>)> [--key-desc <key_desc>] [--clevis <(nbde|tang|tpm2)> [--tang-url <tang_url>] [<(--thumbprint <thp> | --trust-url)>]::
+     Turn encryption on for the specified pool. This operation must encrypt
+     every block in the pool and takes time proportional to the size of the
+     pool.
+pool encryption off --in-place <(--uuid <uuid> |--name <name>)>::
+     Turn encryption off for the specified pool. This operation must write
+     the plain text of every block in the pool and takes time proportional to
+     the size of the pool.
+pool encryption reencrypt --in-place <(--uuid <uuid> |--name <name>)>::
+     Reencrypt the pool with a new master key. This operation must overwrite
+     every block in the pool with re-encrypted data and takes time
+     proportional to the size of the pool.
+pool encryption bind <(nbde|tang)> <(--uuid <uuid> |--name <name>)> <(--thumbprint <thp> | --trust-url)> <url>::
+     Bind the devices in the specified pool to a supplementary encryption
+     mechanism that uses NBDE (Network-Bound Disc Encryption). *tang* is
+     an alias for *nbde*.
+pool encryption bind tpm2 <(--uuid <uuid> |--name <name>)>::
+     Bind the devices in the specified pool to a supplementary encryption
+     mechanism that uses TPM 2.0 (Trusted Platform Module).
+pool encryption bind keyring <(--uuid <uuid> |--name <name>)> <keydesc>::
+     Bind the devices in the specified pool to a supplementary encryption
+     mechanism using a key in the kernel keyring.
+pool encryption rebind clevis <(--uuid <uuid> |--name <name>)> [--token-slot <token slot>]::
+     Rebind the devices in the specified pool using the Clevis configuration
+     with which the devices in the pool were previously bound.
+pool encryption rebind keyring <(--uuid <uuid> |--name <name>)> <keydesc> [--token-slot <token slot>]::
+     Rebind the devices in the specified pool using the specified key
+     description.
+pool encryption unbind <(clevis|keyring)> <(--uuid <uuid> |--name <name>)> [--token-slot <token slot>]::
+     Unbind the devices in the specified pool from the specified encryption
+     mechanism.
 pool set-fs-limit <pool name> <amount> ::
      Set the limit on the number of file systems allowed per-pool. This number
      may only be increased from its current value.
@@ -243,6 +274,20 @@ OPTIONS
 --token-slot <token slot> ::
         For V2 pools only. Use the token slot number to select among
         different bindings that use the same encryption method.
+--in-place ::
+        This is a mandatory option that must be set when requesting
+        a long-running in-place encryption operation. These operations are
+        a kind that must read and write every block in the pool. Hence these
+        operations take a time that is linear in the size of the pool.
+        Additionally, these operations are run in place, that is, the
+        pool's data blocks are directly modified while it is in use. While
+        the operation is taking place, automatic administrative actions,
+        for example, extending filesystems, can not be taken on the pool.
+        Furthermore, user-initiated actions, such as adding a new device to
+        a pool are also disabled. The pool administrator should therefore
+        ensure that no administrative operations will become urgently
+        necessary while the encryption operation is running. Consider
+        backing up your data before initiating this operation.
 
 
 SIZE SPECIFICATION FORMAT FOR INPUT
@@ -337,6 +382,11 @@ Encryption Enabled: Key Description::
 Encryption Enabled: Clevis Configuration::
 	The Clevis configuration, if the pool is encrypted via Clevis. Only
         displayed if metadata version is 1 and encryption is enabled.
+
+Encryption Enabled: Last Time Reencrypted::
+        The last time the pool was re-encrypted. If the pool has never been
+        re-encrypted, the value is "Never". Only displayed if metadata
+        version is 2 and encryption is enabled.
 
 Encryption Enabled: Free Token Slots Remaining::
         The number of token slots remaining that can accommodate new
