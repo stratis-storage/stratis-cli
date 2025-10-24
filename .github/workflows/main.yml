@@ -33,6 +33,7 @@ jobs:
           # MANDATORY CHECKS USING CURRENT DEVELOPMENT INTERPRETER
           - dependencies: >
               bandit
+              libatomic
               monkeytype
               pylint
               python3-dateutil
