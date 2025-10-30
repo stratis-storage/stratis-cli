@@ -34,14 +34,13 @@ from .._constants import (
     YesOrNo,
 )
 from ._debug import POOL_DEBUG_SUBCMDS
-from ._encryption import BIND_SUBCMDS, ENCRYPTION_SUBCMDS, REBIND_SUBCMDS
+from ._encryption import BIND_SUBCMDS, REBIND_SUBCMDS
 from ._shared import (
     KEYFILE_PATH_OR_STDIN,
     TRUST_URL_OR_THUMBPRINT,
     UUID_OR_NAME,
     ClevisEncryptionOptions,
     DefaultAction,
-    MoveNotice,
     RejectAction,
     ensure_nat,
     parse_range,
@@ -391,14 +390,6 @@ POOL_SUBCMDS = [
         },
     ),
     (
-        "encryption",
-        {
-            "help": "Manage pool encryption operations",
-            "aliases": ["crypt"],
-            "subcmds": ENCRYPTION_SUBCMDS,
-        },
-    ),
-    (
         "init-cache",
         {
             "help": "Initialize the cache with block devices",
@@ -488,20 +479,24 @@ POOL_SUBCMDS = [
     (
         "bind",
         {
-            "epilog": str(MoveNotice("bind", "pool", "pool encryption", "3.10.0")),
+            "help": "Bind the given pool with an additional encryption facility",
             "subcmds": BIND_SUBCMDS,
         },
     ),
     (
         "rebind",
         {
-            "epilog": str(MoveNotice("rebind", "pool", "pool encryption", "3.10.0")),
+            "help": (
+                "Rebind the given pool with a currently in use encryption "
+                "facility but new credentials"
+            ),
             "subcmds": REBIND_SUBCMDS,
         },
     ),
     (
         "unbind",
         {
+            "help": "Unbind the given pool, removing use of the specified encryption method",
             "args": [
                 (
                     "method",
@@ -523,7 +518,6 @@ POOL_SUBCMDS = [
                     },
                 ),
             ],
-            "epilog": str(MoveNotice("unbind", "pool", "pool encryption", "3.10.0")),
             "func": BindActions.unbind,
         },
     ),
