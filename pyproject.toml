@@ -5,7 +5,3 @@ build-backend = "setuptools.build_meta"
 [tool.pyright]
 include = ["src", "tests", "bin"]
 pythonVersion = "3.12"
-executionEnvironments = [
-  # bug apparently introduced in pyright 1.1.405
-  { root  = "tests", reportMissingImports = "none" }
-]
