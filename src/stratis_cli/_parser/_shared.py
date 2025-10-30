@@ -127,35 +127,6 @@ def ensure_nat(arg):
     return result
 
 
-class MoveNotice:  # pylint: disable=too-few-public-methods
-    """
-    Constructs a move notice, for printing.
-    """
-
-    def __init__(self, name, deprecated, preferred, version_completed):
-        """
-        Initializer.
-
-        :param str name: the name of the moved command
-        :param str deprecated: the deprecated command-line prefix
-        :param str preferred: the preferred command-line prefix
-        :param str version_completed: the version of stratis move is completed
-        """
-        self.name = name
-        self.deprecated = deprecated
-        self.preferred = preferred
-        self.version_completed = version_completed
-
-    def __str__(self):
-        return (
-            f'MOVE NOTICE: The "{self.name}" subcommand can also be found '
-            f'under the "{self.preferred}" subcommand. The '
-            f'"{self.deprecated} {self.name}" subcommand that you are using '
-            "now is deprecated and will be removed in stratis "
-            f"{self.version_completed}."
-        )
-
-
 UUID_OR_NAME = [
     (
         "--name",
