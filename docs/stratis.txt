@@ -43,7 +43,7 @@ pool create [--key-desc <key_desc>] [--clevis <(nbde|tang|tpm2)> [--tang-url <ta
 pool stop <(--uuid <uuid> |--name <name>)>::
      Stop a pool, specifying the pool by its UUID or by its name. Tear down
      the storage stack but leave all metadata intact.
-pool start [--remove-cache] [--keyfile-path KEYFILE_PATH | --capture-key] --unlock-method <(any | clevis | keyring)> <(--uuid <uuid> |--name <name>)>::
+pool start [--keyfile-path KEYFILE_PATH | --capture-key] --unlock-method <(any | clevis | keyring)> <(--uuid <uuid> |--name <name>)>::
      Start a pool, specifying the pool by its UUID or by its name. Use the
      --unlock-method option to specify a method of unlocking the pool if it
      is encrypted. If an unlock method of any is specified the pool will be
@@ -54,9 +54,7 @@ pool start [--remove-cache] [--keyfile-path KEYFILE_PATH | --capture-key] --unlo
      option is required if --keyfile-path or --capture-key is used. If the
      value is any, the specified passphrase will be tried for all keyslots;
      otherwise the specified passphrase will be tried only for the keyslot
-     corresponding to the specified method. If --remove-cache is specified,
-     the pool's cache, if there is one, will not be set up and the Stratis
-     metadata on each of the pool's cache devices, if any, will be removed.
+     corresponding to the specified method.
 pool list [--stopped] [(--uuid <uuid> |--name <name>)]::
      List pools. If the --stopped option is used, list only stopped pools.
      Otherwise, list only started pools. If a UUID or name is specified, print
