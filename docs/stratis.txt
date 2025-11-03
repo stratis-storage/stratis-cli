@@ -43,7 +43,7 @@ pool create [--key-desc <key_desc>] [--clevis <(nbde|tang|tpm2)> [--tang-url <ta
 pool stop <(--uuid <uuid> |--name <name>)>::
      Stop a pool, specifying the pool by its UUID or by its name. Tear down
      the storage stack but leave all metadata intact.
-pool start [--keyfile-path KEYFILE_PATH | --capture-key] --unlock-method <(any | clevis | keyring)> <(--uuid <uuid> |--name <name>)>::
+pool start [--remove-cache] [--keyfile-path KEYFILE_PATH | --capture-key] --unlock-method <(any | clevis | keyring)> <(--uuid <uuid> |--name <name>)>::
      Start a pool, specifying the pool by its UUID or by its name. Use the
      --unlock-method option to specify a method of unlocking the pool if it
      is encrypted. If an unlock method of any is specified the pool will be
@@ -54,7 +54,9 @@ pool start [--keyfile-path KEYFILE_PATH | --capture-key] --unlock-method <(any |
      option is required if --keyfile-path or --capture-key is used. If the
      value is any, the specified passphrase will be tried for all keyslots;
      otherwise the specified passphrase will be tried only for the keyslot
-     corresponding to the specified method.
+     corresponding to the specified method. If --remove-cache is specified,
+     the pool's cache, if there is one, will not be set up and the Stratis
+     metadata on each of the pool's cache devices, if any, will be removed.
 pool list [--stopped] [(--uuid <uuid> |--name <name>)]::
      List pools. If the --stopped option is used, list only stopped pools.
      Otherwise, list only started pools. If a UUID or name is specified, print
@@ -83,22 +85,38 @@ pool extend-data <pool_name> [--device-uuid <uuid>]::
 pool bind <(nbde|tang)> <pool name> <url> <(--thumbprint <thp> | --trust-url)>::
      Bind the devices in the specified pool to a supplementary encryption
      mechanism that uses NBDE (Network-Bound Disc Encryption). *tang* is
-     an alias for *nbde*.
+     an alias for *nbde*. MOVE NOTICE: The "bind" subcommand can also be found
+     under the "pool encryption" subcommand. The "pool bind" subcommand that
+     you are using now is deprecated and will be removed in stratis 3.10.0.
 pool bind tpm2 <pool name>::
      Bind the devices in the specified pool to a supplementary encryption
-     mechanism that uses TPM 2.0 (Trusted Platform Module).
+     mechanism that uses TPM 2.0 (Trusted Platform Module). MOVE NOTICE: The
+     "tpm2" subcommand can also be found under the "pool encryption bind"
+     subcommand. The "pool bind tpm2" subcommand that you are using now is
+     deprecated and will be removed in stratis 3.10.0.
 pool bind keyring <pool name> <keydesc>::
      Bind the devices in the specified pool to a supplementary encryption
-     mechanism using a key in the kernel keyring.
+     mechanism using a key in the kernel keyring. MOVE NOTICE: The "keyring"
+     subcommand can also be found under the "pool encryption bind" subcommand.
+     The "pool bind keyring" subcommand that you are using now is deprecated
+     and will be removed in stratis 3.10.0.
 pool rebind clevis <pool name> [--token-slot <token slot>]::
      Rebind the devices in the specified pool using the Clevis configuration
-     with which the devices in the pool were previously bound.
+     with which the devices in the pool were previously bound. MOVE NOTICE:
+     The "clevis" subcommand can also be found under the "pool encryption
+     rebind" subcommand. The "pool rebind clevis" subcommand that you are
+     using now is deprecated and will be removed in stratis 3.10.0.
 pool rebind keyring <pool name> <keydesc> [--token-slot <token slot>]::
      Rebind the devices in the specified pool using the specified key
-     description.
+     description. MOVE NOTICE: The "keyring" subcommand can also be found
+     under the "pool encryption rebind" subcommand. The "pool rebind keyring"
+     subcommand that you are using now is deprecated and will be removed in
+     stratis 3.10.0.
 pool unbind <(clevis|keyring)> <pool name> [--token-slot <token slot>]::
      Unbind the devices in the specified pool from the specified encryption
-     mechanism.
+     mechanism. MOVE NOTICE: The "unbind" subcommand can also be found under
+     the "pool encryption" subcommand. The "pool unbind" subcommand that you
+     are using now is deprecated and will be removed in stratis 3.10.0.
 pool set-fs-limit <pool name> <amount> ::
      Set the limit on the number of file systems allowed per-pool. This number
      may only be increased from its current value.
