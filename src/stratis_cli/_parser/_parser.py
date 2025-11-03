@@ -118,12 +118,19 @@ def add_subcommand(subparser, cmd):
     Add subcommand to a parser based on a subcommand dict.
     """
     name, info = cmd
+    help_text = info.get("help")
 
-    parser = subparser.add_parser(
-        name,
-        help=info["help"],
-        aliases=info.get("aliases", []),
-    )
+    if help_text is None:
+        parser = subparser.add_parser(
+            name, aliases=info.get("aliases", []), epilog=info.get("epilog")
+        )
+    else:
+        parser = subparser.add_parser(
+            name,
+            help=help_text,
+            aliases=info.get("aliases", []),
+            epilog=info.get("epilog"),
+        )
 
     subcmds = info.get("subcmds")
     if subcmds is not None:
