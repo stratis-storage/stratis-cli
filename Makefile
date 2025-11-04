@@ -59,6 +59,7 @@ fmt:
 
 .PHONY: fmt-ci
 fmt-ci:
+	(cd src; yes | abs2rel)
 	isort --diff --check-only setup.py bin/stratis src tests
 	black ./bin/stratis . --check
 
