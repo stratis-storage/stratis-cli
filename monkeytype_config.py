@@ -4,8 +4,8 @@ Monkeytype Configuration File
 
 # isort: STDLIB
 import os
-from typing import Any, Union
 from types import CodeType
+from typing import Any, Union
 
 # isort: THIRDPARTY
 from monkeytype.config import DefaultConfig

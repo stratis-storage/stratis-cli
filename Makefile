@@ -4,6 +4,8 @@ else
   PYTHON = monkeytype run
 endif
 
+ISORT_MODULES = monkeytype_config.py setup.py bin/stratis src tests
+
 MONKEYTYPE_MODULES = stratis_cli._actions._bind \
                      stratis_cli._actions._constants \
                      stratis_cli._actions._data \
@@ -54,12 +56,13 @@ lint:
 .PHONY: fmt
 fmt:
 	(cd src; yes | abs2rel)
-	isort setup.py bin/stratis src tests
+	isort ${ISORT_MODULES}
 	black ./bin/stratis .
 
 .PHONY: fmt-ci
 fmt-ci:
-	isort --diff --check-only setup.py bin/stratis src tests
+	(cd src; yes | abs2rel)
+	isort --diff --check-only ${ISORT_MODULES}
 	black ./bin/stratis . --check
 
 .PHONY: fmt-shell
