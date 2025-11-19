@@ -42,7 +42,7 @@ lint:
 	pylint setup.py ${PYLINT_DISABLE}
 	pylint bin/stratis ${PYLINT_DISABLE}
 	pylint src/stratis_cli --disable=duplicate-code ${PYLINT_DISABLE} --ignore=_introspect.py
-	pylint tests/whitebox --disable=duplicate-code ${PYLINT_DISABLE}
+	pylint tests --disable=duplicate-code ${PYLINT_DISABLE}
 	bandit monkeytype_config.py ${BANDIT_SKIP}
 	bandit setup.py ${BANDIT_SKIP}
 	bandit bin/stratis ${BANDIT_SKIP}
@@ -87,8 +87,8 @@ view:
 	rm packages_stratis-cli.pdf
 	pyreverse ${PYREVERSE_OPTS} --project="stratis-cli-errors" src/stratis_cli/_errors.py
 	mv classes_stratis-cli-errors.pdf _pyreverse
-	pyreverse ${PYREVERSE_OPTS} --project="test-whitebox" tests/whitebox/_misc.py -a 1
-	mv classes_test-whitebox.pdf _pyreverse
+	pyreverse ${PYREVERSE_OPTS} --project="test" tests/_misc.py -a 1
+	mv classes_test.pdf _pyreverse
 
 .PHONY: api-docs
 api-docs:
@@ -96,15 +96,15 @@ api-docs:
 	sphinx-build-3 -b html api api/_build/html
 
 dbus-tests:
-	${PYTHON} -m unittest discover ${UNITTEST_OPTS} --top-level-directory ./tests/whitebox --start-directory ./tests/whitebox/integration
+	${PYTHON} -m unittest discover ${UNITTEST_OPTS} --top-level-directory ./tests --start-directory ./tests/integration
 
 unit-tests:
-	${PYTHON} -m unittest discover ${UNITTEST_OPTS} --start-directory ./tests/whitebox/unit
+	${PYTHON} -m unittest discover ${UNITTEST_OPTS} --start-directory ./tests/unit
 
 .PHONY: coverage
 coverage:
-	python3 -m coverage run -p --timid --branch -m unittest discover --quiet --top-level-directory ./tests/whitebox --start-directory ./tests/whitebox/integration >& /dev/null
-	python3 -m coverage run -p --timid --branch -m unittest discover --quiet --start-directory ./tests/whitebox/unit
+	python3 -m coverage run -p --timid --branch -m unittest discover --quiet --top-level-directory ./tests --start-directory ./tests/integration >& /dev/null
+	python3 -m coverage run -p --timid --branch -m unittest discover --quiet --start-directory ./tests/unit
 
 .PHONY: coverage-report
 coverage-report:
