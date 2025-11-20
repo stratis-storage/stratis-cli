@@ -126,7 +126,7 @@ class PhysicalActions:
 
         tables = [
             [
-                path_to_name[modev.Pool()],
+                path_to_name.get(modev.Pool(), TABLE_UNKNOWN_STRING),
                 paths(modev),
                 size(modev),
                 tier_str(modev.Tier()),
