@@ -18,6 +18,7 @@ Facilities for managing and reporting errors.
 import os
 import sys
 from collections.abc import Iterator
+from typing import List, Optional
 
 # isort: THIRDPARTY
 import dbus
@@ -60,7 +61,7 @@ _DBUS_INTERFACE_MSG = (
 )
 
 
-def _interface_name_to_common_name(interface_name):
+def _interface_name_to_common_name(interface_name: str) -> str:
     """
     Maps a D-Bus interface name to the common name that identifies the type
     of stratisd thing that the interface represents.
@@ -99,7 +100,7 @@ def get_errors(exc: BaseException) -> Iterator[BaseException]:
 
 def _interpret_errors_0(
     error: dbus.exceptions.DBusException,
-):
+) -> Optional[str]:
     """
     Handle match on SCAE .*  DBE
       where:
@@ -159,9 +160,9 @@ def _interpret_errors_0(
     return None  # pragma: no cover
 
 
-def _interpret_errors_1(
-    errors,
-):  # pylint: disable=too-many-return-statements, too-many-branches
+def _interpret_errors_1(  # pylint: disable=too-many-return-statements, too-many-branches
+    errors: List[BaseException],
+) -> Optional[str]:
     """
     Interpret the subchain of errors after the first error.
 
@@ -246,7 +247,9 @@ def _interpret_errors_1(
     return None  # pragma: no cover
 
 
-def _interpret_errors_2(errors):
+def _interpret_errors_2(
+    errors: List[BaseException],
+) -> Optional[str]:
     """
     Interpret the error when it is known that the first error is a
     DPClientInvocationError
@@ -332,7 +335,7 @@ def _interpret_errors_2(errors):
     return None  # pragma: no cover
 
 
-def _interpret_errors(errors):
+def _interpret_errors(errors: List[BaseException]) -> Optional[str]:
     """
     Laboriously add best guesses at the cause of the error, based on
     developer knowledge and possibly further information that is gathered
@@ -357,7 +360,7 @@ def _interpret_errors(errors):
         return None
 
 
-def handle_error(err):
+def handle_error(err: StratisCliActionError):
     """
     Do the right thing with the given error, which may be the head of an error
     chain.
