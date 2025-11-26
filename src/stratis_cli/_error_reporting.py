@@ -183,11 +183,28 @@ def _interpret_errors_1(  # pylint: disable=too-many-return-statements, too-many
     # generated code is constructed, or if the introspection data from
     # which the auto-generated code is constructed does not match the
     # daemon interface. This situation is unlikely and difficult to
-    # elicit in a test.
+    # elicit in a test. It may arise however, in the case where there
+    # is an error producing a property and that property, even although
+    # part of the official API, is missing from the GetManagedObjects result.
     if isinstance(
         error,
         (DbusClientMissingSearchPropertiesError, DbusClientMissingPropertyError),
     ):  # pragma: no cover
+        if len(errors) > 1:
+            maybe_key_error = errors[1]
+            if isinstance(maybe_key_error, KeyError):
+                prop_key = (
+                    maybe_key_error.args[0] if len(maybe_key_error.args) > 0 else ""
+                )
+                return (
+                    f'Property "{prop_key}" belonging to interface '
+                    f'"{error.interface_name}" is not in this '
+                    "GetManagedObjects result. This could be due to the fact "
+                    "that stratisd omitted the property from the "
+                    "GetManagedObjects result because there was an error in "
+                    "obtaining that value."
+                )
+
         return _DBUS_INTERFACE_MSG
 
     if isinstance(error, StratisCliEngineError):
@@ -247,7 +264,7 @@ def _interpret_errors_1(  # pylint: disable=too-many-return-statements, too-many
     return None  # pragma: no cover
 
 
-def _interpret_errors_2(
+def _interpret_errors_2(  # pylint: disable=too-many-return-statements
     errors: List[BaseException],
 ) -> Optional[str]:
     """
@@ -308,6 +325,16 @@ def _interpret_errors_2(
                         f"requested, because it could not set the D-Bus "
                         f'property "{context.property_name}" belonging to '
                         f'interface "{error.interface_name}" to "{context.value}". '
+                        f"It returned the following error: "
+                        f"{next_error.get_dbus_message()}."
+                    )
+
+                if isinstance(context, DPClientGetPropertyContext):  # pragma: no cover
+                    return (
+                        f"stratisd failed to perform the operation that you "
+                        f"requested, because it could not get the D-Bus "
+                        f'property "{context.property_name}" belonging to '
+                        f'interface "{error.interface_name}". '
                         f"It returned the following error: "
                         f"{next_error.get_dbus_message()}."
                     )
