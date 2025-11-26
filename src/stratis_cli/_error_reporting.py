@@ -112,13 +112,13 @@ def _interpret_errors_0(
     :rtype: None or str
     """
 
+    dbus_name = error.get_dbus_name()
+
     # The permissions with which stratis-cli makes requests on the D-Bus
     # are controlled by the "stratisd.conf" file. The CLI tests do not
     # control the contents or installation of "stratisd.conf"
     # and therefore, we cannot test this case reliably.
-    if (
-        error.get_dbus_name() == "org.freedesktop.DBus.Error.AccessDenied"
-    ):  # pragma: no cover
+    if dbus_name == "org.freedesktop.DBus.Error.AccessDenied":  # pragma: no cover
         return (
             "Most likely stratis has insufficient permissions for the action requested."
         )
@@ -129,7 +129,7 @@ def _interpret_errors_0(
     # running with a new major version and is supplying a different name on the
     # D-Bus than stratis is attempting to use. The second and third
     # possibilities are both covered by a single error message.
-    if error.get_dbus_name() in (
+    if dbus_name in (
         "org.freedesktop.DBus.Error.NameHasNoOwner",
         "org.freedesktop.DBus.Error.ServiceUnknown",
     ):
