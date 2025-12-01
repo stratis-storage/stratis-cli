@@ -349,6 +349,7 @@ def _interpret_errors(errors: List[BaseException]) -> Optional[str]:
     """
     try:
         assert isinstance(errors[0], StratisCliActionError)
+        assert len(errors) > 1
 
         return _interpret_errors_1(errors[1:])
 
