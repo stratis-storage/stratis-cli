@@ -18,6 +18,7 @@ Facilities for managing and reporting errors.
 import os
 import sys
 from collections.abc import Iterator
+from typing import List, Optional
 
 # isort: THIRDPARTY
 import dbus
@@ -60,7 +61,7 @@ _DBUS_INTERFACE_MSG = (
 )
 
 
-def _interface_name_to_common_name(interface_name):
+def _interface_name_to_common_name(interface_name: str) -> str:
     """
     Maps a D-Bus interface name to the common name that identifies the type
     of stratisd thing that the interface represents.
@@ -99,7 +100,7 @@ def get_errors(exc: BaseException) -> Iterator[BaseException]:
 
 def _interpret_errors_0(
     error: dbus.exceptions.DBusException,
-):
+) -> Optional[str]:
     """
     Handle match on SCAE .*  DBE
       where:
@@ -112,13 +113,13 @@ def _interpret_errors_0(
     :rtype: None or str
     """
 
+    dbus_name = error.get_dbus_name()
+
     # The permissions with which stratis-cli makes requests on the D-Bus
     # are controlled by the "stratisd.conf" file. The CLI tests do not
     # control the contents or installation of "stratisd.conf"
     # and therefore, we cannot test this case reliably.
-    if (
-        error.get_dbus_name() == "org.freedesktop.DBus.Error.AccessDenied"
-    ):  # pragma: no cover
+    if dbus_name == "org.freedesktop.DBus.Error.AccessDenied":  # pragma: no cover
         return (
             "Most likely stratis has insufficient permissions for the action requested."
         )
@@ -129,7 +130,7 @@ def _interpret_errors_0(
     # running with a new major version and is supplying a different name on the
     # D-Bus than stratis is attempting to use. The second and third
     # possibilities are both covered by a single error message.
-    if error.get_dbus_name() in (
+    if dbus_name in (
         "org.freedesktop.DBus.Error.NameHasNoOwner",
         "org.freedesktop.DBus.Error.ServiceUnknown",
     ):
@@ -159,9 +160,9 @@ def _interpret_errors_0(
     return None  # pragma: no cover
 
 
-def _interpret_errors_1(
-    errors,
-):  # pylint: disable=too-many-return-statements, too-many-branches
+def _interpret_errors_1(  # pylint: disable=too-many-return-statements, too-many-branches
+    errors: List[BaseException],
+) -> Optional[str]:
     """
     Interpret the subchain of errors after the first error.
 
@@ -182,11 +183,28 @@ def _interpret_errors_1(
     # generated code is constructed, or if the introspection data from
     # which the auto-generated code is constructed does not match the
     # daemon interface. This situation is unlikely and difficult to
-    # elicit in a test.
+    # elicit in a test. It may arise however, in the case where there
+    # is an error producing a property and that property, even although
+    # part of the official API, is missing from the GetManagedObjects result.
     if isinstance(
         error,
         (DbusClientMissingSearchPropertiesError, DbusClientMissingPropertyError),
     ):  # pragma: no cover
+        if len(errors) > 1:
+            maybe_key_error = errors[1]
+            if isinstance(maybe_key_error, KeyError):
+                prop_key = (
+                    maybe_key_error.args[0] if len(maybe_key_error.args) > 0 else ""
+                )
+                return (
+                    f'Property "{prop_key}" belonging to interface '
+                    f'"{error.interface_name}" is not in this '
+                    "GetManagedObjects result. This could be due to the fact "
+                    "that stratisd omitted the property from the "
+                    "GetManagedObjects result because there was an error in "
+                    "obtaining that value."
+                )
+
         return _DBUS_INTERFACE_MSG
 
     if isinstance(error, StratisCliEngineError):
@@ -246,7 +264,9 @@ def _interpret_errors_1(
     return None  # pragma: no cover
 
 
-def _interpret_errors_2(errors):
+def _interpret_errors_2(  # pylint: disable=too-many-return-statements
+    errors: List[BaseException],
+) -> Optional[str]:
     """
     Interpret the error when it is known that the first error is a
     DPClientInvocationError
@@ -309,6 +329,16 @@ def _interpret_errors_2(errors):
                         f"{next_error.get_dbus_message()}."
                     )
 
+                if isinstance(context, DPClientGetPropertyContext):  # pragma: no cover
+                    return (
+                        f"stratisd failed to perform the operation that you "
+                        f"requested, because it could not get the D-Bus "
+                        f'property "{context.property_name}" belonging to '
+                        f'interface "{error.interface_name}". '
+                        f"It returned the following error: "
+                        f"{next_error.get_dbus_message()}."
+                    )
+
             if next_error.get_dbus_name() == "org.freedesktop.DBus.Error.NoReply":
                 context = error.context
                 if (
@@ -332,7 +362,7 @@ def _interpret_errors_2(errors):
     return None  # pragma: no cover
 
 
-def _interpret_errors(errors):
+def _interpret_errors(errors: List[BaseException]) -> Optional[str]:
     """
     Laboriously add best guesses at the cause of the error, based on
     developer knowledge and possibly further information that is gathered
@@ -346,6 +376,7 @@ def _interpret_errors(errors):
     """
     try:
         assert isinstance(errors[0], StratisCliActionError)
+        assert len(errors) > 1
 
         return _interpret_errors_1(errors[1:])
 
@@ -357,7 +388,7 @@ def _interpret_errors(errors):
         return None
 
 
-def handle_error(err):
+def handle_error(err: StratisCliActionError):
     """
     Do the right thing with the given error, which may be the head of an error
     chain.
