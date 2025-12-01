@@ -79,11 +79,3 @@ Python Coding Style
 -------------------
 ``stratis`` conforms to PEP-8 style guidelines as enforced by the ``black``
 formatting tool.
-
-Tab Completion
---------------
-From time to time, our external contributors have added support for
-tab-completion in a variety of different shells. The files are included in the
-stratis-cli GitHub release, but they are not supported by the Stratis project.
-We welcome further contributions to these files and will continue to include
-them for as long as they seem useful to our users.
