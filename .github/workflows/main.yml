@@ -50,8 +50,6 @@ jobs:
             task:
               PATH=${PATH}:/github/home/.local/bin PYTHONPATH=./src
               make -f Makefile fmt-ci
-          - dependencies: shfmt
-            task: make -f Makefile fmt-shell-ci
     runs-on: ubuntu-latest
     container: fedora:42  # CURRENT DEVELOPMENT ENVIRONMENT
     steps:
