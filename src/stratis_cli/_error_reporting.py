@@ -282,11 +282,13 @@ def _interpret_errors_2(  # pylint: disable=too-many-return-statements
     if len(errors) > 1:
         next_error = errors[1]
         if isinstance(next_error, dbus.exceptions.DBusException):
+            dbus_name = next_error.get_dbus_name()
+
             # We do not test this error, as the only known way to cause it is
             # manipulation of selinux configuration, which is too laborious to
             # bother with at this time.
             if (
-                next_error.get_dbus_name() == "org.freedesktop.DBus.Error.Disconnected"
+                dbus_name == "org.freedesktop.DBus.Error.Disconnected"
             ):  # pragma: no cover
                 return (
                     "The D-Bus connection was disconnected during a "
@@ -294,7 +296,7 @@ def _interpret_errors_2(  # pylint: disable=too-many-return-statements
                     "prohibit that particular D-Bus interaction."
                 )
 
-            if next_error.get_dbus_name() == "org.freedesktop.DBus.Error.Failed":
+            if dbus_name == "org.freedesktop.DBus.Error.Failed":
                 context = error.context
 
                 # We do not test this error, as the only known way to cause it
@@ -339,7 +341,7 @@ def _interpret_errors_2(  # pylint: disable=too-many-return-statements
                         f"{next_error.get_dbus_message()}."
                     )
 
-            if next_error.get_dbus_name() == "org.freedesktop.DBus.Error.NoReply":
+            if dbus_name == "org.freedesktop.DBus.Error.NoReply":
                 context = error.context
                 if (
                     error.interface_name == MANAGER_0_INTERFACE
