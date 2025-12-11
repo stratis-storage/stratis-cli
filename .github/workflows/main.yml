@@ -53,7 +53,7 @@ jobs:
     runs-on: ubuntu-latest
     container: fedora:42  # CURRENT DEVELOPMENT ENVIRONMENT
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           persist-credentials: false
       - name: Install dependencies
@@ -82,7 +82,7 @@ jobs:
           clang
           glibc-static
           make
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           persist-credentials: false
       - uses: dtolnay/rust-toolchain@master
@@ -125,7 +125,7 @@ jobs:
           10
       - name: Display Python version
         run: python3 --version
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           path: stratis-cli
           persist-credentials: false
@@ -185,7 +185,7 @@ jobs:
       # yamllint disable rule:line-length
       options: --privileged --userns=host --ipc=host -v /run/dbus/system_bus_socket:/run/dbus/system_bus_socket:ro -v /usr/share/dbus-1:/usr/share/dbus-1
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           path: stratis-cli
           persist-credentials: false

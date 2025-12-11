@@ -47,7 +47,7 @@ jobs:
           python3-psutil
           python3-wcwidth
           systemd-devel
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           path: stratis-cli
           persist-credentials: false
