@@ -110,7 +110,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@master
         with:
           components: cargo
-          toolchain: 1.77.0  # LOWEST SUPPORTED RUST TOOLCHAIN
+          toolchain: 1.82.0  # LOWEST SUPPORTED RUST TOOLCHAIN
       - name: Install python prerequisites
         run: >
           dnf install -y
@@ -213,7 +213,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@master
         with:
           components: cargo
-          toolchain: 1.77.0  # LOWEST SUPPORTED RUST TOOLCHAIN
+          toolchain: 1.82.0  # LOWEST SUPPORTED RUST TOOLCHAIN
       - uses: stratis-storage/github-actions/github-modify@HEAD
         with:
           repo: stratisd
