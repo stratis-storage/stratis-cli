@@ -550,7 +550,7 @@ class PoolActions:
         if return_code != StratisdErrors.OK:  # pragma: no cover
             raise StratisCliEngineError(return_code, message)
 
-        if not added or len(devs_added) < len(blockdevs):  # pragma: no cover
+        if not added or len(devs_added) < len(blockdevs):
             devnodes_added = [
                 MODev(info).Devnode()
                 for (object_path, info) in devs(
@@ -605,7 +605,7 @@ class PoolActions:
         if return_code != StratisdErrors.OK:
             raise StratisCliEngineError(return_code, message)
 
-        if not added or len(devs_added) < len(blockdevs):  # pragma: no cover
+        if not added or len(devs_added) < len(blockdevs):
             devnodes_added = [
                 MODev(info).Devnode()
                 for (object_path, info) in devs(

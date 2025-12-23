@@ -15,6 +15,9 @@
 Test 'add'.
 """
 
+# isort: STDLIB
+from unittest.mock import patch
+
 # isort: FIRSTPARTY
 from dbus_client_gen import DbusClientUniqueResultError
 
@@ -22,6 +25,7 @@ from dbus_client_gen import DbusClientUniqueResultError
 from stratis_cli import StratisCliErrorCodes
 from stratis_cli._errors import (
     StratisCliEngineError,
+    StratisCliIncoherenceError,
     StratisCliInUseOtherTierError,
     StratisCliInUseSameTierError,
     StratisCliPartialChangeError,
@@ -113,6 +117,26 @@ class AddDataTestCase1(SimTestCase):
         """
         command_line = self._MENU + [self._POOLNAME] + self._DEVICES
         self.check_error(StratisCliPartialChangeError, command_line, _ERROR)
+
+    def test_add_data_again_mock_check(self):
+        """
+        Test that trying to add the same devices twice results in a
+        StratisCliIncoherenceError exception.
+        There are 0 target resources that would change.
+        There is 1 target resource that would not change.
+        """
+        command_line = self._MENU + [self._POOLNAME] + self._DEVICES
+        # isort: LOCAL
+        import stratis_cli  # pylint: disable=import-outside-toplevel
+
+        with patch.object(
+            # pylint: disable=protected-access
+            stratis_cli._actions._pool,  # pyright: ignore
+            "_check_same_tier",
+            autospec=True,
+            return_value=None,
+        ):
+            self.check_error(StratisCliIncoherenceError, command_line, _ERROR)
 
     def test_add_data_cache(self):
         """
@@ -225,6 +249,29 @@ class AddCacheTestCase1(SimTestCase):
         command_line = self._MENU + [self._POOLNAME] + devices
         RUNNER(command_line)
         self.check_error(StratisCliPartialChangeError, command_line, _ERROR)
+
+    def test_add_cache_again_mock_check(self):
+        """
+        Test that trying to add the same devices twice results in a
+        StratisCliIncoherence exception.
+        There are 0 target resources that would change.
+        There is 1 target resource that would not change.
+        """
+        devices = _DEVICE_STRATEGY()
+        command_line = self._MENU + [self._POOLNAME] + devices
+        RUNNER(command_line)
+
+        # isort: LOCAL
+        import stratis_cli  # pylint: disable=import-outside-toplevel
+
+        with patch.object(
+            # pylint: disable=protected-access
+            stratis_cli._actions._pool,  # pyright: ignore
+            "_check_same_tier",
+            autospec=True,
+            return_value=None,
+        ):
+            self.check_error(StratisCliIncoherenceError, command_line, _ERROR)
 
     def test_add_cache_data(self):
         """
