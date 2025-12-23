@@ -2,7 +2,6 @@ This directory contains tests of the CLI functionality.
 
 There are three directories containing three types of tests:
 * unit - strict unit tests which require no setup of the environment
-* monkey_patching - tests that use monkey_patching to mock some behavior
 * integration - straightforward tests of functionality
 
 The project Makefile has make targets for running these different categories
