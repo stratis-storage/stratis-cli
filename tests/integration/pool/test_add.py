@@ -154,6 +154,32 @@ class AddDataTestCase1(SimTestCase):
             _ERROR,
         )
 
+    def test_add_data_cache_mock_check(self):
+        """
+        Test that adding 1 data device that is already in the cache tier raises
+        an exception.
+        """
+        devices = _DEVICE_STRATEGY()
+        command_line = (
+            ["--propagate", "pool", "init-cache"] + [self._POOLNAME] + devices
+        )
+        RUNNER(command_line)
+        # isort: LOCAL
+        import stratis_cli  # pylint: disable=import-outside-toplevel
+
+        with patch.object(
+            # pylint: disable=protected-access
+            stratis_cli._actions._pool,  # pyright: ignore
+            "_check_opposite_tier",
+            autospec=True,
+            return_value=None,
+        ):
+            self.check_error(
+                StratisCliEngineError,
+                self._MENU + [self._POOLNAME] + devices,
+                _ERROR,
+            )
+
     def test_add_data_cache_2(self):
         """
         Test that adding multiple (2) data devices that are already in the cache tier raises
@@ -280,6 +306,24 @@ class AddCacheTestCase1(SimTestCase):
         """
         command_line = self._MENU + [self._POOLNAME] + self._DEVICES
         self.check_error(StratisCliInUseOtherTierError, command_line, _ERROR)
+
+    def test_add_cache_data_mock_check(self):
+        """
+        Test that adding 1 cache device that is already in the data tier raises
+        an exception.
+        """
+        command_line = self._MENU + [self._POOLNAME] + self._DEVICES
+        # isort: LOCAL
+        import stratis_cli  # pylint: disable=import-outside-toplevel
+
+        with patch.object(
+            # pylint: disable=protected-access
+            stratis_cli._actions._pool,  # pyright: ignore
+            "_check_opposite_tier",
+            autospec=True,
+            return_value=None,
+        ):
+            self.check_error(StratisCliEngineError, command_line, _ERROR)
 
 
 class AddCacheTestCase2(SimTestCase):
