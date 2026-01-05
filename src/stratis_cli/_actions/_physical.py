@@ -17,9 +17,13 @@ Miscellaneous physical actions.
 
 # isort: STDLIB
 from argparse import Namespace
+from typing import Callable
 
 # isort: THIRDPARTY
 from justbytes import Range
+
+# isort: FIRSTPARTY
+from dbus_client_gen import DbusClientMissingPropertyError
 
 from .._stratisd_constants import BlockDevTiers
 from ._connection import get_object
@@ -79,7 +83,23 @@ class PhysicalActions:
             ).search(managed_objects)
         )
 
-        def paths(modev):
+        def catch_missing_property(modev, prop_to_name: Callable) -> str:
+            """
+            Get a property from an modev. If the property is missing,
+            return the TABLE_UNKNOWN_STRING value.
+            """
+            try:
+                return prop_to_name(modev)
+            except DbusClientMissingPropertyError:  # pragma: no cover
+                return TABLE_UNKNOWN_STRING
+
+        def pool_name_lookup(modev) -> str:
+            """
+            Look up a name for a pool.
+            """
+            return path_to_name.get(modev.Pool(), TABLE_UNKNOWN_STRING)
+
+        def paths(modev) -> str:
             """
             Return <physical_path> (<metadata_path>) if they are different,
             otherwise, just <metadata_path>.
@@ -100,37 +120,44 @@ class PhysicalActions:
                 else f"{physical_path} ({metadata_path})"
             )
 
-        def size(modev):
+        def size(modev) -> str:
             """
             Return in-use size (observed size) if they are different, otherwise
             just in-use size.
             """
             in_use_size = Range(modev.TotalPhysicalSize())
             observed_size = get_property(modev.NewPhysicalSize(), Range, in_use_size)
+
             return (
                 f"{in_use_size}"
                 if in_use_size == observed_size
                 else f"{in_use_size} ({observed_size})"
             )
 
-        def tier_str(value):
+        def tier_str(modev) -> str:
             """
             String representation of a tier.
             """
             try:
-                return str(BlockDevTiers(value))
+                return str(BlockDevTiers(modev.Tier()))
             except ValueError:  # pragma: no cover
                 return TABLE_UNKNOWN_STRING
 
         format_uuid = get_uuid_formatter(namespace.unhyphenated_uuids)
 
+        def uuid_str(modev) -> str:
+            """
+            String representation of UUID.
+            """
+            return format_uuid(modev.Uuid())
+
         tables = [
             [
-                path_to_name.get(modev.Pool(), TABLE_UNKNOWN_STRING),
-                paths(modev),
-                size(modev),
-                tier_str(modev.Tier()),
-                format_uuid(modev.Uuid()),
+                catch_missing_property(modev, pool_name_lookup),
+                catch_missing_property(modev, paths),
+                catch_missing_property(modev, size),
+                catch_missing_property(modev, tier_str),
+                catch_missing_property(modev, uuid_str),
             ]
             for modev in modevs
         ]
