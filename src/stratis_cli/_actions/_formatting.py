@@ -17,12 +17,16 @@ Formatting for tables.
 
 # isort: STDLIB
 import sys
+from functools import wraps
 from typing import Any, Callable, List, Optional
 from uuid import UUID
 
 # isort: THIRDPARTY
 from dbus import Struct
 from wcwidth import wcswidth
+
+# isort: FIRSTPARTY
+from dbus_client_gen import DbusClientMissingPropertyError
 
 # placeholder for tables where a desired value was not obtained from stratisd
 # when the value should be supported.
@@ -160,3 +164,23 @@ def get_uuid_formatter(unhyphenated: bool) -> Callable:
     return (
         (lambda u: UUID(str(u)).hex) if unhyphenated else (lambda u: str(UUID(str(u))))
     )
+
+
+def catch_missing_property(
+    prop_to_str: Callable[[Any], Any], default: Any
+) -> Callable[[Any], Any]:
+    """
+    Return a function to just return a default if a property is missing.
+    """
+
+    @wraps(prop_to_str)
+    def inner(mo: Any) -> str:
+        """
+        Catch the exception and return a default
+        """
+        try:
+            return prop_to_str(mo)
+        except DbusClientMissingPropertyError:
+            return default
+
+    return inner

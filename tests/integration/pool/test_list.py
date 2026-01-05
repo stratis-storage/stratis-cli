@@ -16,10 +16,11 @@ Test 'list'.
 """
 
 # isort: STDLIB
+from unittest.mock import patch
 from uuid import uuid4
 
 # isort: FIRSTPARTY
-from dbus_client_gen import DbusClientUniqueResultError
+from dbus_client_gen import DbusClientMissingPropertyError, DbusClientUniqueResultError
 
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
@@ -316,3 +317,24 @@ class List5TestCase(SimTestCase):
         Test detail view on running pool.
         """
         TEST_RUNNER(self._MENU + [f"--name={self._POOLNAME}"])
+
+    def test_list_no_size(self):
+        """
+        Test listing the pool when size information not included in
+        GetManagedObjects result.
+        """
+        # isort: LOCAL
+        import stratis_cli  # pylint: disable=import-outside-toplevel
+
+        with patch.object(
+            # pylint: disable=protected-access
+            stratis_cli._actions._list_pool.Default,  # pyright: ignore
+            "size_triple",
+            autospec=True,
+            side_effect=DbusClientMissingPropertyError(
+                "oops",
+                stratis_cli._actions._constants.POOL_INTERFACE,  # pyright: ignore
+                "TotalPhysicalUsed",
+            ),
+        ):
+            TEST_RUNNER(self._MENU)

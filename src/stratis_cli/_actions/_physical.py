@@ -17,6 +17,7 @@ Miscellaneous physical actions.
 
 # isort: STDLIB
 from argparse import Namespace
+from typing import Any, Callable
 
 # isort: THIRDPARTY
 from justbytes import Range
@@ -26,6 +27,7 @@ from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import (
     TABLE_UNKNOWN_STRING,
+    catch_missing_property,
     get_property,
     get_uuid_formatter,
     print_table,
@@ -79,7 +81,7 @@ class PhysicalActions:
             ).search(managed_objects)
         )
 
-        def paths(modev):
+        def paths(modev: Any) -> str:
             """
             Return <physical_path> (<metadata_path>) if they are different,
             otherwise, just <metadata_path>.
@@ -100,7 +102,7 @@ class PhysicalActions:
                 else f"{physical_path} ({metadata_path})"
             )
 
-        def size(modev):
+        def size_str(modev: Any) -> str:
             """
             Return in-use size (observed size) if they are different, otherwise
             just in-use size.
@@ -113,24 +115,35 @@ class PhysicalActions:
                 else f"{in_use_size} ({observed_size})"
             )
 
-        def tier_str(value):
+        def tier_str(modev: Any) -> str:
             """
             String representation of a tier.
             """
             try:
-                return str(BlockDevTiers(value))
+                return str(BlockDevTiers(modev.Tier()))
             except ValueError:  # pragma: no cover
                 return TABLE_UNKNOWN_STRING
 
         format_uuid = get_uuid_formatter(namespace.unhyphenated_uuids)
 
+        def missing_property(func: Callable[[Any], str]) -> Callable[[Any], str]:
+            return catch_missing_property(func, TABLE_UNKNOWN_STRING)
+
+        pool_name_func = missing_property(
+            lambda mo: path_to_name.get(mo.Pool(), TABLE_UNKNOWN_STRING)
+        )
+        paths_func = missing_property(paths)
+        size_func = missing_property(size_str)
+        tier_func = missing_property(tier_str)
+        uuid_func = missing_property(lambda modev: format_uuid(modev.Uuid()))
+
         tables = [
             [
-                path_to_name.get(modev.Pool(), TABLE_UNKNOWN_STRING),
-                paths(modev),
-                size(modev),
-                tier_str(modev.Tier()),
-                format_uuid(modev.Uuid()),
+                pool_name_func(modev),
+                paths_func(modev),
+                size_func(modev),
+                tier_func(modev),
+                uuid_func(modev),
             ]
             for modev in modevs
         ]

@@ -28,7 +28,9 @@ from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import (
     TABLE_FAILURE_STRING,
+    TABLE_UNKNOWN_STRING,
     TOTAL_USED_FREE,
+    catch_missing_property,
     get_property,
     print_table,
 )
@@ -124,7 +126,12 @@ class ListFilesystem(ABC):  # pylint: disable=too-few-public-methods
         """
         Calculate size triple
         """
-        return SizeTriple(Range(mofs.Size()), get_property(mofs.Used(), Range, None))
+        return SizeTriple(
+            catch_missing_property(lambda mo: Range(mo.Size()), None)(mofs),
+            catch_missing_property(
+                lambda mo: get_property(mo.Used(), Range, None), None
+            )(mofs),
+        )
 
 
 class Table(ListFilesystem):  # pylint: disable=too-few-public-methods
@@ -158,16 +165,31 @@ class Table(ListFilesystem):  # pylint: disable=too-few-public-methods
             )
             return f"{triple_str} / {limit}"
 
+        def missing_property(func: Callable[[Any], str]) -> Callable[[Any], str]:
+            return catch_missing_property(func, TABLE_UNKNOWN_STRING)
+
+        pool_name_func = missing_property(
+            lambda mo: self.pool_object_path_to_pool_name.get(
+                mo.Pool(), TABLE_UNKNOWN_STRING
+            )
+        )
+        name_func = missing_property(lambda mofs: mofs.Name())
+        size_func = missing_property(
+            lambda mofs: filesystem_size_quartet(
+                ListFilesystem.size_triple(mofs),
+                get_property(mofs.SizeLimit(), Range, None),
+            )
+        )
+        devnode_func = missing_property(lambda mofs: mofs.Devnode())
+        uuid_func = missing_property(lambda mofs: self.uuid_formatter(mofs.Uuid()))
+
         tables = [
             (
-                self.pool_object_path_to_pool_name[mofilesystem.Pool()],
-                mofilesystem.Name(),
-                filesystem_size_quartet(
-                    ListFilesystem.size_triple(mofilesystem),
-                    get_property(mofilesystem.SizeLimit(), Range, None),
-                ),
-                mofilesystem.Devnode(),
-                self.uuid_formatter(mofilesystem.Uuid()),
+                pool_name_func(mofilesystem),
+                name_func(mofilesystem),
+                size_func(mofilesystem),
+                devnode_func(mofilesystem),
+                uuid_func(mofilesystem),
             )
             for mofilesystem in self.filesystems_with_props
         ]
@@ -198,29 +220,52 @@ class Detail(ListFilesystem):  # pylint: disable=too-few-public-methods
 
         fs = self.filesystems_with_props[0]
 
-        size_triple = ListFilesystem.size_triple(fs)
-        limit = get_property(fs.SizeLimit(), Range, None)
-        created = (
-            date_parser.isoparse(fs.Created()).astimezone().strftime("%b %d %Y %H:%M")
+        def missing_property(func: Callable[[Any], str]) -> Callable[[Any], str]:
+            return catch_missing_property(func, TABLE_UNKNOWN_STRING)(fs)
+
+        uuid = missing_property(lambda mo: self.uuid_formatter(mo.Uuid()))
+        print(f"UUID: {uuid}")
+
+        name = missing_property(lambda mo: mo.Name())
+        print(f"Name: {name}")
+
+        pool = missing_property(
+            lambda mo: self.pool_object_path_to_pool_name.get(
+                mo.Pool(), TABLE_UNKNOWN_STRING
+            ),
         )
+        print(f"Pool: {pool}")
 
-        origin = get_property(fs.Origin(), self.uuid_formatter, None)
-
-        print(f"UUID: {self.uuid_formatter(fs.Uuid())}")
-        print(f"Name: {fs.Name()}")
-        print(f"Pool: {self.pool_object_path_to_pool_name[fs.Pool()]}")
+        devnode = missing_property(lambda mo: mo.Devnode())
         print()
-        print(f"Device: {fs.Devnode()}")
+        print(f"Device: {devnode}")
+
+        created = missing_property(
+            lambda mo: date_parser.isoparse(mo.Created())
+            .astimezone()
+            .strftime("%b %d %Y %H:%M"),
+        )
         print()
         print(f"Created: {created}")
+
+        origin = catch_missing_property(
+            lambda mo: get_property(mo.Origin(), self.uuid_formatter, None), None
+        )
         print()
         print(f"Snapshot origin: {origin}")
         if origin is not None:
-            scheduled = "Yes" if fs.MergeScheduled() else "No"
+            scheduled = missing_property(
+                lambda mo: "Yes" if mo.MergeScheduled() else "No"
+            )
             print(f"    Revert scheduled: {scheduled}")
+
+        size_triple = ListFilesystem.size_triple(fs)
         print()
         print("Sizes:")
-        print(f"  Logical size of thin device: {size_triple.total()}")
+        print(
+            "  Logical size of thin device: "
+            f"{TABLE_FAILURE_STRING if size_triple.total() is None else size_triple.total()}"
+        )
         print(
             "  Total used (including XFS metadata): "
             f"{TABLE_FAILURE_STRING if size_triple.used() is None else size_triple.used()}"
@@ -228,6 +273,10 @@ class Detail(ListFilesystem):  # pylint: disable=too-few-public-methods
         print(
             "  Free: "
             f"{TABLE_FAILURE_STRING if size_triple.free() is None else size_triple.free()}"
+        )
+
+        limit = missing_property(
+            lambda mo: get_property(mo.SizeLimit(), lambda x: str(Range(x)), str(None))
         )
         print()
         print(f"  Size Limit: {limit}")

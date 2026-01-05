@@ -44,7 +44,9 @@ from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import (
     TABLE_FAILURE_STRING,
+    TABLE_UNKNOWN_STRING,
     TOTAL_USED_FREE,
+    catch_missing_property,
     get_property,
     print_table,
 )
@@ -452,7 +454,7 @@ class DefaultTable(Default):  # pylint: disable=too-few-public-methods
         """
         self.uuid_formatter = uuid_formatter
 
-    def display(self):
+    def display(self):  # pylint: disable=too-many-locals
         """
         List pools in table view.
         """
@@ -526,21 +528,34 @@ class DefaultTable(Default):  # pylint: disable=too-few-public-methods
             (objpath, MOPool(info)) for objpath, info in pools().search(managed_objects)
         ]
 
+        name_func = catch_missing_property(lambda mo: mo.Name(), TABLE_UNKNOWN_STRING)
+        size_func = catch_missing_property(physical_size_triple, TABLE_UNKNOWN_STRING)
+        properties_func = catch_missing_property(
+            properties_string, TABLE_UNKNOWN_STRING
+        )
+        uuid_func = catch_missing_property(
+            lambda mo: self.uuid_formatter(mo.Uuid()), TABLE_UNKNOWN_STRING
+        )
+
+        def alert_func(pool_object_path: str, mopool: Any) -> List[str]:
+            """
+            Combined alert codes.
+            """
+            return [
+                str(code)
+                for code in catch_missing_property(
+                    Default.alert_codes, default=[TABLE_UNKNOWN_STRING]
+                )(mopool)
+                + alerts.alert_codes(pool_object_path)
+            ]
+
         tables = [
             (
-                mopool.Name(),
-                physical_size_triple(mopool),
-                properties_string(mopool),
-                self.uuid_formatter(mopool.Uuid()),
-                ", ".join(
-                    sorted(
-                        str(code)
-                        for code in (
-                            Default.alert_codes(mopool)
-                            + alerts.alert_codes(pool_object_path)
-                        )
-                    )
-                ),
+                name_func(mopool),
+                size_func(mopool),
+                properties_func(mopool),
+                uuid_func(mopool),
+                ", ".join(sorted(alert_func(pool_object_path, mopool))),
             )
             for (pool_object_path, mopool) in pools_with_props
         ]
