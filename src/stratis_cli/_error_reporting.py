@@ -354,7 +354,6 @@ def _interpret_errors_2(  # pylint: disable=too-many-return-statements
                     )
 
             if dbus_name == "org.freedesktop.DBus.Error.NoReply":
-                context = error.context
                 if (
                     error.interface_name == MANAGER_0_INTERFACE
                     and isinstance(context, DPClientGetPropertyContext)
