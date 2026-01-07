@@ -283,6 +283,19 @@ def _interpret_errors_2(  # pylint: disable=too-many-return-statements
         next_error = errors[1]
         if isinstance(next_error, dbus.exceptions.DBusException):
             dbus_name = next_error.get_dbus_name()
+            context = error.context
+
+            if dbus_name == "org.freedesktop.zbus.Error" and isinstance(
+                context, DPClientSetPropertyContext
+            ):  # pragma: no cover
+                return (
+                    f"stratisd failed to perform the operation that you "
+                    f"requested, because it could not set the D-Bus "
+                    f'property "{context.property_name}" belonging to '
+                    f'interface "{error.interface_name}" to "{context.value}". '
+                    f"It returned the following error: "
+                    f"{next_error.get_dbus_message()}."
+                )
 
             # We do not test this error, as the only known way to cause it is
             # manipulation of selinux configuration, which is too laborious to
@@ -297,7 +310,6 @@ def _interpret_errors_2(  # pylint: disable=too-many-return-statements
                 )
 
             if dbus_name == "org.freedesktop.DBus.Error.Failed":
-                context = error.context
 
                 # We do not test this error, as the only known way to cause it
                 # is to spam the daemon with a succession of mutating commands
