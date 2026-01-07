@@ -44,10 +44,10 @@ class Create2TestCase(SimTestCase):
 
     def test_creation(self):
         """
-        Creation of two volumes at once should fail.
+        Creation of two volumes at once should succeed.
         """
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES
-        self.check_error(StratisCliEngineError, command_line, _ERROR)
+        TEST_RUNNER(command_line)
 
 
 class Create4TestCase(SimTestCase):
@@ -106,8 +106,6 @@ class Create5TestCase(SimTestCase):
         command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
         RUNNER(command_line)
 
-        # Creation of two volumes is split up into two calls to RUNNER,
-        # since only one filesystem per request is currently allowed.
         command_line = self._MENU + [self._POOLNAME] + self._VOLNAMES[0:1]
         RUNNER(command_line)
 
