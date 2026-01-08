@@ -8,6 +8,7 @@ ISORT_MODULES = monkeytype_config.py setup.py bin/stratis src tests
 
 MONKEYTYPE_MODULES = stratis_cli._actions._bind \
                      stratis_cli._actions._constants \
+                     stratis_cli._actions._crypt \
                      stratis_cli._actions._data \
                      stratis_cli._actions._debug \
                      stratis_cli._actions._environment \
