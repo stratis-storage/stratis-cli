@@ -249,7 +249,8 @@ class PoolActions:
             raise StratisCliIncoherenceError(
                 (
                     f"Expected to create the specified pool {pool_name} but stratisd "
-                    f"reports that it did not actually create the pool"
+                    "reports that it did not actually create the pool because "
+                    f"a pool with name {pool_name} already exists."
                 )
             )
 
@@ -478,9 +479,10 @@ class PoolActions:
         if not changed:  # pragma: no cover
             raise StratisCliIncoherenceError(
                 (
-                    f"Expected to destroy the specified pool {namespace.pool_name} but "
-                    f"stratisd reports that it did not actually "
-                    f"destroy the pool requested"
+                    "Expected to destroy the specified pool "
+                    f"{namespace.pool_name} but stratisd reports that it did "
+                    "not actually destroy the pool because no pool named "
+                    f"{namespace.pool_name} was found."
                 )
             )
 
