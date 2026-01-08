@@ -283,6 +283,7 @@ def _interpret_errors_2(  # pylint: disable=too-many-return-statements
         next_error = errors[1]
         if isinstance(next_error, dbus.exceptions.DBusException):
             dbus_name = next_error.get_dbus_name()
+            dbus_message = next_error.get_dbus_message()
             context = error.context
 
             if dbus_name == "org.freedesktop.zbus.Error" and isinstance(
@@ -293,8 +294,7 @@ def _interpret_errors_2(  # pylint: disable=too-many-return-statements
                     f"requested, because it could not set the D-Bus "
                     f'property "{context.property_name}" belonging to '
                     f'interface "{error.interface_name}" to "{context.value}". '
-                    f"It returned the following error: "
-                    f"{next_error.get_dbus_message()}."
+                    f"It returned the following error: {dbus_message}."
                 )
 
             # We do not test this error, as the only known way to cause it is
@@ -306,7 +306,8 @@ def _interpret_errors_2(  # pylint: disable=too-many-return-statements
                 return (
                     "The D-Bus connection was disconnected during a "
                     "D-Bus interaction. Most likely, your selinux settings "
-                    "prohibit that particular D-Bus interaction."
+                    "prohibit that particular D-Bus interaction. The D-Bus "
+                    f"service sent the following message: {dbus_message}."
                 )
 
             if dbus_name == "org.freedesktop.DBus.Error.Failed":
@@ -330,7 +331,8 @@ def _interpret_errors_2(  # pylint: disable=too-many-return-statements
                         "A D-Bus method failed during execution of the "
                         "selected command. Most likely, the failure was due "
                         "to a transient inconsistency in the D-Bus interface "
-                        "and the command will succeed if run again."
+                        "and the command will succeed if run again. The D-Bus "
+                        f"service sent the following message: {dbus_message}."
                     )
 
                 if isinstance(context, DPClientSetPropertyContext):  # pragma: no cover
@@ -339,8 +341,7 @@ def _interpret_errors_2(  # pylint: disable=too-many-return-statements
                         f"requested, because it could not set the D-Bus "
                         f'property "{context.property_name}" belonging to '
                         f'interface "{error.interface_name}" to "{context.value}". '
-                        f"It returned the following error: "
-                        f"{next_error.get_dbus_message()}."
+                        f"It returned the following error: {dbus_message}."
                     )
 
                 if isinstance(context, DPClientGetPropertyContext):  # pragma: no cover
@@ -349,12 +350,10 @@ def _interpret_errors_2(  # pylint: disable=too-many-return-statements
                         f"requested, because it could not get the D-Bus "
                         f'property "{context.property_name}" belonging to '
                         f'interface "{error.interface_name}". '
-                        f"It returned the following error: "
-                        f"{next_error.get_dbus_message()}."
+                        f"It returned the following error: {dbus_message}."
                     )
 
             if dbus_name == "org.freedesktop.DBus.Error.NoReply":
-                context = error.context
                 if (
                     error.interface_name == MANAGER_0_INTERFACE
                     and isinstance(context, DPClientGetPropertyContext)
@@ -364,13 +363,15 @@ def _interpret_errors_2(  # pylint: disable=too-many-return-statements
                         "stratis did not send the requested commands to "
                         "stratisd. stratis attempted communication with "
                         "the daemon, stratisd, over the D-Bus, but stratisd "
-                        "did not respond in the allowed time."
+                        "did not respond in the allowed time. The D-Bus "
+                        f"service sent the following message: {dbus_message}."
                     )
 
                 return (
                     "stratis sent the requested commands to stratisd over "
                     "the D-Bus but stratisd did not return the results in "
-                    "the allowed time."
+                    "the allowed time. The D-Bus service sent the following "
+                    f"message: {dbus_message}."
                 )
 
     return None  # pragma: no cover
