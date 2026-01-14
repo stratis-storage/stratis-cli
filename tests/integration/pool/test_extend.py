@@ -61,6 +61,14 @@ class ExtendDataTestCase(SimTestCase):
         command_line = self._MENU + [self._POOLNAME]
         self.check_error(StratisCliNoDeviceSizeChangeError, command_line, _ERROR)
 
+    def test_no_uuid_2(self):
+        """
+        Test trying to extend a pool without specifying a UUID but still
+        specifying the --device-uuid option.
+        """
+        command_line = self._MENU + [self._POOLNAME, "--device-uuid"]
+        self.check_error(StratisCliNoDeviceSizeChangeError, command_line, _ERROR)
+
     def test_good_uuid(self):
         """
         Test trying to extend a device specifying an existing device UUID.
@@ -71,3 +79,15 @@ class ExtendDataTestCase(SimTestCase):
             f"--device-uuid={UUID(props.Uuid())}",
         ]
         self.check_error(StratisCliPartialChangeError, command_line, _ERROR)
+
+    def test_multiple_uuids(self):
+        """
+        Test passing multiple UUIDs with the --device-uuid option.
+        """
+        command_line = self._MENU + [
+            self._POOLNAME,
+            "--device-uuid",
+            f"{uuid4()}",
+            f"{uuid4()}",
+        ]
+        self.check_error(StratisCliResourceNotFoundError, command_line, _ERROR)
