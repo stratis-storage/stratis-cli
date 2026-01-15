@@ -17,7 +17,11 @@ Miscellaneous whole pool encryption actions.
 
 # isort: STDLIB
 import json
+import xml.etree.ElementTree as ET  # nosec B405
 from argparse import Namespace
+
+# isort: FIRSTPARTY
+from dbus_python_client_gen import make_class
 
 from .._constants import PoolId
 from .._errors import (
@@ -30,6 +34,22 @@ from .._stratisd_constants import StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._utils import long_running_operation
+
+
+def _make_class(spec, class_name, *, methods=None, timeout=-1):
+    """
+    Make a class from spec, with only requested methods.
+    Interpret None as all methods.
+    """
+    new_spec = ET.Element(spec.tag, spec.attrib)
+    new_spec.extend(
+        [
+            child
+            for child in spec
+            if child.tag == "method" and methods is None or child.get("name") in methods
+        ]
+    )
+    return make_class(class_name, new_spec, timeout=timeout)
 
 
 class CryptActions:
@@ -48,7 +68,11 @@ class CryptActions:
             raise StratisCliInPlaceNotSpecified()
 
         # pylint: disable=import-outside-toplevel
-        from ._data import MOPool, ObjectManager, Pool, pools
+        from ._data import MOPool, ObjectManager, pool_spec, pools
+
+        Pool = _make_class(  # pylint: disable=invalid-name
+            pool_spec, "Pool", methods=["EncryptPool"], timeout=10
+        )
 
         pool_id = PoolId.from_parser_namespace(namespace)
         assert pool_id is not None
@@ -108,7 +132,11 @@ class CryptActions:
             raise StratisCliInPlaceNotSpecified()
 
         # pylint: disable=import-outside-toplevel
-        from ._data import MOPool, ObjectManager, Pool, pools
+        from ._data import MOPool, ObjectManager, pool_spec, pools
+
+        Pool = _make_class(  # pylint: disable=invalid-name
+            pool_spec, "Pool", methods=["DecryptPool"], timeout=10
+        )
 
         pool_id = PoolId.from_parser_namespace(namespace)
         assert pool_id is not None
@@ -150,7 +178,11 @@ class CryptActions:
             raise StratisCliInPlaceNotSpecified()
 
         # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, Pool, pools
+        from ._data import ObjectManager, pool_spec, pools
+
+        Pool = _make_class(  # pylint: disable=invalid-name
+            pool_spec, "Pool", methods=["ReencryptPool"], timeout=10
+        )
 
         pool_id = PoolId.from_parser_namespace(namespace)
         assert pool_id is not None
