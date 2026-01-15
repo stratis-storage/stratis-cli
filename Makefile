@@ -1,31 +1,4 @@
-ifeq ($(origin MONKEYTYPE), undefined)
-  PYTHON = python3
-else
-  PYTHON = monkeytype run
-endif
-
-ISORT_MODULES = monkeytype_config.py setup.py bin/stratis src tests
-
-MONKEYTYPE_MODULES = stratis_cli._actions._bind \
-                     stratis_cli._actions._constants \
-                     stratis_cli._actions._data \
-                     stratis_cli._actions._debug \
-                     stratis_cli._actions._environment \
-                     stratis_cli._actions._list_filesystem \
-                     stratis_cli._actions._logical \
-                     stratis_cli._actions._physical \
-                     stratis_cli._actions._pool \
-                     stratis_cli._actions._stratisd_version \
-                     stratis_cli._actions._stratis \
-                     stratis_cli._actions._top \
-                     stratis_cli._actions._utils \
-                     stratis_cli._exit \
-                     stratis_cli._main \
-                     stratis_cli._parser._debug \
-                     stratis_cli._parser._encryption \
-                     stratis_cli._parser._key \
-                     stratis_cli._parser._pool \
-                     stratis_cli._version
+ISORT_MODULES = setup.py bin/stratis src tests
 
 UNITTEST_OPTS = --verbose
 #
@@ -38,12 +11,10 @@ PYLINT_DISABLE = --disable=fixme
 
 .PHONY: lint
 lint:
-	pylint monkeytype_config.py ${PYLINT_DISABLE}
 	pylint setup.py ${PYLINT_DISABLE}
 	pylint bin/stratis ${PYLINT_DISABLE}
 	pylint src/stratis_cli --disable=duplicate-code ${PYLINT_DISABLE} --ignore=_introspect.py
 	pylint tests --disable=duplicate-code ${PYLINT_DISABLE}
-	bandit monkeytype_config.py ${BANDIT_SKIP}
 	bandit setup.py ${BANDIT_SKIP}
 	bandit bin/stratis ${BANDIT_SKIP}
 	# Ignore B101 errors. We do not distribute optimized code, i.e., .pyo
@@ -55,13 +26,11 @@ lint:
 
 .PHONY: fmt
 fmt:
-	(cd src; yes | abs2rel)
 	isort ${ISORT_MODULES}
 	black ./bin/stratis .
 
 .PHONY: fmt-ci
 fmt-ci:
-	(cd src; yes | abs2rel)
 	isort --diff --check-only ${ISORT_MODULES}
 	black ./bin/stratis . --check
 
@@ -88,10 +57,10 @@ api-docs:
 	sphinx-build-3 -b html api api/_build/html
 
 dbus-tests:
-	${PYTHON} -m unittest discover ${UNITTEST_OPTS} --top-level-directory ./tests --start-directory ./tests/integration
+	python3 -m unittest discover ${UNITTEST_OPTS} --top-level-directory ./tests --start-directory ./tests/integration
 
 unit-tests:
-	${PYTHON} -m unittest discover ${UNITTEST_OPTS} --start-directory ./tests/unit
+	python3 -m unittest discover ${UNITTEST_OPTS} --start-directory ./tests/unit
 
 .PHONY: coverage
 coverage:
@@ -118,12 +87,3 @@ yamllint:
 .PHONY: package
 package:
 	(umask 0022; python -m build; python -m twine check --strict ./dist/*)
-
-.PHONY: apply
-apply:
-	@echo "Modules traced:"
-	@monkeytype list-modules
-	@echo "Annotating:"
-	@for module in ${MONKEYTYPE_MODULES}; do \
-	  monkeytype --verbose apply  --sample-count --ignore-existing-annotations $${module} > /dev/null; \
-	done

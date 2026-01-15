@@ -34,7 +34,6 @@ jobs:
           - dependencies: >
               bandit
               libatomic
-              monkeytype
               pylint
               python3-dateutil
               python3-dbus-client-gen
@@ -67,8 +66,6 @@ jobs:
         run: python --version
       - name: Install pyright
         run: pip install --user pyright
-      - name: Install abs2rel
-        run: pip install --user abs2rel
       - name: Run test
         run: ${{ matrix.task }}
 
