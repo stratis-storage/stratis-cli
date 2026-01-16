@@ -54,8 +54,15 @@ class BindActions:
         discussion of the pin and the configuration, consult Clevis
         documentation.
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, Pool, pools
+        from ._data import (  # pylint: disable=import-outside-toplevel
+            POOL_GEN,
+            ObjectManager,
+            pools,
+        )
+
+        Pool = POOL_GEN.make_partial_class(  # pylint: disable=invalid-name
+            methods=["BindClevis"], properties=[]
+        )
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -90,8 +97,15 @@ class BindActions:
         """
         Bind all devices in an encrypted pool using the kernel keyring.
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, Pool, pools
+        from ._data import (  # pylint: disable=import-outside-toplevel
+            POOL_GEN,
+            ObjectManager,
+            pools,
+        )
+
+        Pool = POOL_GEN.make_partial_class(  # pylint: disable=invalid-name
+            methods=["BindKeyring"], properties=[]
+        )
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -126,7 +140,11 @@ class BindActions:
         :raises StratisCliEngineError:
         """
         # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, Pool, pools
+        from ._data import POOL_GEN, ObjectManager, pools
+
+        Pool = POOL_GEN.make_partial_class(  # pylint: disable=invalid-name
+            methods=["UnbindClevis", "UnbindKeyring"], properties=[]
+        )
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -173,8 +191,15 @@ class RebindActions:
         """
         Rebind with Clevis nbde/tang
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, Pool, pools
+        from ._data import (  # pylint: disable=import-outside-toplevel
+            POOL_GEN,
+            ObjectManager,
+            pools,
+        )
+
+        Pool = POOL_GEN.make_partial_class(  # pylint: disable=invalid-name
+            methods=["RebindClevis"], properties=[]
+        )
 
         pool_id = _get_pool_id(namespace)
 
@@ -211,7 +236,11 @@ class RebindActions:
         Rebind with a kernel keyring
         """
         # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, Pool, pools
+        from ._data import POOL_GEN, ObjectManager, pools
+
+        Pool = POOL_GEN.make_partial_class(  # pylint: disable=invalid-name
+            methods=["RebindKeyring"], properties=[]
+        )
 
         keydesc = namespace.keydesc
 

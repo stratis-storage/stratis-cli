@@ -37,7 +37,11 @@ class TopDebugActions:  # pylint: disable=too-few-public-methods
         """
         Refresh pools from their metadata up.
         """
-        from ._data import Manager  # pylint: disable=import-outside-toplevel
+        from ._data import MANAGER_GEN  # pylint: disable=import-outside-toplevel
+
+        Manager = MANAGER_GEN.make_partial_class(  # pylint: disable=invalid-name
+            methods=["RefreshState"], properties=[]
+        )
 
         (return_code, message) = Manager.Methods.RefreshState(
             get_object(TOP_OBJECT), {}
@@ -98,8 +102,15 @@ class PoolDebugActions:  # pylint: disable=too-few-public-methods
         """
         Get some information about the pool-level metadata.
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, Pool, pools
+        from ._data import (  # pylint: disable=import-outside-toplevel
+            POOL_GEN,
+            ObjectManager,
+            pools,
+        )
+
+        Pool = POOL_GEN.make_partial_class(  # pylint: disable=invalid-name
+            methods=["Metadata"], properties=[]
+        )
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -161,8 +172,15 @@ class FilesystemDebugActions:  # pylint: disable=too-few-public-methods
         :raises StratisCliEngineError:
         """
 
-        # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, Pool, pools
+        from ._data import (  # pylint: disable=import-outside-toplevel
+            POOL_GEN,
+            ObjectManager,
+            pools,
+        )
+
+        Pool = POOL_GEN.make_partial_class(  # pylint: disable=invalid-name
+            methods=["FilesystemMetadata"], properties=[]
+        )
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})

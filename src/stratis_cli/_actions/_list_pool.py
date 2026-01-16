@@ -660,7 +660,11 @@ class StoppedDetail(Stopped):  # pylint: disable=too-few-public-methods
         Display info about a stopped pool.
         """
 
-        from ._data import Manager  # pylint: disable=import-outside-toplevel
+        from ._data import MANAGER_GEN  # pylint: disable=import-outside-toplevel
+
+        Manager = MANAGER_GEN.make_partial_class(  # pylint: disable=invalid-name
+            methods=[], properties=["StoppedPools"]
+        )
 
         proxy = get_object(TOP_OBJECT)
         stopped_pools = Manager.Properties.StoppedPools.Get(proxy)
@@ -700,7 +704,11 @@ class StoppedTable(Stopped):  # pylint: disable=too-few-public-methods
         """
         List stopped pools.
         """
-        from ._data import Manager  # pylint: disable=import-outside-toplevel
+        from ._data import MANAGER_GEN  # pylint: disable=import-outside-toplevel
+
+        Manager = MANAGER_GEN.make_partial_class(  # pylint: disable=invalid-name
+            methods=[], properties=["StoppedPools"]
+        )
 
         proxy = get_object(TOP_OBJECT)
 

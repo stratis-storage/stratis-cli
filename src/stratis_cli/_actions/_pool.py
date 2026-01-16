@@ -176,8 +176,19 @@ class PoolActions:
         :raises StratisCliIncoherenceError:
         :raises StratisCliNameConflictError:
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import Manager, ObjectManager, Pool, pools
+        from ._data import (  # pylint: disable=import-outside-toplevel
+            MANAGER_GEN,
+            POOL_GEN,
+            ObjectManager,
+            pools,
+        )
+
+        Manager = MANAGER_GEN.make_partial_class(  # pylint: disable=invalid-name
+            methods=["CreatePool"], properties=[]
+        )
+        Pool = POOL_GEN.make_partial_class(  # pylint: disable=invalid-name
+            methods=[], properties=["Overprovisioning"]
+        )
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -265,8 +276,11 @@ class PoolActions:
         :raises StratisCliIncoherenceError:
         :raises StratisCliEngineError:
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import Manager
+        from ._data import MANAGER_GEN  # pylint: disable=import-outside-toplevel
+
+        Manager = MANAGER_GEN.make_partial_class(  # pylint: disable=invalid-name
+            methods=["StopPool"], properties=[]
+        )
 
         proxy = get_object(TOP_OBJECT)
 
@@ -291,8 +305,11 @@ class PoolActions:
         :raises StratisCliIncoherenceError:
         :raises StratisCliEngineError:
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import Manager
+        from ._data import MANAGER_GEN  # pylint: disable=import-outside-toplevel
+
+        Manager = MANAGER_GEN.make_partial_class(  # pylint: disable=invalid-name
+            methods=["StartPool"], properties=["StoppedPools"]
+        )
 
         proxy = get_object(TOP_OBJECT)
 
@@ -376,8 +393,18 @@ class PoolActions:
         :raises StratisCliEngineError:
         :raises StratisCliIncoherenceError:
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import MODev, MOPool, ObjectManager, Pool, devs, pools
+        from ._data import (  # pylint: disable=import-outside-toplevel
+            POOL_GEN,
+            MODev,
+            MOPool,
+            ObjectManager,
+            devs,
+            pools,
+        )
+
+        Pool = POOL_GEN.make_partial_class(  # pylint: disable=invalid-name
+            methods=["InitCache"], properties=[]
+        )
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -456,8 +483,15 @@ class PoolActions:
         :raises StratisCliEngineError:
         :raises StratisCliIncoherenceError:
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import Manager, ObjectManager, pools
+        from ._data import (  # pylint: disable=import-outside-toplevel
+            MANAGER_GEN,
+            ObjectManager,
+            pools,
+        )
+
+        Manager = MANAGER_GEN.make_partial_class(  # pylint: disable=invalid-name
+            methods=["DestroyPool"], properties=[]
+        )
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -494,8 +528,15 @@ class PoolActions:
         :raises StratisCliEngineError:
         :raises StratisCliNoChangeError:
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, Pool, pools
+        from ._data import (  # pylint: disable=import-outside-toplevel
+            POOL_GEN,
+            ObjectManager,
+            pools,
+        )
+
+        Pool = POOL_GEN.make_partial_class(  # pylint: disable=invalid-name
+            methods=["SetName"], properties=[]
+        )
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -526,8 +567,17 @@ class PoolActions:
         :raises StratisCliInUseSameTierError:
         :raises StratisCliPartialChangeError:
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import MODev, ObjectManager, Pool, devs, pools
+        from ._data import (  # pylint: disable=import-outside-toplevel
+            POOL_GEN,
+            MODev,
+            ObjectManager,
+            devs,
+            pools,
+        )
+
+        Pool = POOL_GEN.make_partial_class(  # pylint: disable=invalid-name
+            methods=["AddDataDevs"], properties=[]
+        )
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -581,8 +631,17 @@ class PoolActions:
         :raises StratisCliInUseSameTierError:
         :raises StratisCliPartialChangeError:
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import MODev, ObjectManager, Pool, devs, pools
+        from ._data import (  # pylint: disable=import-outside-toplevel
+            POOL_GEN,
+            MODev,
+            ObjectManager,
+            devs,
+            pools,
+        )
+
+        Pool = POOL_GEN.make_partial_class(  # pylint: disable=invalid-name
+            methods=["AddCacheDevs"], properties=[]
+        )
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -635,8 +694,17 @@ class PoolActions:
         :raises StratisCliEngineError:
         :raises StratisCliIncoherenceError:
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import MODev, ObjectManager, Pool, devs, pools
+        from ._data import (  # pylint: disable=import-outside-toplevel
+            POOL_GEN,
+            MODev,
+            ObjectManager,
+            devs,
+            pools,
+        )
+
+        Pool = POOL_GEN.make_partial_class(  # pylint: disable=invalid-name
+            methods=["GrowPhysicalDevice"], properties=[]
+        )
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -753,8 +821,16 @@ class PoolActions:
         """
         Set the filesystem limit.
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import MOPool, ObjectManager, Pool, pools
+        from ._data import (  # pylint: disable=import-outside-toplevel
+            POOL_GEN,
+            MOPool,
+            ObjectManager,
+            pools,
+        )
+
+        Pool = POOL_GEN.make_partial_class(  # pylint: disable=invalid-name
+            methods=[], properties=["FsLimit"]
+        )
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -776,8 +852,16 @@ class PoolActions:
         """
         Set the overprovisioning mode.
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import MOPool, ObjectManager, Pool, pools
+        from ._data import (  # pylint: disable=import-outside-toplevel
+            POOL_GEN,
+            MOPool,
+            ObjectManager,
+            pools,
+        )
+
+        Pool = POOL_GEN.make_partial_class(  # pylint: disable=invalid-name
+            methods=[], properties=["Overprovisioning"]
+        )
 
         decision = bool(namespace.decision)
 

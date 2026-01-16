@@ -394,9 +394,15 @@ def stop_pool(pool_name):
     :raises: RuntimeError
     """
 
-    # pylint: disable=import-outside-toplevel
     # isort: LOCAL
-    from stratis_cli._actions._data import Manager
+    # pylint: disable=import-outside-toplevel
+    from stratis_cli._actions._data import (
+        MANAGER_GEN,
+    )
+
+    Manager = MANAGER_GEN.make_partial_class(  # pylint: disable=invalid-name
+        methods=["StopPool"], properties=[]
+    )
 
     proxy = get_object(TOP_OBJECT)
 

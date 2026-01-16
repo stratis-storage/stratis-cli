@@ -25,7 +25,6 @@ import dbus
 from dbus_python_client_gen import (
     DPClientGetPropertyContext,
     DPClientInvocationError,
-    DPClientMethodCallContext,
 )
 
 # isort: LOCAL
@@ -135,37 +134,6 @@ class TestTimeoutErrorResponse(SimTestCase):
             "Get",
             _VersionGetter.Get,
         ):
-            self.check_error(DPClientInvocationError, command_line, _ERROR)
-
-    def test_dbus_action_method_not_return(self):
-        """
-        Verify behavior of stratisd ListKeys method result not obtained in
-        reasonable time. Fake the correct D-Bus exception.
-        """
-        # pylint: disable=import-outside-toplevel
-        command_line = ["--propagate", "key", "list"]
-
-        # isort: LOCAL
-        from stratis_cli._actions import _data
-
-        class _KeyLister:  # pylint: disable=too-few-public-methods
-            @staticmethod
-            def ListKeys(
-                _object, _args
-            ):  # pylint: disable=invalid-name, no-method-argument
-                """
-                Mock ListKeys method.
-                """
-                dbus_exception = dbus.exceptions.DBusException("msg")
-                dbus_exception._dbus_error_name = "org.freedesktop.DBus.Error.NoReply"  # pylint: disable=protected-access
-                raise DPClientInvocationError(
-                    "fake timeout error",
-                    "intf",
-                    DPClientMethodCallContext("ListKeys", []),
-                ) from dbus_exception
-
-        # pylint: disable=protected-access
-        with patch.object(_data.Manager.Methods, "ListKeys", _KeyLister.ListKeys):
             self.check_error(DPClientInvocationError, command_line, _ERROR)
 
 

@@ -18,6 +18,7 @@ XML interface specifications.
 import os
 import sys
 import xml.etree.ElementTree as ET  # nosec B405
+from typing import List, Optional, Type
 
 # isort: FIRSTPARTY
 from dbus_client_gen import (
@@ -65,6 +66,59 @@ SPECS |= (
 )
 
 
+class DbusClassGen:  # pylint: disable=too-few-public-methods
+    """
+    Instructions for making a dbus-python class for calling D-Bus methods.
+    """
+
+    def __init__(self, name: str, interface_name: str):
+        """
+        Initializer.
+        """
+        self.name = name
+        self.interface_name = interface_name
+
+    def make_partial_class(
+        self,
+        *,
+        methods: Optional[List[str]] = None,
+        properties: Optional[List[str]] = None,
+        timeout: int = DBUS_TIMEOUT_SECONDS,  # pylint: disable=redefined-outer-name
+    ) -> Type:
+        """
+        Make a class from a spec with only requested methods and properties.
+
+        Interpret None as meaning include all, [] as meaning include none.
+        """
+        timeout = get_timeout(os.environ.get("STRATIS_DBUS_TIMEOUT", timeout * 1000))
+
+        spec = ET.fromstring(SPECS[self.interface_name])  # nosec B314
+
+        new_spec = ET.Element(spec.tag, spec.attrib)
+        new_spec.extend(
+            [
+                child
+                for child in spec
+                if child.tag == "method"
+                and (methods is None or child.get("name") in methods)
+            ]
+        )
+        new_spec.extend(
+            [
+                child
+                for child in spec
+                if child.tag == "property"
+                and (properties is None or child.get("name") in properties)
+            ]
+        )
+        return make_class(self.name, new_spec, timeout=timeout)
+
+
+REPORT_GEN = DbusClassGen("Report", REPORT_INTERFACE)
+FILESYSTEM_GEN = DbusClassGen("Filesystem", FILESYSTEM_INTERFACE)
+MANAGER_GEN = DbusClassGen("Manager", MANAGER_INTERFACE)
+POOL_GEN = DbusClassGen("Pool", POOL_INTERFACE)
+
 try:
     # pylint: disable=invalid-name
 
@@ -72,26 +126,17 @@ try:
         os.environ.get("STRATIS_DBUS_TIMEOUT", DBUS_TIMEOUT_SECONDS * 1000)
     )
 
-    report_spec = ET.fromstring(SPECS[REPORT_INTERFACE])  # nosec B314
-    Report = make_class("Report", report_spec, timeout)
-
     filesystem_spec = ET.fromstring(SPECS[FILESYSTEM_INTERFACE])  # nosec B314
-    Filesystem = make_class("Filesystem", filesystem_spec, timeout)
     MOFilesystem = managed_object_class("MOFilesystem", filesystem_spec)
     filesystems = mo_query_builder(filesystem_spec)
 
     pool_spec = ET.fromstring(SPECS[POOL_INTERFACE])  # nosec B314
-    Pool = make_class("Pool", pool_spec, timeout)
     MOPool = managed_object_class("MOPool", pool_spec)
     pools = mo_query_builder(pool_spec)
 
     blockdev_spec = ET.fromstring(SPECS[BLOCKDEV_INTERFACE])  # nosec B314
     MODev = managed_object_class("MODev", blockdev_spec)
     devs = mo_query_builder(blockdev_spec)
-
-    Manager = make_class(
-        "Manager", ET.fromstring(SPECS[MANAGER_INTERFACE]), timeout  # nosec B314
-    )
 
     ObjectManager = make_class(
         "ObjectManager",
@@ -142,10 +187,11 @@ def _add_abs_path_assertion(klass, method_name, key):
 
 
 try:
-    _add_abs_path_assertion(Manager, "CreatePool", "devices")
-    _add_abs_path_assertion(Pool, "InitCache", "devices")
-    _add_abs_path_assertion(Pool, "AddCacheDevs", "devices")
-    _add_abs_path_assertion(Pool, "AddDataDevs", "devices")
+    # _add_abs_path_assertion(Manager, "CreatePool", "devices")
+    # _add_abs_path_assertion(Pool, "InitCache", "devices")
+    # _add_abs_path_assertion(Pool, "AddCacheDevs", "devices")
+    # _add_abs_path_assertion(Pool, "AddDataDevs", "devices")
+    pass
 
 except AttributeError as err:  # pragma: no cover
     # This can only happen if the expected method is missing from the XML spec
