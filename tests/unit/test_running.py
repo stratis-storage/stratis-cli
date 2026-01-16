@@ -22,7 +22,7 @@ import unittest
 import dbus
 
 # isort: FIRSTPARTY
-from dbus_python_client_gen import DPClientInvocationError
+from dbus_python_client_gen import DPClientInvocationError, DPClientMethodCallContext
 
 # isort: LOCAL
 from stratis_cli._actions._utils import long_running_operation
@@ -34,20 +34,38 @@ class LongRunningOperationTestCase(unittest.TestCase):
     engine.
     """
 
-    def test_raise_dbus_exception(self):
+    def test_catch_dbus_exception(self):
         """
         Should succeed because it catches the distinguishing NoReply D-Bus
-        error.
+        error from the identified method.
         """
 
         def raises_error(_):
             raise DPClientInvocationError(
-                "fake", "intf", None
+                "fake", "intf", DPClientMethodCallContext("MethodName", [])
             ) from dbus.exceptions.DBusException(
                 name="org.freedesktop.DBus.Error.NoReply"
             )
 
-        self.assertIsNone(long_running_operation(raises_error)(None))
+        self.assertIsNone(
+            long_running_operation(method_names=["MethodName"])(raises_error)(None)
+        )
+
+    def test_raise_dbus_exception_no_name_match(self):
+        """
+        Should succeed because it catches the distinguishing NoReply D-Bus
+        error from the identified method.
+        """
+
+        def raises_error(_):
+            raise DPClientInvocationError(
+                "fake", "intf", DPClientMethodCallContext("MethodName", [])
+            ) from dbus.exceptions.DBusException(
+                name="org.freedesktop.DBus.Error.NoReply"
+            )
+
+        with self.assertRaises(DPClientInvocationError):
+            long_running_operation(method_names=["OtherMethodName"])(raises_error)(None)
 
     def test_no_dbus_exception(self):
         """
@@ -58,4 +76,4 @@ class LongRunningOperationTestCase(unittest.TestCase):
             raise DPClientInvocationError("fake", "intf", None)
 
         with self.assertRaises(DPClientInvocationError):
-            long_running_operation(raises_error)(None)
+            long_running_operation(method_names=["OtherMethodName"])(raises_error)(None)

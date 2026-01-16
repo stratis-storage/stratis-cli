@@ -58,7 +58,7 @@ class CryptActions:
     """
 
     @staticmethod
-    @long_running_operation
+    @long_running_operation(method_names=["EncryptPool"])
     def encrypt(namespace: Namespace):
         """
         Encrypt a previously unencrypted pool.
@@ -123,7 +123,7 @@ class CryptActions:
             )
 
     @staticmethod
-    @long_running_operation
+    @long_running_operation(method_names=["DecryptPool"])
     def unencrypt(namespace: Namespace):
         """
         Unencrypt a previously encrypted pool.
@@ -169,7 +169,7 @@ class CryptActions:
             )
 
     @staticmethod
-    @long_running_operation
+    @long_running_operation(method_names=["ReencryptPool"])
     def reencrypt(namespace: Namespace):
         """
         Reencrypt an already encrypted pool with a new key.

@@ -26,7 +26,7 @@ from argparse import Namespace
 from collections.abc import Iterator
 from enum import Enum
 from functools import wraps
-from typing import Any, Callable, Optional, Tuple
+from typing import Any, Callable, List, Optional, Tuple
 from uuid import UUID
 
 # isort: THIRDPARTY
@@ -36,7 +36,7 @@ from dbus.proxies import ProxyObject
 from justbytes import Range
 
 # isort: FIRSTPARTY
-from dbus_python_client_gen import DPClientInvocationError
+from dbus_python_client_gen import DPClientInvocationError, DPClientMethodCallContext
 
 from .._errors import (
     StratisCliKeyfileNotFoundError,
@@ -315,23 +315,45 @@ def get_errors(exc: BaseException) -> Iterator[BaseException]:
         exc = exc.__cause__
 
 
-def long_running_operation(func: Callable) -> Callable:
+def long_running_operation(
+    *, method_names: List[str]
+) -> Callable[[Callable], Callable]:
     """
     Mark a function as a long running operation and catch and ignore NoReply
-    D-Bus exception.
+    D-Bus exception so long as the method raising the exception is one
+    of the methods specified in method_names.
     """
 
-    @wraps(func)
-    def wrapper(namespace: Namespace):
-        try:
-            func(namespace)
-        except DPClientInvocationError as err:
-            if not any(
-                isinstance(e, DBusException)
-                and e.get_dbus_name() == "org.freedesktop.DBus.Error.NoReply"
-                for e in get_errors(err)
-            ):
-                raise err
-            print("Operation initiated", file=sys.stderr)
+    def decorator(func: Callable) -> Callable:
+        """
+        Decorator
+        """
 
-    return wrapper
+        @wraps(func)
+        def wrapper(namespace: Namespace):
+            """
+            Wrapper
+            """
+            try:
+                func(namespace)
+            except DPClientInvocationError as err:
+                if not any(
+                    isinstance(e, DBusException)
+                    and e.get_dbus_name() == "org.freedesktop.DBus.Error.NoReply"
+                    for e in get_errors(err)
+                ):
+                    raise err
+
+                context = err.context
+                if (
+                    isinstance(context, DPClientMethodCallContext)
+                    and context.method_name in method_names
+                ):
+                    print("Operation initiated", file=sys.stderr)
+
+                else:
+                    raise err
+
+        return wrapper
+
+    return decorator
