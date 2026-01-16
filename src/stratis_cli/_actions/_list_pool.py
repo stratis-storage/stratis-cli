@@ -46,7 +46,6 @@ from ._utils import (
     PoolFeature,
     SizeTriple,
     StoppedPool,
-    fetch_stopped_pools_property,
 )
 
 
@@ -661,8 +660,10 @@ class StoppedDetail(Stopped):  # pylint: disable=too-few-public-methods
         Display info about a stopped pool.
         """
 
+        from ._data import Manager  # pylint: disable=import-outside-toplevel
+
         proxy = get_object(TOP_OBJECT)
-        stopped_pools = fetch_stopped_pools_property(proxy)
+        stopped_pools = Manager.Properties.StoppedPools.Get(proxy)
         selection_func = self.selection.stopped_pools_func()
 
         stopped_pool = next(
@@ -699,9 +700,11 @@ class StoppedTable(Stopped):  # pylint: disable=too-few-public-methods
         """
         List stopped pools.
         """
+        from ._data import Manager  # pylint: disable=import-outside-toplevel
+
         proxy = get_object(TOP_OBJECT)
 
-        stopped_pools = fetch_stopped_pools_property(proxy)
+        stopped_pools = Manager.Properties.StoppedPools.Get(proxy)
 
         def clevis_str(value, metadata_version, features):
             if metadata_version is MetadataVersion.V2:

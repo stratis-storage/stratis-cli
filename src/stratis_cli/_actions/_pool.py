@@ -51,7 +51,7 @@ from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import get_property, get_uuid_formatter
 from ._list_pool import list_pools
-from ._utils import StoppedPool, fetch_stopped_pools_property, get_passphrase_fd
+from ._utils import StoppedPool, get_passphrase_fd
 
 
 def _generate_pools_to_blockdevs(
@@ -308,7 +308,7 @@ class PoolActions:
             elif namespace.unlock_method is UnlockMethod.ANY:
                 unlock_method = (True, (False, 0))
             else:
-                stopped_pools = fetch_stopped_pools_property(proxy)
+                stopped_pools = Manager.Properties.StoppedPools.Get(proxy)
                 selection_func = pool_id.stopped_pools_func()
                 stopped_pool = next(
                     (

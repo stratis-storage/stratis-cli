@@ -28,7 +28,6 @@ from uuid import UUID
 
 # isort: THIRDPARTY
 from dbus import Dictionary, Struct
-from dbus.proxies import ProxyObject
 from justbytes import Range
 
 from .._errors import (
@@ -252,21 +251,6 @@ def get_passphrase_fd(*, keyfile_path=None, verify=True) -> Tuple[int, int]:
             raise StratisCliKeyfileNotFoundError(keyfile_path) from err
 
     return (file_desc, fd_to_close)
-
-
-def fetch_stopped_pools_property(proxy: ProxyObject) -> Dictionary:
-    """
-    Fetch the StoppedPools property from stratisd.
-    :param proxy: proxy to the top object in stratisd
-    :return: a representation of stopped devices
-    :rtype: dict
-    :raises StratisCliEngineError:
-    """
-
-    # pylint: disable=import-outside-toplevel
-    from ._data import Manager
-
-    return Manager.Properties.StoppedPools.Get(proxy)
 
 
 class SizeTriple:
