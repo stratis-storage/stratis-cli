@@ -203,8 +203,9 @@ class DefaultAlerts:  # pylint: disable=too-few-public-methods
         :returns: a pair of sets
         :rtype: tuple of (set of ObjectPath)
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import MODev
+        from ._data import BLOCKDEV_GEN  # pylint: disable=import-outside-toplevel
+
+        MODev = BLOCKDEV_GEN.mo()
 
         (increased, decreased) = (set(), set())
         for _, info in devs_to_search:
@@ -415,8 +416,15 @@ class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
         """
         List a single pool in detail.
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import MOPool, ObjectManager, devs, pools
+        from ._data import (  # pylint: disable=import-outside-toplevel
+            BLOCKDEV_GEN,
+            OBJECT_MANAGER_GEN,
+            POOL_GEN,
+        )
+
+        ObjectManager = OBJECT_MANAGER_GEN.dp_class()
+        devs = BLOCKDEV_GEN.query_builder()
+        (MOPool, pools) = (POOL_GEN.mo(), POOL_GEN.query_builder())
 
         proxy = get_object(TOP_OBJECT)
 
@@ -452,8 +460,15 @@ class DefaultTable(Default):  # pylint: disable=too-few-public-methods
         """
         List pools in table view.
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import MOPool, ObjectManager, devs, pools
+        from ._data import (  # pylint: disable=import-outside-toplevel
+            BLOCKDEV_GEN,
+            OBJECT_MANAGER_GEN,
+            POOL_GEN,
+        )
+
+        ObjectManager = OBJECT_MANAGER_GEN.dp_class()
+        devs = BLOCKDEV_GEN.query_builder()
+        (MOPool, pools) = (POOL_GEN.mo(), POOL_GEN.query_builder())
 
         proxy = get_object(TOP_OBJECT)
 
@@ -660,7 +675,9 @@ class StoppedDetail(Stopped):  # pylint: disable=too-few-public-methods
         Display info about a stopped pool.
         """
 
-        from ._data import Manager  # pylint: disable=import-outside-toplevel
+        from ._data import MANAGER_GEN  # pylint: disable=import-outside-toplevel
+
+        Manager = MANAGER_GEN.dp_class()
 
         proxy = get_object(TOP_OBJECT)
         stopped_pools = Manager.Properties.StoppedPools.Get(proxy)
@@ -700,7 +717,9 @@ class StoppedTable(Stopped):  # pylint: disable=too-few-public-methods
         """
         List stopped pools.
         """
-        from ._data import Manager  # pylint: disable=import-outside-toplevel
+        from ._data import MANAGER_GEN  # pylint: disable=import-outside-toplevel
+
+        Manager = MANAGER_GEN.dp_class()
 
         proxy = get_object(TOP_OBJECT)
 

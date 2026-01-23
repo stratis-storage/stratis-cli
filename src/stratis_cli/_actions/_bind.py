@@ -54,8 +54,13 @@ class BindActions:
         discussion of the pin and the configuration, consult Clevis
         documentation.
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, Pool, pools
+        from ._data import (  # pylint: disable=import-outside-toplevel
+            OBJECT_MANAGER_GEN,
+            POOL_GEN,
+        )
+
+        ObjectManager = OBJECT_MANAGER_GEN.dp_class()
+        (Pool, pools) = (POOL_GEN.dp_class(), POOL_GEN.query_builder())
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -90,8 +95,13 @@ class BindActions:
         """
         Bind all devices in an encrypted pool using the kernel keyring.
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, Pool, pools
+        from ._data import (  # pylint: disable=import-outside-toplevel
+            OBJECT_MANAGER_GEN,
+            POOL_GEN,
+        )
+
+        ObjectManager = OBJECT_MANAGER_GEN.dp_class()
+        (Pool, pools) = (POOL_GEN.dp_class(), POOL_GEN.query_builder())
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -125,8 +135,13 @@ class BindActions:
         :raises StratisCliNoChangeError:
         :raises StratisCliEngineError:
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, Pool, pools
+        from ._data import (  # pylint: disable=import-outside-toplevel
+            OBJECT_MANAGER_GEN,
+            POOL_GEN,
+        )
+
+        ObjectManager = OBJECT_MANAGER_GEN.dp_class()
+        (Pool, pools) = (POOL_GEN.dp_class(), POOL_GEN.query_builder())
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -173,8 +188,13 @@ class RebindActions:
         """
         Rebind with Clevis nbde/tang
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, Pool, pools
+        from ._data import (  # pylint: disable=import-outside-toplevel
+            OBJECT_MANAGER_GEN,
+            POOL_GEN,
+        )
+
+        ObjectManager = OBJECT_MANAGER_GEN.dp_class()
+        (Pool, pools) = (POOL_GEN.dp_class(), POOL_GEN.query_builder())
 
         pool_id = _get_pool_id(namespace)
 
@@ -210,8 +230,13 @@ class RebindActions:
         """
         Rebind with a kernel keyring
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, Pool, pools
+        from ._data import (  # pylint: disable=import-outside-toplevel
+            OBJECT_MANAGER_GEN,
+            POOL_GEN,
+        )
+
+        ObjectManager = OBJECT_MANAGER_GEN.dp_class()
+        (Pool, pools) = (POOL_GEN.dp_class(), POOL_GEN.query_builder())
 
         keydesc = namespace.keydesc
 

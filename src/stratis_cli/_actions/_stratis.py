@@ -32,7 +32,8 @@ class StratisActions:  # pylint: disable=too-few-public-methods
         """
         List the stratisd version.
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import Manager
+        from ._data import MANAGER_GEN  # pylint: disable=import-outside-toplevel
+
+        Manager = MANAGER_GEN.dp_class()
 
         print(f"{Manager.Properties.Version.Get(get_object(TOP_OBJECT))}")

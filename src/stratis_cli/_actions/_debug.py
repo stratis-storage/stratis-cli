@@ -37,7 +37,9 @@ class TopDebugActions:  # pylint: disable=too-few-public-methods
         """
         Refresh pools from their metadata up.
         """
-        from ._data import Manager  # pylint: disable=import-outside-toplevel
+        from ._data import MANAGER_GEN  # pylint: disable=import-outside-toplevel
+
+        Manager = MANAGER_GEN.dp_class()
 
         (return_code, message) = Manager.Methods.RefreshState(
             get_object(TOP_OBJECT), {}
@@ -79,8 +81,13 @@ class PoolDebugActions:  # pylint: disable=too-few-public-methods
         :raises StratisCliEngineError:
         """
 
-        # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, pools
+        from ._data import (  # pylint: disable=import-outside-toplevel
+            OBJECT_MANAGER_GEN,
+            POOL_GEN,
+        )
+
+        ObjectManager = OBJECT_MANAGER_GEN.dp_class()
+        pools = POOL_GEN.query_builder()
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -98,8 +105,13 @@ class PoolDebugActions:  # pylint: disable=too-few-public-methods
         """
         Get some information about the pool-level metadata.
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, Pool, pools
+        from ._data import (  # pylint: disable=import-outside-toplevel
+            OBJECT_MANAGER_GEN,
+            POOL_GEN,
+        )
+
+        ObjectManager = OBJECT_MANAGER_GEN.dp_class()
+        (Pool, pools) = (POOL_GEN.dp_class(), POOL_GEN.query_builder())
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -138,8 +150,13 @@ class FilesystemDebugActions:  # pylint: disable=too-few-public-methods
         :raises StratisCliEngineError:
         """
 
-        # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, filesystems
+        from ._data import (  # pylint: disable=import-outside-toplevel
+            FILESYSTEM_GEN,
+            OBJECT_MANAGER_GEN,
+        )
+
+        filesystems = FILESYSTEM_GEN.query_builder()
+        ObjectManager = OBJECT_MANAGER_GEN.dp_class()
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -161,8 +178,13 @@ class FilesystemDebugActions:  # pylint: disable=too-few-public-methods
         :raises StratisCliEngineError:
         """
 
-        # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, Pool, pools
+        from ._data import (  # pylint: disable=import-outside-toplevel
+            OBJECT_MANAGER_GEN,
+            POOL_GEN,
+        )
+
+        ObjectManager = OBJECT_MANAGER_GEN.dp_class()
+        (Pool, pools) = (POOL_GEN.dp_class(), POOL_GEN.query_builder())
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -207,8 +229,13 @@ class BlockdevDebugActions:  # pylint: disable=too-few-public-methods
         :raises StratisCliEngineError:
         """
 
-        # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, devs
+        from ._data import (  # pylint: disable=import-outside-toplevel
+            BLOCKDEV_GEN,
+            OBJECT_MANAGER_GEN,
+        )
+
+        ObjectManager = OBJECT_MANAGER_GEN.dp_class()
+        devs = BLOCKDEV_GEN.query_builder()
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})

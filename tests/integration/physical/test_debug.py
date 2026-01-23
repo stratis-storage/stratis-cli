@@ -59,7 +59,10 @@ class DebugTestCase(SimTestCase):
         # pylint: disable=import-outside-toplevel
         from stratis_cli._actions._connection import get_object
         from stratis_cli._actions._constants import TOP_OBJECT
-        from stratis_cli._actions._data import MODev, ObjectManager, devs
+        from stratis_cli._actions._data import BLOCKDEV_GEN, OBJECT_MANAGER_GEN
+
+        ObjectManager = OBJECT_MANAGER_GEN.dp_class()
+        (MODev, devs) = (BLOCKDEV_GEN.mo(), BLOCKDEV_GEN.query_builder())
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})

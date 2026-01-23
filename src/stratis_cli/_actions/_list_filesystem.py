@@ -43,8 +43,15 @@ def list_filesystems(
     """
     assert fs_id is None or pool_name is not None
 
-    # pylint: disable=import-outside-toplevel
-    from ._data import MOFilesystem, MOPool, ObjectManager, filesystems, pools
+    from ._data import (  # pylint: disable=import-outside-toplevel
+        FILESYSTEM_GEN,
+        OBJECT_MANAGER_GEN,
+        POOL_GEN,
+    )
+
+    (MOFilesystem, filesystems) = (FILESYSTEM_GEN.mo(), FILESYSTEM_GEN.query_builder())
+    ObjectManager = OBJECT_MANAGER_GEN.dp_class()
+    (MOPool, pools) = (POOL_GEN.mo(), POOL_GEN.query_builder())
 
     proxy = get_object(TOP_OBJECT)
     managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})

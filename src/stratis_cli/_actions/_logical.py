@@ -52,8 +52,18 @@ class LogicalActions:
         """
         # pylint: disable=too-many-locals
 
-        # pylint: disable=import-outside-toplevel
-        from ._data import MOFilesystem, ObjectManager, Pool, filesystems, pools
+        from ._data import (  # pylint: disable=import-outside-toplevel
+            FILESYSTEM_GEN,
+            OBJECT_MANAGER_GEN,
+            POOL_GEN,
+        )
+
+        (MOFilesystem, filesystems) = (
+            FILESYSTEM_GEN.mo(),
+            FILESYSTEM_GEN.query_builder(),
+        )
+        (Pool, pools) = (POOL_GEN.dp_class(), POOL_GEN.query_builder())
+        ObjectManager = OBJECT_MANAGER_GEN.dp_class()
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -150,8 +160,18 @@ class LogicalActions:
         """
         # pylint: disable=too-many-locals
 
-        # pylint: disable=import-outside-toplevel
-        from ._data import MOFilesystem, ObjectManager, Pool, filesystems, pools
+        from ._data import (  # pylint: disable=import-outside-toplevel
+            FILESYSTEM_GEN,
+            OBJECT_MANAGER_GEN,
+            POOL_GEN,
+        )
+
+        (MOFilesystem, filesystems) = (
+            FILESYSTEM_GEN.mo(),
+            FILESYSTEM_GEN.query_builder(),
+        )
+        ObjectManager = OBJECT_MANAGER_GEN.dp_class()
+        (Pool, pools) = (POOL_GEN.dp_class(), POOL_GEN.query_builder())
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -212,8 +232,15 @@ class LogicalActions:
         :raises StratisCliEngineError:
         :raises StratisCliNoChangeError:
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, Pool, filesystems, pools
+        from ._data import (  # pylint: disable=import-outside-toplevel
+            FILESYSTEM_GEN,
+            OBJECT_MANAGER_GEN,
+            POOL_GEN,
+        )
+
+        filesystems = FILESYSTEM_GEN.query_builder()
+        ObjectManager = OBJECT_MANAGER_GEN.dp_class()
+        (Pool, pools) = (POOL_GEN.dp_class(), POOL_GEN.query_builder())
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -248,8 +275,18 @@ class LogicalActions:
         :raises StratisCliEngineError:
         :raises StratisCliNoChangeError:
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import Filesystem, ObjectManager, filesystems, pools
+        from ._data import (  # pylint: disable=import-outside-toplevel
+            FILESYSTEM_GEN,
+            OBJECT_MANAGER_GEN,
+            POOL_GEN,
+        )
+
+        (Filesystem, filesystems) = (
+            FILESYSTEM_GEN.dp_class(),
+            FILESYSTEM_GEN.query_builder(),
+        )
+        ObjectManager = OBJECT_MANAGER_GEN.dp_class()
+        pools = POOL_GEN.query_builder()
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -279,8 +316,19 @@ class LogicalActions:
         """
         Set an upper limit on the size of the filesystem.
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import Filesystem, MOFilesystem, ObjectManager, filesystems, pools
+        from ._data import (  # pylint: disable=import-outside-toplevel
+            FILESYSTEM_GEN,
+            OBJECT_MANAGER_GEN,
+            POOL_GEN,
+        )
+
+        (Filesystem, MOFilesystem, filesystems) = (
+            FILESYSTEM_GEN.dp_class(),
+            FILESYSTEM_GEN.mo(),
+            FILESYSTEM_GEN.query_builder(),
+        )
+        ObjectManager = OBJECT_MANAGER_GEN.dp_class()
+        pools = POOL_GEN.query_builder()
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -317,8 +365,19 @@ class LogicalActions:
         """
         Unset upper limit on the size of the filesystem.
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import Filesystem, MOFilesystem, ObjectManager, filesystems, pools
+        from ._data import (  # pylint: disable=import-outside-toplevel
+            FILESYSTEM_GEN,
+            OBJECT_MANAGER_GEN,
+            POOL_GEN,
+        )
+
+        (Filesystem, MOFilesystem, filesystems) = (
+            FILESYSTEM_GEN.dp_class(),
+            FILESYSTEM_GEN.mo(),
+            FILESYSTEM_GEN.query_builder(),
+        )
+        ObjectManager = OBJECT_MANAGER_GEN.dp_class()
+        pools = POOL_GEN.query_builder()
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -345,8 +404,19 @@ class LogicalActions:
         """
         Schedule reverting a snapshot into its origin.
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import Filesystem, MOFilesystem, ObjectManager, filesystems, pools
+        from ._data import (  # pylint: disable=import-outside-toplevel
+            FILESYSTEM_GEN,
+            OBJECT_MANAGER_GEN,
+            POOL_GEN,
+        )
+
+        (Filesystem, MOFilesystem, filesystems) = (
+            FILESYSTEM_GEN.dp_class(),
+            FILESYSTEM_GEN.mo(),
+            FILESYSTEM_GEN.query_builder(),
+        )
+        ObjectManager = OBJECT_MANAGER_GEN.dp_class()
+        pools = POOL_GEN.query_builder()
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -373,12 +443,23 @@ class LogicalActions:
         Filesystem.Properties.MergeScheduled.Set(get_object(fs_object_path), True)
 
     @staticmethod
-    def cancel_revert(namespace: Namespace):
+    def cancel_revert(namespace: Namespace):  # pylint: disable=too-many-locals
         """
         Cancel reverting a snapshot into its origin.
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import Filesystem, MOFilesystem, ObjectManager, filesystems, pools
+        from ._data import (  # pylint: disable=import-outside-toplevel
+            FILESYSTEM_GEN,
+            OBJECT_MANAGER_GEN,
+            POOL_GEN,
+        )
+
+        (Filesystem, MOFilesystem, filesystems) = (
+            FILESYSTEM_GEN.dp_class(),
+            FILESYSTEM_GEN.mo(),
+            FILESYSTEM_GEN.query_builder(),
+        )
+        ObjectManager = OBJECT_MANAGER_GEN.dp_class()
+        pools = POOL_GEN.query_builder()
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})

@@ -124,9 +124,12 @@ class List2TestCase(SimTestCase):
         """
         Test detailed list view for a specific uuid.
         """
-        # pylint: disable=import-outside-toplevel
         # isort: LOCAL
-        from stratis_cli._actions._data import MOPool
+        from stratis_cli._actions._data import (  # pylint: disable=import-outside-toplevel
+            POOL_GEN,
+        )
+
+        MOPool = POOL_GEN.mo()
 
         proxy = get_object(TOP_OBJECT)
 

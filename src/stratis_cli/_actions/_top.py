@@ -48,8 +48,9 @@ def _fetch_keylist(proxy: ProxyObject) -> Array:
     :rtype: list of str
     :raises StratisCliEngineError:
     """
-    # pylint: disable=import-outside-toplevel
-    from ._data import Manager
+    from ._data import MANAGER_GEN  # pylint: disable=import-outside-toplevel
+
+    Manager = MANAGER_GEN.dp_class()
 
     (keys, return_code, message) = Manager.Methods.ListKeys(proxy, {})
     if return_code != StratisdErrors.OK:  # pragma: no cover
@@ -76,8 +77,9 @@ def _add_update_key(
 
     fd_argument, fd_to_close = get_passphrase_fd(keyfile_path=keyfile_path)
 
-    # pylint: disable=import-outside-toplevel
-    from ._data import Manager
+    from ._data import MANAGER_GEN  # pylint: disable=import-outside-toplevel
+
+    Manager = MANAGER_GEN.dp_class()
 
     add_ret = Manager.Methods.SetKey(
         proxy,
@@ -104,7 +106,9 @@ class TopActions:
 
         # pylint: disable=import-outside-toplevel
         if namespace.report_name is ReportKey.MANAGED_OBJECTS:
-            from ._data import ObjectManager
+            from ._data import OBJECT_MANAGER_GEN
+
+            ObjectManager = OBJECT_MANAGER_GEN.dp_class()
 
             dbus_report: Dictionary = ObjectManager.Methods.GetManagedObjects(
                 get_object(TOP_OBJECT), {}
@@ -120,14 +124,18 @@ class TopActions:
 
         else:
             if namespace.report_name is ReportKey.ENGINE_STATE:
-                from ._data import Manager
+                from ._data import MANAGER_GEN
+
+                Manager = MANAGER_GEN.dp_class()
 
                 (json_report, return_code, message) = Manager.Methods.EngineStateReport(
                     get_object(TOP_OBJECT), {}
                 )
 
             else:
-                from ._data import Report
+                from ._data import REPORT_GEN
+
+                Report = REPORT_GEN.dp_class()
 
                 (json_report, return_code, message) = Report.Methods.GetReport(
                     get_object(TOP_OBJECT), {"name": str(namespace.report_name)}
@@ -239,8 +247,9 @@ class TopActions:
         :raises StratisCliNoChangeError:
         :raises StratisCliIncoherenceError:
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import Manager
+        from ._data import MANAGER_GEN  # pylint: disable=import-outside-toplevel
+
+        Manager = MANAGER_GEN.dp_class()
 
         proxy = get_object(TOP_OBJECT)
 
