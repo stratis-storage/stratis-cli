@@ -22,6 +22,7 @@ from packaging.version import Version
 from .._errors import StratisCliStratisdVersionError
 from ._connection import get_object
 from ._constants import MAXIMUM_STRATISD_VERSION, MINIMUM_STRATISD_VERSION, TOP_OBJECT
+from ._data import MANAGER0_GEN
 
 
 def check_stratisd_version():
@@ -31,14 +32,10 @@ def check_stratisd_version():
 
     :raises StratisCliStratisdVersionError
     """
-    from ._data import MANAGER0_GEN  # pylint: disable=import-outside-toplevel
-
-    Manager0 = MANAGER0_GEN.dp_class()
-
     version_spec = SpecifierSet(f">={MINIMUM_STRATISD_VERSION}") & SpecifierSet(
         f"<{MAXIMUM_STRATISD_VERSION}"
     )
-    version = Manager0.Properties.Version.Get(get_object(TOP_OBJECT))
+    version = MANAGER0_GEN.dp_class().Properties.Version.Get(get_object(TOP_OBJECT))
 
     if Version(version) not in version_spec:
         raise StratisCliStratisdVersionError(

@@ -16,7 +16,6 @@ XML interface specifications.
 """
 # isort: STDLIB
 import os
-import sys
 import xml.etree.ElementTree as ET  # nosec B405
 from typing import Callable, Type
 
@@ -40,11 +39,6 @@ from ._constants import (
 )
 from ._environment import get_timeout
 from ._introspect import SPECS
-
-assert hasattr(sys.modules.get("stratis_cli"), "run"), (
-    "This module is being loaded too eagerly. Make sure that loading it is "
-    "deferred until after the stratis_cli module has been fully loaded."
-)
 
 DBUS_TIMEOUT_SECONDS = 120
 

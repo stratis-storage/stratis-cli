@@ -25,6 +25,13 @@ from .._errors import StratisCliEngineError, StratisCliSynthUeventError
 from .._stratisd_constants import StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
+from ._data import (
+    BLOCKDEV_GEN,
+    FILESYSTEM_GEN,
+    MANAGER_GEN,
+    OBJECT_MANAGER_GEN,
+    POOL_GEN,
+)
 
 
 class TopDebugActions:  # pylint: disable=too-few-public-methods
@@ -37,8 +44,6 @@ class TopDebugActions:  # pylint: disable=too-few-public-methods
         """
         Refresh pools from their metadata up.
         """
-        from ._data import MANAGER_GEN  # pylint: disable=import-outside-toplevel
-
         Manager = MANAGER_GEN.dp_class()
 
         (return_code, message) = Manager.Methods.RefreshState(
@@ -81,11 +86,6 @@ class PoolDebugActions:  # pylint: disable=too-few-public-methods
         :raises StratisCliEngineError:
         """
 
-        from ._data import (  # pylint: disable=import-outside-toplevel
-            OBJECT_MANAGER_GEN,
-            POOL_GEN,
-        )
-
         ObjectManager = OBJECT_MANAGER_GEN.dp_class()
         pools = POOL_GEN.query_builder()
 
@@ -105,11 +105,6 @@ class PoolDebugActions:  # pylint: disable=too-few-public-methods
         """
         Get some information about the pool-level metadata.
         """
-        from ._data import (  # pylint: disable=import-outside-toplevel
-            OBJECT_MANAGER_GEN,
-            POOL_GEN,
-        )
-
         ObjectManager = OBJECT_MANAGER_GEN.dp_class()
         (Pool, pools) = (POOL_GEN.dp_class(), POOL_GEN.query_builder())
 
@@ -150,11 +145,6 @@ class FilesystemDebugActions:  # pylint: disable=too-few-public-methods
         :raises StratisCliEngineError:
         """
 
-        from ._data import (  # pylint: disable=import-outside-toplevel
-            FILESYSTEM_GEN,
-            OBJECT_MANAGER_GEN,
-        )
-
         filesystems = FILESYSTEM_GEN.query_builder()
         ObjectManager = OBJECT_MANAGER_GEN.dp_class()
 
@@ -177,11 +167,6 @@ class FilesystemDebugActions:  # pylint: disable=too-few-public-methods
 
         :raises StratisCliEngineError:
         """
-
-        from ._data import (  # pylint: disable=import-outside-toplevel
-            OBJECT_MANAGER_GEN,
-            POOL_GEN,
-        )
 
         ObjectManager = OBJECT_MANAGER_GEN.dp_class()
         (Pool, pools) = (POOL_GEN.dp_class(), POOL_GEN.query_builder())
@@ -228,11 +213,6 @@ class BlockdevDebugActions:  # pylint: disable=too-few-public-methods
 
         :raises StratisCliEngineError:
         """
-
-        from ._data import (  # pylint: disable=import-outside-toplevel
-            BLOCKDEV_GEN,
-            OBJECT_MANAGER_GEN,
-        )
 
         ObjectManager = OBJECT_MANAGER_GEN.dp_class()
         devs = BLOCKDEV_GEN.query_builder()

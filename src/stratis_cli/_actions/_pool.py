@@ -49,6 +49,7 @@ from .._errors import (
 from .._stratisd_constants import BlockDevTiers, MetadataVersion, StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
+from ._data import BLOCKDEV_GEN, MANAGER_GEN, OBJECT_MANAGER_GEN, POOL_GEN
 from ._formatting import get_property, get_uuid_formatter
 from ._list_pool import list_pools
 from ._utils import StoppedPool, get_passphrase_fd
@@ -68,11 +69,6 @@ def _generate_pools_to_blockdevs(
     :returns: a map of pool names to sets of strings containing blockdevs they own
     :rtype: dict of str * frozenset of str
     """
-    from ._data import (  # pylint: disable=import-outside-toplevel
-        BLOCKDEV_GEN,
-        POOL_GEN,
-    )
-
     (MODev, devs) = (BLOCKDEV_GEN.mo(), BLOCKDEV_GEN.query_builder())
     (MOPool, pools) = (POOL_GEN.mo(), POOL_GEN.query_builder())
 
@@ -181,12 +177,6 @@ class PoolActions:
         :raises StratisCliIncoherenceError:
         :raises StratisCliNameConflictError:
         """
-        from ._data import (  # pylint: disable=import-outside-toplevel
-            MANAGER_GEN,
-            OBJECT_MANAGER_GEN,
-            POOL_GEN,
-        )
-
         Manager = MANAGER_GEN.dp_class()
         ObjectManager = OBJECT_MANAGER_GEN.dp_class()
         (Pool, pools) = (POOL_GEN.dp_class(), POOL_GEN.query_builder())
@@ -277,8 +267,6 @@ class PoolActions:
         :raises StratisCliIncoherenceError:
         :raises StratisCliEngineError:
         """
-        from ._data import MANAGER_GEN  # pylint: disable=import-outside-toplevel
-
         Manager = MANAGER_GEN.dp_class()
 
         proxy = get_object(TOP_OBJECT)
@@ -304,8 +292,6 @@ class PoolActions:
         :raises StratisCliIncoherenceError:
         :raises StratisCliEngineError:
         """
-        from ._data import MANAGER_GEN  # pylint: disable=import-outside-toplevel
-
         Manager = MANAGER_GEN.dp_class()
 
         proxy = get_object(TOP_OBJECT)
@@ -390,12 +376,6 @@ class PoolActions:
         :raises StratisCliEngineError:
         :raises StratisCliIncoherenceError:
         """
-        from ._data import (  # pylint: disable=import-outside-toplevel
-            BLOCKDEV_GEN,
-            OBJECT_MANAGER_GEN,
-            POOL_GEN,
-        )
-
         ObjectManager = OBJECT_MANAGER_GEN.dp_class()
         (MODev, devs) = (BLOCKDEV_GEN.mo(), BLOCKDEV_GEN.query_builder())
         (MOPool, Pool, pools) = (
@@ -481,12 +461,6 @@ class PoolActions:
         :raises StratisCliEngineError:
         :raises StratisCliIncoherenceError:
         """
-        from ._data import (  # pylint: disable=import-outside-toplevel
-            MANAGER_GEN,
-            OBJECT_MANAGER_GEN,
-            POOL_GEN,
-        )
-
         Manager = MANAGER_GEN.dp_class()
         ObjectManager = OBJECT_MANAGER_GEN.dp_class()
         pools = POOL_GEN.query_builder()
@@ -526,11 +500,6 @@ class PoolActions:
         :raises StratisCliEngineError:
         :raises StratisCliNoChangeError:
         """
-        from ._data import (  # pylint: disable=import-outside-toplevel
-            OBJECT_MANAGER_GEN,
-            POOL_GEN,
-        )
-
         ObjectManager = OBJECT_MANAGER_GEN.dp_class()
         (Pool, pools) = (POOL_GEN.dp_class(), POOL_GEN.query_builder())
 
@@ -563,12 +532,6 @@ class PoolActions:
         :raises StratisCliInUseSameTierError:
         :raises StratisCliPartialChangeError:
         """
-        from ._data import (  # pylint: disable=import-outside-toplevel
-            BLOCKDEV_GEN,
-            OBJECT_MANAGER_GEN,
-            POOL_GEN,
-        )
-
         ObjectManager = OBJECT_MANAGER_GEN.dp_class()
         (MODev, devs) = (BLOCKDEV_GEN.mo(), BLOCKDEV_GEN.query_builder())
         (Pool, pools) = (POOL_GEN.dp_class(), POOL_GEN.query_builder())
@@ -625,12 +588,6 @@ class PoolActions:
         :raises StratisCliInUseSameTierError:
         :raises StratisCliPartialChangeError:
         """
-        from ._data import (  # pylint: disable=import-outside-toplevel
-            BLOCKDEV_GEN,
-            OBJECT_MANAGER_GEN,
-            POOL_GEN,
-        )
-
         ObjectManager = OBJECT_MANAGER_GEN.dp_class()
         (MODev, devs) = (BLOCKDEV_GEN.mo(), BLOCKDEV_GEN.query_builder())
         (Pool, pools) = (POOL_GEN.dp_class(), POOL_GEN.query_builder())
@@ -686,12 +643,6 @@ class PoolActions:
         :raises StratisCliEngineError:
         :raises StratisCliIncoherenceError:
         """
-        from ._data import (  # pylint: disable=import-outside-toplevel
-            BLOCKDEV_GEN,
-            OBJECT_MANAGER_GEN,
-            POOL_GEN,
-        )
-
         ObjectManager = OBJECT_MANAGER_GEN.dp_class()
         (MODev, devs) = (BLOCKDEV_GEN.mo(), BLOCKDEV_GEN.query_builder())
         (Pool, pools) = (POOL_GEN.dp_class(), POOL_GEN.query_builder())
@@ -811,11 +762,6 @@ class PoolActions:
         """
         Set the filesystem limit.
         """
-        from ._data import (  # pylint: disable=import-outside-toplevel
-            OBJECT_MANAGER_GEN,
-            POOL_GEN,
-        )
-
         ObjectManager = OBJECT_MANAGER_GEN.dp_class()
         (MOPool, Pool, pools) = (
             POOL_GEN.mo(),
@@ -843,11 +789,6 @@ class PoolActions:
         """
         Set the overprovisioning mode.
         """
-        from ._data import (  # pylint: disable=import-outside-toplevel
-            OBJECT_MANAGER_GEN,
-            POOL_GEN,
-        )
-
         ObjectManager = OBJECT_MANAGER_GEN.dp_class()
         (MOPool, Pool, pools) = (
             POOL_GEN.mo(),

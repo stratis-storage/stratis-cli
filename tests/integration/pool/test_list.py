@@ -25,6 +25,7 @@ from dbus_client_gen import DbusClientUniqueResultError
 from stratis_cli import StratisCliErrorCodes
 from stratis_cli._actions._connection import get_object
 from stratis_cli._actions._constants import TOP_OBJECT
+from stratis_cli._actions._data import POOL_GEN
 from stratis_cli._errors import StratisCliResourceNotFoundError
 
 from .._keyutils import RandomKeyTmpFile
@@ -124,11 +125,6 @@ class List2TestCase(SimTestCase):
         """
         Test detailed list view for a specific uuid.
         """
-        # isort: LOCAL
-        from stratis_cli._actions._data import (  # pylint: disable=import-outside-toplevel
-            POOL_GEN,
-        )
-
         MOPool = POOL_GEN.mo()
 
         proxy = get_object(TOP_OBJECT)

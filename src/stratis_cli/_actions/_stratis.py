@@ -20,6 +20,7 @@ from argparse import Namespace
 
 from ._connection import get_object
 from ._constants import TOP_OBJECT
+from ._data import MANAGER_GEN
 
 
 class StratisActions:  # pylint: disable=too-few-public-methods
@@ -32,8 +33,5 @@ class StratisActions:  # pylint: disable=too-few-public-methods
         """
         List the stratisd version.
         """
-        from ._data import MANAGER_GEN  # pylint: disable=import-outside-toplevel
-
         Manager = MANAGER_GEN.dp_class()
-
         print(f"{Manager.Properties.Version.Get(get_object(TOP_OBJECT))}")

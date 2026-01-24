@@ -24,6 +24,7 @@ from justbytes import Range
 from .._stratisd_constants import BlockDevTiers
 from ._connection import get_object
 from ._constants import TOP_OBJECT
+from ._data import BLOCKDEV_GEN, OBJECT_MANAGER_GEN, POOL_GEN
 from ._formatting import (
     TABLE_UNKNOWN_STRING,
     get_property,
@@ -45,12 +46,6 @@ class PhysicalActions:
         List devices. If a pool is specified in the namespace, list devices
         for that pool. Otherwise, list all devices for all pools.
         """
-        from ._data import (  # pylint: disable=import-outside-toplevel
-            BLOCKDEV_GEN,
-            OBJECT_MANAGER_GEN,
-            POOL_GEN,
-        )
-
         ObjectManager = OBJECT_MANAGER_GEN.dp_class()
         (MODev, devs) = (BLOCKDEV_GEN.mo(), BLOCKDEV_GEN.query_builder())
         (MOPool, pools) = (POOL_GEN.mo(), POOL_GEN.query_builder())

@@ -22,6 +22,7 @@ from dbus_client_gen import DbusClientUniqueResultError
 
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
+from stratis_cli._actions._data import BLOCKDEV_GEN, OBJECT_MANAGER_GEN
 
 from .._misc import RUNNER, TEST_RUNNER, SimTestCase, device_name_list
 
@@ -59,7 +60,6 @@ class DebugTestCase(SimTestCase):
         # pylint: disable=import-outside-toplevel
         from stratis_cli._actions._connection import get_object
         from stratis_cli._actions._constants import TOP_OBJECT
-        from stratis_cli._actions._data import BLOCKDEV_GEN, OBJECT_MANAGER_GEN
 
         ObjectManager = OBJECT_MANAGER_GEN.dp_class()
         (MODev, devs) = (BLOCKDEV_GEN.mo(), BLOCKDEV_GEN.query_builder())

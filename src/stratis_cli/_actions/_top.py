@@ -36,6 +36,7 @@ from .._errors import (
 from .._stratisd_constants import ReportKey, StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
+from ._data import MANAGER_GEN, OBJECT_MANAGER_GEN, REPORT_GEN
 from ._formatting import print_table
 from ._utils import get_passphrase_fd
 
@@ -48,8 +49,6 @@ def _fetch_keylist(proxy: ProxyObject) -> Array:
     :rtype: list of str
     :raises StratisCliEngineError:
     """
-    from ._data import MANAGER_GEN  # pylint: disable=import-outside-toplevel
-
     Manager = MANAGER_GEN.dp_class()
 
     (keys, return_code, message) = Manager.Methods.ListKeys(proxy, {})
@@ -77,8 +76,6 @@ def _add_update_key(
 
     fd_argument, fd_to_close = get_passphrase_fd(keyfile_path=keyfile_path)
 
-    from ._data import MANAGER_GEN  # pylint: disable=import-outside-toplevel
-
     Manager = MANAGER_GEN.dp_class()
 
     add_ret = Manager.Methods.SetKey(
@@ -104,9 +101,7 @@ class TopActions:
         :raises StratisCliEngineError:
         """
 
-        # pylint: disable=import-outside-toplevel
         if namespace.report_name is ReportKey.MANAGED_OBJECTS:
-            from ._data import OBJECT_MANAGER_GEN
 
             ObjectManager = OBJECT_MANAGER_GEN.dp_class()
 
@@ -124,7 +119,6 @@ class TopActions:
 
         else:
             if namespace.report_name is ReportKey.ENGINE_STATE:
-                from ._data import MANAGER_GEN
 
                 Manager = MANAGER_GEN.dp_class()
 
@@ -133,7 +127,6 @@ class TopActions:
                 )
 
             else:
-                from ._data import REPORT_GEN
 
                 Report = REPORT_GEN.dp_class()
 
@@ -247,7 +240,6 @@ class TopActions:
         :raises StratisCliNoChangeError:
         :raises StratisCliIncoherenceError:
         """
-        from ._data import MANAGER_GEN  # pylint: disable=import-outside-toplevel
 
         Manager = MANAGER_GEN.dp_class()
 

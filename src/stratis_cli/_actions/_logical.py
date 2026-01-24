@@ -32,6 +32,7 @@ from .._errors import (
 from .._stratisd_constants import StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
+from ._data import FILESYSTEM_GEN, OBJECT_MANAGER_GEN, POOL_GEN
 from ._formatting import get_uuid_formatter
 from ._list_filesystem import list_filesystems
 
@@ -42,7 +43,7 @@ class LogicalActions:
     """
 
     @staticmethod
-    def create_volumes(namespace: Namespace):
+    def create_volumes(namespace: Namespace):  # pylint: disable=too-many-locals
         """
         Create volumes in a pool.
 
@@ -50,14 +51,6 @@ class LogicalActions:
         :raises StratisCliIncoherenceError:
         :raises StratisCliPartialChangeError:
         """
-        # pylint: disable=too-many-locals
-
-        from ._data import (  # pylint: disable=import-outside-toplevel
-            FILESYSTEM_GEN,
-            OBJECT_MANAGER_GEN,
-            POOL_GEN,
-        )
-
         (MOFilesystem, filesystems) = (
             FILESYSTEM_GEN.mo(),
             FILESYSTEM_GEN.query_builder(),
@@ -150,7 +143,7 @@ class LogicalActions:
         )
 
     @staticmethod
-    def destroy_volumes(namespace: Namespace):
+    def destroy_volumes(namespace: Namespace):  # pylint: disable=too-many-locals
         """
         Destroy volumes in a pool.
 
@@ -158,14 +151,6 @@ class LogicalActions:
         :raises StratisCliIncoherenceError:
         :raises StratisCliPartialChangeError:
         """
-        # pylint: disable=too-many-locals
-
-        from ._data import (  # pylint: disable=import-outside-toplevel
-            FILESYSTEM_GEN,
-            OBJECT_MANAGER_GEN,
-            POOL_GEN,
-        )
-
         (MOFilesystem, filesystems) = (
             FILESYSTEM_GEN.mo(),
             FILESYSTEM_GEN.query_builder(),
@@ -232,12 +217,6 @@ class LogicalActions:
         :raises StratisCliEngineError:
         :raises StratisCliNoChangeError:
         """
-        from ._data import (  # pylint: disable=import-outside-toplevel
-            FILESYSTEM_GEN,
-            OBJECT_MANAGER_GEN,
-            POOL_GEN,
-        )
-
         filesystems = FILESYSTEM_GEN.query_builder()
         ObjectManager = OBJECT_MANAGER_GEN.dp_class()
         (Pool, pools) = (POOL_GEN.dp_class(), POOL_GEN.query_builder())
@@ -275,12 +254,6 @@ class LogicalActions:
         :raises StratisCliEngineError:
         :raises StratisCliNoChangeError:
         """
-        from ._data import (  # pylint: disable=import-outside-toplevel
-            FILESYSTEM_GEN,
-            OBJECT_MANAGER_GEN,
-            POOL_GEN,
-        )
-
         (Filesystem, filesystems) = (
             FILESYSTEM_GEN.dp_class(),
             FILESYSTEM_GEN.query_builder(),
@@ -316,12 +289,6 @@ class LogicalActions:
         """
         Set an upper limit on the size of the filesystem.
         """
-        from ._data import (  # pylint: disable=import-outside-toplevel
-            FILESYSTEM_GEN,
-            OBJECT_MANAGER_GEN,
-            POOL_GEN,
-        )
-
         (Filesystem, MOFilesystem, filesystems) = (
             FILESYSTEM_GEN.dp_class(),
             FILESYSTEM_GEN.mo(),
@@ -365,12 +332,6 @@ class LogicalActions:
         """
         Unset upper limit on the size of the filesystem.
         """
-        from ._data import (  # pylint: disable=import-outside-toplevel
-            FILESYSTEM_GEN,
-            OBJECT_MANAGER_GEN,
-            POOL_GEN,
-        )
-
         (Filesystem, MOFilesystem, filesystems) = (
             FILESYSTEM_GEN.dp_class(),
             FILESYSTEM_GEN.mo(),
@@ -404,12 +365,6 @@ class LogicalActions:
         """
         Schedule reverting a snapshot into its origin.
         """
-        from ._data import (  # pylint: disable=import-outside-toplevel
-            FILESYSTEM_GEN,
-            OBJECT_MANAGER_GEN,
-            POOL_GEN,
-        )
-
         (Filesystem, MOFilesystem, filesystems) = (
             FILESYSTEM_GEN.dp_class(),
             FILESYSTEM_GEN.mo(),
@@ -447,12 +402,6 @@ class LogicalActions:
         """
         Cancel reverting a snapshot into its origin.
         """
-        from ._data import (  # pylint: disable=import-outside-toplevel
-            FILESYSTEM_GEN,
-            OBJECT_MANAGER_GEN,
-            POOL_GEN,
-        )
-
         (Filesystem, MOFilesystem, filesystems) = (
             FILESYSTEM_GEN.dp_class(),
             FILESYSTEM_GEN.mo(),

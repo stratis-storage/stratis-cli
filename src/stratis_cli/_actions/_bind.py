@@ -24,6 +24,7 @@ from .._errors import StratisCliEngineError, StratisCliNoChangeError
 from .._stratisd_constants import StratisdErrors
 from ._connection import get_object
 from ._constants import TOP_OBJECT
+from ._data import OBJECT_MANAGER_GEN, POOL_GEN
 
 
 def _get_pool_id(namespace: Namespace) -> PoolId:
@@ -54,11 +55,6 @@ class BindActions:
         discussion of the pin and the configuration, consult Clevis
         documentation.
         """
-        from ._data import (  # pylint: disable=import-outside-toplevel
-            OBJECT_MANAGER_GEN,
-            POOL_GEN,
-        )
-
         ObjectManager = OBJECT_MANAGER_GEN.dp_class()
         (Pool, pools) = (POOL_GEN.dp_class(), POOL_GEN.query_builder())
 
@@ -95,11 +91,6 @@ class BindActions:
         """
         Bind all devices in an encrypted pool using the kernel keyring.
         """
-        from ._data import (  # pylint: disable=import-outside-toplevel
-            OBJECT_MANAGER_GEN,
-            POOL_GEN,
-        )
-
         ObjectManager = OBJECT_MANAGER_GEN.dp_class()
         (Pool, pools) = (POOL_GEN.dp_class(), POOL_GEN.query_builder())
 
@@ -135,11 +126,6 @@ class BindActions:
         :raises StratisCliNoChangeError:
         :raises StratisCliEngineError:
         """
-        from ._data import (  # pylint: disable=import-outside-toplevel
-            OBJECT_MANAGER_GEN,
-            POOL_GEN,
-        )
-
         ObjectManager = OBJECT_MANAGER_GEN.dp_class()
         (Pool, pools) = (POOL_GEN.dp_class(), POOL_GEN.query_builder())
 
@@ -188,11 +174,6 @@ class RebindActions:
         """
         Rebind with Clevis nbde/tang
         """
-        from ._data import (  # pylint: disable=import-outside-toplevel
-            OBJECT_MANAGER_GEN,
-            POOL_GEN,
-        )
-
         ObjectManager = OBJECT_MANAGER_GEN.dp_class()
         (Pool, pools) = (POOL_GEN.dp_class(), POOL_GEN.query_builder())
 
@@ -230,11 +211,6 @@ class RebindActions:
         """
         Rebind with a kernel keyring
         """
-        from ._data import (  # pylint: disable=import-outside-toplevel
-            OBJECT_MANAGER_GEN,
-            POOL_GEN,
-        )
-
         ObjectManager = OBJECT_MANAGER_GEN.dp_class()
         (Pool, pools) = (POOL_GEN.dp_class(), POOL_GEN.query_builder())
 

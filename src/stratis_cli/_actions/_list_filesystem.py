@@ -26,6 +26,7 @@ from justbytes import Range
 
 from ._connection import get_object
 from ._constants import TOP_OBJECT
+from ._data import FILESYSTEM_GEN, OBJECT_MANAGER_GEN, POOL_GEN
 from ._formatting import (
     TABLE_FAILURE_STRING,
     TOTAL_USED_FREE,
@@ -42,12 +43,6 @@ def list_filesystems(
     List the specified information about filesystems.
     """
     assert fs_id is None or pool_name is not None
-
-    from ._data import (  # pylint: disable=import-outside-toplevel
-        FILESYSTEM_GEN,
-        OBJECT_MANAGER_GEN,
-        POOL_GEN,
-    )
 
     (MOFilesystem, filesystems) = (FILESYSTEM_GEN.mo(), FILESYSTEM_GEN.query_builder())
     ObjectManager = OBJECT_MANAGER_GEN.dp_class()

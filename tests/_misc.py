@@ -34,6 +34,12 @@ import psutil
 from stratis_cli import StratisCliErrorCodes, run
 from stratis_cli._actions._connection import get_object
 from stratis_cli._actions._constants import TOP_OBJECT
+from stratis_cli._actions._data import (
+    BLOCKDEV_GEN,
+    MANAGER_GEN,
+    OBJECT_MANAGER_GEN,
+    POOL_GEN,
+)
 from stratis_cli._error_reporting import get_errors, handle_error
 from stratis_cli._errors import StratisCliActionError
 
@@ -352,12 +358,6 @@ def get_pool(proxy, pool_name):
     :rtype: str * dict
     :raise DbusClientUniqueError:
     """
-    # isort: LOCAL
-    from stratis_cli._actions._data import (  # pylint: disable=import-outside-toplevel
-        OBJECT_MANAGER_GEN,
-        POOL_GEN,
-    )
-
     ObjectManager = OBJECT_MANAGER_GEN.dp_class()
     pools = POOL_GEN.query_builder()
 
@@ -374,12 +374,6 @@ def get_pool_blockdevs(proxy, pool_name):
     Get a generator of blockdevs for a given pool.
     """
     pool_object_path, _ = get_pool(proxy, pool_name)
-
-    # isort: LOCAL
-    from stratis_cli._actions._data import (  # pylint: disable=import-outside-toplevel
-        BLOCKDEV_GEN,
-        OBJECT_MANAGER_GEN,
-    )
 
     ObjectManager = OBJECT_MANAGER_GEN.dp_class()
     (MODev, devs) = (BLOCKDEV_GEN.mo(), BLOCKDEV_GEN.query_builder())
@@ -403,12 +397,6 @@ def stop_pool(pool_name):
     :rtype: UUID
     :raises: RuntimeError
     """
-
-    # isort: LOCAL
-    from stratis_cli._actions._data import (  # pylint: disable=import-outside-toplevel
-        MANAGER_GEN,
-    )
-
     Manager = MANAGER_GEN.dp_class()
 
     proxy = get_object(TOP_OBJECT)
