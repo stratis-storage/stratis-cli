@@ -27,6 +27,8 @@ jobs:
   - job: copr_build
     trigger: pull_request
     identifier: copr_pull
+    additional_repos:
+      - copr://packit/stratis-storage-dbus-python-client-gen-119-copr_pull
     targets:
       - fedora-all
 
