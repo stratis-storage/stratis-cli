@@ -82,7 +82,7 @@ all-tests: unit-tests dbus-tests
 
 .PHONY: yamllint
 yamllint:
-	yamllint --strict .github/workflows/*.yml .packit.yaml
+	yamllint --strict .github/workflows/*.yml .packit.yaml .yamllint.yaml
 
 .PHONY: package
 package:
