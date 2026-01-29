@@ -62,6 +62,10 @@ jobs:
           pip
           python-unversioned-command
           ${{ matrix.dependencies }}
+      - name: Add Copr repo
+        run: |
+          dnf install -y 'dnf*-command(copr)'
+          dnf copr enable -y packit/stratis-storage-dbus-python-client-gen-master-copr_commit
       - name: Display Python version
         run: python --version
       - name: Install pyright
@@ -73,6 +77,10 @@ jobs:
     runs-on: ubuntu-latest
     container: fedora:42  # CURRENT DEVELOPMENT ENVIRONMENT
     steps:
+      - name: Add Copr repo
+        run: |
+          dnf install -y 'dnf*-command(copr)'
+          dnf copr enable -y packit/stratis-storage-dbus-python-client-gen-master-copr_commit
       - name: Install dependencies
         run: >
           dnf install -y
@@ -125,6 +133,10 @@ jobs:
         with:
           path: stratis-cli
           persist-credentials: false
+      - name: Add Copr repo
+        run: |
+          dnf install -y 'dnf*-command(copr)'
+          dnf copr enable -y packit/stratis-storage-dbus-python-client-gen-master-copr_commit
       - name: Install dependencies
         run: >
           dnf install -y
@@ -183,6 +195,10 @@ jobs:
         with:
           path: stratis-cli
           persist-credentials: false
+      - name: Add Copr repo
+        run: |
+          dnf install -y 'dnf*-command(copr)'
+          dnf copr enable -y packit/stratis-storage-dbus-python-client-gen-master-copr_commit
       - name: Install dependencies
         run: >
           dnf install -y
