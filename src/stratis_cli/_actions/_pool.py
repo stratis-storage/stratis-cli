@@ -21,11 +21,12 @@ import os
 from argparse import Namespace
 from collections import defaultdict
 from itertools import tee
-from typing import Dict
+from typing import Dict, Generator, List, Sequence
 from uuid import UUID
 
 # isort: THIRDPARTY
 from dbus import Dictionary
+from dbus.proxies import ProxyObject
 from justbytes import Range
 
 # isort: FIRSTPARTY
@@ -653,7 +654,7 @@ class PoolActions:
             )
         )
 
-        def expandable(modev):
+        def expandable(modev) -> bool:
             """
             Return true if the new size is greater than total.
 
@@ -668,7 +669,7 @@ class PoolActions:
                 else new_size > Range(modev.TotalPhysicalSize())
             )
 
-        def expand(pool_proxy, modev):  # pragma: no cover
+        def expand(pool_proxy: ProxyObject, modev):  # pragma: no cover
             """
             Expand a pool by extending exactly one expandable device in the
             pool.
@@ -692,7 +693,9 @@ class PoolActions:
                     )
                 )
 
-        def get_devices_to_expand(device_uuids, modevs):
+        def get_devices_to_expand(
+            device_uuids: Sequence[UUID], modevs: Generator
+        ) -> List:
             """
             Calculate devices to expand
             :param device_uuids: a list of device uuids, if empty expand all
@@ -704,12 +707,12 @@ class PoolActions:
             if device_uuids == []:
                 expand_modevs = [modev for modev in modevs if expandable(modev)]
             else:
-                device_uuids = frozenset(uuid.hex for uuid in device_uuids)
+                device_uuid_set = frozenset(uuid.hex for uuid in device_uuids)
                 expand_modevs = [
-                    modev for modev in modevs if modev.Uuid() in device_uuids
+                    modev for modev in modevs if modev.Uuid() in device_uuid_set
                 ]
-                if len(expand_modevs) < len(device_uuids):
-                    missing_uuids = device_uuids.difference(
+                if len(expand_modevs) < len(device_uuid_set):
+                    missing_uuids = device_uuid_set.difference(
                         frozenset(UUID(modev.Uuid()) for modev in expand_modevs)
                     )
 
