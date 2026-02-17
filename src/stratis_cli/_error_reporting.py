@@ -17,7 +17,6 @@ Facilities for managing and reporting errors.
 # isort: STDLIB
 import os
 import sys
-from collections.abc import Iterator
 from typing import List, Optional
 
 # isort: THIRDPARTY
@@ -41,6 +40,7 @@ from ._actions import (
     FILESYSTEM_INTERFACE,
     MANAGER_0_INTERFACE,
     POOL_INTERFACE,
+    get_errors,
 )
 from ._errors import (
     StratisCliActionError,
@@ -85,17 +85,6 @@ def _interface_name_to_common_name(interface_name: str) -> str:
 
     # This is a permanent no cover. There should never be an unknown interface.
     raise StratisCliUnknownInterfaceError(interface_name)  # pragma: no cover
-
-
-def get_errors(exc: BaseException) -> Iterator[BaseException]:
-    """
-    Generates a sequence of exceptions starting with exc and following the chain
-    of causes.
-    """
-    yield exc
-    while exc.__cause__ is not None:
-        yield exc.__cause__
-        exc = exc.__cause__
 
 
 def _interpret_errors_0(
@@ -288,7 +277,7 @@ def _interpret_errors_2(  # pylint: disable=too-many-return-statements
 
             if dbus_name == "org.freedesktop.zbus.Error" and isinstance(
                 context, DPClientSetPropertyContext
-            ):  # pragma: no cover
+            ):
                 return (
                     f"stratisd failed to perform the operation that you "
                     f"requested, because it could not set the D-Bus "
@@ -333,15 +322,6 @@ def _interpret_errors_2(  # pylint: disable=too-many-return-statements
                         "to a transient inconsistency in the D-Bus interface "
                         "and the command will succeed if run again. The D-Bus "
                         f"service sent the following message: {dbus_message}."
-                    )
-
-                if isinstance(context, DPClientSetPropertyContext):  # pragma: no cover
-                    return (
-                        f"stratisd failed to perform the operation that you "
-                        f"requested, because it could not set the D-Bus "
-                        f'property "{context.property_name}" belonging to '
-                        f'interface "{error.interface_name}" to "{context.value}". '
-                        f"It returned the following error: {dbus_message}."
                     )
 
                 if isinstance(context, DPClientGetPropertyContext):  # pragma: no cover

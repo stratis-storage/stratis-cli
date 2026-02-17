@@ -273,3 +273,41 @@ class ClevisEncryptionOptions:  # pylint: disable=too-few-public-methods
                 else ClevisInfo(CLEVIS_PIN_TPM2, {})
             )
         )
+
+
+CLEVIS_AND_KERNEL = [
+    (
+        "--key-desc",
+        {
+            "help": ("Key description of key in kernel keyring"),
+        },
+    ),
+    (
+        "--clevis",
+        {
+            "type": Clevis,
+            "help": "Specification for binding with Clevis.",
+            "choices": list(Clevis),
+        },
+    ),
+    (
+        "--tang-url",
+        {
+            "help": "URL of Clevis tang server (--clevis=[tang|nbde] must be set)",
+        },
+    ),
+]
+
+IN_PLACE = [
+    (
+        "--in-place",
+        {
+            "action": "store_true",
+            "help": (
+                "Perform the operation in place; requires no additional "
+                "devices; see man page entry for this option for more "
+                "information"
+            ),
+        },
+    )
+]
