@@ -2,7 +2,7 @@ SPECS = {
     "org.freedesktop.DBus.ObjectManager": """
 <interface name="org.freedesktop.DBus.ObjectManager">
     <method name="GetManagedObjects">
-      <arg name="objpath_interfaces_and_properties" type="a{oa{sa{sv}}}" direction="out" />
+      <arg type="a{oa{sa{sv}}}" direction="out" />
     </method>
   </interface>
 """,
