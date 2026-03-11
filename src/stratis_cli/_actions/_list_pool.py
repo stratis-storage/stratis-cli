@@ -19,7 +19,14 @@ Pool actions.
 import json
 import os
 from abc import ABC, abstractmethod
-from typing import List, Optional, Union
+from typing import (
+    Any,
+    Callable,
+    Iterable,
+    List,
+    Mapping,
+)
+from uuid import UUID
 
 # isort: THIRDPARTY
 from justbytes import Range
@@ -30,8 +37,9 @@ from .._alerts import (
     PoolDeviceSizeChangeAlert,
     PoolEncryptionAlert,
 )
+from .._constants import PoolId
 from .._errors import StratisCliResourceNotFoundError
-from .._stratisd_constants import MetadataVersion, PoolActionAvailability
+from .._stratisd_constants import ClevisInfo, MetadataVersion, PoolActionAvailability
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import (
@@ -41,6 +49,7 @@ from ._formatting import (
     print_table,
 )
 from ._utils import (
+    EncryptionInfo,
     EncryptionInfoClevis,
     EncryptionInfoKeyDescription,
     PoolFeature,
@@ -50,14 +59,14 @@ from ._utils import (
 )
 
 
-def _metadata_version(mopool) -> Optional[MetadataVersion]:
+def _metadata_version(mopool: Any) -> MetadataVersion | None:
     try:
         return MetadataVersion(int(mopool.MetadataVersion()))
     except ValueError:  # pragma: no cover
         return None
 
 
-def _volume_key_loaded(mopool) -> Union[tuple[bool, bool], tuple[bool, str]]:
+def _volume_key_loaded(mopool: Any) -> tuple[bool, bool] | tuple[bool, str]:
     """
     The string result is an error message indicating that the volume key
     state is unknown.
@@ -70,12 +79,12 @@ def _volume_key_loaded(mopool) -> Union[tuple[bool, bool], tuple[bool, str]]:
 
 # This method is only used with legacy pools
 def _non_existent_or_inconsistent_to_str(
-    value,
+    value: EncryptionInfo | None,
     *,
-    inconsistent_str="inconsistent",
-    non_existent_str="N/A",
-    interp=lambda x: str(x),  # pylint: disable=unnecessary-lambda
-):  # pragma: no cover
+    inconsistent_str: str = "inconsistent",
+    non_existent_str: str = "N/A",
+    interp: Callable[[Any], str] = str,
+) -> str:  # pragma: no cover
     """
     Process dbus result that encodes both inconsistency and existence of the
     value.
@@ -87,15 +96,18 @@ def _non_existent_or_inconsistent_to_str(
     :returns: a string to print
     :rtype: str
     """
-    if not value.consistent():
-        return inconsistent_str
-
-    value = value.value
-
     if value is None:
         return non_existent_str
 
-    return interp(value)
+    if not value.consistent():
+        return inconsistent_str
+
+    inner_value = value.value
+
+    if inner_value is None:
+        return non_existent_str
+
+    return interp(inner_value)
 
 
 class TokenSlotInfo:  # pylint: disable=too-few-public-methods
@@ -105,7 +117,13 @@ class TokenSlotInfo:  # pylint: disable=too-few-public-methods
     token and then printed.
     """
 
-    def __init__(self, token_slot, *, key=None, clevis=None):
+    def __init__(
+        self,
+        token_slot: int,
+        *,
+        key: str | None = None,
+        clevis: tuple[str, Any] | None = None,
+    ):
         """
         Initialize either information about a key or about a Clevis
         configuration for purposes of printing later.
@@ -121,7 +139,7 @@ class TokenSlotInfo:  # pylint: disable=too-few-public-methods
         self.key = key
         self.clevis = clevis
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Token Slot: {self.token_slot}{os.linesep}" + (
             f"    Key Description: {self.key}"
             if self.clevis is None
@@ -137,7 +155,7 @@ class DefaultAlerts:  # pylint: disable=too-few-public-methods
     Alerts to display for a started pool.
     """
 
-    def __init__(self, devs):
+    def __init__(self, devs: Iterable[tuple[Any, Mapping[str, Mapping[str, Any]]]]):
         """
         The initializer.
 
@@ -145,7 +163,7 @@ class DefaultAlerts:  # pylint: disable=too-few-public-methods
         """
         (self.increased, self.decreased) = DefaultAlerts._pools_with_changed_devs(devs)
 
-    def alert_codes(self, pool_object_path, mopool) -> List[PoolAlertType]:
+    def alert_codes(self, pool_object_path: str, mopool: Any) -> List[PoolAlertType]:
         """
         Return alert code objects for a pool.
 
@@ -191,7 +209,9 @@ class DefaultAlerts:  # pylint: disable=too-few-public-methods
         )
 
     @staticmethod
-    def _pools_with_changed_devs(devs_to_search):
+    def _pools_with_changed_devs(
+        devs_to_search: Iterable[tuple[Any, Mapping[str, Mapping[str, Any]]]]
+    ) -> tuple[set[str], set[str]]:
         """
         Returns a tuple of sets containing (1) pools that have a device that
         has increased in size and (2) pools that have a device that has
@@ -221,7 +241,7 @@ class DefaultAlerts:  # pylint: disable=too-few-public-methods
 
     @staticmethod
     def _from_sets(
-        pool_object_path, increased, decreased
+        pool_object_path: str, increased: set[str], decreased: set[str]
     ) -> List[PoolDeviceSizeChangeAlert]:
         """
         Get the code from sets and one pool object path.
@@ -248,7 +268,12 @@ class DefaultAlerts:  # pylint: disable=too-few-public-methods
         return []
 
 
-def list_pools(uuid_formatter, *, stopped=False, selection=None):
+def list_pools(
+    uuid_formatter: Callable[[str | UUID], str],
+    *,
+    stopped: bool = False,
+    selection: PoolId | None = None,
+):
     """
     List the specified information about pools.
     :param uuid_formatter: how to format UUIDs
@@ -270,7 +295,7 @@ def list_pools(uuid_formatter, *, stopped=False, selection=None):
     klass.display()
 
 
-def _clevis_to_str(clevis_info):  # pragma: no cover
+def _clevis_to_str(clevis_info: ClevisInfo) -> str:  # pragma: no cover
     """
     :param ClevisInfo clevis_info: the Clevis info to stringify
     :return: a string that represents the clevis info
@@ -306,7 +331,7 @@ class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
     List one pool with a detail view.
     """
 
-    def __init__(self, uuid_formatter, selection):
+    def __init__(self, uuid_formatter: Callable[[str | UUID], str], selection: PoolId):
         """
         Initializer.
         :param uuid_formatter: function to format a UUID str or UUID
@@ -317,7 +342,7 @@ class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
         self.selection = selection
 
     def _print_detail_view(
-        self, pool_object_path, mopool, alerts: DefaultAlerts
+        self, pool_object_path: str, mopool: Any, alerts: DefaultAlerts
     ):  # pylint: disable=too-many-locals
         """
         Print the detailed view for a single pool.
@@ -441,7 +466,7 @@ class DefaultTable(Default):  # pylint: disable=too-few-public-methods
     List several pools with a table view.
     """
 
-    def __init__(self, uuid_formatter):
+    def __init__(self, uuid_formatter: Callable[[str | UUID], str]):
         """
         Initializer.
         :param uuid_formatter: function to format a UUID str or UUID
@@ -458,7 +483,7 @@ class DefaultTable(Default):  # pylint: disable=too-few-public-methods
 
         proxy = get_object(TOP_OBJECT)
 
-        def physical_size_triple(mopool):
+        def physical_size_triple(mopool: Any) -> str:
             """
             Calculate the triple to display for total physical size.
 
@@ -487,7 +512,7 @@ class DefaultTable(Default):  # pylint: disable=too-few-public-methods
                 )
             )
 
-        def properties_string(mopool):
+        def properties_string(mopool: Any) -> str:
             """
             Make a string encoding some important properties of the pool
 
@@ -497,7 +522,7 @@ class DefaultTable(Default):  # pylint: disable=too-few-public-methods
             :type props_map: dict of str * any
             """
 
-            def gen_string(has_property, code):
+            def gen_string(has_property: bool, code: str) -> str:
                 """
                 Generate the display string for a boolean property
 
@@ -561,7 +586,7 @@ class Stopped(ListPool):  # pylint: disable=too-few-public-methods
     """
 
     @staticmethod
-    def _pool_name(maybe_value):
+    def _pool_name(maybe_value: str | None) -> str:
         """
         Return formatted string for pool name.
 
@@ -571,7 +596,7 @@ class Stopped(ListPool):  # pylint: disable=too-few-public-methods
         return "<UNAVAILABLE>" if maybe_value is None else maybe_value
 
     @staticmethod
-    def _metadata_version_str(maybe_value):
+    def _metadata_version_str(maybe_value: MetadataVersion | None) -> str:
         """
         Return formatted string for metadata version.
 
@@ -586,7 +611,7 @@ class StoppedDetail(Stopped):  # pylint: disable=too-few-public-methods
     Detailed view of one stopped pool.
     """
 
-    def __init__(self, uuid_formatter, selection):
+    def __init__(self, uuid_formatter: Callable[[str | UUID], str], selection: PoolId):
         """
         Initializer.
         :param uuid_formatter: function to format a UUID str or UUID
@@ -596,7 +621,7 @@ class StoppedDetail(Stopped):  # pylint: disable=too-few-public-methods
         self.uuid_formatter = uuid_formatter
         self.selection = selection
 
-    def _print_detail_view(self, pool_uuid, pool):
+    def _print_detail_view(self, pool_uuid: str, pool: StoppedPool):
         """
         Print detailed view of a stopped pool.
 
@@ -687,7 +712,7 @@ class StoppedTable(Stopped):  # pylint: disable=too-few-public-methods
     Table view of one or many stopped pools.
     """
 
-    def __init__(self, uuid_formatter):
+    def __init__(self, uuid_formatter: Callable[[str | UUID], str]):
         """
         Initializer.
         :param uuid_formatter: function to format a UUID str or UUID
@@ -703,7 +728,11 @@ class StoppedTable(Stopped):  # pylint: disable=too-few-public-methods
 
         stopped_pools = fetch_stopped_pools_property(proxy)
 
-        def clevis_str(value, metadata_version, features):
+        def clevis_str(
+            value: Any | None,
+            metadata_version: MetadataVersion | None,
+            features: frozenset[PoolFeature] | None,
+        ) -> str:
             if metadata_version is MetadataVersion.V2:
                 return (
                     "<UNKNOWN>"
@@ -727,7 +756,11 @@ class StoppedTable(Stopped):  # pylint: disable=too-few-public-methods
                 interp=lambda _: "present",
             )  # pragma: no cover
 
-        def key_description_str(value, metadata_version, features):
+        def key_description_str(
+            value: EncryptionInfoKeyDescription | None,
+            metadata_version: MetadataVersion | None,
+            features: frozenset[PoolFeature] | None,
+        ) -> str:
             if metadata_version is MetadataVersion.V2:
                 return (
                     "<UNKNOWN>"
