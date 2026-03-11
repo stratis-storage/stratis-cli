@@ -69,7 +69,7 @@ try:
     # pylint: disable=invalid-name
 
     timeout = get_timeout(
-        os.environ.get("STRATIS_DBUS_TIMEOUT", DBUS_TIMEOUT_SECONDS * 1000)
+        os.environ.get("STRATIS_DBUS_TIMEOUT", str(DBUS_TIMEOUT_SECONDS * 1000))
     )
 
     report_spec = ET.fromstring(SPECS[REPORT_INTERFACE])  # nosec B314
