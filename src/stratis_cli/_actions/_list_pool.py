@@ -325,11 +325,11 @@ class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
         print(f"UUID: {self.uuid_formatter(mopool.Uuid())}")
         print(f"Name: {mopool.Name()}")
 
-        alert_summary = [
+        alert_summary = sorted(
             f"{code}: {code.summarize()}"
             for code in alerts.alert_codes(pool_object_path)
             + Default.alert_codes(mopool)
-        ]
+        )
         print(f"Alerts: {len(alert_summary)}")
         for line in alert_summary:  # pragma: no cover
             print(f"     {line}")
