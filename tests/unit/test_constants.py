@@ -78,7 +78,7 @@ class PoolFeatureTestCase(unittest.TestCase):
         for feature in PoolFeature:
             if feature is PoolFeature.UNRECOGNIZED:
                 self.assertIsInstance(str(feature), str)
-                if bool(int(os.environ.get("STRATIS_STRICT_POOL_FEATURES", False))):
+                if bool(int(os.environ.get("STRATIS_STRICT_POOL_FEATURES", "0"))):
                     with self.assertRaises(ValueError):
                         PoolFeature("unknown")
             else:
@@ -91,7 +91,7 @@ class PoolFeatureTestCase(unittest.TestCase):
         mostly to help monkeytype realize that the type of _missing_'s
         value parameter is not just str.
         """
-        if bool(int(os.environ.get("STRATIS_STRICT_POOL_FEATURES", 0))):
+        if bool(int(os.environ.get("STRATIS_STRICT_POOL_FEATURES", "0"))):
 
             def test_func(val):
                 self.assertIsNone(

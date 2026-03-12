@@ -15,29 +15,19 @@
 Environment functions.
 """
 
-# isort: STDLIB
-from typing import Union
-
 from .._errors import StratisCliEnvironmentError
 
 
-def get_timeout(value: Union[float, int, str]) -> int:
+def get_timeout(value: str) -> int:
     """
-    Turn an input str or int (milliseconds) into an int timeout value (secs).
+    Turn an input str (milliseconds) into an int timeout value (secs).
 
-    :param value: the input str or int
-    :type value: str or int or float
+    :param str value: the input str
     :raises StratisCliEnvironmentError:
     :returns: int
     """
 
     maximum_dbus_timeout_ms = 1073741823
-
-    # Ensure the input str is not a float
-    if isinstance(value, float):
-        raise StratisCliEnvironmentError(
-            "The timeout value provided is a float; it should be an integer."
-        )
 
     try:
         timeout_int = int(value)

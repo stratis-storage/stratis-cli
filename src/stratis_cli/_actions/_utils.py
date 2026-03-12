@@ -38,7 +38,12 @@ from .._errors import (
 )
 from .._stratisd_constants import ClevisInfo, MetadataVersion
 
-_STRICT_POOL_FEATURES = bool(int(os.environ.get("STRATIS_STRICT_POOL_FEATURES", False)))
+try:
+    _STRICT_POOL_FEATURES = bool(
+        int(os.environ.get("STRATIS_STRICT_POOL_FEATURES", "0"))
+    )
+except ValueError:  # pragma: no cover
+    _STRICT_POOL_FEATURES = False
 
 
 class EncryptionInfo:  # pylint: disable=too-few-public-methods
