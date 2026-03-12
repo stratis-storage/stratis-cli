@@ -367,9 +367,7 @@ class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
 
         metadata_version = _metadata_version(mopool)
 
-        print(
-            f'Metadata Version: {"none" if metadata_version is None else metadata_version}'
-        )
+        print(f"Metadata Version: {metadata_version}")
 
         print(
             f"Actions Allowed: "

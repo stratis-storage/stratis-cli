@@ -150,7 +150,7 @@ class Table(ListFilesystem):  # pylint: disable=too-few-public-methods
                     )
                 )
             )
-            return f'{triple_str} / {"None" if limit is None else limit}'
+            return f"{triple_str} / {limit}"
 
         tables = [
             (
@@ -209,7 +209,7 @@ class Detail(ListFilesystem):  # pylint: disable=too-few-public-methods
         print()
         print(f"Created: {created}")
         print()
-        print(f'Snapshot origin: {"None" if origin is None else origin}')
+        print(f"Snapshot origin: {origin}")
         if origin is not None:
             scheduled = "Yes" if fs.MergeScheduled() else "No"
             print(f"    Revert scheduled: {scheduled}")
@@ -225,4 +225,4 @@ class Detail(ListFilesystem):  # pylint: disable=too-few-public-methods
             f"{TABLE_FAILURE_STRING if size_triple.free() is None else size_triple.free()}"
         )
         print()
-        print(f"  Size Limit: {'None' if limit is None else limit}")
+        print(f"  Size Limit: {limit}")
