@@ -297,6 +297,16 @@ class Default(ListPool):  # pylint: disable=too-few-public-methods
 
         return availability_alerts + no_alloc_space_alerts + pool_encryption_alerts
 
+    @staticmethod
+    def size_triple(mopool: Any) -> SizeTriple:
+        """
+        Calculate SizeTriple from size information.
+        """
+        return SizeTriple(
+            Range(mopool.TotalPhysicalSize()),
+            get_property(mopool.TotalPhysicalUsed(), Range, None),
+        )
+
 
 class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
     """
@@ -395,10 +405,7 @@ class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
         else:
             print("Encryption Enabled: No")
 
-        size_triple = SizeTriple(
-            Range(mopool.TotalPhysicalSize()),
-            get_property(mopool.TotalPhysicalUsed(), Range, None),
-        )
+        size_triple = Default.size_triple(mopool)
 
         print(f"Fully Allocated: {'Yes' if mopool.NoAllocSpace() else 'No'}")
         print(f"    Size: {size_triple.total()}")
@@ -467,10 +474,7 @@ class DefaultTable(Default):  # pylint: disable=too-few-public-methods
             :returns: a string to display in the resulting list output
             :rtype: str
             """
-            size_triple = SizeTriple(
-                Range(mopool.TotalPhysicalSize()),
-                get_property(mopool.TotalPhysicalUsed(), Range, None),
-            )
+            size_triple = Default.size_triple(mopool)
 
             return " / ".join(
                 (
