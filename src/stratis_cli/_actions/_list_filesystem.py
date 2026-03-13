@@ -28,7 +28,9 @@ from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import (
     TABLE_FAILURE_STRING,
+    TABLE_UNKNOWN_STRING,
     TOTAL_USED_FREE,
+    catch_missing_property,
     get_property,
     print_table,
 )
@@ -152,17 +154,37 @@ class Table(ListFilesystem):  # pylint: disable=too-few-public-methods
             )
             return f"{triple_str} / {limit}"
 
+        pool_name_func = catch_missing_property(
+            lambda mo: self.pool_object_path_to_pool_name.get(
+                mo.Pool(), TABLE_UNKNOWN_STRING
+            ),
+            TABLE_UNKNOWN_STRING,
+        )
+        name_func = catch_missing_property(
+            lambda mofs: mofs.Name(), TABLE_UNKNOWN_STRING
+        )
+        size_func = catch_missing_property(
+            lambda mofs: filesystem_size_quartet(
+                Range(mofs.Size()),
+                get_property(mofs.Used(), Range, None),
+                get_property(mofs.SizeLimit(), Range, None),
+            ),
+            TABLE_UNKNOWN_STRING,
+        )
+        devnode_func = catch_missing_property(
+            lambda mofs: mofs.Devnode(), TABLE_UNKNOWN_STRING
+        )
+        uuid_func = catch_missing_property(
+            lambda mofs: self.uuid_formatter(mofs.Uuid()), TABLE_UNKNOWN_STRING
+        )
+
         tables = [
             (
-                self.pool_object_path_to_pool_name[mofilesystem.Pool()],
-                mofilesystem.Name(),
-                filesystem_size_quartet(
-                    Range(mofilesystem.Size()),
-                    get_property(mofilesystem.Used(), Range, None),
-                    get_property(mofilesystem.SizeLimit(), Range, None),
-                ),
-                mofilesystem.Devnode(),
-                self.uuid_formatter(mofilesystem.Uuid()),
+                pool_name_func(mofilesystem),
+                name_func(mofilesystem),
+                size_func(mofilesystem),
+                devnode_func(mofilesystem),
+                uuid_func(mofilesystem),
             )
             for mofilesystem in self.filesystems_with_props
         ]

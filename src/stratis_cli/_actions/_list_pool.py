@@ -36,6 +36,7 @@ from .._alerts import (
     PoolAllocSpaceAlert,
     PoolDeviceSizeChangeAlert,
     PoolEncryptionAlert,
+    PoolMaintenanceAlert,
 )
 from .._constants import PoolId
 from .._errors import StratisCliResourceNotFoundError
@@ -44,7 +45,9 @@ from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import (
     TABLE_FAILURE_STRING,
+    TABLE_UNKNOWN_STRING,
     TOTAL_USED_FREE,
+    catch_missing_property,
     get_property,
     print_table,
 )
@@ -57,24 +60,6 @@ from ._utils import (
     StoppedPool,
     fetch_stopped_pools_property,
 )
-
-
-def _metadata_version(mopool: Any) -> MetadataVersion | None:
-    try:
-        return MetadataVersion(int(mopool.MetadataVersion()))
-    except ValueError:  # pragma: no cover
-        return None
-
-
-def _volume_key_loaded(mopool: Any) -> tuple[bool, bool] | tuple[bool, str]:
-    """
-    The string result is an error message indicating that the volume key
-    state is unknown.
-    """
-    result = mopool.VolumeKeyLoaded()
-    if isinstance(result, int):
-        return (True, bool(result))
-    return (False, str(result))  # pragma: no cover
 
 
 # This method is only used with legacy pools
@@ -150,79 +135,16 @@ class TokenSlotInfo:  # pylint: disable=too-few-public-methods
         )
 
 
-class DefaultAlerts:  # pylint: disable=too-few-public-methods
+class DeviceSizeChangedAlerts:  # pylint: disable=too-few-public-methods
     """
-    Alerts to display for a started pool.
+    Calculate alerts for changed devices; requires searching among devices.
     """
 
-    def __init__(self, devs: Iterable[tuple[Any, Mapping[str, Mapping[str, Any]]]]):
+    def __init__(
+        self, devs_to_search: Iterable[tuple[Any, Mapping[str, Mapping[str, Any]]]]
+    ):
         """
-        The initializer.
-
-        :param devs: result of GetManagedObjects
-        """
-        (self.increased, self.decreased) = DefaultAlerts._pools_with_changed_devs(devs)
-
-    def alert_codes(self, pool_object_path: str, mopool: Any) -> List[PoolAlertType]:
-        """
-        Return alert code objects for a pool.
-
-        :param mopool: object to access pool properties
-
-        :returns: list of PoolAlertType
-        """
-        action_availability = PoolActionAvailability[str(mopool.AvailableActions())]
-        availability_alerts = action_availability.pool_maintenance_alerts()
-
-        no_alloc_space_alerts = (
-            [PoolAllocSpaceAlert.NO_ALLOC_SPACE] if mopool.NoAllocSpace() else []
-        )
-
-        device_size_changed_alerts = DefaultAlerts._from_sets(
-            pool_object_path, self.increased, self.decreased
-        )
-
-        metadata_version = _metadata_version(mopool)
-
-        (vkl_is_bool, volume_key_loaded) = _volume_key_loaded(mopool)
-
-        pool_encryption_alerts = (
-            [PoolEncryptionAlert.VOLUME_KEY_NOT_LOADED]
-            if metadata_version is MetadataVersion.V2
-            and mopool.Encrypted()
-            and vkl_is_bool
-            and not volume_key_loaded
-            else []
-        ) + (
-            [PoolEncryptionAlert.VOLUME_KEY_STATUS_UNKNOWN]
-            if metadata_version is MetadataVersion.V2
-            and mopool.Encrypted()
-            and not vkl_is_bool
-            else []
-        )
-
-        return (
-            availability_alerts
-            + no_alloc_space_alerts
-            + device_size_changed_alerts
-            + pool_encryption_alerts
-        )
-
-    @staticmethod
-    def _pools_with_changed_devs(
-        devs_to_search: Iterable[tuple[Any, Mapping[str, Mapping[str, Any]]]]
-    ) -> tuple[set[str], set[str]]:
-        """
-        Returns a tuple of sets containing (1) pools that have a device that
-        has increased in size and (2) pools that have a device that has
-        decreased in size.
-
-        A pool may occupy both sets if one device has increased and one has
-        decreased.
-
-        :param devs_to_search: an iterable of device objects
-        :returns: a pair of sets
-        :rtype: tuple of (set of ObjectPath)
+        Initializer.
         """
         # pylint: disable=import-outside-toplevel
         from ._data import MODev
@@ -237,33 +159,25 @@ class DefaultAlerts:  # pylint: disable=too-few-public-methods
             if observed_size < size:  # pragma: no cover
                 decreased.add(modev.Pool())
 
-        return (increased, decreased)
+        (self.increased, self.decreased) = (increased, decreased)
 
-    @staticmethod
-    def _from_sets(
-        pool_object_path: str, increased: set[str], decreased: set[str]
-    ) -> List[PoolDeviceSizeChangeAlert]:
+    def alert_codes(self, pool_object_path: str) -> List[PoolDeviceSizeChangeAlert]:
         """
         Get the code from sets and one pool object path.
 
         :param pool_object_path: the pool object path
-        :param increased: pools that have devices that have increased in size
-        :type increased: set of object path
-        :param decreased: pools that have devices that have decrease in size
-        :type increased: set of object path
-
         :returns: the codes
         """
         if (
-            pool_object_path in increased and pool_object_path in decreased
+            pool_object_path in self.increased and pool_object_path in self.decreased
         ):  # pragma: no cover
             return [
                 PoolDeviceSizeChangeAlert.DEVICE_SIZE_INCREASED,
                 PoolDeviceSizeChangeAlert.DEVICE_SIZE_DECREASED,
             ]
-        if pool_object_path in increased:  # pragma: no cover
+        if pool_object_path in self.increased:  # pragma: no cover
             return [PoolDeviceSizeChangeAlert.DEVICE_SIZE_INCREASED]
-        if pool_object_path in decreased:  # pragma: no cover
+        if pool_object_path in self.decreased:  # pragma: no cover
             return [PoolDeviceSizeChangeAlert.DEVICE_SIZE_DECREASED]
         return []
 
@@ -320,10 +234,81 @@ class ListPool(ABC):  # pylint:disable=too-few-public-methods
         """
 
 
-class Default(ListPool):  # pylint: disable=too-few-public-methods
+class Default(ListPool):
     """
     Handle listing the pools that are listed by default.
     """
+
+    @staticmethod
+    def metadata_version(mopool: Any) -> MetadataVersion | None:
+        """
+        Return the metadata version, dealing with the possibility that it
+        might be an error string.
+        """
+        try:
+            return MetadataVersion(int(mopool.MetadataVersion()))
+        except ValueError:  # pragma: no cover
+            return None
+
+    @staticmethod
+    def _volume_key_loaded(mopool: Any) -> tuple[bool, bool] | tuple[bool, str]:
+        """
+        The string result is an error message indicating that the volume key
+        state is unknown.
+        """
+        result = mopool.VolumeKeyLoaded()
+        if isinstance(result, int):
+            return (True, bool(result))
+        return (False, str(result))  # pragma: no cover
+
+    @staticmethod
+    def alert_codes(
+        mopool: Any,
+    ) -> List[PoolEncryptionAlert | PoolAllocSpaceAlert | PoolMaintenanceAlert]:
+        """
+        Return alert code objects for a pool.
+
+        :param mopool: object to access pool properties
+
+        :returns: list of alerts obtainable from GetManagedObjects properties
+        """
+        action_availability = PoolActionAvailability[str(mopool.AvailableActions())]
+        availability_alerts = action_availability.pool_maintenance_alerts()
+
+        no_alloc_space_alerts = (
+            [PoolAllocSpaceAlert.NO_ALLOC_SPACE] if mopool.NoAllocSpace() else []
+        )
+
+        metadata_version = Default.metadata_version(mopool)
+
+        (vkl_is_bool, volume_key_loaded) = Default._volume_key_loaded(mopool)
+
+        pool_encryption_alerts = (
+            [PoolEncryptionAlert.VOLUME_KEY_NOT_LOADED]
+            if metadata_version is MetadataVersion.V2
+            and mopool.Encrypted()
+            and vkl_is_bool
+            and not volume_key_loaded
+            else []
+        ) + (
+            [PoolEncryptionAlert.VOLUME_KEY_STATUS_UNKNOWN]
+            if metadata_version is MetadataVersion.V2
+            and mopool.Encrypted()
+            and not vkl_is_bool
+            else []
+        )
+
+        return availability_alerts + no_alloc_space_alerts + pool_encryption_alerts
+
+    @staticmethod
+    def size_triple(mopool: Any) -> SizeTriple:
+        """
+        Calculate SizeTriple from size information.
+        """
+        return SizeTriple(
+            Range(mopool.TotalPhysicalSize()),
+            get_property(mopool.TotalPhysicalUsed(), Range, None),
+        )
 
 
 class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
@@ -342,7 +327,7 @@ class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
         self.selection = selection
 
     def _print_detail_view(
-        self, pool_object_path: str, mopool: Any, alerts: DefaultAlerts
+        self, pool_object_path: str, mopool: Any, alerts: DeviceSizeChangedAlerts
     ):  # pylint: disable=too-many-locals
         """
         Print the detailed view for a single pool.
@@ -350,22 +335,23 @@ class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
         :param UUID uuid: the pool uuid
         :param pool_object_path: object path of the pool
         :param MOPool mopool: properties of the pool
-        :param DefaultAlerts alerts: pool alerts
+        :param DeviceSizeChangedAlerts alerts: pool alerts
         """
         encrypted = mopool.Encrypted()
 
         print(f"UUID: {self.uuid_formatter(mopool.Uuid())}")
         print(f"Name: {mopool.Name()}")
 
-        alert_summary = [
+        alert_summary = sorted(
             f"{code}: {code.summarize()}"
-            for code in alerts.alert_codes(pool_object_path, mopool)
-        ]
+            for code in alerts.alert_codes(pool_object_path)
+            + Default.alert_codes(mopool)
+        )
         print(f"Alerts: {len(alert_summary)}")
         for line in alert_summary:  # pragma: no cover
             print(f"     {line}")
 
-        metadata_version = _metadata_version(mopool)
+        metadata_version = Default.metadata_version(mopool)
 
         print(f"Metadata Version: {metadata_version}")
 
@@ -422,10 +408,7 @@ class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
         else:
             print("Encryption Enabled: No")
 
-        size_triple = SizeTriple(
-            Range(mopool.TotalPhysicalSize()),
-            get_property(mopool.TotalPhysicalUsed(), Range, None),
-        )
+        size_triple = Default.size_triple(mopool)
 
         print(f"Fully Allocated: {'Yes' if mopool.NoAllocSpace() else 'No'}")
         print(f"    Size: {size_triple.total()}")
@@ -452,7 +435,7 @@ class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
             .search(managed_objects)
         )
 
-        alerts = DefaultAlerts(
+        alerts = DeviceSizeChangedAlerts(
             devs(props={"Pool": pool_object_path}).search(managed_objects)
         )
 
@@ -472,7 +455,7 @@ class DefaultTable(Default):  # pylint: disable=too-few-public-methods
         """
         self.uuid_formatter = uuid_formatter
 
-    def display(self):
+    def display(self):  # pylint: disable=too-many-locals
         """
         List pools in table view.
         """
@@ -494,10 +477,7 @@ class DefaultTable(Default):  # pylint: disable=too-few-public-methods
             :returns: a string to display in the resulting list output
             :rtype: str
             """
-            size_triple = SizeTriple(
-                Range(mopool.TotalPhysicalSize()),
-                get_property(mopool.TotalPhysicalUsed(), Range, None),
-            )
+            size_triple = Default.size_triple(mopool)
 
             return " / ".join(
                 (
@@ -531,7 +511,7 @@ class DefaultTable(Default):  # pylint: disable=too-few-public-methods
                 """
                 return (" " if has_property else "~") + code
 
-            metadata_version = _metadata_version(mopool)
+            metadata_version = Default.metadata_version(mopool)
 
             props_list = [
                 (metadata_version in (MetadataVersion.V1, None), "Le"),
@@ -543,23 +523,37 @@ class DefaultTable(Default):  # pylint: disable=too-few-public-methods
 
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
 
-        alerts = DefaultAlerts(devs().search(managed_objects))
+        alerts = DeviceSizeChangedAlerts(devs().search(managed_objects))
 
         pools_with_props = [
             (objpath, MOPool(info)) for objpath, info in pools().search(managed_objects)
         ]
 
+        name_func = catch_missing_property(lambda mo: mo.Name(), TABLE_UNKNOWN_STRING)
+        size_func = catch_missing_property(physical_size_triple, TABLE_UNKNOWN_STRING)
+        properties_func = catch_missing_property(
+            properties_string, TABLE_UNKNOWN_STRING
+        )
+        uuid_func = catch_missing_property(
+            lambda mo: self.uuid_formatter(mo.Uuid()), TABLE_UNKNOWN_STRING
+        )
+
+        def alert_func(pool_object_path: str, mopool: Any) -> List[PoolAlertType]:
+            """
+            Combined alert codes.
+            """
+            return catch_missing_property(
+                Default.alert_codes, default=[TABLE_UNKNOWN_STRING]
+            )(mopool) + alerts.alert_codes(pool_object_path)
+
         tables = [
             (
-                mopool.Name(),
-                physical_size_triple(mopool),
-                properties_string(mopool),
-                self.uuid_formatter(mopool.Uuid()),
+                name_func(mopool),
+                size_func(mopool),
+                properties_func(mopool),
+                uuid_func(mopool),
                 ", ".join(
-                    sorted(
-                        str(code)
-                        for code in alerts.alert_codes(pool_object_path, mopool)
-                    )
+                    sorted(str(code) for code in alert_func(pool_object_path, mopool))
                 ),
             )
             for (pool_object_path, mopool) in pools_with_props
