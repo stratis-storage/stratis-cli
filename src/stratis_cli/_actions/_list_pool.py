@@ -29,6 +29,7 @@ from typing import (
 from uuid import UUID
 
 # isort: THIRDPARTY
+from dateutil import parser as date_parser
 from justbytes import Range
 
 from .._alerts import (
@@ -382,6 +383,14 @@ class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
 
         if encrypted:
             print("Encryption Enabled: Yes")
+
+            (valid, timestamp) = mopool.LastReencryptedTimestamp()
+            reencrypted = (
+                date_parser.isoparse(timestamp).astimezone().strftime("%b %d %Y %H:%M")
+                if valid
+                else "Never"
+            )
+            print(f"    Last Time Reencrypted: {reencrypted}")
 
             if metadata_version is MetadataVersion.V1:  # pragma: no cover
                 key_description_str = _non_existent_or_inconsistent_to_str(
