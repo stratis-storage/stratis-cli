@@ -1,3 +1,55 @@
+stratis-cli 3.9.0
+=================
+Required stratisd version: 3.9.0
+
+Recommended development environment: Fedora 41
+
+- Restore version 9 changes reverted for previous release:
+  https://github.com/stratis-storage/stratis-cli/pull/1234
+
+- Support for zbus refactoring:
+  https://github.com/stratis-storage/stratis-cli/pull/1264
+  https://github.com/stratis-storage/stratis-cli/pull/1253
+  https://github.com/stratis-storage/stratis-cli/pull/1252
+  https://github.com/stratis-storage/stratis-cli/pull/1240
+  https://github.com/stratis-storage/stratis-cli/pull/1239
+
+- Increase lowest supported version of Rust to 1.85:
+  https://github.com/stratis-storage/stratis-cli/pull/1256
+
+- Remove tab completion files:
+  https://github.com/stratis-storage/stratis-cli/pull/1241
+
+- Improve error message when pool was not destroyed/created:
+  https://github.com/stratis-storage/stratis-cli/pull/1254
+
+- Add additional type annotations:
+  https://github.com/stratis-storage/stratis-cli/pull/1268
+  https://github.com/stratis-storage/stratis-cli/pull/1267
+  https://github.com/stratis-storage/stratis-cli/pull/1265
+
+- Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/1269
+  https://github.com/stratis-storage/stratis-cli/pull/1266
+  https://github.com/stratis-storage/stratis-cli/pull/1263
+  https://github.com/stratis-storage/stratis-cli/pull/1262
+  https://github.com/stratis-storage/stratis-cli/pull/1260
+  https://github.com/stratis-storage/stratis-cli/pull/1258
+  https://github.com/stratis-storage/stratis-cli/pull/1255
+  https://github.com/stratis-storage/stratis-cli/pull/1249
+  https://github.com/stratis-storage/stratis-cli/pull/1248
+  https://github.com/stratis-storage/stratis-cli/pull/1247
+  https://github.com/stratis-storage/stratis-cli/pull/1245
+  https://github.com/stratis-storage/stratis-cli/pull/1244
+  https://github.com/stratis-storage/stratis-cli/pull/1243
+  https://github.com/stratis-storage/stratis-cli/pull/1242
+  https://github.com/stratis-storage/stratis-cli/pull/1238
+  https://github.com/stratis-storage/stratis-cli/pull/1237
+  https://github.com/stratis-storage/stratis-cli/pull/1236
+  https://github.com/stratis-storage/stratis-cli/pull/1235
+  https://github.com/stratis-storage/stratis-cli/pull/1200
+
+
 stratis-cli 3.8.3
 =================
 Required stratisd version: 3.8.2
