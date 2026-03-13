@@ -231,7 +231,7 @@ class ListPool(ABC):  # pylint:disable=too-few-public-methods
         """
 
 
-class Default(ListPool):  # pylint: disable=too-few-public-methods
+class Default(ListPool):
     """
     Handle listing the pools that are listed by default.
     """
