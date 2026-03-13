@@ -59,24 +59,6 @@ from ._utils import (
 )
 
 
-def _metadata_version(mopool: Any) -> MetadataVersion | None:
-    try:
-        return MetadataVersion(int(mopool.MetadataVersion()))
-    except ValueError:  # pragma: no cover
-        return None
-
-
-def _volume_key_loaded(mopool: Any) -> tuple[bool, bool] | tuple[bool, str]:
-    """
-    The string result is an error message indicating that the volume key
-    state is unknown.
-    """
-    result = mopool.VolumeKeyLoaded()
-    if isinstance(result, int):
-        return (True, bool(result))
-    return (False, str(result))  # pragma: no cover
-
-
 # This method is only used with legacy pools
 def _non_existent_or_inconsistent_to_str(
     value: EncryptionInfo | None,
@@ -255,6 +237,28 @@ class Default(ListPool):  # pylint: disable=too-few-public-methods
     """
 
     @staticmethod
+    def metadata_version(mopool: Any) -> MetadataVersion | None:
+        """
+        Return the metadata version, dealing with the possibility that it
+        might be an error string.
+        """
+        try:
+            return MetadataVersion(int(mopool.MetadataVersion()))
+        except ValueError:  # pragma: no cover
+            return None
+
+    @staticmethod
+    def _volume_key_loaded(mopool: Any) -> tuple[bool, bool] | tuple[bool, str]:
+        """
+        The string result is an error message indicating that the volume key
+        state is unknown.
+        """
+        result = mopool.VolumeKeyLoaded()
+        if isinstance(result, int):
+            return (True, bool(result))
+        return (False, str(result))  # pragma: no cover
+
+    @staticmethod
     def alert_codes(
         mopool: Any,
     ) -> List[PoolEncryptionAlert | PoolAllocSpaceAlert | PoolMaintenanceAlert]:
@@ -272,9 +276,9 @@ class Default(ListPool):  # pylint: disable=too-few-public-methods
             [PoolAllocSpaceAlert.NO_ALLOC_SPACE] if mopool.NoAllocSpace() else []
         )
 
-        metadata_version = _metadata_version(mopool)
+        metadata_version = Default.metadata_version(mopool)
 
-        (vkl_is_bool, volume_key_loaded) = _volume_key_loaded(mopool)
+        (vkl_is_bool, volume_key_loaded) = Default._volume_key_loaded(mopool)
 
         pool_encryption_alerts = (
             [PoolEncryptionAlert.VOLUME_KEY_NOT_LOADED]
@@ -334,7 +338,7 @@ class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
         for line in alert_summary:  # pragma: no cover
             print(f"     {line}")
 
-        metadata_version = _metadata_version(mopool)
+        metadata_version = Default.metadata_version(mopool)
 
         print(f"Metadata Version: {metadata_version}")
 
@@ -500,7 +504,7 @@ class DefaultTable(Default):  # pylint: disable=too-few-public-methods
                 """
                 return (" " if has_property else "~") + code
 
-            metadata_version = _metadata_version(mopool)
+            metadata_version = Default.metadata_version(mopool)
 
             props_list = [
                 (metadata_version in (MetadataVersion.V1, None), "Le"),
