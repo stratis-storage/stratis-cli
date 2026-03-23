@@ -119,6 +119,13 @@ class ListFilesystem(ABC):  # pylint: disable=too-few-public-methods
         List filesystems.
         """
 
+    @staticmethod
+    def size_triple(mofs: Any) -> SizeTriple:
+        """
+        Calculate size triple
+        """
+        return SizeTriple(Range(mofs.Size()), get_property(mofs.Used(), Range, None))
+
 
 class Table(ListFilesystem):  # pylint: disable=too-few-public-methods
     """
@@ -131,7 +138,7 @@ class Table(ListFilesystem):  # pylint: disable=too-few-public-methods
         """
 
         def filesystem_size_quartet(
-            total: Range, used: Optional[Range], limit: Optional[Range]
+            size_triple: SizeTriple, limit: Optional[Range]
         ) -> str:
             """
             Calculate the triple to display for filesystem size.
@@ -139,7 +146,6 @@ class Table(ListFilesystem):  # pylint: disable=too-few-public-methods
             :returns: a string a formatted string showing all three values
             :rtype: str
             """
-            size_triple = SizeTriple(total, used)
             triple_str = " / ".join(
                 (
                     TABLE_FAILURE_STRING if x is None else str(x)
@@ -157,8 +163,7 @@ class Table(ListFilesystem):  # pylint: disable=too-few-public-methods
                 self.pool_object_path_to_pool_name[mofilesystem.Pool()],
                 mofilesystem.Name(),
                 filesystem_size_quartet(
-                    Range(mofilesystem.Size()),
-                    get_property(mofilesystem.Used(), Range, None),
+                    ListFilesystem.size_triple(mofilesystem),
                     get_property(mofilesystem.SizeLimit(), Range, None),
                 ),
                 mofilesystem.Devnode(),
@@ -193,7 +198,7 @@ class Detail(ListFilesystem):  # pylint: disable=too-few-public-methods
 
         fs = self.filesystems_with_props[0]
 
-        size_triple = SizeTriple(Range(fs.Size()), get_property(fs.Used(), Range, None))
+        size_triple = ListFilesystem.size_triple(fs)
         limit = get_property(fs.SizeLimit(), Range, None)
         created = (
             date_parser.isoparse(fs.Created()).astimezone().strftime("%b %d %Y %H:%M")
