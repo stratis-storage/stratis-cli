@@ -15,6 +15,9 @@
 Test 'set'.
 """
 
+# isort: STDLIB
+from unittest.mock import patch
+
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
 from stratis_cli._errors import (
@@ -127,3 +130,15 @@ class TestKeySet(SimTestCase):
             _ERROR,
             stdin="\n\n",
         )
+
+    def test_key_set_capture_key_keyboard_interrupt(self):
+        """
+        Test coverage when a KeyboardInterrupt is sent while setting a
+        passphrase. It's not possible to test that terminal is set back
+        to correct value very easily in this infrastructure; but probably
+        just exercising the code is enough.
+        """
+        command_line = self._MENU + [self._KEYNAME, "--capture-key"]
+        with patch("sys.stdin.readline", side_effect=KeyboardInterrupt):
+            with self.assertRaises(KeyboardInterrupt):
+                RUNNER(command_line)
