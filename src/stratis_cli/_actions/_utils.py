@@ -215,8 +215,8 @@ def get_pass(prompt: str) -> str:
     password = None
     try:
         password = sys.stdin.readline()
-    except Exception as err:  # pragma: no cover
-        if old_attrs is not None:
+    except BaseException as err:
+        if old_attrs is not None:  # pragma: no cover
             termios.tcsetattr(sys.stdin, termios.TCSAFLUSH, old_attrs)
         raise err
 
