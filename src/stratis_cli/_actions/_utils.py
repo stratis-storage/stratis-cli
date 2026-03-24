@@ -279,11 +279,11 @@ class SizeTriple:
     Manage values in a size triple.
     """
 
-    def __init__(self, total: Range, used: Optional[Range]):
+    def __init__(self, total: Optional[Range], used: Optional[Range]):
         self._total = total
         self._used = used
 
-    def total(self) -> Range:
+    def total(self) -> Optional[Range]:
         """
         Total.
         """
@@ -299,4 +299,8 @@ class SizeTriple:
         """
         Total - used.
         """
-        return None if self._used is None else self._total - self._used
+        return (
+            None
+            if self._used is None or self.total is None
+            else self._total - self._used
+        )
