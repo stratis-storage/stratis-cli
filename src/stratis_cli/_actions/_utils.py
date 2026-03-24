@@ -23,7 +23,7 @@ import os
 import sys
 import termios
 from enum import Enum
-from typing import Any, Optional, Tuple
+from typing import Any, Tuple
 from uuid import UUID
 
 # isort: THIRDPARTY
@@ -279,24 +279,28 @@ class SizeTriple:
     Manage values in a size triple.
     """
 
-    def __init__(self, total: Range, used: Optional[Range]):
+    def __init__(self, total: Range | None, used: Range | None):
         self._total = total
         self._used = used
 
-    def total(self) -> Range:
+    def total(self) -> Range | None:
         """
         Total.
         """
         return self._total
 
-    def used(self) -> Optional[Range]:
+    def used(self) -> Range | None:
         """
         Used.
         """
         return self._used
 
-    def free(self) -> Optional[Range]:
+    def free(self) -> Range | None:
         """
         Total - used.
         """
-        return None if self._used is None else self._total - self._used
+        return (
+            None
+            if self._used is None or self._total is None
+            else self._total - self._used
+        )
