@@ -17,7 +17,7 @@ Filesystem listing.
 
 # isort: STDLIB
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, List
 
 # isort: THIRDPARTY
 from dateutil import parser as date_parser
@@ -137,15 +137,21 @@ class Table(ListFilesystem):  # pylint: disable=too-few-public-methods
         List the filesystems.
         """
 
-        def filesystem_size_quartet(
-            size_triple: SizeTriple, limit: Optional[Range]
-        ) -> str:
+        def pool_name_str(mofs: Any) -> str:
+            return self.pool_object_path_to_pool_name[mofs.Pool()]
+
+        def name_str(mofs: Any) -> str:
+            return mofs.Name()
+
+        def filesystem_size_quartet(mofs: Any) -> str:
             """
             Calculate the string to display for filesystem sizes.
 
             :returns: a properly formatted string
             :rtype: str
             """
+            size_triple = ListFilesystem.size_triple(mofs)
+            limit = get_property(mofs.SizeLimit(), Range, None)
             triple_str = " / ".join(
                 (
                     TABLE_UNKNOWN_STRING if x is None else str(x)
@@ -158,16 +164,19 @@ class Table(ListFilesystem):  # pylint: disable=too-few-public-methods
             )
             return f"{triple_str} / {limit}"
 
+        def devnode_str(mofs: Any) -> str:
+            return mofs.Devnode()
+
+        def uuid_str(mofs: Any) -> str:
+            return self.uuid_formatter(mofs.Uuid())
+
         tables = [
             (
-                self.pool_object_path_to_pool_name[mofilesystem.Pool()],
-                mofilesystem.Name(),
-                filesystem_size_quartet(
-                    ListFilesystem.size_triple(mofilesystem),
-                    get_property(mofilesystem.SizeLimit(), Range, None),
-                ),
-                mofilesystem.Devnode(),
-                self.uuid_formatter(mofilesystem.Uuid()),
+                pool_name_str(mofilesystem),
+                name_str(mofilesystem),
+                filesystem_size_quartet(mofilesystem),
+                devnode_str(mofilesystem),
+                uuid_str(mofilesystem),
             )
             for mofilesystem in self.filesystems_with_props
         ]
