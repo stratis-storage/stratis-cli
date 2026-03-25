@@ -319,6 +319,13 @@ class Default(ListPool):
         """
         return self.uuid_formatter(mopool.Uuid())
 
+    @staticmethod
+    def name_str(mopool: Any) -> str:
+        """
+        Return a string representation of the pool name.
+        """
+        return mopool.Name()
+
 
 class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
     """
@@ -349,7 +356,7 @@ class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
         encrypted = mopool.Encrypted()
 
         print(f"UUID: {self.uuid_str(mopool)}")
-        print(f"Name: {mopool.Name()}")
+        print(f"Name: {Default.name_str(mopool)}")
 
         alert_summary = sorted(
             f"{code}: {code.summarize()}"
@@ -532,7 +539,7 @@ class DefaultTable(Default):  # pylint: disable=too-few-public-methods
 
         tables = [
             (
-                mopool.Name(),
+                Default.name_str(mopool),
                 physical_size_triple(mopool),
                 properties_string(mopool),
                 self.uuid_str(mopool),
