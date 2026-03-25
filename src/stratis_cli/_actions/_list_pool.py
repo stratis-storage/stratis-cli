@@ -43,7 +43,7 @@ from .._stratisd_constants import ClevisInfo, MetadataVersion, PoolActionAvailab
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import (
-    TABLE_FAILURE_STRING,
+    TABLE_UNKNOWN_STRING,
     TOTAL_USED_FREE,
     get_property,
     print_table,
@@ -412,7 +412,7 @@ class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
         print(f"    Allocated: {Range(mopool.AllocatedSize())}")
         print(
             "    Used: "
-            f"{TABLE_FAILURE_STRING if size_triple.used() is None else size_triple.used()}"
+            f"{TABLE_UNKNOWN_STRING if size_triple.used() is None else size_triple.used()}"
         )
 
     def display(self):
@@ -478,7 +478,7 @@ class DefaultTable(Default):  # pylint: disable=too-few-public-methods
 
             return " / ".join(
                 (
-                    TABLE_FAILURE_STRING if x is None else str(x)
+                    TABLE_UNKNOWN_STRING if x is None else str(x)
                     for x in (
                         size_triple.total(),
                         size_triple.used(),

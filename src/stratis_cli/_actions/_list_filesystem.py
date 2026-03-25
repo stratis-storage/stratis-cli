@@ -27,7 +27,7 @@ from justbytes import Range
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import (
-    TABLE_FAILURE_STRING,
+    TABLE_UNKNOWN_STRING,
     TOTAL_USED_FREE,
     get_property,
     print_table,
@@ -148,7 +148,7 @@ class Table(ListFilesystem):  # pylint: disable=too-few-public-methods
             """
             triple_str = " / ".join(
                 (
-                    TABLE_FAILURE_STRING if x is None else str(x)
+                    TABLE_UNKNOWN_STRING if x is None else str(x)
                     for x in (
                         size_triple.total(),
                         size_triple.used(),
@@ -223,11 +223,11 @@ class Detail(ListFilesystem):  # pylint: disable=too-few-public-methods
         print(f"  Logical size of thin device: {size_triple.total()}")
         print(
             "  Total used (including XFS metadata): "
-            f"{TABLE_FAILURE_STRING if size_triple.used() is None else size_triple.used()}"
+            f"{TABLE_UNKNOWN_STRING if size_triple.used() is None else size_triple.used()}"
         )
         print(
             "  Free: "
-            f"{TABLE_FAILURE_STRING if size_triple.free() is None else size_triple.free()}"
+            f"{TABLE_UNKNOWN_STRING if size_triple.free() is None else size_triple.free()}"
         )
         print()
         print(f"  Size Limit: {limit}")
