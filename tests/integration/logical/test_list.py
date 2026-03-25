@@ -14,9 +14,12 @@
 """
 Test 'list'.
 """
+# isort: STDLIB
+from unittest.mock import patch
+from xml.etree import ElementTree  # nosect B405
 
 # isort: FIRSTPARTY
-from dbus_client_gen import DbusClientUniqueResultError
+from dbus_client_gen import DbusClientMissingPropertyError, DbusClientUniqueResultError
 
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
@@ -206,3 +209,87 @@ class List5TestCase(SimTestCase):
         """
         command_line = self._MENU + [self._POOLNAMES[0], f"--name={self._VOLUMES[2]}"]
         TEST_RUNNER(command_line)
+
+
+class List6TestCase(SimTestCase):
+    """
+    Test listing pools when properties have gone missing.
+    """
+
+    _MENU = ["--propagate", "filesystem", "list"]
+    _POOLNAME = "deadpool"
+    _VOLUMES = ["livery", "liberty", "library"]
+
+    def setUp(self):
+        """
+        Start the stratisd daemon with the simulator. Create a pool.
+        """
+        super().setUp()
+
+        command_line = [
+            "--propagate",
+            "pool",
+            "create",
+            self._POOLNAME,
+        ] + _DEVICE_STRATEGY()
+        RUNNER(command_line)
+
+        for fsname in self._VOLUMES[:2]:
+            command_line = ["filesystem", "create", self._POOLNAME, fsname]
+            RUNNER(command_line)
+
+        command_line = [
+            "filesystem",
+            "snapshot",
+            self._POOLNAME,
+            self._VOLUMES[1],
+            self._VOLUMES[2],
+        ]
+        RUNNER(command_line)
+
+    def test_dropping_properties(self):
+        """
+        Verify no exception thrown if any of filesystem properties are dropped.
+
+        However, avoid dropping Pool, Name, and Uuid properties, because
+        lookup will fail in that case.
+        """
+        # isort: LOCAL
+        import stratis_cli  # pylint: disable=import-outside-toplevel
+        from stratis_cli import _actions  # pylint: disable=import-outside-toplevel
+
+        # pylint: disable=import-outside-toplevel,protected-access
+        from stratis_cli._actions._introspect import (
+            SPECS,
+        )
+
+        filesystem_spec = SPECS[_actions._constants.FILESYSTEM_INTERFACE]
+        spec = ElementTree.fromstring(filesystem_spec)  # nosec B314
+
+        for property_name in [
+            prop.attrib["name"]
+            for prop in spec.findall("./property")
+            if not (prop.attrib["name"] in ("Pool", "Name", "Uuid"))
+        ]:
+            with patch.object(
+                # pylint: disable=protected-access
+                stratis_cli._actions._data.MOFilesystem,  # pyright: ignore
+                property_name,
+                autospec=True,
+                side_effect=DbusClientMissingPropertyError(
+                    "oops",
+                    stratis_cli._actions._constants.FILESYSTEM_INTERFACE,  # pyright: ignore
+                    property_name,
+                ),
+            ):
+                for options in [
+                    [self._POOLNAME],
+                    [self._POOLNAME, f"--name={self._VOLUMES[0]}"],
+                    [self._POOLNAME, f"--name={self._VOLUMES[1]}"],
+                    [self._POOLNAME, f"--name={self._VOLUMES[2]}"],
+                ]:
+                    with self.subTest(
+                        property_name=property_name,
+                        options=options,
+                    ):
+                        TEST_RUNNER(self._MENU + options)
