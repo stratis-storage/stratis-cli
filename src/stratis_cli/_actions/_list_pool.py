@@ -230,6 +230,12 @@ class ListPool(ABC):  # pylint:disable=too-few-public-methods
         List the pools.
         """
 
+    def __init__(self, uuid_formatter: Callable[[UUID | str], str]):
+        """
+        Initializer.
+        """
+        self.uuid_formatter = uuid_formatter
+
 
 class Default(ListPool):
     """
@@ -320,7 +326,7 @@ class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
         :param uuid_formatter: str or UUID -> str
         :param PoolId selection: how to select pools to list
         """
-        self.uuid_formatter = uuid_formatter
+        super().__init__(uuid_formatter)
         self.selection = selection
 
     def _print_detail_view(
@@ -443,14 +449,6 @@ class DefaultTable(Default):  # pylint: disable=too-few-public-methods
     """
     List several pools with a table view.
     """
-
-    def __init__(self, uuid_formatter: Callable[[str | UUID], str]):
-        """
-        Initializer.
-        :param uuid_formatter: function to format a UUID str or UUID
-        :param uuid_formatter: str or UUID -> str
-        """
-        self.uuid_formatter = uuid_formatter
 
     def display(self):
         """
@@ -596,7 +594,7 @@ class StoppedDetail(Stopped):  # pylint: disable=too-few-public-methods
         :param uuid_formatter: str or UUID -> str
         :param PoolId selection: how to select pools to list
         """
-        self.uuid_formatter = uuid_formatter
+        super().__init__(uuid_formatter)
         self.selection = selection
 
     def _print_detail_view(self, pool_uuid: str, pool: StoppedPool):
@@ -689,14 +687,6 @@ class StoppedTable(Stopped):  # pylint: disable=too-few-public-methods
     """
     Table view of one or many stopped pools.
     """
-
-    def __init__(self, uuid_formatter: Callable[[str | UUID], str]):
-        """
-        Initializer.
-        :param uuid_formatter: function to format a UUID str or UUID
-        :param uuid_formatter: str or UUID -> str
-        """
-        self.uuid_formatter = uuid_formatter
 
     def display(self):
         """
