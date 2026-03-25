@@ -313,6 +313,12 @@ class Default(ListPool):
             get_property(mopool.TotalPhysicalUsed(), Range, None),
         )
 
+    def uuid_str(self, mopool: Any) -> str:
+        """
+        Return a string representation of UUID, correctly formatted.
+        """
+        return self.uuid_formatter(mopool.Uuid())
+
 
 class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
     """
@@ -342,7 +348,7 @@ class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
         """
         encrypted = mopool.Encrypted()
 
-        print(f"UUID: {self.uuid_formatter(mopool.Uuid())}")
+        print(f"UUID: {self.uuid_str(mopool)}")
         print(f"Name: {mopool.Name()}")
 
         alert_summary = sorted(
@@ -529,7 +535,7 @@ class DefaultTable(Default):  # pylint: disable=too-few-public-methods
                 mopool.Name(),
                 physical_size_triple(mopool),
                 properties_string(mopool),
-                self.uuid_formatter(mopool.Uuid()),
+                self.uuid_str(mopool),
                 ", ".join(
                     sorted(
                         str(code)
