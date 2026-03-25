@@ -537,21 +537,24 @@ class DefaultTable(Default):  # pylint: disable=too-few-public-methods
             (objpath, MOPool(info)) for objpath, info in pools().search(managed_objects)
         ]
 
+        def alerts_str(mopool: Any, pool_object_path: str) -> str:
+            return ", ".join(
+                sorted(
+                    str(code)
+                    for code in (
+                        Default.alert_codes(mopool)
+                        + alerts.alert_codes(pool_object_path)
+                    )
+                )
+            )
+
         tables = [
             (
                 Default.name_str(mopool),
                 physical_size_triple(mopool),
                 properties_string(mopool),
                 self.uuid_str(mopool),
-                ", ".join(
-                    sorted(
-                        str(code)
-                        for code in (
-                            Default.alert_codes(mopool)
-                            + alerts.alert_codes(pool_object_path)
-                        )
-                    )
-                ),
+                alerts_str(mopool, pool_object_path),
             )
             for (pool_object_path, mopool) in pools_with_props
         ]
