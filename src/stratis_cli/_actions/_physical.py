@@ -17,6 +17,7 @@ Miscellaneous physical actions.
 
 # isort: STDLIB
 from argparse import Namespace
+from typing import Any
 
 # isort: THIRDPARTY
 from justbytes import Range
@@ -79,7 +80,13 @@ class PhysicalActions:
             ).search(managed_objects)
         )
 
-        def paths(modev):
+        def pool_name_str(modev: Any) -> str:
+            """
+            Return the name of the pool this device belongs to.
+            """
+            return path_to_name.get(modev.Pool(), TABLE_UNKNOWN_STRING)
+
+        def paths_str(modev: Any) -> str:
             """
             Return <physical_path> (<metadata_path>) if they are different,
             otherwise, just <metadata_path>.
@@ -100,7 +107,7 @@ class PhysicalActions:
                 else f"{physical_path} ({metadata_path})"
             )
 
-        def size(modev):
+        def size_str(modev: Any) -> str:
             """
             Return in-use size (observed size) if they are different, otherwise
             just in-use size.
@@ -113,24 +120,30 @@ class PhysicalActions:
                 else f"{in_use_size} ({observed_size})"
             )
 
-        def tier_str(value):
+        def tier_str(modev: Any) -> str:
             """
             String representation of a tier.
             """
             try:
-                return str(BlockDevTiers(value))
+                return str(BlockDevTiers(modev.Tier()))
             except ValueError:  # pragma: no cover
                 return TABLE_UNKNOWN_STRING
 
         format_uuid = get_uuid_formatter(namespace.unhyphenated_uuids)
 
+        def uuid_str(modev: Any) -> str:
+            """
+            String representation of UUID.
+            """
+            return format_uuid(modev.Uuid())
+
         tables = [
             [
-                path_to_name.get(modev.Pool(), TABLE_UNKNOWN_STRING),
-                paths(modev),
-                size(modev),
-                tier_str(modev.Tier()),
-                format_uuid(modev.Uuid()),
+                pool_name_str(modev),
+                paths_str(modev),
+                size_str(modev),
+                tier_str(modev),
+                uuid_str(modev),
             ]
             for modev in modevs
         ]
