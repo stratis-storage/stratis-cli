@@ -23,7 +23,6 @@ from typing import (
     Any,
     Callable,
     Iterable,
-    List,
     Mapping,
 )
 from uuid import UUID
@@ -158,7 +157,7 @@ class DeviceSizeChangedAlerts:  # pylint: disable=too-few-public-methods
 
         (self.increased, self.decreased) = (increased, decreased)
 
-    def alert_codes(self, pool_object_path: str) -> List[PoolDeviceSizeChangeAlert]:
+    def alert_codes(self, pool_object_path: str) -> list[PoolDeviceSizeChangeAlert]:
         """
         Get the code from sets and one pool object path.
 
@@ -267,7 +266,7 @@ class Default(ListPool):
     @staticmethod
     def alert_codes(
         mopool: Any,
-    ) -> List[PoolEncryptionAlert | PoolAllocSpaceAlert | PoolMaintenanceAlert]:
+    ) -> list[PoolEncryptionAlert | PoolAllocSpaceAlert | PoolMaintenanceAlert]:
         """
         Return alert code objects for a pool.
 
@@ -286,7 +285,7 @@ class Default(ListPool):
 
         (vkl_is_bool, volume_key_loaded) = Default._volume_key_loaded(mopool)
 
-        pool_encryption_alerts = (
+        pool_encryption_alerts: list[PoolEncryptionAlert] = (
             [PoolEncryptionAlert.VOLUME_KEY_NOT_LOADED]
             if metadata_version is MetadataVersion.V2
             and mopool.Encrypted()
