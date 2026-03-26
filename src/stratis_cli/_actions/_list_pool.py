@@ -30,6 +30,9 @@ from uuid import UUID
 # isort: THIRDPARTY
 from justbytes import Range
 
+# isort: FIRSTPARTY
+from dbus_client_gen import DbusClientMissingPropertyError
+
 from .._alerts import (
     PoolAllocSpaceAlert,
     PoolDeviceSizeChangeAlert,
@@ -245,11 +248,13 @@ class Default(ListPool):
     def metadata_version(mopool: Any) -> MetadataVersion | None:
         """
         Return the metadata version, dealing with the possibility that it
-        might be an error string.
+        might be unparsable.
         """
         try:
             return MetadataVersion(int(mopool.MetadataVersion()))
         except ValueError:  # pragma: no cover
+            return None
+        except DbusClientMissingPropertyError:
             return None
 
     @staticmethod
@@ -268,38 +273,49 @@ class Default(ListPool):
         mopool: Any,
     ) -> list[PoolEncryptionAlert | PoolAllocSpaceAlert | PoolMaintenanceAlert]:
         """
-        Return alert code objects for a pool.
+        Return alert code objects for a pool. If some D-Bus properties are
+        missing, the information related to those D-Bus properties is simply
+        omitted.
 
         :param mopool: object to access pool properties
 
         :returns: list of alerts obtainable from GetManagedObjects properties
         """
-        action_availability = PoolActionAvailability[str(mopool.AvailableActions())]
-        availability_alerts = action_availability.pool_maintenance_alerts()
+        try:
+            action_availability = PoolActionAvailability[str(mopool.AvailableActions())]
+            availability_alerts = action_availability.pool_maintenance_alerts()
 
-        no_alloc_space_alerts = (
-            [PoolAllocSpaceAlert.NO_ALLOC_SPACE] if mopool.NoAllocSpace() else []
-        )
+        except DbusClientMissingPropertyError:
+            availability_alerts = []
+
+        try:
+            no_alloc_space_alerts = (
+                [PoolAllocSpaceAlert.NO_ALLOC_SPACE] if mopool.NoAllocSpace() else []
+            )
+        except DbusClientMissingPropertyError:
+            no_alloc_space_alerts = []
 
         metadata_version = Default.metadata_version(mopool)
 
-        (vkl_is_bool, volume_key_loaded) = Default._volume_key_loaded(mopool)
-
-        pool_encryption_alerts: list[PoolEncryptionAlert] = (
-            [PoolEncryptionAlert.VOLUME_KEY_NOT_LOADED]
-            if metadata_version is MetadataVersion.V2
-            and mopool.Encrypted()
-            and vkl_is_bool
-            and not volume_key_loaded
-            else []
-        ) + (
-            [PoolEncryptionAlert.VOLUME_KEY_STATUS_UNKNOWN]
-            if metadata_version is MetadataVersion.V2
-            and mopool.Encrypted()
-            and not vkl_is_bool
-            else []
-        )
-
+        try:
+            (vkl_is_bool, volume_key_loaded) = Default._volume_key_loaded(mopool)
+            encrypted = bool(mopool.Encrypted())
+            pool_encryption_alerts: list[PoolEncryptionAlert] = (
+                [PoolEncryptionAlert.VOLUME_KEY_NOT_LOADED]
+                if metadata_version is MetadataVersion.V2
+                and encrypted
+                and vkl_is_bool
+                and not volume_key_loaded
+                else []
+            ) + (
+                [PoolEncryptionAlert.VOLUME_KEY_STATUS_UNKNOWN]
+                if metadata_version is MetadataVersion.V2
+                and encrypted
+                and not vkl_is_bool
+                else []
+            )
+        except DbusClientMissingPropertyError:
+            pool_encryption_alerts = [PoolEncryptionAlert.VOLUME_KEY_STATUS_UNKNOWN]
         return availability_alerts + no_alloc_space_alerts + pool_encryption_alerts
 
     @staticmethod
@@ -307,23 +323,36 @@ class Default(ListPool):
         """
         Calculate SizeTriple from size information.
         """
-        return SizeTriple(
-            Range(mopool.TotalPhysicalSize()),
-            get_property(mopool.TotalPhysicalUsed(), Range, None),
-        )
+        try:
+            size = Range(mopool.TotalPhysicalSize())
+        except DbusClientMissingPropertyError:
+            size = None
+
+        try:
+            used = get_property(mopool.TotalPhysicalUsed(), Range, None)
+        except DbusClientMissingPropertyError:
+            used = None
+
+        return SizeTriple(size, used)
 
     def uuid_str(self, mopool: Any) -> str:
         """
         Return a string representation of UUID, correctly formatted.
         """
-        return self.uuid_formatter(mopool.Uuid())
+        try:
+            return self.uuid_formatter(mopool.Uuid())
+        except DbusClientMissingPropertyError:
+            return TABLE_UNKNOWN_STRING
 
     @staticmethod
     def name_str(mopool: Any) -> str:
         """
         Return a string representation of the pool name.
         """
-        return mopool.Name()
+        try:
+            return mopool.Name()
+        except DbusClientMissingPropertyError:
+            return TABLE_UNKNOWN_STRING
 
 
 class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
@@ -343,7 +372,7 @@ class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
 
     def _print_detail_view(
         self, pool_object_path: str, mopool: Any, alerts: DeviceSizeChangedAlerts
-    ):  # pylint: disable=too-many-locals
+    ):  # pylint: disable=too-many-locals,too-many-statements,too-many-branches
         """
         Print the detailed view for a single pool.
 
@@ -352,8 +381,6 @@ class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
         :param MOPool mopool: properties of the pool
         :param DeviceSizeChangedAlerts alerts: pool alerts
         """
-        encrypted = mopool.Encrypted()
-
         print(f"UUID: {self.uuid_str(mopool)}")
         print(f"Name: {Default.name_str(mopool)}")
 
@@ -363,75 +390,130 @@ class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
             + Default.alert_codes(mopool)
         )
         print(f"Alerts: {len(alert_summary)}")
-        for line in alert_summary:  # pragma: no cover
+        for line in alert_summary:
             print(f"     {line}")
 
         metadata_version = Default.metadata_version(mopool)
-
-        print(f"Metadata Version: {metadata_version}")
-
-        print(
-            f"Actions Allowed: "
-            f"{PoolActionAvailability[str(mopool.AvailableActions())].name}"
+        metadata_version_str = (
+            metadata_version if metadata_version is not None else TABLE_UNKNOWN_STRING
         )
-        print(f"Cache: {'Yes' if mopool.HasCache() else 'No'}")
-        print(f"Filesystem Limit: {mopool.FsLimit()}")
-        print(
-            f"Allows Overprovisioning: "
-            f"{'Yes' if mopool.Overprovisioning() else 'No'}"
-        )
+        print(f"Metadata Version: {metadata_version_str}")
 
-        if encrypted:
+        try:
+            actions_allowed_str = PoolActionAvailability[
+                str(mopool.AvailableActions())
+            ].name
+        except DbusClientMissingPropertyError:
+            actions_allowed_str = TABLE_UNKNOWN_STRING
+        print(f"Actions Allowed: {actions_allowed_str}")
+
+        try:
+            cache_str = "Yes" if mopool.HasCache() else "No"
+        except DbusClientMissingPropertyError:
+            cache_str = TABLE_UNKNOWN_STRING
+        print(f"Cache: {cache_str}")
+
+        try:
+            fs_limit_str = mopool.FsLimit()
+        except DbusClientMissingPropertyError:
+            fs_limit_str = TABLE_UNKNOWN_STRING
+        print(f"Filesystem Limit: {fs_limit_str}")
+
+        try:
+            allow_overprovisioning_str = "Yes" if mopool.Overprovisioning() else "No"
+        except DbusClientMissingPropertyError:
+            allow_overprovisioning_str = TABLE_UNKNOWN_STRING
+        print(f"Allows Overprovisioning: {allow_overprovisioning_str}")
+
+        try:
+            encrypted = bool(mopool.Encrypted())
+        except DbusClientMissingPropertyError:
+            encrypted = None
+
+        if encrypted is None:
+            print(f"Encryption Enabled: {TABLE_UNKNOWN_STRING}")
+        elif encrypted is True:
             print("Encryption Enabled: Yes")
 
             if metadata_version is MetadataVersion.V1:  # pragma: no cover
-                key_description_str = _non_existent_or_inconsistent_to_str(
-                    EncryptionInfoKeyDescription(mopool.KeyDescriptions())
-                )
+                try:
+                    key_description_str = _non_existent_or_inconsistent_to_str(
+                        EncryptionInfoKeyDescription(mopool.KeyDescriptions())
+                    )
+                except DbusClientMissingPropertyError:
+                    key_description_str = TABLE_UNKNOWN_STRING
                 print(f"    Key Description: {key_description_str}")
 
-                clevis_info_str = _non_existent_or_inconsistent_to_str(
-                    EncryptionInfoClevis(mopool.ClevisInfos()),
-                    interp=_clevis_to_str,
-                )
+                try:
+                    clevis_info_str = _non_existent_or_inconsistent_to_str(
+                        EncryptionInfoClevis(mopool.ClevisInfos()),
+                        interp=_clevis_to_str,
+                    )
+                except DbusClientMissingPropertyError:
+                    clevis_info_str = TABLE_UNKNOWN_STRING
                 print(f"    Clevis Configuration: {clevis_info_str}")
             elif metadata_version is MetadataVersion.V2:
-                encryption_infos = sorted(
-                    [
+
+                try:
+                    free_str = get_property(
+                        mopool.FreeTokenSlots(),
+                        lambda x: str(int(x)),
+                        TABLE_UNKNOWN_STRING,
+                    )
+                except DbusClientMissingPropertyError:
+                    free_str = TABLE_UNKNOWN_STRING
+                print(f"    Free Token Slots Remaining: {free_str}")
+
+                try:
+                    key_encryption_infos = [
                         TokenSlotInfo(token_slot, key=str(description))
                         for token_slot, description in mopool.KeyDescriptions()
                     ]
-                    + [
+                except DbusClientMissingPropertyError:
+                    key_encryption_infos = []
+
+                try:
+                    clevis_encryption_infos = [
                         TokenSlotInfo(
                             token_slot, clevis=(str(pin), json.loads(str(config)))
                         )
                         for token_slot, (pin, config) in mopool.ClevisInfos()
-                    ],
+                    ]
+                except DbusClientMissingPropertyError:
+                    clevis_encryption_infos = []
+
+                encryption_infos = sorted(
+                    key_encryption_infos + clevis_encryption_infos,
                     key=lambda x: x.token_slot,
                 )
-
-                free_valid, free = mopool.FreeTokenSlots()
-                print(
-                    f'    Free Token Slots Remaining: {int(free) if free_valid else "<UNKNOWN>"}'
-                )
-
-                for info in encryption_infos:
-                    for line in str(info).split(os.linesep):
-                        print(f"    {line}")
-            else:  # pragma: no cover
-                pass
+                if encryption_infos == []:  # pragma: no cover
+                    print("    No token slot information available")
+                else:
+                    for info in encryption_infos:
+                        for line in str(info).split(os.linesep):
+                            print(f"    {line}")
         else:
             print("Encryption Enabled: No")
 
         size_triple = Default.size_triple(mopool)
 
-        print(f"Fully Allocated: {'Yes' if mopool.NoAllocSpace() else 'No'}")
-        print(f"    Size: {size_triple.total()}")
-        print(f"    Allocated: {Range(mopool.AllocatedSize())}")
-        print(
-            "    Used: "
-            f"{TABLE_UNKNOWN_STRING if size_triple.used() is None else size_triple.used()}"
-        )
+        def size_str(value: Range | None) -> str:
+            return TABLE_UNKNOWN_STRING if value is None else str(value)
+
+        try:
+            fully_allocated_str = "Yes" if mopool.NoAllocSpace() else "No"
+        except DbusClientMissingPropertyError:
+            fully_allocated_str = TABLE_UNKNOWN_STRING
+        print(f"Fully Allocated: {fully_allocated_str}")
+
+        print(f"    Size: {size_str(size_triple.total())}")
+
+        try:
+            allocated_size = Range(mopool.AllocatedSize())
+        except DbusClientMissingPropertyError:
+            allocated_size = None
+        print(f"    Allocated: {size_str(allocated_size)}")
+        print(f"    Used: {size_str(size_triple.used())}")
 
     def display(self):
         """
@@ -507,7 +589,7 @@ class DefaultTable(Default):  # pylint: disable=too-few-public-methods
             :type props_map: dict of str * any
             """
 
-            def gen_string(has_property: bool, code: str) -> str:
+            def gen_string(has_property: bool | None, code: str) -> str:
                 """
                 Generate the display string for a boolean property
 
@@ -516,15 +598,41 @@ class DefaultTable(Default):  # pylint: disable=too-few-public-methods
                 :returns: the generated string
                 :rtype: str
                 """
-                return (" " if has_property else "~") + code
+                return (
+                    "?"
+                    if has_property is None
+                    else (" " if has_property else "~") + code
+                )
 
             metadata_version = Default.metadata_version(mopool)
 
+            try:
+                has_cache = bool(mopool.HasCache())
+            except DbusClientMissingPropertyError:
+                has_cache = None
+
+            try:
+                encrypted = bool(mopool.Encrypted())
+            except DbusClientMissingPropertyError:
+                encrypted = None
+
+            try:
+                overprovisioning = bool(mopool.Overprovisioning())
+            except DbusClientMissingPropertyError:
+                overprovisioning = None
+
             props_list = [
-                (metadata_version in (MetadataVersion.V1, None), "Le"),
-                (bool(mopool.HasCache()), "Ca"),
-                (bool(mopool.Encrypted()), "Cr"),
-                (bool(mopool.Overprovisioning()), "Op"),
+                (
+                    (
+                        None
+                        if metadata_version is None
+                        else metadata_version is MetadataVersion.V1
+                    ),
+                    "Le",
+                ),
+                (has_cache, "Ca"),
+                (encrypted, "Cr"),
+                (overprovisioning, "Op"),
             ]
             return ",".join(gen_string(x, y) for x, y in props_list)
 
