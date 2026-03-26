@@ -248,7 +248,7 @@ class Default(ListPool):
             return None
 
     @staticmethod
-    def _volume_key_loaded(mopool: Any) -> tuple[bool, bool] | tuple[bool, str]:
+    def _volume_key_loaded(mopool: Any) -> tuple[bool, bool | str]:
         """
         The string result is an error message indicating that the volume key
         state is unknown.
