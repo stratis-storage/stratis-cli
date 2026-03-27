@@ -33,7 +33,8 @@ jobs:
           - dependencies: yamllint
             task: make -f Makefile yamllint
     runs-on: ubuntu-latest
-    container: fedora:42  # CURRENT DEVELOPMENT ENVIRONMENT
+    container:
+      image: quay.io/fedora/fedora:42  # CURRENT DEVELOPMENT ENVIRONMENT
     steps:
       - uses: actions/checkout@v6
         with:

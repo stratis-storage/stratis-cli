@@ -50,7 +50,8 @@ jobs:
               PATH=${PATH}:/github/home/.local/bin PYTHONPATH=./src
               make -f Makefile fmt-ci
     runs-on: ubuntu-latest
-    container: fedora:42  # CURRENT DEVELOPMENT ENVIRONMENT
+    container:
+      image: quay.io/fedora/fedora:42  # CURRENT DEVELOPMENT ENVIRONMENT
     steps:
       - uses: actions/checkout@v6
         with:
@@ -71,7 +72,8 @@ jobs:
 
   check-typos:
     runs-on: ubuntu-latest
-    container: fedora:42  # CURRENT DEVELOPMENT ENVIRONMENT
+    container:
+      image: quay.io/fedora/fedora:42  # CURRENT DEVELOPMENT ENVIRONMENT
     steps:
       - name: Install dependencies
         run: >
@@ -100,7 +102,7 @@ jobs:
           - python: "3.12"  # LOWEST SUPPORTED PYTHON TOOLCHAIN
     runs-on: ubuntu-latest
     container:
-      image: fedora:42  # CURRENT DEVELOPMENT ENVIRONMENT
+      image: quay.io/fedora/fedora:42  # CURRENT DEVELOPMENT ENVIRONMENT
       options: --privileged --userns=host --ipc=host -v /run/dbus/system_bus_socket:/run/dbus/system_bus_socket:ro -v /usr/share/dbus-1:/usr/share/dbus-1
     steps:
       - uses: dtolnay/rust-toolchain@master
@@ -176,7 +178,7 @@ jobs:
     needs: test-runs
     runs-on: ubuntu-latest
     container:
-      image: fedora:42  # CURRENT DEVELOPMENT ENVIRONMENT
+      image: quay.io/fedora/fedora:42  # CURRENT DEVELOPMENT ENVIRONMENT
       options: --privileged --userns=host --ipc=host -v /run/dbus/system_bus_socket:/run/dbus/system_bus_socket:ro -v /usr/share/dbus-1:/usr/share/dbus-1
     steps:
       - uses: actions/checkout@v6
