@@ -141,9 +141,9 @@ class Table(ListFilesystem):  # pylint: disable=too-few-public-methods
             size_triple: SizeTriple, limit: Optional[Range]
         ) -> str:
             """
-            Calculate the triple to display for filesystem size.
+            Calculate the string to display for filesystem sizes.
 
-            :returns: a string a formatted string showing all three values
+            :returns: a properly formatted string
             :rtype: str
             """
             triple_str = " / ".join(
