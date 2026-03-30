@@ -17,17 +17,20 @@ Filesystem listing.
 
 # isort: STDLIB
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, List
 
 # isort: THIRDPARTY
 from dateutil import parser as date_parser
 from dbus import ObjectPath, String
 from justbytes import Range
 
+# isort: FIRSTPARTY
+from dbus_client_gen import DbusClientMissingPropertyError
+
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import (
-    TABLE_FAILURE_STRING,
+    TABLE_UNKNOWN_STRING,
     TOTAL_USED_FREE,
     get_property,
     print_table,
@@ -124,7 +127,67 @@ class ListFilesystem(ABC):  # pylint: disable=too-few-public-methods
         """
         Calculate size triple
         """
-        return SizeTriple(Range(mofs.Size()), get_property(mofs.Used(), Range, None))
+        try:
+            size = Range(mofs.Size())
+        except DbusClientMissingPropertyError:
+            size = None
+
+        try:
+            used = get_property(mofs.Used(), Range, None)
+        except DbusClientMissingPropertyError:
+            used = None
+
+        return SizeTriple(size, used)
+
+    @staticmethod
+    def limit_str(mofs: Any) -> str:
+        """
+        Return limit representation for printing.
+        """
+        try:
+            return str(get_property(mofs.SizeLimit(), Range, None))
+        except DbusClientMissingPropertyError:
+            return TABLE_UNKNOWN_STRING
+
+    @staticmethod
+    def devnode_str(mofs: Any) -> str:
+        """
+        Return devnode representation for printing.
+        """
+        try:
+            return mofs.Devnode()
+        except DbusClientMissingPropertyError:
+            return TABLE_UNKNOWN_STRING
+
+    @staticmethod
+    def name_str(mofs: Any) -> str:
+        """
+        Return name representation for printing.
+        """
+        try:
+            return mofs.Name()
+        except DbusClientMissingPropertyError:  # pragma: no cover
+            return TABLE_UNKNOWN_STRING
+
+    def uuid_str(self, mofs: Any) -> str:
+        """
+        Return representation of UUID, correctly formatted according to options.
+        """
+        try:
+            return self.uuid_formatter(mofs.Uuid())
+        except DbusClientMissingPropertyError:  # pragma: no cover
+            return TABLE_UNKNOWN_STRING
+
+    def pool_name_str(self, mofs: Any) -> str:
+        """
+        Return the name of this filesystem's pool.
+        """
+        try:
+            return self.pool_object_path_to_pool_name.get(
+                mofs.Pool(), TABLE_UNKNOWN_STRING
+            )
+        except DbusClientMissingPropertyError:  # pragma: no cover
+            return TABLE_UNKNOWN_STRING
 
 
 class Table(ListFilesystem):  # pylint: disable=too-few-public-methods
@@ -137,18 +200,19 @@ class Table(ListFilesystem):  # pylint: disable=too-few-public-methods
         List the filesystems.
         """
 
-        def filesystem_size_quartet(
-            size_triple: SizeTriple, limit: Optional[Range]
-        ) -> str:
+        def filesystem_size_quartet(mofs: Any) -> str:
             """
-            Calculate the triple to display for filesystem size.
+            Calculate the string to display for filesystem sizes.
 
-            :returns: a string a formatted string showing all three values
+            :returns: a properly formatted string
             :rtype: str
             """
+            size_triple = ListFilesystem.size_triple(mofs)
+            limit = ListFilesystem.limit_str(mofs)
+
             triple_str = " / ".join(
                 (
-                    TABLE_FAILURE_STRING if x is None else str(x)
+                    TABLE_UNKNOWN_STRING if x is None else str(x)
                     for x in (
                         size_triple.total(),
                         size_triple.used(),
@@ -160,14 +224,11 @@ class Table(ListFilesystem):  # pylint: disable=too-few-public-methods
 
         tables = [
             (
-                self.pool_object_path_to_pool_name[mofilesystem.Pool()],
-                mofilesystem.Name(),
-                filesystem_size_quartet(
-                    ListFilesystem.size_triple(mofilesystem),
-                    get_property(mofilesystem.SizeLimit(), Range, None),
-                ),
-                mofilesystem.Devnode(),
-                self.uuid_formatter(mofilesystem.Uuid()),
+                self.pool_name_str(mofilesystem),
+                ListFilesystem.name_str(mofilesystem),
+                filesystem_size_quartet(mofilesystem),
+                ListFilesystem.devnode_str(mofilesystem),
+                self.uuid_str(mofilesystem),
             )
             for mofilesystem in self.filesystems_with_props
         ]
@@ -198,36 +259,47 @@ class Detail(ListFilesystem):  # pylint: disable=too-few-public-methods
 
         fs = self.filesystems_with_props[0]
 
-        size_triple = ListFilesystem.size_triple(fs)
-        limit = get_property(fs.SizeLimit(), Range, None)
-        created = (
-            date_parser.isoparse(fs.Created()).astimezone().strftime("%b %d %Y %H:%M")
-        )
+        print(f"UUID: {self.uuid_str(fs)}")
+        print(f"Name: {ListFilesystem.name_str(fs)}")
+        print(f"Pool: {self.pool_name_str(fs)}")
 
-        origin = get_property(fs.Origin(), self.uuid_formatter, None)
-
-        print(f"UUID: {self.uuid_formatter(fs.Uuid())}")
-        print(f"Name: {fs.Name()}")
-        print(f"Pool: {self.pool_object_path_to_pool_name[fs.Pool()]}")
         print()
-        print(f"Device: {fs.Devnode()}")
+        print(f"Device: {ListFilesystem.devnode_str(fs)}")
+
+        try:
+            created = (
+                date_parser.isoparse(fs.Created())
+                .astimezone()
+                .strftime("%b %d %Y %H:%M")
+            )
+        except DbusClientMissingPropertyError:
+            created = TABLE_UNKNOWN_STRING
         print()
         print(f"Created: {created}")
+
         print()
-        print(f"Snapshot origin: {origin}")
-        if origin is not None:
-            scheduled = "Yes" if fs.MergeScheduled() else "No"
-            print(f"    Revert scheduled: {scheduled}")
+        try:
+            origin = get_property(fs.Origin(), self.uuid_formatter, None)
+            print(f"Snapshot origin: {origin}")
+            if origin is not None:
+                try:
+                    scheduled = "Yes" if fs.MergeScheduled() else "No"
+                except DbusClientMissingPropertyError:
+                    scheduled = TABLE_UNKNOWN_STRING
+                print(f"    Revert scheduled: {scheduled}")
+        except DbusClientMissingPropertyError:
+            print(f"Snapshot origin: {TABLE_UNKNOWN_STRING}")
+
+        def size_str(value: Range | None) -> str:
+            return TABLE_UNKNOWN_STRING if value is None else str(value)
+
+        size_triple = ListFilesystem.size_triple(fs)
         print()
         print("Sizes:")
-        print(f"  Logical size of thin device: {size_triple.total()}")
-        print(
-            "  Total used (including XFS metadata): "
-            f"{TABLE_FAILURE_STRING if size_triple.used() is None else size_triple.used()}"
-        )
-        print(
-            "  Free: "
-            f"{TABLE_FAILURE_STRING if size_triple.free() is None else size_triple.free()}"
-        )
+        print(f"  Logical size of thin device: {size_str(size_triple.total())}")
+        print(f"  Total used (including XFS metadata): {size_str(size_triple.used())}")
+        print(f"  Free: {size_str(size_triple.free())}")
+
+        limit = ListFilesystem.limit_str(fs)
         print()
         print(f"  Size Limit: {limit}")

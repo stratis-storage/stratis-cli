@@ -17,9 +17,13 @@ Miscellaneous physical actions.
 
 # isort: STDLIB
 from argparse import Namespace
+from typing import Any
 
 # isort: THIRDPARTY
 from justbytes import Range
+
+# isort: FIRSTPARTY
+from dbus_client_gen import DbusClientMissingPropertyError
 
 from .._stratisd_constants import BlockDevTiers
 from ._connection import get_object
@@ -79,7 +83,16 @@ class PhysicalActions:
             ).search(managed_objects)
         )
 
-        def paths(modev):
+        def pool_name_str(modev: Any) -> str:
+            """
+            Return the name of the pool this device belongs to.
+            """
+            try:
+                return path_to_name.get(modev.Pool(), TABLE_UNKNOWN_STRING)
+            except DbusClientMissingPropertyError:  # pragma: no cover
+                return TABLE_UNKNOWN_STRING
+
+        def paths_str(modev: Any) -> str:
             """
             Return <physical_path> (<metadata_path>) if they are different,
             otherwise, just <metadata_path>.
@@ -91,8 +104,15 @@ class PhysicalActions:
             :returns: the string to print
             :rtype: str
             """
-            metadata_path = modev.Devnode()
-            physical_path = modev.PhysicalPath()
+            try:
+                metadata_path = modev.Devnode()
+            except DbusClientMissingPropertyError:
+                metadata_path = TABLE_UNKNOWN_STRING
+
+            try:
+                physical_path = modev.PhysicalPath()
+            except DbusClientMissingPropertyError:
+                physical_path = TABLE_UNKNOWN_STRING
 
             return (
                 metadata_path
@@ -100,37 +120,58 @@ class PhysicalActions:
                 else f"{physical_path} ({metadata_path})"
             )
 
-        def size(modev):
+        def size_str(modev: Any) -> str:
             """
             Return in-use size (observed size) if they are different, otherwise
             just in-use size.
             """
-            in_use_size = Range(modev.TotalPhysicalSize())
-            observed_size = get_property(modev.NewPhysicalSize(), Range, in_use_size)
+            try:
+                in_use_size = Range(modev.TotalPhysicalSize())
+            except DbusClientMissingPropertyError:
+                in_use_size = TABLE_UNKNOWN_STRING
+
+            try:
+                observed_size = get_property(
+                    modev.NewPhysicalSize(), Range, in_use_size
+                )
+            except DbusClientMissingPropertyError:
+                observed_size = TABLE_UNKNOWN_STRING
+
             return (
                 f"{in_use_size}"
                 if in_use_size == observed_size
                 else f"{in_use_size} ({observed_size})"
             )
 
-        def tier_str(value):
+        def tier_str(modev: Any) -> str:
             """
             String representation of a tier.
             """
             try:
-                return str(BlockDevTiers(value))
+                return str(BlockDevTiers(modev.Tier()))
             except ValueError:  # pragma: no cover
+                return TABLE_UNKNOWN_STRING
+            except DbusClientMissingPropertyError:
                 return TABLE_UNKNOWN_STRING
 
         format_uuid = get_uuid_formatter(namespace.unhyphenated_uuids)
 
+        def uuid_str(modev: Any) -> str:
+            """
+            String representation of UUID.
+            """
+            try:
+                return format_uuid(modev.Uuid())
+            except DbusClientMissingPropertyError:
+                return TABLE_UNKNOWN_STRING
+
         tables = [
             [
-                path_to_name.get(modev.Pool(), TABLE_UNKNOWN_STRING),
-                paths(modev),
-                size(modev),
-                tier_str(modev.Tier()),
-                format_uuid(modev.Uuid()),
+                pool_name_str(modev),
+                paths_str(modev),
+                size_str(modev),
+                tier_str(modev),
+                uuid_str(modev),
             ]
             for modev in modevs
         ]

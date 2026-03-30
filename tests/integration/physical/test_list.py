@@ -15,8 +15,12 @@
 Test 'list'.
 """
 
+# isort: STDLIB
+from unittest.mock import patch
+from xml.etree import ElementTree  # nosec B405
+
 # isort: FIRSTPARTY
-from dbus_client_gen import DbusClientUniqueResultError
+from dbus_client_gen import DbusClientMissingPropertyError, DbusClientUniqueResultError
 
 # isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
@@ -97,3 +101,57 @@ class List2TestCase(SimTestCase):
         """
         command_line = self._MENU[:-1]
         TEST_RUNNER(command_line)
+
+
+class List3TestCase(SimTestCase):
+    """
+    Test listing devices when properties have gone missing.
+    """
+
+    _MENU = ["--propagate", "blockdev", "list"]
+    _POOLNAME = "deadpool"
+
+    def setUp(self):
+        """
+        Start the stratisd daemon with the simulator.
+        """
+        super().setUp()
+        command_line = ["pool", "create"] + [self._POOLNAME] + _DEVICE_STRATEGY()
+        RUNNER(command_line)
+
+    def test_dropping_properties(self):
+        """
+        Verify no exception thrown if any of device properties are dropped.
+        """
+        # isort: LOCAL
+        import stratis_cli  # pylint: disable=import-outside-toplevel
+        from stratis_cli import _actions  # pylint: disable=import-outside-toplevel
+
+        # pylint: disable=import-outside-toplevel,protected-access
+        from stratis_cli._actions._introspect import (
+            SPECS,
+        )
+
+        blockdev_spec = SPECS[_actions._constants.BLOCKDEV_INTERFACE]
+        spec = ElementTree.fromstring(blockdev_spec)  # nosec B314
+
+        for property_name in [
+            prop.attrib["name"]
+            for prop in spec.findall("./property")
+            if prop.attrib["name"] != "Pool"
+        ]:
+            with patch.object(
+                # pylint: disable=protected-access
+                stratis_cli._actions._data.MODev,  # pyright: ignore
+                property_name,
+                autospec=True,
+                side_effect=DbusClientMissingPropertyError(
+                    "oops",
+                    stratis_cli._actions._constants.BLOCKDEV_INTERFACE,  # pyright: ignore
+                    property_name,
+                ),
+            ):
+                with self.subTest(
+                    property_name=property_name,
+                ):
+                    TEST_RUNNER(self._MENU + [self._POOLNAME])
