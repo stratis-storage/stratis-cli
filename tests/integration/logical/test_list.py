@@ -255,13 +255,11 @@ class List6TestCase(SimTestCase):
         lookup will fail in that case.
         """
         # isort: LOCAL
-        import stratis_cli  # pylint: disable=import-outside-toplevel
-        from stratis_cli import _actions  # pylint: disable=import-outside-toplevel
+        import stratis_cli  # noqa: PLC0415
+        from stratis_cli import _actions  # noqa: PLC0415
 
-        # pylint: disable=import-outside-toplevel,protected-access
-        from stratis_cli._actions._introspect import (
-            SPECS,
-        )
+        # pylint: disable=protected-access
+        from stratis_cli._actions._introspect import SPECS  # noqa: PLC0415
 
         filesystem_spec = SPECS[_actions._constants.FILESYSTEM_INTERFACE]
         spec = ElementTree.fromstring(filesystem_spec)

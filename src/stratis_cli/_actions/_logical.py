@@ -52,8 +52,13 @@ class LogicalActions:
         """
         # pylint: disable=too-many-locals
 
-        # pylint: disable=import-outside-toplevel
-        from ._data import MOFilesystem, ObjectManager, Pool, filesystems, pools
+        from ._data import (  # noqa: PLC0415
+            MOFilesystem,
+            ObjectManager,
+            Pool,
+            filesystems,
+            pools,
+        )
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -150,8 +155,13 @@ class LogicalActions:
         """
         # pylint: disable=too-many-locals
 
-        # pylint: disable=import-outside-toplevel
-        from ._data import MOFilesystem, ObjectManager, Pool, filesystems, pools
+        from ._data import (  # noqa: PLC0415
+            MOFilesystem,
+            ObjectManager,
+            Pool,
+            filesystems,
+            pools,
+        )
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -212,8 +222,7 @@ class LogicalActions:
         :raises StratisCliEngineError:
         :raises StratisCliNoChangeError:
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, Pool, filesystems, pools
+        from ._data import ObjectManager, Pool, filesystems, pools  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -248,8 +257,12 @@ class LogicalActions:
         :raises StratisCliEngineError:
         :raises StratisCliNoChangeError:
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import Filesystem, ObjectManager, filesystems, pools
+        from ._data import (  # noqa: PLC0415
+            Filesystem,
+            ObjectManager,
+            filesystems,
+            pools,
+        )
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -279,8 +292,13 @@ class LogicalActions:
         """
         Set an upper limit on the size of the filesystem.
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import Filesystem, MOFilesystem, ObjectManager, filesystems, pools
+        from ._data import (  # noqa: PLC0415
+            Filesystem,
+            MOFilesystem,
+            ObjectManager,
+            filesystems,
+            pools,
+        )
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -317,8 +335,13 @@ class LogicalActions:
         """
         Unset upper limit on the size of the filesystem.
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import Filesystem, MOFilesystem, ObjectManager, filesystems, pools
+        from ._data import (  # noqa: PLC0415
+            Filesystem,
+            MOFilesystem,
+            ObjectManager,
+            filesystems,
+            pools,
+        )
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -345,8 +368,13 @@ class LogicalActions:
         """
         Schedule reverting a snapshot into its origin.
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import Filesystem, MOFilesystem, ObjectManager, filesystems, pools
+        from ._data import (  # noqa: PLC0415
+            Filesystem,
+            MOFilesystem,
+            ObjectManager,
+            filesystems,
+            pools,
+        )
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -377,8 +405,13 @@ class LogicalActions:
         """
         Cancel reverting a snapshot into its origin.
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import Filesystem, MOFilesystem, ObjectManager, filesystems, pools
+        from ._data import (  # noqa: PLC0415
+            Filesystem,
+            MOFilesystem,
+            ObjectManager,
+            filesystems,
+            pools,
+        )
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})

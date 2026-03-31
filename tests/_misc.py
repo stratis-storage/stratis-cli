@@ -351,9 +351,8 @@ def get_pool(proxy, pool_name):
     :rtype: str * dict
     :raise DbusClientUniqueError:
     """
-    # pylint: disable=import-outside-toplevel
     # isort: LOCAL
-    from stratis_cli._actions._data import ObjectManager, pools
+    from stratis_cli._actions._data import ObjectManager, pools  # noqa: PLC0415
 
     managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
     return next(
@@ -369,9 +368,8 @@ def get_pool_blockdevs(proxy, pool_name):
     """
     pool_object_path, _ = get_pool(proxy, pool_name)
 
-    # pylint: disable=import-outside-toplevel
     # isort: LOCAL
-    from stratis_cli._actions._data import MODev, ObjectManager, devs
+    from stratis_cli._actions._data import MODev, ObjectManager, devs  # noqa: PLC0415
 
     managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
     return (
@@ -393,9 +391,8 @@ def stop_pool(pool_name):
     :raises: RuntimeError
     """
 
-    # pylint: disable=import-outside-toplevel
     # isort: LOCAL
-    from stratis_cli._actions._data import Manager
+    from stratis_cli._actions._data import Manager  # noqa: PLC0415
 
     proxy = get_object(TOP_OBJECT)
 

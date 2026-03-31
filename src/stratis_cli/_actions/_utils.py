@@ -274,8 +274,7 @@ def fetch_stopped_pools_property(proxy: ProxyObject) -> Dictionary:
     :raises StratisCliEngineError:
     """
 
-    # pylint: disable=import-outside-toplevel
-    from ._data import Manager
+    from ._data import Manager  # noqa: PLC0415
 
     return Manager.Properties.StoppedPools.Get(proxy)
 

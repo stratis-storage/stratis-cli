@@ -46,8 +46,13 @@ def list_filesystems(
     """
     assert fs_id is None or pool_name is not None
 
-    # pylint: disable=import-outside-toplevel
-    from ._data import MOFilesystem, MOPool, ObjectManager, filesystems, pools
+    from ._data import (  # noqa: PLC0415
+        MOFilesystem,
+        MOPool,
+        ObjectManager,
+        filesystems,
+        pools,
+    )
 
     proxy = get_object(TOP_OBJECT)
     managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})

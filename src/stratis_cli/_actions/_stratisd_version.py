@@ -31,8 +31,7 @@ def check_stratisd_version():
 
     :raises StratisCliStratisdVersionError
     """
-    # pylint: disable=import-outside-toplevel
-    from ._data import Manager0
+    from ._data import Manager0  # noqa: PLC0415
 
     version_spec = SpecifierSet(f">={MINIMUM_STRATISD_VERSION}") & SpecifierSet(
         f"<{MAXIMUM_STRATISD_VERSION}"

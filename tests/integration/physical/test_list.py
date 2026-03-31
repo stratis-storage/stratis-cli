@@ -124,13 +124,11 @@ class List3TestCase(SimTestCase):
         Verify no exception thrown if any of device properties are dropped.
         """
         # isort: LOCAL
-        import stratis_cli  # pylint: disable=import-outside-toplevel
-        from stratis_cli import _actions  # pylint: disable=import-outside-toplevel
+        import stratis_cli  # noqa: PLC0415
+        from stratis_cli import _actions  # noqa: PLC0415
 
-        # pylint: disable=import-outside-toplevel,protected-access
-        from stratis_cli._actions._introspect import (
-            SPECS,
-        )
+        # pylint: disable=protected-access
+        from stratis_cli._actions._introspect import SPECS  # noqa: PLC0415
 
         blockdev_spec = SPECS[_actions._constants.BLOCKDEV_INTERFACE]
         spec = ElementTree.fromstring(blockdev_spec)

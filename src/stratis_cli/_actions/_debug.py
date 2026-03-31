@@ -37,7 +37,7 @@ class TopDebugActions:  # pylint: disable=too-few-public-methods
         """
         Refresh pools from their metadata up.
         """
-        from ._data import Manager  # pylint: disable=import-outside-toplevel
+        from ._data import Manager  # noqa: PLC0415
 
         (return_code, message) = Manager.Methods.RefreshState(
             get_object(TOP_OBJECT), {}
@@ -79,8 +79,7 @@ class PoolDebugActions:  # pylint: disable=too-few-public-methods
         :raises StratisCliEngineError:
         """
 
-        # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, pools
+        from ._data import ObjectManager, pools  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -98,8 +97,7 @@ class PoolDebugActions:  # pylint: disable=too-few-public-methods
         """
         Get some information about the pool-level metadata.
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, Pool, pools
+        from ._data import ObjectManager, Pool, pools  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -138,8 +136,7 @@ class FilesystemDebugActions:  # pylint: disable=too-few-public-methods
         :raises StratisCliEngineError:
         """
 
-        # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, filesystems
+        from ._data import ObjectManager, filesystems  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -161,8 +158,7 @@ class FilesystemDebugActions:  # pylint: disable=too-few-public-methods
         :raises StratisCliEngineError:
         """
 
-        # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, Pool, pools
+        from ._data import ObjectManager, Pool, pools  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -207,8 +203,7 @@ class BlockdevDebugActions:  # pylint: disable=too-few-public-methods
         :raises StratisCliEngineError:
         """
 
-        # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, devs
+        from ._data import ObjectManager, devs  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})

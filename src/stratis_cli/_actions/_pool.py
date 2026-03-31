@@ -69,8 +69,7 @@ def _generate_pools_to_blockdevs(
     :returns: a map of pool names to sets of strings containing blockdevs they own
     :rtype: dict of str * frozenset of str
     """
-    # pylint: disable=import-outside-toplevel
-    from ._data import MODev, MOPool, devs, pools
+    from ._data import MODev, MOPool, devs, pools  # noqa: PLC0415
 
     pool_map = dict(
         (path, str(MOPool(info).Name()))
@@ -177,8 +176,7 @@ class PoolActions:
         :raises StratisCliIncoherenceError:
         :raises StratisCliNameConflictError:
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import Manager, ObjectManager, Pool, pools
+        from ._data import Manager, ObjectManager, Pool, pools  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -266,8 +264,7 @@ class PoolActions:
         :raises StratisCliIncoherenceError:
         :raises StratisCliEngineError:
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import Manager
+        from ._data import Manager  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
 
@@ -292,8 +289,7 @@ class PoolActions:
         :raises StratisCliIncoherenceError:
         :raises StratisCliEngineError:
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import Manager
+        from ._data import Manager  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
 
@@ -377,8 +373,14 @@ class PoolActions:
         :raises StratisCliEngineError:
         :raises StratisCliIncoherenceError:
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import MODev, MOPool, ObjectManager, Pool, devs, pools
+        from ._data import (  # noqa: PLC0415
+            MODev,
+            MOPool,
+            ObjectManager,
+            Pool,
+            devs,
+            pools,
+        )
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -457,8 +459,7 @@ class PoolActions:
         :raises StratisCliEngineError:
         :raises StratisCliIncoherenceError:
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import Manager, ObjectManager, pools
+        from ._data import Manager, ObjectManager, pools  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -495,8 +496,7 @@ class PoolActions:
         :raises StratisCliEngineError:
         :raises StratisCliNoChangeError:
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, Pool, pools
+        from ._data import ObjectManager, Pool, pools  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -527,8 +527,7 @@ class PoolActions:
         :raises StratisCliInUseSameTierError:
         :raises StratisCliPartialChangeError:
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import MODev, ObjectManager, Pool, devs, pools
+        from ._data import MODev, ObjectManager, Pool, devs, pools  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -582,8 +581,7 @@ class PoolActions:
         :raises StratisCliInUseSameTierError:
         :raises StratisCliPartialChangeError:
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import MODev, ObjectManager, Pool, devs, pools
+        from ._data import MODev, ObjectManager, Pool, devs, pools  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -636,8 +634,7 @@ class PoolActions:
         :raises StratisCliEngineError:
         :raises StratisCliIncoherenceError:
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import MODev, ObjectManager, Pool, devs, pools
+        from ._data import MODev, ObjectManager, Pool, devs, pools  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -756,8 +753,7 @@ class PoolActions:
         """
         Set the filesystem limit.
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import MOPool, ObjectManager, Pool, pools
+        from ._data import MOPool, ObjectManager, Pool, pools  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -779,8 +775,7 @@ class PoolActions:
         """
         Set the overprovisioning mode.
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import MOPool, ObjectManager, Pool, pools
+        from ._data import MOPool, ObjectManager, Pool, pools  # noqa: PLC0415
 
         decision = bool(namespace.decision)
 

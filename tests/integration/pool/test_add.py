@@ -127,7 +127,7 @@ class AddDataTestCase1(SimTestCase):
         """
         command_line = self._MENU + [self._POOLNAME] + self._DEVICES
         # isort: LOCAL
-        import stratis_cli  # pylint: disable=import-outside-toplevel
+        import stratis_cli  # noqa: PLC0415
 
         with patch.object(
             # pylint: disable=protected-access
@@ -165,7 +165,7 @@ class AddDataTestCase1(SimTestCase):
         )
         RUNNER(command_line)
         # isort: LOCAL
-        import stratis_cli  # pylint: disable=import-outside-toplevel
+        import stratis_cli  # noqa: PLC0415
 
         with patch.object(
             # pylint: disable=protected-access
@@ -288,7 +288,7 @@ class AddCacheTestCase1(SimTestCase):
         RUNNER(command_line)
 
         # isort: LOCAL
-        import stratis_cli  # pylint: disable=import-outside-toplevel
+        import stratis_cli  # noqa: PLC0415
 
         with patch.object(
             # pylint: disable=protected-access
@@ -314,7 +314,7 @@ class AddCacheTestCase1(SimTestCase):
         """
         command_line = self._MENU + [self._POOLNAME] + self._DEVICES
         # isort: LOCAL
-        import stratis_cli  # pylint: disable=import-outside-toplevel
+        import stratis_cli  # noqa: PLC0415
 
         with patch.object(
             # pylint: disable=protected-access

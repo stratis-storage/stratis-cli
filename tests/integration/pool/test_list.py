@@ -126,9 +126,8 @@ class List2TestCase(SimTestCase):
         """
         Test detailed list view for a specific uuid.
         """
-        # pylint: disable=import-outside-toplevel
         # isort: LOCAL
-        from stratis_cli._actions._data import MOPool
+        from stratis_cli._actions._data import MOPool  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
 
@@ -347,13 +346,11 @@ class List6TestCase(SimTestCase):
         Verify no exception thrown if any of pool properties are dropped.
         """
         # isort: LOCAL
-        import stratis_cli  # pylint: disable=import-outside-toplevel
-        from stratis_cli import _actions  # pylint: disable=import-outside-toplevel
+        import stratis_cli  # noqa: PLC0415
+        from stratis_cli import _actions  # noqa: PLC0415
 
-        # pylint: disable=import-outside-toplevel,protected-access
-        from stratis_cli._actions._introspect import (
-            SPECS,
-        )
+        # pylint: disable=protected-access
+        from stratis_cli._actions._introspect import SPECS  # noqa: PLC0415
 
         pool_spec = SPECS[_actions._constants.POOL_INTERFACE]
         spec = ElementTree.fromstring(pool_spec)
@@ -411,13 +408,11 @@ class List7TestCase(SimTestCase):
         Verify no exception thrown if any of pool properties are dropped.
         """
         # isort: LOCAL
-        import stratis_cli  # pylint: disable=import-outside-toplevel
-        from stratis_cli import _actions  # pylint: disable=import-outside-toplevel
+        import stratis_cli  # noqa: PLC0415
+        from stratis_cli import _actions  # noqa: PLC0415
 
-        # pylint: disable=import-outside-toplevel,protected-access
-        from stratis_cli._actions._introspect import (
-            SPECS,
-        )
+        # pylint: disable=protected-access
+        from stratis_cli._actions._introspect import SPECS  # noqa: PLC0415
 
         pool_spec = SPECS[_actions._constants.POOL_INTERFACE]
         spec = ElementTree.fromstring(pool_spec)

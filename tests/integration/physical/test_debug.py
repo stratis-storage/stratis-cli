@@ -56,10 +56,13 @@ class DebugTestCase(SimTestCase):
         """
 
         # isort: LOCAL
-        # pylint: disable=import-outside-toplevel
-        from stratis_cli._actions._connection import get_object
-        from stratis_cli._actions._constants import TOP_OBJECT
-        from stratis_cli._actions._data import MODev, ObjectManager, devs
+        from stratis_cli._actions._connection import get_object  # noqa: PLC0415
+        from stratis_cli._actions._constants import TOP_OBJECT  # noqa: PLC0415
+        from stratis_cli._actions._data import (  # noqa: PLC0415
+            MODev,
+            ObjectManager,
+            devs,
+        )
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})

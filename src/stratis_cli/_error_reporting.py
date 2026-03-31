@@ -124,9 +124,8 @@ def _interpret_errors_0(
         "org.freedesktop.DBus.Error.ServiceUnknown",
     ):
         try:
-            # pylint: disable=import-outside-toplevel
             # isort: THIRDPARTY
-            import psutil
+            import psutil  # noqa: PLC0415
 
             for proc in psutil.process_iter():
                 try:
@@ -149,7 +148,7 @@ def _interpret_errors_0(
     return None  # pragma: no cover
 
 
-def _interpret_errors_1(  # pylint: disable=too-many-return-statements, too-many-branches
+def _interpret_errors_1(  # noqa: PLR0911,PLR0912
     errors: List[BaseException],
 ) -> Optional[str]:
     """
@@ -253,7 +252,7 @@ def _interpret_errors_1(  # pylint: disable=too-many-return-statements, too-many
     return None  # pragma: no cover
 
 
-def _interpret_errors_2(  # pylint: disable=too-many-return-statements
+def _interpret_errors_2(  # noqa: PLR0911
     errors: List[BaseException],
 ) -> Optional[str]:
     """

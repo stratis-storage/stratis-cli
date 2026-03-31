@@ -24,6 +24,7 @@ from .._misc import RUNNER, TEST_RUNNER, SimTestCase, device_name_list
 
 _ERROR = StratisCliErrorCodes.ERROR
 _DEVICE_STRATEGY = device_name_list(1, 1)
+_MAX_LUKS_TOKEN_SLOTS_ALLOWED_TO_BE_USED = 14
 
 
 class BindTestCase(SimTestCase):
@@ -185,7 +186,7 @@ class BindTestCase3(SimTestCase):
         Run out of token slots to bind to.
         """
 
-        for index in range(15):
+        for index in range(_MAX_LUKS_TOKEN_SLOTS_ALLOWED_TO_BE_USED + 1):
             key_desc = f"key-{index}"
             with RandomKeyTmpFile() as fname:
                 command_line = [
@@ -199,7 +200,7 @@ class BindTestCase3(SimTestCase):
                 RUNNER(command_line)
 
             command_line = self._MENU + ["keyring", self._POOLNAME, key_desc]
-            if index < 14:
+            if index < _MAX_LUKS_TOKEN_SLOTS_ALLOWED_TO_BE_USED:
                 RUNNER(command_line)
             else:
                 self.check_error(StratisCliEngineError, command_line, _ERROR)

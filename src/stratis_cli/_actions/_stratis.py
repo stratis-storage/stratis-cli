@@ -32,7 +32,6 @@ class StratisActions:  # pylint: disable=too-few-public-methods
         """
         List the stratisd version.
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import Manager
+        from ._data import Manager  # noqa: PLC0415
 
         print(f"{Manager.Properties.Version.Get(get_object(TOP_OBJECT))}")

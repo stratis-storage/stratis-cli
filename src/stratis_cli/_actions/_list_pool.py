@@ -146,8 +146,7 @@ class DeviceSizeChangedAlerts:  # pylint: disable=too-few-public-methods
         """
         Initializer.
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import MODev
+        from ._data import MODev  # noqa: PLC0415
 
         (increased, decreased) = (set(), set())
         for _, info in devs_to_search:
@@ -200,7 +199,7 @@ def list_pools(
             klass = StoppedTable(uuid_formatter)
         else:
             klass = StoppedDetail(uuid_formatter, selection)
-    else:
+    else:  # noqa: PLR5501
         if selection is None:
             klass = DefaultTable(uuid_formatter)
         else:
@@ -371,9 +370,9 @@ class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
         super().__init__(uuid_formatter)
         self.selection = selection
 
-    def _print_detail_view(
+    def _print_detail_view(  # noqa: PLR0912,PLR0915
         self, pool_object_path: str, mopool: Any, alerts: DeviceSizeChangedAlerts
-    ):  # pylint: disable=too-many-locals,too-many-statements,too-many-branches
+    ):
         """
         Print the detailed view for a single pool.
 
@@ -532,8 +531,7 @@ class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
         """
         List a single pool in detail.
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import MOPool, ObjectManager, devs, pools
+        from ._data import MOPool, ObjectManager, devs, pools  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
 
@@ -561,8 +559,7 @@ class DefaultTable(Default):  # pylint: disable=too-few-public-methods
         """
         List pools in table view.
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import MOPool, ObjectManager, devs, pools
+        from ._data import MOPool, ObjectManager, devs, pools  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
 

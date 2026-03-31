@@ -49,8 +49,7 @@ class PhysicalActions:
         List devices. If a pool is specified in the namespace, list devices
         for that pool. Otherwise, list all devices for all pools.
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import MODev, MOPool, ObjectManager, devs, pools
+        from ._data import MODev, MOPool, ObjectManager, devs, pools  # noqa: PLC0415
 
         # This method is invoked as the default for "stratis blockdev";
         # the namespace may not have a pool_name field.
