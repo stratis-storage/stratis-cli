@@ -48,7 +48,7 @@ from ._shared import (
 )
 
 
-class IntegrityOptions:  # pylint: disable=too-few-public-methods
+class IntegrityOptions:
     """
     Gathers and verifies integrity options.
     """
@@ -87,7 +87,7 @@ class IntegrityOptions:  # pylint: disable=too-few-public-methods
         namespace.integrity = self
 
 
-class CreateOptions:  # pylint: disable=too-few-public-methods
+class CreateOptions:
     """
     Gathers and verifies options specified on pool create.
     """

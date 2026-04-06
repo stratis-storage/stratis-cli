@@ -88,8 +88,6 @@ class StratisdVersionTestCase(SimTestCase):
         from stratis_cli._actions import _data  # noqa: PLC0415
 
         command_line = ["--propagate", "daemon", "version"]
-
-        # pylint: disable=protected-access
         with patch.object(
             _data.Manager0.Properties.Version,
             "Get",
@@ -113,21 +111,20 @@ class TestTimeoutErrorResponse(SimTestCase):
 
         command_line = ["--propagate", "key", "list"]
 
-        class _VersionGetter:  # pylint: disable=too-few-public-methods
+        class _VersionGetter:
             @staticmethod
-            def Get(_):  # pylint: disable=invalid-name, no-method-argument
+            def Get(_):
                 """
                 Mock Get method.
                 """
                 dbus_exception = dbus.exceptions.DBusException("msg")
-                dbus_exception._dbus_error_name = "org.freedesktop.DBus.Error.NoReply"  # pylint: disable=protected-access
+                dbus_exception._dbus_error_name = "org.freedesktop.DBus.Error.NoReply"
                 raise DPClientInvocationError(
                     "fake timeout error",
                     MANAGER_0_INTERFACE,
                     DPClientGetPropertyContext("Version"),
                 ) from dbus_exception
 
-        # pylint: disable=protected-access
         with patch.object(
             _data.Manager0.Properties.Version,
             "Get",
@@ -145,23 +142,20 @@ class TestTimeoutErrorResponse(SimTestCase):
         # isort: LOCAL
         from stratis_cli._actions import _data  # noqa: PLC0415
 
-        class _KeyLister:  # pylint: disable=too-few-public-methods
+        class _KeyLister:
             @staticmethod
-            def ListKeys(
-                _object, _args
-            ):  # pylint: disable=invalid-name, no-method-argument
+            def ListKeys(_object, _args):
                 """
                 Mock ListKeys method.
                 """
                 dbus_exception = dbus.exceptions.DBusException("msg")
-                dbus_exception._dbus_error_name = "org.freedesktop.DBus.Error.NoReply"  # pylint: disable=protected-access
+                dbus_exception._dbus_error_name = "org.freedesktop.DBus.Error.NoReply"
                 raise DPClientInvocationError(
                     "fake timeout error",
                     "intf",
                     DPClientMethodCallContext("ListKeys", []),
                 ) from dbus_exception
 
-        # pylint: disable=protected-access
         with patch.object(_data.Manager.Methods, "ListKeys", _KeyLister.ListKeys):
             self.check_error(DPClientInvocationError, command_line, _ERROR)
 

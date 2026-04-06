@@ -38,9 +38,7 @@ from ._formatting import (
 from ._utils import SizeTriple
 
 
-def list_filesystems(
-    uuid_formatter: Callable, *, pool_name=None, fs_id=None
-):  # pylint: disable=too-many-locals
+def list_filesystems(uuid_formatter: Callable, *, pool_name=None, fs_id=None):
     """
     List the specified information about filesystems.
     """
@@ -100,7 +98,7 @@ def list_filesystems(
     klass.display()
 
 
-class ListFilesystem(ABC):  # pylint: disable=too-few-public-methods
+class ListFilesystem(ABC):
     """
     Handle listing a filesystem or filesystems.
     """
@@ -195,7 +193,7 @@ class ListFilesystem(ABC):  # pylint: disable=too-few-public-methods
             return TABLE_UNKNOWN_STRING
 
 
-class Table(ListFilesystem):  # pylint: disable=too-few-public-methods
+class Table(ListFilesystem):
     """
     List filesystems using table format.
     """
@@ -251,7 +249,7 @@ class Table(ListFilesystem):  # pylint: disable=too-few-public-methods
         )
 
 
-class Detail(ListFilesystem):  # pylint: disable=too-few-public-methods
+class Detail(ListFilesystem):
     """
     Do a detailed listing of filesystems.
     """

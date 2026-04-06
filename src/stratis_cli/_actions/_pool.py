@@ -168,7 +168,7 @@ class PoolActions:
     """
 
     @staticmethod
-    def create_pool(namespace: Namespace):  # pylint: disable=too-many-locals
+    def create_pool(namespace: Namespace):
         """
         Create a stratis pool.
 
@@ -366,7 +366,7 @@ class PoolActions:
             raise StratisCliNoChangeError("start", pool_id)
 
     @staticmethod
-    def init_cache(namespace: Namespace):  # pylint: disable=too-many-locals
+    def init_cache(namespace: Namespace):
         """
         Initialize the cache of an existing stratis pool.
 
@@ -517,7 +517,7 @@ class PoolActions:
             raise StratisCliNoChangeError("rename", namespace.new)
 
     @staticmethod
-    def add_data_devices(namespace: Namespace):  # pylint: disable=too-many-locals
+    def add_data_devices(namespace: Namespace):
         """
         Add specified data devices to a pool.
 
@@ -571,7 +571,7 @@ class PoolActions:
             )
 
     @staticmethod
-    def add_cache_devices(namespace: Namespace):  # pylint: disable=too-many-locals
+    def add_cache_devices(namespace: Namespace):
         """
         Add specified cache devices to a pool.
 
@@ -625,7 +625,7 @@ class PoolActions:
             )
 
     @staticmethod
-    def extend_data(namespace: Namespace):  # pylint: disable=too-many-locals
+    def extend_data(namespace: Namespace):
         """
         Extend the pool making use of the additional space offered by component
         devices. Exit immediately if something unexpected happens.

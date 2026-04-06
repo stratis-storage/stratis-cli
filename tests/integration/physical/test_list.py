@@ -126,8 +126,6 @@ class List3TestCase(SimTestCase):
         # isort: LOCAL
         import stratis_cli  # noqa: PLC0415
         from stratis_cli import _actions  # noqa: PLC0415
-
-        # pylint: disable=protected-access
         from stratis_cli._actions._introspect import SPECS  # noqa: PLC0415
 
         blockdev_spec = SPECS[_actions._constants.BLOCKDEV_INTERFACE]
@@ -139,7 +137,6 @@ class List3TestCase(SimTestCase):
             if prop.attrib["name"] != "Pool"
         ]:
             with patch.object(
-                # pylint: disable=protected-access
                 stratis_cli._actions._data.MODev,  # pyright: ignore
                 property_name,
                 autospec=True,

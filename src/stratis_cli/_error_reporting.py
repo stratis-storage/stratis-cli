@@ -377,7 +377,6 @@ def _interpret_errors(errors: List[BaseException]) -> Optional[str]:
     # This indicates that an exception has occurred while an explanation was
     # being constructed. This would be hard to cause, since the code is
     # written in order to make that impossible.
-    # pylint: disable=broad-except
     except Exception:  # pragma: no cover
         return None
 

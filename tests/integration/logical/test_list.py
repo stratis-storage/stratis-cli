@@ -257,8 +257,6 @@ class List6TestCase(SimTestCase):
         # isort: LOCAL
         import stratis_cli  # noqa: PLC0415
         from stratis_cli import _actions  # noqa: PLC0415
-
-        # pylint: disable=protected-access
         from stratis_cli._actions._introspect import SPECS  # noqa: PLC0415
 
         filesystem_spec = SPECS[_actions._constants.FILESYSTEM_INTERFACE]
@@ -270,7 +268,6 @@ class List6TestCase(SimTestCase):
             if not (prop.attrib["name"] in ("Pool", "Name", "Uuid"))
         ]:
             with patch.object(
-                # pylint: disable=protected-access
                 stratis_cli._actions._data.MOFilesystem,  # pyright: ignore
                 property_name,
                 autospec=True,

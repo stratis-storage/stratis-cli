@@ -104,7 +104,6 @@ class _Service:
     Handle starting and stopping the stratisd daemon.
     """
 
-    # pylint: disable=consider-using-with
     def setup(self):
         """
         Start the stratisd daemon with the simulator.
@@ -115,13 +114,11 @@ class _Service:
             raise RuntimeError(
                 "STRATISD environment variable must be set to absolute path of stratisd executable"
             ) from err
-        self._stratisd = (  # pylint: disable=attribute-defined-outside-init
-            subprocess.Popen(
-                [os.path.join(stratisd_var), "--sim"],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True,
-            )
+        self._stratisd = subprocess.Popen(
+            [os.path.join(stratisd_var), "--sim"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
         )
         time.sleep(1)
 

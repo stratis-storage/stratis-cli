@@ -48,10 +48,8 @@ def gen_subparsers(parser, command_line):
     yield (parser, command_line)
     for action in (
         action
-        for action in parser._actions  # pylint: disable=protected-access
-        if isinstance(
-            action, argparse._SubParsersAction  # pylint: disable=protected-access
-        )
+        for action in parser._actions
+        if isinstance(action, argparse._SubParsersAction)
     ):
         for name, subparser in sorted(action.choices.items(), key=lambda x: x[0]):
             # if name is an alias then in it is not the name used in prog

@@ -348,8 +348,6 @@ class List6TestCase(SimTestCase):
         # isort: LOCAL
         import stratis_cli  # noqa: PLC0415
         from stratis_cli import _actions  # noqa: PLC0415
-
-        # pylint: disable=protected-access
         from stratis_cli._actions._introspect import SPECS  # noqa: PLC0415
 
         pool_spec = SPECS[_actions._constants.POOL_INTERFACE]
@@ -359,7 +357,6 @@ class List6TestCase(SimTestCase):
             prop.attrib["name"] for prop in spec.findall("./property")
         ]:
             with patch.object(
-                # pylint: disable=protected-access
                 stratis_cli._actions._data.MOPool,  # pyright: ignore
                 property_name,
                 autospec=True,
@@ -410,8 +407,6 @@ class List7TestCase(SimTestCase):
         # isort: LOCAL
         import stratis_cli  # noqa: PLC0415
         from stratis_cli import _actions  # noqa: PLC0415
-
-        # pylint: disable=protected-access
         from stratis_cli._actions._introspect import SPECS  # noqa: PLC0415
 
         pool_spec = SPECS[_actions._constants.POOL_INTERFACE]
@@ -421,7 +416,6 @@ class List7TestCase(SimTestCase):
             prop.attrib["name"] for prop in spec.findall("./property")
         ]:
             with patch.object(
-                # pylint: disable=protected-access
                 stratis_cli._actions._data.MOPool,  # pyright: ignore
                 property_name,
                 autospec=True,

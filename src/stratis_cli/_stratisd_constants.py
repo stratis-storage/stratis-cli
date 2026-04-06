@@ -68,9 +68,9 @@ class PoolActionAvailability(IntEnum):
     What category of interactions a pool is enabled for.
     """
 
-    fully_operational = 0  # pylint: disable=invalid-name
-    no_ipc_requests = 1  # pylint: disable=invalid-name
-    no_pool_changes = 2  # pylint: disable=invalid-name
+    fully_operational = 0
+    no_ipc_requests = 1
+    no_pool_changes = 2
 
     def pool_maintenance_alerts(self) -> List[PoolMaintenanceAlert]:
         """
@@ -104,8 +104,6 @@ class ClevisInfo:
     """
     Store a representation of Clevis encryption info
     """
-
-    # pylint: disable=too-few-public-methods
 
     def __init__(self, pin: str, config: Mapping[str, Any]):
         """

@@ -22,7 +22,7 @@ from ._connection import get_object
 from ._constants import TOP_OBJECT
 
 
-class StratisActions:  # pylint: disable=too-few-public-methods
+class StratisActions:
     """
     Stratis actions.
     """

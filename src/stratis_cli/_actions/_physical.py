@@ -41,10 +41,8 @@ class PhysicalActions:
     Actions on the physical aspects of a pool.
     """
 
-    # pylint: disable=too-few-public-methods
-
     @staticmethod
-    def list_devices(namespace: Namespace):  # pylint: disable=too-many-locals
+    def list_devices(namespace: Namespace):
         """
         List devices. If a pool is specified in the namespace, list devices
         for that pool. Otherwise, list all devices for all pools.

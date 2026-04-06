@@ -130,7 +130,6 @@ class AddDataTestCase1(SimTestCase):
         import stratis_cli  # noqa: PLC0415
 
         with patch.object(
-            # pylint: disable=protected-access
             stratis_cli._actions._pool,  # pyright: ignore
             "_check_same_tier",
             autospec=True,
@@ -168,7 +167,6 @@ class AddDataTestCase1(SimTestCase):
         import stratis_cli  # noqa: PLC0415
 
         with patch.object(
-            # pylint: disable=protected-access
             stratis_cli._actions._pool,  # pyright: ignore
             "_check_opposite_tier",
             autospec=True,
@@ -291,7 +289,6 @@ class AddCacheTestCase1(SimTestCase):
         import stratis_cli  # noqa: PLC0415
 
         with patch.object(
-            # pylint: disable=protected-access
             stratis_cli._actions._pool,  # pyright: ignore
             "_check_same_tier",
             autospec=True,
@@ -317,7 +314,6 @@ class AddCacheTestCase1(SimTestCase):
         import stratis_cli  # noqa: PLC0415
 
         with patch.object(
-            # pylint: disable=protected-access
             stratis_cli._actions._pool,  # pyright: ignore
             "_check_opposite_tier",
             autospec=True,

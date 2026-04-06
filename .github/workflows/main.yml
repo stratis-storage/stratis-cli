@@ -32,7 +32,6 @@ jobs:
           # MANDATORY CHECKS USING CURRENT DEVELOPMENT INTERPRETER
           - dependencies: >
               libatomic
-              pylint
               python3-dateutil
               python3-dbus-client-gen
               python3-dbus-python-client-gen
@@ -41,6 +40,7 @@ jobs:
               python3-psutil
               python3-setuptools
               python3-wcwidth
+              ruff
             task: >
               PATH=${PATH}:/github/home/.local/bin PYTHONPATH=./src
               make -f Makefile lint

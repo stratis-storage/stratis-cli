@@ -33,9 +33,7 @@ from ._shared import (
 )
 
 
-class ClevisEncryptionOptionsForTang(
-    ClevisEncryptionOptions
-):  # pylint: disable=too-few-public-methods
+class ClevisEncryptionOptionsForTang(ClevisEncryptionOptions):
     """
     Class that verifies Clevis encryption options for bind subcommand.
     """
@@ -47,9 +45,7 @@ class ClevisEncryptionOptionsForTang(
         super().__init__(namespace)
 
 
-class ClevisEncryptionOptionsForTpm2(
-    ClevisEncryptionOptions
-):  # pylint: disable=too-few-public-methods
+class ClevisEncryptionOptionsForTpm2(ClevisEncryptionOptions):
     """
     Class that verifies Clevis encryption options for bind subcommand.
     """

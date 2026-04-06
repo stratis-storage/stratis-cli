@@ -27,7 +27,7 @@ from ._misc import RUNNER, RunTestCase, SimTestCase
 _PARSE_ERROR = StratisCliErrorCodes.PARSE_ERROR
 
 
-class ParserTestCase(RunTestCase):  # pylint: disable=too-many-public-methods
+class ParserTestCase(RunTestCase):
     """
     Test parser behavior. The behavior should be identical, regardless of
     whether the "--propagate" flag is set. That is, stratis should never produce

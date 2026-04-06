@@ -94,15 +94,13 @@ class PoolFeatureTestCase(unittest.TestCase):
         if bool(int(os.environ.get("STRATIS_STRICT_POOL_FEATURES", "0"))):
 
             def test_func(val):
-                self.assertIsNone(
-                    PoolFeature._missing_(val)  # pylint: disable=protected-access
-                )
+                self.assertIsNone(PoolFeature._missing_(val))
 
         else:
 
             def test_func(val):
                 self.assertEqual(
-                    PoolFeature._missing_(val),  # pylint: disable=protected-access
+                    PoolFeature._missing_(val),
                     PoolFeature.UNRECOGNIZED,
                 )
 

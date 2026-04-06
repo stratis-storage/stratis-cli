@@ -27,7 +27,7 @@ from ._connection import get_object
 from ._constants import TOP_OBJECT
 
 
-class TopDebugActions:  # pylint: disable=too-few-public-methods
+class TopDebugActions:
     """
     Top level object debug actions.
     """
@@ -66,7 +66,7 @@ class TopDebugActions:  # pylint: disable=too-few-public-methods
             ) from err
 
 
-class PoolDebugActions:  # pylint: disable=too-few-public-methods
+class PoolDebugActions:
     """
     Pool debug actions.
     """
@@ -123,7 +123,7 @@ class PoolDebugActions:  # pylint: disable=too-few-public-methods
             print(json.dumps(json.loads(metadata)))
 
 
-class FilesystemDebugActions:  # pylint: disable=too-few-public-methods
+class FilesystemDebugActions:
     """
     Filesystem debug actions.
     """
@@ -190,7 +190,7 @@ class FilesystemDebugActions:  # pylint: disable=too-few-public-methods
             print(json.dumps(json.loads(metadata)))
 
 
-class BlockdevDebugActions:  # pylint: disable=too-few-public-methods
+class BlockdevDebugActions:
     """
     Blockdev debug actions.
     """

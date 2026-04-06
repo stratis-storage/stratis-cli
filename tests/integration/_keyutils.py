@@ -24,7 +24,6 @@ class RandomKeyTmpFile:
     Generate a random passphrase and put it in a temporary file.
     """
 
-    # pylint: disable=consider-using-with
     def __init__(self, key_bytes=32):
         """
         Initializer

@@ -38,7 +38,7 @@ def parse_range_or_current(values: str) -> Tuple[Optional[Range], str]:
     return (None if values == "current" else parse_range(values), values)
 
 
-class FilesystemListOptions:  # pylint: disable=too-few-public-methods
+class FilesystemListOptions:
     """
     Verifies filesystem list options.
     """

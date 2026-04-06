@@ -66,7 +66,6 @@ SPECS |= (
 
 
 try:
-    # pylint: disable=invalid-name
 
     timeout = get_timeout(
         os.environ.get("STRATIS_DBUS_TIMEOUT", str(DBUS_TIMEOUT_SECONDS * 1000))

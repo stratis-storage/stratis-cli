@@ -95,7 +95,7 @@ def _non_existent_or_inconsistent_to_str(
     return interp(inner_value)
 
 
-class TokenSlotInfo:  # pylint: disable=too-few-public-methods
+class TokenSlotInfo:
     """
     Just a class to merge info about two different ways of occupying LUKS
     token slots into one, so that the two different ways can be sorted by
@@ -135,7 +135,7 @@ class TokenSlotInfo:  # pylint: disable=too-few-public-methods
         )
 
 
-class DeviceSizeChangedAlerts:  # pylint: disable=too-few-public-methods
+class DeviceSizeChangedAlerts:
     """
     Calculate alerts for changed devices; requires searching among devices.
     """
@@ -221,7 +221,7 @@ def _clevis_to_str(clevis_info: ClevisInfo) -> str:  # pragma: no cover
     return f"{clevis_info.pin}   {config_string}"
 
 
-class ListPool(ABC):  # pylint:disable=too-few-public-methods
+class ListPool(ABC):
     """
     Handle listing a pool or pools.
     """
@@ -355,7 +355,7 @@ class Default(ListPool):
             return TABLE_UNKNOWN_STRING
 
 
-class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
+class DefaultDetail(Default):
     """
     List one pool with a detail view.
     """
@@ -550,7 +550,7 @@ class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
         self._print_detail_view(pool_object_path, MOPool(mopool), alerts)
 
 
-class DefaultTable(Default):  # pylint: disable=too-few-public-methods
+class DefaultTable(Default):
     """
     List several pools with a table view.
     """
@@ -689,7 +689,7 @@ class DefaultTable(Default):  # pylint: disable=too-few-public-methods
         )
 
 
-class Stopped(ListPool):  # pylint: disable=too-few-public-methods
+class Stopped(ListPool):
     """
     Support for listing stopped pools.
     """
@@ -715,7 +715,7 @@ class Stopped(ListPool):  # pylint: disable=too-few-public-methods
         return "<MIXED>" if maybe_value is None else str(maybe_value)
 
 
-class StoppedDetail(Stopped):  # pylint: disable=too-few-public-methods
+class StoppedDetail(Stopped):
     """
     Detailed view of one stopped pool.
     """
@@ -816,7 +816,7 @@ class StoppedDetail(Stopped):  # pylint: disable=too-few-public-methods
         self._print_detail_view(pool_uuid, StoppedPool(pool))
 
 
-class StoppedTable(Stopped):  # pylint: disable=too-few-public-methods
+class StoppedTable(Stopped):
     """
     Table view of one or many stopped pools.
     """

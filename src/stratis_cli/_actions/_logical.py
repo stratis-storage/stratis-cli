@@ -50,7 +50,6 @@ class LogicalActions:
         :raises StratisCliIncoherenceError:
         :raises StratisCliPartialChangeError:
         """
-        # pylint: disable=too-many-locals
 
         from ._data import (  # noqa: PLC0415
             MOFilesystem,
@@ -153,7 +152,6 @@ class LogicalActions:
         :raises StratisCliIncoherenceError:
         :raises StratisCliPartialChangeError:
         """
-        # pylint: disable=too-many-locals
 
         from ._data import (  # noqa: PLC0415
             MOFilesystem,
@@ -288,7 +286,7 @@ class LogicalActions:
             raise StratisCliNoChangeError("rename", namespace.new_name)
 
     @staticmethod
-    def set_size_limit(namespace: Namespace):  # pylint: disable=too-many-locals
+    def set_size_limit(namespace: Namespace):
         """
         Set an upper limit on the size of the filesystem.
         """

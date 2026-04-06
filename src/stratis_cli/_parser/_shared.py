@@ -127,7 +127,7 @@ def ensure_nat(arg):
     return result
 
 
-class MoveNotice:  # pylint: disable=too-few-public-methods
+class MoveNotice:
     """
     Constructs a move notice, for printing.
     """
@@ -206,7 +206,7 @@ TRUST_URL_OR_THUMBPRINT = [
 ]
 
 
-class ClevisEncryptionOptions:  # pylint: disable=too-few-public-methods
+class ClevisEncryptionOptions:
     """
     Gathers and verifies encryption options.
     """
