@@ -117,7 +117,7 @@ def print_table(
     :param alignment: the alignment indicator for each key, '<', '>', '^', '='
     :type alignment: list of str
     :param file: file to print too
-    :type file: writeable stream
+    :type file: writable stream
 
     Precondition: len(column_headings) == len(alignment) == len of each entry
     in row_entries.
