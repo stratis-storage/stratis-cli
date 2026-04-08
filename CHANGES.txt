@@ -7,7 +7,13 @@ Recommended development environment: Fedora 41
 - Restore version 9 changes reverted for previous release:
   https://github.com/stratis-storage/stratis-cli/pull/1234
 
+- Catch BaseException during password input:
+  https://github.com/stratis-storage/stratis-cli/pull/1271
+
 - Support for zbus refactoring:
+  https://github.com/stratis-storage/stratis-cli/pull/1273
+  https://github.com/stratis-storage/stratis-cli/pull/1272
+  https://github.com/stratis-storage/stratis-cli/pull/1270
   https://github.com/stratis-storage/stratis-cli/pull/1264
   https://github.com/stratis-storage/stratis-cli/pull/1253
   https://github.com/stratis-storage/stratis-cli/pull/1252
@@ -29,6 +35,8 @@ Recommended development environment: Fedora 41
   https://github.com/stratis-storage/stratis-cli/pull/1265
 
 - Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/1276
+  https://github.com/stratis-storage/stratis-cli/pull/1274
   https://github.com/stratis-storage/stratis-cli/pull/1269
   https://github.com/stratis-storage/stratis-cli/pull/1266
   https://github.com/stratis-storage/stratis-cli/pull/1263
