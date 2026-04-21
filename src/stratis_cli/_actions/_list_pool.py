@@ -28,6 +28,7 @@ from typing import (
 from uuid import UUID
 
 # isort: THIRDPARTY
+from dateutil import parser as date_parser
 from justbytes import Range
 
 # isort: FIRSTPARTY
@@ -434,6 +435,18 @@ class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
             print(f"Encryption Enabled: {TABLE_UNKNOWN_STRING}")
         elif encrypted is True:
             print("Encryption Enabled: Yes")
+
+            try:
+                reencrypted = get_property(
+                    mopool.LastReencryptedTimestamp(),
+                    lambda t: date_parser.isoparse(t)
+                    .astimezone()
+                    .strftime("%b %d %Y %H:%M"),
+                    "Never",
+                )
+            except DbusClientMissingPropertyError:
+                reencrypted = TABLE_UNKNOWN_STRING
+            print(f"    Last Time Reencrypted: {reencrypted}")
 
             if metadata_version is MetadataVersion.V1:  # pragma: no cover
                 try:

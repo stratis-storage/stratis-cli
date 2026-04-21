@@ -22,14 +22,20 @@ import json
 import os
 import sys
 import termios
+from argparse import Namespace
 from enum import Enum
-from typing import Any, Tuple
+from functools import wraps
+from typing import Any, Callable, Generator, Sequence, Tuple
 from uuid import UUID
 
 # isort: THIRDPARTY
 from dbus import Dictionary, Struct
+from dbus.exceptions import DBusException
 from dbus.proxies import ProxyObject
 from justbytes import Range
+
+# isort: FIRSTPARTY
+from dbus_python_client_gen import DPClientInvocationError, DPClientMethodCallContext
 
 from .._errors import (
     StratisCliKeyfileNotFoundError,
@@ -304,3 +310,58 @@ class SizeTriple:
             if self._used is None or self._total is None
             else self._total - self._used
         )
+
+
+def get_errors(exc: BaseException) -> Generator[BaseException, None, None]:
+    """
+    Generates a sequence of exceptions starting with exc and following the chain
+    of causes.
+    """
+    yield exc
+    while exc.__cause__ is not None:
+        yield exc.__cause__
+        exc = exc.__cause__
+
+
+def long_running_operation(
+    *, method_names: Sequence[str]
+) -> Callable[[Callable], Callable]:
+    """
+    Mark a function as a long running operation and catch and ignore NoReply
+    D-Bus exception so long as the method raising the exception is one
+    of the methods specified in method_names.
+    """
+
+    def decorator(func: Callable[[Namespace], None]) -> Callable[[Namespace], None]:
+        """
+        Decorator
+        """
+
+        @wraps(func)
+        def wrapper(namespace: Namespace):
+            """
+            Wrapper
+            """
+            try:
+                func(namespace)
+            except DPClientInvocationError as err:
+                if not any(
+                    isinstance(e, DBusException)
+                    and e.get_dbus_name() == "org.freedesktop.DBus.Error.NoReply"
+                    for e in get_errors(err)
+                ):
+                    raise err
+
+                context = err.context
+                if (
+                    isinstance(context, DPClientMethodCallContext)
+                    and context.method_name in method_names
+                ):
+                    print("Operation initiated", file=sys.stderr)
+
+                else:
+                    raise err
+
+        return wrapper
+
+    return decorator
