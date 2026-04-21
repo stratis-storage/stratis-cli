@@ -215,7 +215,7 @@ def get_pass(prompt: str) -> str:
                 "Warning: this device is not a TTY so the password may be echoed",
                 file=sys.stderr,
             )
-    except Exception:  # nosec pylint: disable=broad-exception-caught
+    except Exception:  # pylint: disable=broad-exception-caught
         pass
 
     password = None

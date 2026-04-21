@@ -16,7 +16,7 @@ Test 'list'.
 """
 # isort: STDLIB
 from unittest.mock import patch
-from xml.etree import ElementTree  # nosect B405
+from xml.etree import ElementTree
 
 # isort: FIRSTPARTY
 from dbus_client_gen import DbusClientMissingPropertyError, DbusClientUniqueResultError
@@ -264,7 +264,7 @@ class List6TestCase(SimTestCase):
         )
 
         filesystem_spec = SPECS[_actions._constants.FILESYSTEM_INTERFACE]
-        spec = ElementTree.fromstring(filesystem_spec)  # nosec B314
+        spec = ElementTree.fromstring(filesystem_spec)
 
         for property_name in [
             prop.attrib["name"]

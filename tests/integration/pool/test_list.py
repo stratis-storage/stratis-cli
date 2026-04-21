@@ -18,7 +18,7 @@ Test 'list'.
 # isort: STDLIB
 from unittest.mock import patch
 from uuid import uuid4
-from xml.etree import ElementTree  # nosect B405
+from xml.etree import ElementTree
 
 # isort: FIRSTPARTY
 from dbus_client_gen import DbusClientMissingPropertyError, DbusClientUniqueResultError
@@ -356,7 +356,7 @@ class List6TestCase(SimTestCase):
         )
 
         pool_spec = SPECS[_actions._constants.POOL_INTERFACE]
-        spec = ElementTree.fromstring(pool_spec)  # nosec B314
+        spec = ElementTree.fromstring(pool_spec)
 
         for property_name in [
             prop.attrib["name"] for prop in spec.findall("./property")
@@ -420,7 +420,7 @@ class List7TestCase(SimTestCase):
         )
 
         pool_spec = SPECS[_actions._constants.POOL_INTERFACE]
-        spec = ElementTree.fromstring(pool_spec)  # nosec B314
+        spec = ElementTree.fromstring(pool_spec)
 
         for property_name in [
             prop.attrib["name"] for prop in spec.findall("./property")

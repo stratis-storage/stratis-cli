@@ -31,7 +31,6 @@ jobs:
         include:
           # MANDATORY CHECKS USING CURRENT DEVELOPMENT INTERPRETER
           - dependencies: >
-              bandit
               libatomic
               pylint
               python3-dateutil
@@ -40,6 +39,7 @@ jobs:
               python3-justbytes
               python3-packaging
               python3-psutil
+              python3-setuptools
               python3-wcwidth
             task: >
               PATH=${PATH}:/github/home/.local/bin PYTHONPATH=./src

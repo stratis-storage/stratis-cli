@@ -17,7 +17,7 @@ XML interface specifications.
 # isort: STDLIB
 import os
 import sys
-import xml.etree.ElementTree as ET  # nosec B405
+import xml.etree.ElementTree as ET
 
 # isort: FIRSTPARTY
 from dbus_client_gen import (
@@ -72,35 +72,33 @@ try:
         os.environ.get("STRATIS_DBUS_TIMEOUT", str(DBUS_TIMEOUT_SECONDS * 1000))
     )
 
-    report_spec = ET.fromstring(SPECS[REPORT_INTERFACE])  # nosec B314
+    report_spec = ET.fromstring(SPECS[REPORT_INTERFACE])
     Report = make_class("Report", report_spec, timeout)
 
-    filesystem_spec = ET.fromstring(SPECS[FILESYSTEM_INTERFACE])  # nosec B314
+    filesystem_spec = ET.fromstring(SPECS[FILESYSTEM_INTERFACE])
     Filesystem = make_class("Filesystem", filesystem_spec, timeout)
     MOFilesystem = managed_object_class("MOFilesystem", filesystem_spec)
     filesystems = mo_query_builder(filesystem_spec)
 
-    pool_spec = ET.fromstring(SPECS[POOL_INTERFACE])  # nosec B314
+    pool_spec = ET.fromstring(SPECS[POOL_INTERFACE])
     Pool = make_class("Pool", pool_spec, timeout)
     MOPool = managed_object_class("MOPool", pool_spec)
     pools = mo_query_builder(pool_spec)
 
-    blockdev_spec = ET.fromstring(SPECS[BLOCKDEV_INTERFACE])  # nosec B314
+    blockdev_spec = ET.fromstring(SPECS[BLOCKDEV_INTERFACE])
     MODev = managed_object_class("MODev", blockdev_spec)
     devs = mo_query_builder(blockdev_spec)
 
-    Manager = make_class(
-        "Manager", ET.fromstring(SPECS[MANAGER_INTERFACE]), timeout  # nosec B314
-    )
+    Manager = make_class("Manager", ET.fromstring(SPECS[MANAGER_INTERFACE]), timeout)
 
     ObjectManager = make_class(
         "ObjectManager",
-        ET.fromstring(SPECS["org.freedesktop.DBus.ObjectManager"]),  # nosec B314
+        ET.fromstring(SPECS["org.freedesktop.DBus.ObjectManager"]),
         timeout,
     )
 
     Manager0 = make_class(
-        "Manager0", ET.fromstring(SPECS[MANAGER_0_INTERFACE]), timeout  # nosec B314
+        "Manager0", ET.fromstring(SPECS[MANAGER_0_INTERFACE]), timeout
     )
 
 # Do not expect to get coverage on Generation errors.

@@ -17,7 +17,7 @@ Test 'list'.
 
 # isort: STDLIB
 from unittest.mock import patch
-from xml.etree import ElementTree  # nosec B405
+from xml.etree import ElementTree
 
 # isort: FIRSTPARTY
 from dbus_client_gen import DbusClientMissingPropertyError, DbusClientUniqueResultError
@@ -133,7 +133,7 @@ class List3TestCase(SimTestCase):
         )
 
         blockdev_spec = SPECS[_actions._constants.BLOCKDEV_INTERFACE]
-        spec = ElementTree.fromstring(blockdev_spec)  # nosec B314
+        spec = ElementTree.fromstring(blockdev_spec)
 
         for property_name in [
             prop.attrib["name"]
