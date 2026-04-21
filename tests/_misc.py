@@ -53,13 +53,12 @@ def device_name_list(min_devices=0, max_devices=10, unique=False):
     def the_func():
         def random_string():
             return "".join(
-                random.choice(string.ascii_uppercase + string.digits)  # nosec B311
-                for _ in range(4)
+                random.choice(string.ascii_uppercase + string.digits) for _ in range(4)
             )
 
         return [
             f"/dev/{random_string()}"
-            for _ in range(random.randrange(min_devices, max_devices + 1))  # nosec B311
+            for _ in range(random.randrange(min_devices, max_devices + 1))
         ]
 
     if unique:
@@ -117,7 +116,7 @@ class _Service:
                 "STRATISD environment variable must be set to absolute path of stratisd executable"
             ) from err
         self._stratisd = (  # pylint: disable=attribute-defined-outside-init
-            subprocess.Popen(  # nosec 119
+            subprocess.Popen(
                 [os.path.join(stratisd_var), "--sim"],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
