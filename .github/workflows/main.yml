@@ -97,7 +97,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - python: "3.13"  # CURRENT DEVELOPMENT PYTHON TOOLCHAIN
+          - python: "3.14"  # CURRENT DEVELOPMENT PYTHON TOOLCHAIN
           - python: "3.12"  # LOWEST SUPPORTED PYTHON TOOLCHAIN
     runs-on: ubuntu-latest
     container:
