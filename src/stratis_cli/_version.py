@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """
-    Version information.
+Version information.
 
-    .. moduleauthor::  mulhern  <amulhern@redhat.com>
+.. moduleauthor::  mulhern  <amulhern@redhat.com>
 """
 
 __version_info__ = (3, 9, 0)
