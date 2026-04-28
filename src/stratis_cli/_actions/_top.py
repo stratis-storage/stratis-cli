@@ -78,8 +78,7 @@ def _add_update_key(
     from ._data import Manager  # noqa: PLC0415
 
     add_ret = Manager.Methods.SetKey(
-        proxy,
-        {"key_desc": key_desc, "key_fd": fd_argument},
+        proxy, {"key_desc": key_desc, "key_fd": fd_argument}
     )
 
     os.close(fd_to_close)

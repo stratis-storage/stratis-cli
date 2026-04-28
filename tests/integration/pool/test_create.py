@@ -42,12 +42,7 @@ class CreateTestCase(SimTestCase):
         """
         Verify that no assertion is thrown if path arguments are relative.
         """
-        command_line = self._MENU + [
-            "some_pool",
-            "../dev",
-            "./fake",
-            "/abc",
-        ]
+        command_line = self._MENU + ["some_pool", "../dev", "./fake", "/abc"]
         TEST_RUNNER(command_line)
 
 

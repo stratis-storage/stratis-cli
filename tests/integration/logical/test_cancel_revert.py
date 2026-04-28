@@ -46,12 +46,7 @@ class FsCancelRevertTestCase(SimTestCase):
         command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
         RUNNER(command_line)
 
-        command_line = [
-            "filesystem",
-            "create",
-            self._POOLNAME,
-            self._FSNAME,
-        ]
+        command_line = ["filesystem", "create", self._POOLNAME, self._FSNAME]
         RUNNER(command_line)
 
         command_line = [

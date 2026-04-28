@@ -51,11 +51,9 @@ POOL_DEBUG_SUBCMDS = [
                     "Pool Identifier",
                     {
                         "description": "Choose one option to specify the pool",
-                        "mut_ex_args": [
-                            (True, UUID_OR_NAME),
-                        ],
+                        "mut_ex_args": [(True, UUID_OR_NAME)],
                     },
-                ),
+                )
             ],
             "func": PoolDebugActions.get_object_path,
         },
@@ -66,10 +64,7 @@ POOL_DEBUG_SUBCMDS = [
             "args": [
                 (
                     "--pretty",
-                    {
-                        "action": "store_true",
-                        "help": "Format output string prettily",
-                    },
+                    {"action": "store_true", "help": "Format output string prettily"},
                 ),
                 (
                     "--written",
@@ -84,11 +79,9 @@ POOL_DEBUG_SUBCMDS = [
                     "Pool Identifier",
                     {
                         "description": "Choose one option to specify the pool",
-                        "mut_ex_args": [
-                            (True, UUID_OR_NAME),
-                        ],
+                        "mut_ex_args": [(True, UUID_OR_NAME)],
                     },
-                ),
+                )
             ],
             "help": "Report the pool's metadata",
             "func": PoolDebugActions.get_metadata,
@@ -106,11 +99,9 @@ FILESYSTEM_DEBUG_SUBCMDS = [
                     "Filesystem Identifier",
                     {
                         "description": "Choose one option to specify the filesystem",
-                        "mut_ex_args": [
-                            (True, UUID_OR_NAME),
-                        ],
+                        "mut_ex_args": [(True, UUID_OR_NAME)],
                     },
-                ),
+                )
             ],
             "func": FilesystemDebugActions.get_object_path,
         },
@@ -126,10 +117,7 @@ FILESYSTEM_DEBUG_SUBCMDS = [
                 ("pool_name", {"help": "Pool name"}),
                 (
                     "--pretty",
-                    {
-                        "action": "store_true",
-                        "help": "Format output string prettily",
-                    },
+                    {"action": "store_true", "help": "Format output string prettily"},
                 ),
                 (
                     "--written",
@@ -157,13 +145,11 @@ BLOCKDEV_DEBUG_SUBCMDS = [
                         "description": (
                             "Choose one option to specify the block device"
                         ),
-                        "mut_ex_args": [
-                            (True, UUID_OR_NAME),
-                        ],
+                        "mut_ex_args": [(True, UUID_OR_NAME)],
                     },
-                ),
+                )
             ],
             "func": BlockdevDebugActions.get_object_path,
         },
-    ),
+    )
 ]

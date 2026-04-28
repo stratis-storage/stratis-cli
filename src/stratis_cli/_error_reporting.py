@@ -88,9 +88,7 @@ def _interface_name_to_common_name(interface_name: str) -> str:
     raise StratisCliUnknownInterfaceError(interface_name)  # pragma: no cover
 
 
-def _interpret_errors_0(
-    error: dbus.exceptions.DBusException,
-) -> Optional[str]:
+def _interpret_errors_0(error: dbus.exceptions.DBusException) -> Optional[str]:
     """
     Handle match on SCAE .*  DBE
       where:
@@ -176,8 +174,7 @@ def _interpret_errors_1(  # noqa: PLR0911,PLR0912
     # is an error producing a property and that property, even although
     # part of the official API, is missing from the GetManagedObjects result.
     if isinstance(
-        error,
-        (DbusClientMissingSearchPropertiesError, DbusClientMissingPropertyError),
+        error, (DbusClientMissingSearchPropertiesError, DbusClientMissingPropertyError)
     ):  # pragma: no cover
         if len(errors) > 1:
             maybe_key_error = errors[1]

@@ -103,10 +103,7 @@ class BindActions:
         )
         (changed, return_code, return_msg) = Pool.Methods.BindKeyring(
             get_object(pool_object_path),
-            {
-                "key_desc": namespace.keydesc,
-                "token_slot": (False, 0),
-            },
+            {"key_desc": namespace.keydesc, "token_slot": (False, 0)},
         )
 
         if return_code != StratisdErrors.OK:

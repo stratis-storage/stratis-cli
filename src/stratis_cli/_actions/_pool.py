@@ -202,35 +202,33 @@ class PoolActions:
         )
 
         try:
-            (
-                (changed, (pool_object_path, _)),
-                return_code,
-                message,
-            ) = Manager.Methods.CreatePool(
-                proxy,
-                {
-                    "name": pool_name,
-                    "devices": blockdevs,
-                    "key_desc": (
-                        []
-                        if namespace.key_desc is None
-                        else [((False, 0), namespace.key_desc)]
-                    ),
-                    "clevis_info": (
-                        []
-                        if namespace.clevis is None
-                        else [
-                            (
-                                (False, 0),
-                                namespace.clevis.pin,
-                                json.dumps(namespace.clevis.config),
-                            )
-                        ]
-                    ),
-                    "journal_size": journal_size,
-                    "tag_spec": tag_spec,
-                    "allocate_superblock": allocate_superblock,
-                },
+            ((changed, (pool_object_path, _)), return_code, message) = (
+                Manager.Methods.CreatePool(
+                    proxy,
+                    {
+                        "name": pool_name,
+                        "devices": blockdevs,
+                        "key_desc": (
+                            []
+                            if namespace.key_desc is None
+                            else [((False, 0), namespace.key_desc)]
+                        ),
+                        "clevis_info": (
+                            []
+                            if namespace.clevis is None
+                            else [
+                                (
+                                    (False, 0),
+                                    namespace.clevis.pin,
+                                    json.dumps(namespace.clevis.config),
+                                )
+                            ]
+                        ),
+                        "journal_size": journal_size,
+                        "tag_spec": tag_spec,
+                        "allocate_superblock": allocate_superblock,
+                    },
+                )
             )
         except DPClientMarshallingError as err:
             u64max = 0xFFFFFFFFFFFFFFFF

@@ -98,12 +98,10 @@ class LogicalActions:
             (n, requested_size_arg, requested_size_limit_arg) for n in requested_names
         ]
 
-        (
-            (created, list_created),
-            return_code,
-            message,
-        ) = Pool.Methods.CreateFilesystems(
-            get_object(pool_object_path), {"specs": requested_specs}
+        ((created, list_created), return_code, message) = (
+            Pool.Methods.CreateFilesystems(
+                get_object(pool_object_path), {"specs": requested_specs}
+            )
         )
 
         if return_code != StratisdErrors.OK:
@@ -189,12 +187,10 @@ class LogicalActions:
             op for (name, op) in pool_filesystems.items() if name in requested_names
         ]
 
-        (
-            (destroyed, list_destroyed),
-            return_code,
-            message,
-        ) = Pool.Methods.DestroyFilesystems(
-            get_object(pool_object_path), {"filesystems": fs_object_paths}
+        ((destroyed, list_destroyed), return_code, message) = (
+            Pool.Methods.DestroyFilesystems(
+                get_object(pool_object_path), {"filesystems": fs_object_paths}
+            )
         )
 
         if return_code != StratisdErrors.OK:

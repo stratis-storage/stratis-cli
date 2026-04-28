@@ -57,22 +57,14 @@ class DebugTestCase(SimTestCase):
         """
         Test bad name.
         """
-        command_line = self._MENU + [
-            "get-object-path",
-            "--name",
-            "noone",
-        ]
+        command_line = self._MENU + ["get-object-path", "--name", "noone"]
         self.check_error(DbusClientUniqueResultError, command_line, _ERROR)
 
     def test_lookup_name(self):
         """
         Test good name lookup.
         """
-        command_line = self._MENU + [
-            "get-object-path",
-            "--name",
-            self._FSNAME,
-        ]
+        command_line = self._MENU + ["get-object-path", "--name", self._FSNAME]
         TEST_RUNNER(command_line)
 
     def test_metadata_name(self):
@@ -82,10 +74,7 @@ class DebugTestCase(SimTestCase):
         command_line = ["filesystem", "create", self._POOLNAME, "newname"]
         RUNNER(command_line)
 
-        command_line = self._MENU + [
-            "get-metadata",
-            self._POOLNAME,
-        ]
+        command_line = self._MENU + ["get-metadata", self._POOLNAME]
         TEST_RUNNER(command_line)
 
     def test_metadata_name_pretty(self):
@@ -95,11 +84,7 @@ class DebugTestCase(SimTestCase):
         command_line = ["filesystem", "create", self._POOLNAME, "newname"]
         RUNNER(command_line)
 
-        command_line = self._MENU + [
-            "get-metadata",
-            self._POOLNAME,
-            "--pretty",
-        ]
+        command_line = self._MENU + ["get-metadata", self._POOLNAME, "--pretty"]
         TEST_RUNNER(command_line)
 
     def test_metadata_name_pretty_fs_name(self):
@@ -138,8 +123,5 @@ class DebugTestCase(SimTestCase):
         """
         Test printing when no filesystems present.
         """
-        command_line = self._MENU + [
-            "get-metadata",
-            self._POOLNAME,
-        ]
+        command_line = self._MENU + ["get-metadata", self._POOLNAME]
         TEST_RUNNER(command_line)

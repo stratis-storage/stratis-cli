@@ -99,10 +99,7 @@ class PoolFeatureTestCase(unittest.TestCase):
         else:
 
             def test_func(val):
-                self.assertEqual(
-                    PoolFeature._missing_(val),
-                    PoolFeature.UNRECOGNIZED,
-                )
+                self.assertEqual(PoolFeature._missing_(val), PoolFeature.UNRECOGNIZED)
 
         for val in [1, 0.347, ["a"], {"b": 32}, lambda x: 32]:
             with self.subTest(val=val):

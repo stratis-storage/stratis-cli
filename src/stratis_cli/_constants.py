@@ -64,9 +64,7 @@ class Id(ABC):
         self.id_type = id_type
         self.id_value = id_value
 
-    def managed_objects_key(
-        self,
-    ):
+    def managed_objects_key(self):
         """
         Return key for managed objects.
 

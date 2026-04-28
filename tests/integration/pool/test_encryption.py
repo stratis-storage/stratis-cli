@@ -72,10 +72,7 @@ class BindTestCase(SimTestCase):
         """
         Binding when unencrypted with tpm should return an error.
         """
-        command_line = self._MENU + [
-            "tpm2",
-            f"--name={self._POOLNAME}",
-        ]
+        command_line = self._MENU + ["tpm2", f"--name={self._POOLNAME}"]
         self.check_error(StratisCliEngineError, command_line, _ERROR)
 
     def test_bind_when_unencrypted_keyring(self):
@@ -123,10 +120,7 @@ class BindTestCase2(SimTestCase):
         Binding when encrypted and bound with Clevis should not raise a no
         change error when token slot is not specified.
         """
-        command_line = self._MENU + [
-            "tpm2",
-            f"--name={self._POOLNAME}",
-        ]
+        command_line = self._MENU + ["tpm2", f"--name={self._POOLNAME}"]
         RUNNER(command_line)
         TEST_RUNNER(command_line)
 
@@ -466,9 +460,7 @@ class OffTestCase(SimTestCase):
         """
         Decrypt an encrypted pool, specifying the pool by name.
         """
-        command_line = self._MENU + [
-            f"--name={self._POOLNAME}",
-        ]
+        command_line = self._MENU + [f"--name={self._POOLNAME}"]
         RUNNER(command_line)
 
 
@@ -489,9 +481,7 @@ class OffTestCase2(SimTestCase):
         """
         Decrypting when unencrypted should return an error.
         """
-        command_line = self._MENU + [
-            f"--name={self._POOLNAME}",
-        ]
+        command_line = self._MENU + [f"--name={self._POOLNAME}"]
         self.check_error(StratisCliNoChangeError, command_line, _ERROR)
 
 
@@ -531,9 +521,7 @@ class ReencryptTestCase(SimTestCase):
         """
         Re-encrypt an encrypted pool, specifying the pool by name.
         """
-        command_line = self._MENU + [
-            f"--name={self._POOLNAME}",
-        ]
+        command_line = self._MENU + [f"--name={self._POOLNAME}"]
         RUNNER(command_line)
 
         # Exercise detail view with last reencryption time set
@@ -558,9 +546,7 @@ class ReencryptTestCase2(SimTestCase):
         """
         Reencrypting when unencrypted should return an error.
         """
-        command_line = self._MENU + [
-            f"--name={self._POOLNAME}",
-        ]
+        command_line = self._MENU + [f"--name={self._POOLNAME}"]
         self.check_error(StratisCliEngineError, command_line, _ERROR)
 
 
@@ -600,10 +586,7 @@ class EncryptTestCase(SimTestCase):
         """
         Encrypting when already encrypted should return an error.
         """
-        command_line = self._MENU + [
-            f"--name={self._POOLNAME}",
-            "--clevis=tpm2",
-        ]
+        command_line = self._MENU + [f"--name={self._POOLNAME}", "--clevis=tpm2"]
         self.check_error(StratisCliNoChangeError, command_line, _ERROR)
 
 
@@ -630,19 +613,14 @@ class EncryptTestCase2(SimTestCase):
         """
         Encrypting when not already encrypted should succeed.
         """
-        command_line = self._MENU + [
-            f"--name={self._POOLNAME}",
-            "--clevis=tpm2",
-        ]
+        command_line = self._MENU + [f"--name={self._POOLNAME}", "--clevis=tpm2"]
         TEST_RUNNER(command_line)
 
     def test_encryption_with_no_encryption_params(self):
         """
         Encrypting without any encryption method fully specified should fail.
         """
-        command_line = self._MENU + [
-            f"--name={self._POOLNAME}",
-        ]
+        command_line = self._MENU + [f"--name={self._POOLNAME}"]
         self.check_error(StratisCliEngineError, command_line, _ERROR)
 
 

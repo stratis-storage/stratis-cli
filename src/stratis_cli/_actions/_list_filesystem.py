@@ -84,15 +84,11 @@ def list_filesystems(uuid_formatter: Callable, *, pool_name=None, fs_id=None):
 
     if fs_id is None:
         klass = Table(
-            uuid_formatter,
-            filesystems_with_props,
-            pool_object_path_to_pool_name,
+            uuid_formatter, filesystems_with_props, pool_object_path_to_pool_name
         )
     else:
         klass = Detail(
-            uuid_formatter,
-            filesystems_with_props,
-            pool_object_path_to_pool_name,
+            uuid_formatter, filesystems_with_props, pool_object_path_to_pool_name
         )
 
     klass.display()
@@ -237,13 +233,7 @@ class Table(ListFilesystem):
         ]
 
         print_table(
-            [
-                "Pool",
-                "Filesystem",
-                f"{TOTAL_USED_FREE} / Limit",
-                "Device",
-                "UUID",
-            ],
+            ["Pool", "Filesystem", f"{TOTAL_USED_FREE} / Limit", "Device", "UUID"],
             sorted(tables, key=lambda entry: (entry[0], entry[1])),
             ["<", "<", "<", "<", "<"],
         )

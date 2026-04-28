@@ -251,9 +251,7 @@ POOL_SUBCMDS = [
                         "description": (
                             "Choose one option to specify the pool to start"
                         ),
-                        "mut_ex_args": [
-                            (True, UUID_OR_NAME),
-                        ],
+                        "mut_ex_args": [(True, UUID_OR_NAME)],
                     },
                 ),
                 (
@@ -286,7 +284,7 @@ POOL_SUBCMDS = [
                                         },
                                     ),
                                 ],
-                            ),
+                            )
                         ],
                     },
                 ),
@@ -298,9 +296,7 @@ POOL_SUBCMDS = [
                             "pool is encrypted and no unattended decryption "
                             "mechanism is available"
                         ),
-                        "mut_ex_args": [
-                            (False, KEYFILE_PATH_OR_STDIN),
-                        ],
+                        "mut_ex_args": [(False, KEYFILE_PATH_OR_STDIN)],
                     },
                 ),
             ],
@@ -321,11 +317,9 @@ POOL_SUBCMDS = [
                         "description": (
                             "Choose one option to specify the pool to stop"
                         ),
-                        "mut_ex_args": [
-                            (True, UUID_OR_NAME),
-                        ],
+                        "mut_ex_args": [(True, UUID_OR_NAME)],
                     },
-                ),
+                )
             ],
             "func": PoolActions.stop_pool,
         },
@@ -342,7 +336,7 @@ POOL_SUBCMDS = [
                         "action": "store_true",
                         "help": "Display information about stopped pools only.",
                     },
-                ),
+                )
             ],
             "groups": [
                 (
@@ -352,11 +346,9 @@ POOL_SUBCMDS = [
                             "Choose one option to display a detailed listing "
                             "for a single pool"
                         ),
-                        "mut_ex_args": [
-                            (False, UUID_OR_NAME),
-                        ],
+                        "mut_ex_args": [(False, UUID_OR_NAME)],
                     },
-                ),
+                )
             ],
             "func": PoolActions.list_pools,
         },
@@ -387,9 +379,7 @@ POOL_SUBCMDS = [
             "args": [
                 (
                     "pool_name",
-                    {
-                        "help": "Name of the pool for which to initialize the cache",
-                    },
+                    {"help": "Name of the pool for which to initialize the cache"},
                 ),
                 (
                     "blockdevs",
@@ -515,13 +505,7 @@ POOL_SUBCMDS = [
             "help": "Set the maximum number of filesystems the pool can support.",
             "args": [
                 ("pool_name", {"help": "Pool name"}),
-                (
-                    "amount",
-                    {
-                        "type": ensure_nat,
-                        "help": "Number of filesystems.",
-                    },
-                ),
+                ("amount", {"type": ensure_nat, "help": "Number of filesystems."}),
             ],
             "func": PoolActions.set_fs_limit,
         },
@@ -551,10 +535,7 @@ POOL_SUBCMDS = [
             "args": [
                 (
                     "code",
-                    {
-                        "choices": PoolAlert.code_strs(),
-                        "help": "Alert code to explain",
-                    },
+                    {"choices": PoolAlert.code_strs(), "help": "Alert code to explain"},
                 )
             ],
             "func": PoolActions.explain_code,

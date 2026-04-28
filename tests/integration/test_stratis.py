@@ -89,9 +89,7 @@ class StratisdVersionTestCase(SimTestCase):
 
         command_line = ["--propagate", "daemon", "version"]
         with patch.object(
-            _data.Manager0.Properties.Version,
-            "Get",
-            return_value="1.0.0",
+            _data.Manager0.Properties.Version, "Get", return_value="1.0.0"
         ):
             self.check_error(StratisCliStratisdVersionError, command_line, _ERROR)
 
@@ -125,11 +123,7 @@ class TestTimeoutErrorResponse(SimTestCase):
                     DPClientGetPropertyContext("Version"),
                 ) from dbus_exception
 
-        with patch.object(
-            _data.Manager0.Properties.Version,
-            "Get",
-            _VersionGetter.Get,
-        ):
+        with patch.object(_data.Manager0.Properties.Version, "Get", _VersionGetter.Get):
             self.check_error(DPClientInvocationError, command_line, _ERROR)
 
     def test_dbus_action_method_not_return(self):

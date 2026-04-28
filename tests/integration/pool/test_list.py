@@ -367,10 +367,7 @@ class List6TestCase(SimTestCase):
                 ),
             ):
                 for options in [[], [f"--name={self._POOLNAME}"]]:
-                    with self.subTest(
-                        property_name=property_name,
-                        options=options,
-                    ):
+                    with self.subTest(property_name=property_name, options=options):
                         TEST_RUNNER(self._MENU + options)
 
 
@@ -426,8 +423,5 @@ class List7TestCase(SimTestCase):
                 ),
             ):
                 for options in [[], [f"--name={self._POOLNAME}"]]:
-                    with self.subTest(
-                        property_name=property_name,
-                        options=options,
-                    ):
+                    with self.subTest(property_name=property_name, options=options):
                         TEST_RUNNER(self._MENU + options)

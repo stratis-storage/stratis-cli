@@ -160,7 +160,7 @@ DAEMON_SUBCMDS = [
             "help": "version of stratisd daemon",
             "func": StratisActions.list_stratisd_version,
         },
-    ),
+    )
 ]
 
 ROOT_SUBCOMMANDS = [
@@ -225,10 +225,7 @@ ROOT_SUBCOMMANDS = [
     ),
     (
         "debug",
-        {
-            "help": "Commands for debugging operations.",
-            "subcmds": TOP_DEBUG_SUBCMDS,
-        },
+        {"help": "Commands for debugging operations.", "subcmds": TOP_DEBUG_SUBCMDS},
     ),
     ("daemon", {"help": "Stratis daemon information", "subcmds": DAEMON_SUBCMDS}),
 ]

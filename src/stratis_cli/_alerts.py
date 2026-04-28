@@ -242,9 +242,7 @@ class PoolAlert:
         return list(PoolAlert.CODE_MAP.keys())
 
     @staticmethod
-    def from_str(
-        code: str,
-    ) -> Optional[PoolAlertType]:
+    def from_str(code: str) -> Optional[PoolAlertType]:
         """
         Obtain an alert object from a distinguishing error string.
 

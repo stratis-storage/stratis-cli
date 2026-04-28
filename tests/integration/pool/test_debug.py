@@ -54,22 +54,14 @@ class DebugTestCase(SimTestCase):
         """
         Test bad name.
         """
-        command_line = self._MENU + [
-            "get-object-path",
-            "--name",
-            "noone",
-        ]
+        command_line = self._MENU + ["get-object-path", "--name", "noone"]
         self.check_error(DbusClientUniqueResultError, command_line, _ERROR)
 
     def test_lookup_name(self):
         """
         Test good name lookup.
         """
-        command_line = self._MENU + [
-            "get-object-path",
-            "--name",
-            self._POOLNAME,
-        ]
+        command_line = self._MENU + ["get-object-path", "--name", self._POOLNAME]
         TEST_RUNNER(command_line)
 
 

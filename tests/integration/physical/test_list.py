@@ -146,7 +146,5 @@ class List3TestCase(SimTestCase):
                     property_name,
                 ),
             ):
-                with self.subTest(
-                    property_name=property_name,
-                ):
+                with self.subTest(property_name=property_name):
                     TEST_RUNNER(self._MENU + [self._POOLNAME])

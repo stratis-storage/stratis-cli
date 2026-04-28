@@ -284,8 +284,5 @@ class List6TestCase(SimTestCase):
                     [self._POOLNAME, f"--name={self._VOLUMES[1]}"],
                     [self._POOLNAME, f"--name={self._VOLUMES[2]}"],
                 ]:
-                    with self.subTest(
-                        property_name=property_name,
-                        options=options,
-                    ):
+                    with self.subTest(property_name=property_name, options=options):
                         TEST_RUNNER(self._MENU + options)

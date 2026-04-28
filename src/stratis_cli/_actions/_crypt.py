@@ -126,9 +126,7 @@ class CryptActions:
             raise StratisCliNoChangeError("encryption off", pool_id)
 
         (changed, return_code, message) = Pool.Methods.DecryptPool(
-            get_object(pool_object_path),
-            {},
-            timeout=10,
+            get_object(pool_object_path), {}, timeout=10
         )
 
         if return_code != StratisdErrors.OK:  # pragma: no cover
@@ -166,9 +164,7 @@ class CryptActions:
         )
 
         (changed, return_code, message) = Pool.Methods.ReencryptPool(
-            get_object(pool_object_path),
-            {},
-            timeout=10,
+            get_object(pool_object_path), {}, timeout=10
         )
 
         if return_code != StratisdErrors.OK:

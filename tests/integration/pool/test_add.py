@@ -93,12 +93,7 @@ class AddDataTestCase1(SimTestCase):
         """
         Test that no assertion is thrown if path arguments are relative.
         """
-        command_line = self._MENU + [
-            self._POOLNAME,
-            "../dev",
-            "./fake",
-            "/abc",
-        ]
+        command_line = self._MENU + [self._POOLNAME, "../dev", "./fake", "/abc"]
         TEST_RUNNER(command_line)
 
     def test_add_data(self):
@@ -173,9 +168,7 @@ class AddDataTestCase1(SimTestCase):
             return_value=None,
         ):
             self.check_error(
-                StratisCliEngineError,
-                self._MENU + [self._POOLNAME] + devices,
-                _ERROR,
+                StratisCliEngineError, self._MENU + [self._POOLNAME] + devices, _ERROR
             )
 
     def test_add_data_cache_2(self):
@@ -254,12 +247,7 @@ class AddCacheTestCase1(SimTestCase):
         """
         Test that no assertion is thrown if path arguments are relative.
         """
-        command_line = self._MENU + [
-            self._POOLNAME,
-            "../dev",
-            "./fake",
-            "/abc",
-        ]
+        command_line = self._MENU + [self._POOLNAME, "../dev", "./fake", "/abc"]
         TEST_RUNNER(command_line)
 
     def test_add_cache_again(self):

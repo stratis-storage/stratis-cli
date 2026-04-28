@@ -172,10 +172,5 @@ class InitCacheSuccessTestCase(SimTestCase):
         """
         Verify that no assertion is thrown if path arguments are relative.
         """
-        command_line = self._MENU + [
-            self._POOLNAME,
-            "../dev",
-            "./fake",
-            "/abc",
-        ]
+        command_line = self._MENU + [self._POOLNAME, "../dev", "./fake", "/abc"]
         TEST_RUNNER(command_line)

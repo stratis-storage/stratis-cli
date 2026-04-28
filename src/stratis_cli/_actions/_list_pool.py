@@ -671,13 +671,7 @@ class DefaultTable(Default):
         ]
 
         print_table(
-            [
-                "Name",
-                TOTAL_USED_FREE,
-                "Properties",
-                "UUID",
-                "Alerts",
-            ],
+            ["Name", TOTAL_USED_FREE, "Properties", "UUID", "Alerts"],
             sorted(tables, key=lambda entry: entry[0]),
             ["<", ">", ">", ">", "<"],
         )
@@ -753,8 +747,7 @@ class StoppedDetail(Stopped):
                 print(f"    Key Description: {key_description_str}")
 
                 clevis_info_str = _non_existent_or_inconsistent_to_str(
-                    clevis_info,
-                    interp=_clevis_to_str,
+                    clevis_info, interp=_clevis_to_str
                 )
                 print(f"    Clevis Configuration: {clevis_info_str}")
 
@@ -847,8 +840,7 @@ class StoppedTable(Stopped):
                 return "<UNENCRYPTED>"
 
             return _non_existent_or_inconsistent_to_str(
-                value,
-                interp=lambda _: "present",
+                value, interp=lambda _: "present"
             )  # pragma: no cover
 
         def key_description_str(

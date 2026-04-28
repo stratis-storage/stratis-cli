@@ -116,11 +116,9 @@ LOGICAL_SUBCMDS = [
                             "Choose one option to display a detailed listing "
                             "for a single filesystem"
                         ),
-                        "mut_ex_args": [
-                            (False, UUID_OR_NAME),
-                        ],
+                        "mut_ex_args": [(False, UUID_OR_NAME)],
                     },
-                ),
+                )
             ],
             "args": [
                 (
@@ -132,13 +130,7 @@ LOGICAL_SUBCMDS = [
                         "nargs": "?",
                     },
                 ),
-                (
-                    "pool_name",
-                    {
-                        "nargs": "?",
-                        "help": "Pool name",
-                    },
-                ),
+                ("pool_name", {"nargs": "?", "help": "Pool name"}),
             ],
             "func": LogicalActions.list_volumes,
         },
@@ -165,20 +157,9 @@ LOGICAL_SUBCMDS = [
         {
             "help": "Rename a filesystem",
             "args": [
-                (
-                    "pool_name",
-                    {
-                        "help": "Name of the pool the filesystem is part of",
-                    },
-                ),
-                (
-                    "fs_name",
-                    {"help": "Name of the filesystem to change"},
-                ),
-                (
-                    "new_name",
-                    {"help": "New name to give that filesystem"},
-                ),
+                ("pool_name", {"help": "Name of the pool the filesystem is part of"}),
+                ("fs_name", {"help": "Name of the filesystem to change"}),
+                ("new_name", {"help": "New name to give that filesystem"}),
             ],
             "func": LogicalActions.rename_fs,
         },
@@ -188,16 +169,8 @@ LOGICAL_SUBCMDS = [
         {
             "help": "set limit for this filesystem",
             "args": [
-                (
-                    "pool_name",
-                    {
-                        "help": "Name of the pool the filesystem is part of",
-                    },
-                ),
-                (
-                    "fs_name",
-                    {"help": "Name of the filesystem to change"},
-                ),
+                ("pool_name", {"help": "Name of the pool the filesystem is part of"}),
+                ("fs_name", {"help": "Name of the filesystem to change"}),
                 (
                     "limit",
                     {
@@ -218,16 +191,8 @@ LOGICAL_SUBCMDS = [
         {
             "help": "unset size limit for this filesystem",
             "args": [
-                (
-                    "pool_name",
-                    {
-                        "help": "Name of the pool the filesystem is part of",
-                    },
-                ),
-                (
-                    "fs_name",
-                    {"help": "Name of the filesystem to change"},
-                ),
+                ("pool_name", {"help": "Name of the pool the filesystem is part of"}),
+                ("fs_name", {"help": "Name of the filesystem to change"}),
             ],
             "func": LogicalActions.unset_size_limit,
         },
@@ -245,13 +210,10 @@ LOGICAL_SUBCMDS = [
                     {
                         "help": (
                             "Name of the pool the snapshot and its origin belong to"
-                        ),
+                        )
                     },
                 ),
-                (
-                    "snapshot_name",
-                    {"help": "Name of the snapshot filesystem"},
-                ),
+                ("snapshot_name", {"help": "Name of the snapshot filesystem"}),
             ],
             "func": LogicalActions.schedule_revert,
         },
@@ -266,13 +228,10 @@ LOGICAL_SUBCMDS = [
                     {
                         "help": (
                             "Name of the pool the snapshot and its origin belong to"
-                        ),
+                        )
                     },
                 ),
-                (
-                    "snapshot_name",
-                    {"help": "Name of the snapshot filesystem"},
-                ),
+                ("snapshot_name", {"help": "Name of the snapshot filesystem"}),
             ],
             "func": LogicalActions.cancel_revert,
         },
