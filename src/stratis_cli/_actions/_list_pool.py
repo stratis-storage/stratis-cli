@@ -19,12 +19,7 @@ Pool actions.
 import json
 import os
 from abc import ABC, abstractmethod
-from typing import (
-    Any,
-    Callable,
-    Iterable,
-    Mapping,
-)
+from typing import Any, Callable, Iterable, Mapping
 from uuid import UUID
 
 # isort: THIRDPARTY

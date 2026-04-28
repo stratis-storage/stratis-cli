@@ -1,5 +1,3 @@
-ISORT_MODULES = setup.py bin/stratis src tests
-
 UNITTEST_OPTS = --verbose
 
 .PHONY: lint
@@ -10,12 +8,14 @@ lint:
 
 .PHONY: fmt
 fmt:
-	isort ${ISORT_MODULES}
+	ruff check --fix --select I bin/stratis
+	ruff check --fix --select I
 	black ./bin/stratis .
 
 .PHONY: fmt-ci
 fmt-ci:
-	isort --diff --check-only ${ISORT_MODULES}
+	ruff check --select I bin/stratis
+	ruff check --select I
 	black ./bin/stratis . --check
 
 .PHONY: check-typos
