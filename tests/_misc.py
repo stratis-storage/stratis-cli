@@ -180,7 +180,7 @@ class RunTestCase(unittest.TestCase):
             expected_cause,
             msg=(
                 "All causes: "
-                f'{", ".join((str(e) for e in list(get_errors(exception))))}'
+                f"{', '.join((str(e) for e in list(get_errors(exception))))}"
             ),
         )
 

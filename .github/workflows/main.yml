@@ -44,7 +44,7 @@ jobs:
             task: >
               PATH=${PATH}:/github/home/.local/bin PYTHONPATH=./src
               make -f Makefile lint
-          - dependencies: black
+          - dependencies: ruff
             task:
               PATH=${PATH}:/github/home/.local/bin PYTHONPATH=./src
               make -f Makefile fmt-ci

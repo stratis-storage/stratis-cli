@@ -14,6 +14,7 @@
 """
 Error codes
 """
+
 # isort: STDLIB
 from enum import Enum, IntEnum
 from typing import Dict, List, Optional, Union

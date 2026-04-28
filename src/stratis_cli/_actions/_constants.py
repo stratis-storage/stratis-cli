@@ -14,6 +14,7 @@
 """
 General constants.
 """
+
 # isort: THIRDPARTY
 from packaging.version import Version
 

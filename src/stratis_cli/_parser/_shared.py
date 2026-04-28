@@ -182,8 +182,7 @@ KEYFILE_PATH_OR_STDIN = [
         {
             "action": "store_true",
             "help": (
-                "Read key from stdin with no terminal echo or userspace "
-                "buffer storage"
+                "Read key from stdin with no terminal echo or userspace buffer storage"
             ),
         },
     ),

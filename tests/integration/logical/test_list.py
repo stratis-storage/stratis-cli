@@ -14,6 +14,7 @@
 """
 Test 'list'.
 """
+
 # isort: STDLIB
 from unittest.mock import patch
 from xml.etree import ElementTree

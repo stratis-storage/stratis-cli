@@ -14,6 +14,7 @@
 """
 Test 'debug'.
 """
+
 # isort: STDLIB
 from uuid import uuid4
 

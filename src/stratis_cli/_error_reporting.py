@@ -14,6 +14,7 @@
 """
 Facilities for managing and reporting errors.
 """
+
 # isort: STDLIB
 import os
 import sys
@@ -299,7 +300,6 @@ def _interpret_errors_2(  # noqa: PLR0911
                 )
 
             if dbus_name == "org.freedesktop.DBus.Error.Failed":
-
                 # We do not test this error, as the only known way to cause it
                 # is to spam the daemon with a succession of mutating commands
                 # from separate processes. The circumstances that cause this

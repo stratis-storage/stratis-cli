@@ -433,9 +433,9 @@ class DefaultDetail(Default):
             try:
                 reencrypted = get_property(
                     mopool.LastReencryptedTimestamp(),
-                    lambda t: date_parser.isoparse(t)
-                    .astimezone()
-                    .strftime("%b %d %Y %H:%M"),
+                    lambda t: (
+                        date_parser.isoparse(t).astimezone().strftime("%b %d %Y %H:%M")
+                    ),
                     "Never",
                 )
             except DbusClientMissingPropertyError:
@@ -460,7 +460,6 @@ class DefaultDetail(Default):
                     clevis_info_str = TABLE_UNKNOWN_STRING
                 print(f"    Clevis Configuration: {clevis_info_str}")
             elif metadata_version is MetadataVersion.V2:
-
                 try:
                     free_str = get_property(
                         mopool.FreeTokenSlots(),
@@ -769,11 +768,11 @@ class StoppedDetail(Stopped):
                 print(
                     "    Allows Unlock via a Key in Kernel Keyring or "
                     "a User-Entered Passphrase: "
-                    f'{"Yes" if PoolFeature.KEY_DESCRIPTION_PRESENT in pool.features else "No"}'
+                    f"{'Yes' if PoolFeature.KEY_DESCRIPTION_PRESENT in pool.features else 'No'}"
                 )
                 print(
                     "    Allows Unattended Unlock via Clevis: "
-                    f'{"Yes" if PoolFeature.CLEVIS_PRESENT in pool.features else "No"}'
+                    f"{'Yes' if PoolFeature.CLEVIS_PRESENT in pool.features else 'No'}"
                 )
             else:
                 print("Encryption Enabled: No")

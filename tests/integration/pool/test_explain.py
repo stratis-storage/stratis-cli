@@ -14,6 +14,7 @@
 """
 Test 'explain'.
 """
+
 # isort: LOCAL
 from stratis_cli._alerts import PoolAlert
 

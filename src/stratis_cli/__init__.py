@@ -14,6 +14,7 @@
 """
 Top level of CLI.
 """
+
 from ._errors import StratisCliEnvironmentError
 from ._exit import StratisCliErrorCodes, exit_
 from ._main import run

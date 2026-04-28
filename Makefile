@@ -10,13 +10,13 @@ lint:
 fmt:
 	ruff check --fix --select I bin/stratis
 	ruff check --fix --select I
-	black ./bin/stratis .
+	ruff format
 
 .PHONY: fmt-ci
 fmt-ci:
 	ruff check --select I bin/stratis
 	ruff check --select I
-	black ./bin/stratis . --check
+	ruff format --check
 
 .PHONY: check-typos
 check-typos:

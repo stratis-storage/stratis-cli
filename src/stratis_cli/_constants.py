@@ -14,6 +14,7 @@
 """
 General constants.
 """
+
 # isort: STDLIB
 from abc import ABC, abstractmethod
 from argparse import Namespace
