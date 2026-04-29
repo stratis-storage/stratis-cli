@@ -41,13 +41,9 @@ jobs:
               python3-setuptools
               python3-wcwidth
               ruff
-            task: >
-              PATH=${PATH}:/github/home/.local/bin PYTHONPATH=./src
-              make -f Makefile lint
+            task: PATH=${PATH}:/github/home/.local/bin make -f Makefile lint
           - dependencies: ruff
-            task:
-              PATH=${PATH}:/github/home/.local/bin PYTHONPATH=./src
-              make -f Makefile fmt-ci
+            task: PATH=${PATH}:/github/home/.local/bin make -f Makefile fmt-ci
     runs-on: ubuntu-latest
     container:
       image: quay.io/fedora/fedora:43  # CURRENT DEVELOPMENT ENVIRONMENT
