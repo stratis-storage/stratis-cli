@@ -15,12 +15,10 @@
 Definition of pool actions to display in the CLI.
 """
 
-# isort: STDLIB
 import copy
 from argparse import SUPPRESS, ArgumentParser, Namespace
 from uuid import UUID
 
-# isort: THIRDPARTY
 from justbytes import MiB, Range
 
 from .._actions import BindActions, PoolActions

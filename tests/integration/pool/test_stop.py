@@ -15,10 +15,8 @@
 Test 'stop'.
 """
 
-# isort: STDLIB
 from uuid import uuid4
 
-# isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
 from stratis_cli._errors import StratisCliEngineError, StratisCliNoChangeError
 

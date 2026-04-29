@@ -15,7 +15,6 @@
 Miscellaneous methods to support testing.
 """
 
-# isort: STDLIB
 import os
 import random
 import signal
@@ -27,10 +26,8 @@ import unittest
 from io import StringIO
 from uuid import UUID
 
-# isort: THIRDPARTY
 import psutil
 
-# isort: LOCAL
 from stratis_cli import StratisCliErrorCodes, run
 from stratis_cli._actions._connection import get_object
 from stratis_cli._actions._constants import TOP_OBJECT
@@ -348,7 +345,6 @@ def get_pool(proxy, pool_name):
     :rtype: str * dict
     :raise DbusClientUniqueError:
     """
-    # isort: LOCAL
     from stratis_cli._actions._data import ObjectManager, pools  # noqa: PLC0415
 
     managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -365,7 +361,6 @@ def get_pool_blockdevs(proxy, pool_name):
     """
     pool_object_path, _ = get_pool(proxy, pool_name)
 
-    # isort: LOCAL
     from stratis_cli._actions._data import MODev, ObjectManager, devs  # noqa: PLC0415
 
     managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -388,7 +383,6 @@ def stop_pool(pool_name):
     :raises: RuntimeError
     """
 
-    # isort: LOCAL
     from stratis_cli._actions._data import Manager  # noqa: PLC0415
 
     proxy = get_object(TOP_OBJECT)

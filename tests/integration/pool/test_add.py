@@ -15,13 +15,9 @@
 Test 'add'.
 """
 
-# isort: STDLIB
 from unittest.mock import patch
 
-# isort: FIRSTPARTY
 from dbus_client_gen import DbusClientUniqueResultError
-
-# isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
 from stratis_cli._errors import (
     StratisCliEngineError,
@@ -121,7 +117,6 @@ class AddDataTestCase1(SimTestCase):
         There is 1 target resource that would not change.
         """
         command_line = self._MENU + [self._POOLNAME] + self._DEVICES
-        # isort: LOCAL
         import stratis_cli  # noqa: PLC0415
 
         with patch.object(
@@ -158,7 +153,6 @@ class AddDataTestCase1(SimTestCase):
             ["--propagate", "pool", "init-cache"] + [self._POOLNAME] + devices
         )
         RUNNER(command_line)
-        # isort: LOCAL
         import stratis_cli  # noqa: PLC0415
 
         with patch.object(
@@ -273,7 +267,6 @@ class AddCacheTestCase1(SimTestCase):
         command_line = self._MENU + [self._POOLNAME] + devices
         RUNNER(command_line)
 
-        # isort: LOCAL
         import stratis_cli  # noqa: PLC0415
 
         with patch.object(
@@ -298,7 +291,6 @@ class AddCacheTestCase1(SimTestCase):
         an exception.
         """
         command_line = self._MENU + [self._POOLNAME] + self._DEVICES
-        # isort: LOCAL
         import stratis_cli  # noqa: PLC0415
 
         with patch.object(

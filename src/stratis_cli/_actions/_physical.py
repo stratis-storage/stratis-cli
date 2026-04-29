@@ -15,14 +15,11 @@
 Miscellaneous physical actions.
 """
 
-# isort: STDLIB
 from argparse import Namespace
 from typing import Any
 
-# isort: THIRDPARTY
 from justbytes import Range
 
-# isort: FIRSTPARTY
 from dbus_client_gen import DbusClientMissingPropertyError
 
 from .._stratisd_constants import BlockDevTiers

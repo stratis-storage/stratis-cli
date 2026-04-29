@@ -15,13 +15,11 @@
 Shared parser operations.
 """
 
-# isort: STDLIB
 import argparse
 import copy
 import re
 from uuid import UUID
 
-# isort: THIRDPARTY
 from justbytes import B, GiB, KiB, MiB, PiB, Range, TiB
 
 from .._constants import Clevis

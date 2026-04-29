@@ -15,12 +15,10 @@
 XML interface specifications.
 """
 
-# isort: STDLIB
 import os
 import sys
 import xml.etree.ElementTree as ET
 
-# isort: FIRSTPARTY
 from dbus_client_gen import (
     DbusClientGenerationError,
     managed_object_class,

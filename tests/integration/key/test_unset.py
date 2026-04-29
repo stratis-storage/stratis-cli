@@ -15,7 +15,6 @@
 Test 'unset'.
 """
 
-# isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
 from stratis_cli._errors import StratisCliNoChangeError
 

@@ -15,14 +15,10 @@
 Test 'list'.
 """
 
-# isort: STDLIB
 from unittest.mock import patch
 from xml.etree import ElementTree
 
-# isort: FIRSTPARTY
 from dbus_client_gen import DbusClientMissingPropertyError, DbusClientUniqueResultError
-
-# isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
 
 from .._misc import (
@@ -255,7 +251,6 @@ class List6TestCase(SimTestCase):
         However, avoid dropping Pool, Name, and Uuid properties, because
         lookup will fail in that case.
         """
-        # isort: LOCAL
         import stratis_cli  # noqa: PLC0415
         from stratis_cli import _actions  # noqa: PLC0415
         from stratis_cli._actions._introspect import SPECS  # noqa: PLC0415

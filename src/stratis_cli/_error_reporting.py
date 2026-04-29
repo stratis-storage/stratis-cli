@@ -15,15 +15,12 @@
 Facilities for managing and reporting errors.
 """
 
-# isort: STDLIB
 import os
 import sys
 from typing import List, Optional
 
-# isort: THIRDPARTY
 import dbus
 
-# isort: FIRSTPARTY
 from dbus_client_gen import (
     DbusClientMissingPropertyError,
     DbusClientMissingSearchPropertiesError,
@@ -123,7 +120,6 @@ def _interpret_errors_0(error: dbus.exceptions.DBusException) -> Optional[str]:
         "org.freedesktop.DBus.Error.ServiceUnknown",
     ):
         try:
-            # isort: THIRDPARTY
             import psutil  # noqa: PLC0415
 
             for proc in psutil.process_iter():

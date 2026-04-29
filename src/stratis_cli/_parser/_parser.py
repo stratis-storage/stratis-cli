@@ -15,7 +15,6 @@
 Top level parser for Stratis CLI.
 """
 
-# isort: STDLIB
 import argparse
 import sys
 

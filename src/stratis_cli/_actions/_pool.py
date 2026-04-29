@@ -15,7 +15,6 @@
 Pool actions.
 """
 
-# isort: STDLIB
 import json
 import os
 from argparse import Namespace
@@ -24,12 +23,10 @@ from itertools import tee
 from typing import Dict, Generator, List, Sequence
 from uuid import UUID
 
-# isort: THIRDPARTY
 from dbus import Dictionary
 from dbus.proxies import ProxyObject
 from justbytes import Range
 
-# isort: FIRSTPARTY
 from dbus_python_client_gen import DPClientMarshallingError
 
 from .._alerts import PoolAlert

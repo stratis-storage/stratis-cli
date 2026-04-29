@@ -15,7 +15,6 @@
 Check version of stratisd
 """
 
-# isort: THIRDPARTY
 from packaging.specifiers import SpecifierSet
 from packaging.version import Version
 

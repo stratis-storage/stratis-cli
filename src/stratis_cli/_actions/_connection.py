@@ -15,7 +15,6 @@
 Low-level interactions with the D-Bus.
 """
 
-# isort: THIRDPARTY
 import dbus
 
 from ._constants import SERVICE

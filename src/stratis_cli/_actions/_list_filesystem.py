@@ -15,16 +15,13 @@
 Filesystem listing.
 """
 
-# isort: STDLIB
 from abc import ABC, abstractmethod
 from typing import Any, Callable, Dict, List
 
-# isort: THIRDPARTY
 from dateutil import parser as date_parser
 from dbus import ObjectPath, String
 from justbytes import Range
 
-# isort: FIRSTPARTY
 from dbus_client_gen import DbusClientMissingPropertyError
 
 from ._connection import get_object

@@ -15,7 +15,6 @@
 Miscellaneous actions about stratis.
 """
 
-# isort: STDLIB
 from argparse import Namespace
 
 from ._connection import get_object

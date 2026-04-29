@@ -15,11 +15,9 @@
 Definition of filesystem actions to display in the CLI.
 """
 
-# isort: STDLIB
 from argparse import SUPPRESS, ArgumentParser, Namespace
 from typing import Optional, Tuple
 
-# isort: THIRDPARTY
 from justbytes import Range
 
 from .._actions import LogicalActions

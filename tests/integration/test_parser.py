@@ -15,11 +15,9 @@
 Test command-line argument parsing.
 """
 
-# isort: STDLIB
 from io import StringIO
 from unittest import mock
 
-# isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
 
 from ._misc import RUNNER, RunTestCase, SimTestCase

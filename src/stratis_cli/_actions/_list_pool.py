@@ -15,18 +15,15 @@
 Pool actions.
 """
 
-# isort: STDLIB
 import json
 import os
 from abc import ABC, abstractmethod
 from typing import Any, Callable, Iterable, Mapping
 from uuid import UUID
 
-# isort: THIRDPARTY
 from dateutil import parser as date_parser
 from justbytes import Range
 
-# isort: FIRSTPARTY
 from dbus_client_gen import DbusClientMissingPropertyError
 
 from .._alerts import (

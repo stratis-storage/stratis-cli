@@ -15,7 +15,6 @@
 Miscellaneous pool-binding actions.
 """
 
-# isort: STDLIB
 import json
 from argparse import Namespace
 

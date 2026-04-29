@@ -15,13 +15,9 @@
 Test 'debug'.
 """
 
-# isort: STDLIB
 from uuid import uuid4
 
-# isort: FIRSTPARTY
 from dbus_client_gen import DbusClientUniqueResultError
-
-# isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
 
 from .._misc import RUNNER, TEST_RUNNER, SimTestCase, device_name_list

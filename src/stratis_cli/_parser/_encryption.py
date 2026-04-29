@@ -15,7 +15,6 @@
 Encryption command-line parser for Stratis CLI.
 """
 
-# isort: STDLIB
 import copy
 from argparse import SUPPRESS, Namespace
 

@@ -15,7 +15,6 @@
 Exit codes and methods.
 """
 
-# isort: STDLIB
 import sys
 from enum import IntEnum
 

@@ -15,10 +15,8 @@
 Miscellaneous logical actions.
 """
 
-# isort: STDLIB
 from argparse import Namespace
 
-# isort: THIRDPARTY
 from justbytes import Range
 
 from .._constants import FilesystemId

@@ -15,14 +15,12 @@
 Miscellaneous top-level actions.
 """
 
-# isort: STDLIB
 import json
 import os
 import sys
 from argparse import Namespace
 from typing import Tuple
 
-# isort: THIRDPARTY
 from dbus import Array, Dictionary, String, Struct, UInt16
 from dbus.proxies import ProxyObject
 

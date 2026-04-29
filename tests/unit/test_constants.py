@@ -15,11 +15,9 @@
 Test 'constants'.
 """
 
-# isort: STDLIB
 import os
 import unittest
 
-# isort: LOCAL
 from stratis_cli._actions._utils import PoolFeature
 from stratis_cli._alerts import PoolAlert
 from stratis_cli._constants import FilesystemId, IdType

@@ -15,7 +15,6 @@
 Miscellaneous whole pool encryption actions.
 """
 
-# isort: STDLIB
 import json
 from argparse import Namespace
 

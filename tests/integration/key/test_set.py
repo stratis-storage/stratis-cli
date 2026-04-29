@@ -15,10 +15,8 @@
 Test 'set'.
 """
 
-# isort: STDLIB
 from unittest.mock import patch
 
-# isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
 from stratis_cli._errors import (
     StratisCliEngineError,

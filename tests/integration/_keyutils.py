@@ -15,7 +15,6 @@
 Key test utilities
 """
 
-# isort: STDLIB
 from tempfile import NamedTemporaryFile
 
 

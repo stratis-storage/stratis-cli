@@ -16,7 +16,6 @@
 Miscellaneous functions.
 """
 
-# isort: STDLIB
 import errno
 import json
 import os
@@ -28,13 +27,11 @@ from functools import wraps
 from typing import Any, Callable, Generator, Sequence, Tuple
 from uuid import UUID
 
-# isort: THIRDPARTY
 from dbus import Dictionary, Struct
 from dbus.exceptions import DBusException
 from dbus.proxies import ProxyObject
 from justbytes import Range
 
-# isort: FIRSTPARTY
 from dbus_python_client_gen import DPClientInvocationError, DPClientMethodCallContext
 
 from .._errors import (

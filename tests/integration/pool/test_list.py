@@ -15,15 +15,11 @@
 Test 'list'.
 """
 
-# isort: STDLIB
 from unittest.mock import patch
 from uuid import uuid4
 from xml.etree import ElementTree
 
-# isort: FIRSTPARTY
 from dbus_client_gen import DbusClientMissingPropertyError, DbusClientUniqueResultError
-
-# isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
 from stratis_cli._actions._connection import get_object
 from stratis_cli._actions._constants import TOP_OBJECT
@@ -126,7 +122,6 @@ class List2TestCase(SimTestCase):
         """
         Test detailed list view for a specific uuid.
         """
-        # isort: LOCAL
         from stratis_cli._actions._data import MOPool  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
@@ -345,7 +340,6 @@ class List6TestCase(SimTestCase):
         """
         Verify no exception thrown if any of pool properties are dropped.
         """
-        # isort: LOCAL
         import stratis_cli  # noqa: PLC0415
         from stratis_cli import _actions  # noqa: PLC0415
         from stratis_cli._actions._introspect import SPECS  # noqa: PLC0415
@@ -401,7 +395,6 @@ class List7TestCase(SimTestCase):
         """
         Verify no exception thrown if any of pool properties are dropped.
         """
-        # isort: LOCAL
         import stratis_cli  # noqa: PLC0415
         from stratis_cli import _actions  # noqa: PLC0415
         from stratis_cli._actions._introspect import SPECS  # noqa: PLC0415
