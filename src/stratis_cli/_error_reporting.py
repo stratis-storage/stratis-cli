@@ -147,9 +147,7 @@ def _interpret_errors_0(error: dbus.exceptions.DBusException) -> Optional[str]:
     return None  # pragma: no cover
 
 
-def _interpret_errors_1(  # noqa: PLR0911,PLR0912
-    errors: List[BaseException],
-) -> Optional[str]:
+def _interpret_errors_1(errors: List[BaseException]) -> Optional[str]:  # noqa: PLR0911,PLR0912
     """
     Interpret the subchain of errors after the first error.
 
@@ -250,9 +248,7 @@ def _interpret_errors_1(  # noqa: PLR0911,PLR0912
     return None  # pragma: no cover
 
 
-def _interpret_errors_2(  # noqa: PLR0911
-    errors: List[BaseException],
-) -> Optional[str]:
+def _interpret_errors_2(errors: List[BaseException]) -> Optional[str]:  # noqa: PLR0911
     """
     Interpret the error when it is known that the first error is a
     DPClientInvocationError
