@@ -15,10 +15,8 @@
 Test 'stop'.
 """
 
-# isort: STDLIB
 from uuid import uuid4
 
-# isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
 from stratis_cli._errors import StratisCliEngineError, StratisCliNoChangeError
 
@@ -45,18 +43,14 @@ class StopTestCase(SimTestCase):
         """
         Stopping with known name should always succeed.
         """
-        command_line = self._MENU + [
-            f"--name={self._POOLNAME}",
-        ]
+        command_line = self._MENU + [f"--name={self._POOLNAME}"]
         TEST_RUNNER(command_line)
 
     def test_stop_stopped(self):
         """
         Stopping a stopped pool should raise exception.
         """
-        command_line = self._MENU + [
-            f"--name={self._POOLNAME}",
-        ]
+        command_line = self._MENU + [f"--name={self._POOLNAME}"]
         RUNNER(command_line)
         self.check_error(StratisCliNoChangeError, command_line, _ERROR)
 
@@ -64,7 +58,5 @@ class StopTestCase(SimTestCase):
         """
         Test stopping passing a bogus UUID.
         """
-        command_line = self._MENU + [
-            f"--uuid={uuid4()}",
-        ]
+        command_line = self._MENU + [f"--uuid={uuid4()}"]
         self.check_error(StratisCliEngineError, command_line, _ERROR)

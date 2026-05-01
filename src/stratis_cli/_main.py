@@ -15,10 +15,8 @@
 Highest level runner.
 """
 
-# isort: STDLIB
 from typing import Callable
 
-# isort: THIRDPARTY
 import justbytes as jb
 
 from ._error_reporting import handle_error

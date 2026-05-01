@@ -15,10 +15,8 @@
 Test error type string formatting.
 """
 
-# isort: STDLIB
 import unittest
 
-# isort: LOCAL
 from stratis_cli._errors import (
     StratisCliGenerationError,
     StratisCliIncoherenceError,

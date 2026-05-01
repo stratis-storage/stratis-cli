@@ -14,12 +14,11 @@
 """
 XML interface specifications.
 """
-# isort: STDLIB
+
 import os
 import sys
 import xml.etree.ElementTree as ET
 
-# isort: FIRSTPARTY
 from dbus_client_gen import (
     DbusClientGenerationError,
     managed_object_class,
@@ -66,8 +65,6 @@ SPECS |= (
 
 
 try:
-    # pylint: disable=invalid-name
-
     timeout = get_timeout(
         os.environ.get("STRATIS_DBUS_TIMEOUT", str(DBUS_TIMEOUT_SECONDS * 1000))
     )
@@ -131,9 +128,9 @@ def _add_abs_path_assertion(klass, method_name, key):
         New CreatePool method
         """
         rel_paths = [path for path in args[key] if not os.path.isabs(path)]
-        assert (
-            rel_paths == []
-        ), f"Precondition violated: paths {', '.join(rel_paths)} should be absolute"
+        assert rel_paths == [], (
+            f"Precondition violated: paths {', '.join(rel_paths)} should be absolute"
+        )
         return orig_method(proxy, args)
 
     setattr(method_class, method_name, new_method)

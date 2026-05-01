@@ -15,10 +15,8 @@
 Test 'set'.
 """
 
-# isort: STDLIB
 from unittest.mock import patch
 
-# isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
 from stratis_cli._errors import (
     StratisCliEngineError,
@@ -65,11 +63,7 @@ class TestKeySet(SimTestCase):
         """
         with RandomKeyTmpFile(128) as fname:
             command_line = self._MENU + [self._KEYNAME, "--keyfile-path", fname]
-            self.check_error(
-                StratisCliEngineError,
-                command_line,
-                _ERROR,
-            )
+            self.check_error(StratisCliEngineError, command_line, _ERROR)
 
     def test_set_key_filename_missing(self):
         """
@@ -125,10 +119,7 @@ class TestKeySet(SimTestCase):
         """
         command_line = self._MENU + [self._KEYNAME, "--capture-key"]
         self.check_error(
-            StratisCliPassphraseEmptyError,
-            command_line,
-            _ERROR,
-            stdin="\n\n",
+            StratisCliPassphraseEmptyError, command_line, _ERROR, stdin="\n\n"
         )
 
     def test_key_set_capture_key_keyboard_interrupt(self):

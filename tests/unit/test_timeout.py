@@ -15,10 +15,8 @@
 Test 'timeout'.
 """
 
-# isort: STDLIB
 import unittest
 
-# isort: LOCAL
 from stratis_cli import StratisCliEnvironmentError
 from stratis_cli._actions._environment import get_timeout
 

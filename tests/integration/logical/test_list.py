@@ -14,14 +14,11 @@
 """
 Test 'list'.
 """
-# isort: STDLIB
+
 from unittest.mock import patch
 from xml.etree import ElementTree
 
-# isort: FIRSTPARTY
 from dbus_client_gen import DbusClientMissingPropertyError, DbusClientUniqueResultError
-
-# isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
 
 from .._misc import (
@@ -254,14 +251,9 @@ class List6TestCase(SimTestCase):
         However, avoid dropping Pool, Name, and Uuid properties, because
         lookup will fail in that case.
         """
-        # isort: LOCAL
-        import stratis_cli  # pylint: disable=import-outside-toplevel
-        from stratis_cli import _actions  # pylint: disable=import-outside-toplevel
-
-        # pylint: disable=import-outside-toplevel,protected-access
-        from stratis_cli._actions._introspect import (
-            SPECS,
-        )
+        import stratis_cli  # noqa: PLC0415
+        from stratis_cli import _actions  # noqa: PLC0415
+        from stratis_cli._actions._introspect import SPECS  # noqa: PLC0415
 
         filesystem_spec = SPECS[_actions._constants.FILESYSTEM_INTERFACE]
         spec = ElementTree.fromstring(filesystem_spec)
@@ -272,7 +264,6 @@ class List6TestCase(SimTestCase):
             if not (prop.attrib["name"] in ("Pool", "Name", "Uuid"))
         ]:
             with patch.object(
-                # pylint: disable=protected-access
                 stratis_cli._actions._data.MOFilesystem,  # pyright: ignore
                 property_name,
                 autospec=True,
@@ -288,8 +279,5 @@ class List6TestCase(SimTestCase):
                     [self._POOLNAME, f"--name={self._VOLUMES[1]}"],
                     [self._POOLNAME, f"--name={self._VOLUMES[2]}"],
                 ]:
-                    with self.subTest(
-                        property_name=property_name,
-                        options=options,
-                    ):
+                    with self.subTest(property_name=property_name, options=options):
                         TEST_RUNNER(self._MENU + options)

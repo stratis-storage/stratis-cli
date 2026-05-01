@@ -15,13 +15,10 @@
 Test properties of range parsing.
 """
 
-# isort: STDLIB
 import unittest
 
-# isort: THIRDPARTY
 import justbytes
 
-# isort: LOCAL
 from stratis_cli._parser._shared import _unit_map
 
 

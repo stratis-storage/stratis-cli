@@ -15,7 +15,6 @@
 Encryption command-line parser for Stratis CLI.
 """
 
-# isort: STDLIB
 import copy
 from argparse import SUPPRESS, Namespace
 
@@ -33,9 +32,7 @@ from ._shared import (
 )
 
 
-class ClevisEncryptionOptionsForTang(
-    ClevisEncryptionOptions
-):  # pylint: disable=too-few-public-methods
+class ClevisEncryptionOptionsForTang(ClevisEncryptionOptions):
     """
     Class that verifies Clevis encryption options for bind subcommand.
     """
@@ -47,9 +44,7 @@ class ClevisEncryptionOptionsForTang(
         super().__init__(namespace)
 
 
-class ClevisEncryptionOptionsForTpm2(
-    ClevisEncryptionOptions
-):  # pylint: disable=too-few-public-methods
+class ClevisEncryptionOptionsForTpm2(ClevisEncryptionOptions):
     """
     Class that verifies Clevis encryption options for bind subcommand.
     """
@@ -213,9 +208,7 @@ BIND_SUBCMDS_ENCRYPTION = [
                     "Pool Identifier",
                     {
                         "description": "Choose one option to specify the pool to bind",
-                        "mut_ex_args": [
-                            (True, UUID_OR_NAME),
-                        ],
+                        "mut_ex_args": [(True, UUID_OR_NAME)],
                     },
                 ),
                 (
@@ -243,16 +236,14 @@ BIND_SUBCMDS_ENCRYPTION = [
                         "help": SUPPRESS,
                         "nargs": "?",
                     },
-                ),
+                )
             ],
             "groups": [
                 (
                     "Pool Identifier",
                     {
                         "description": "Choose one option to specify the pool to bind",
-                        "mut_ex_args": [
-                            (True, UUID_OR_NAME),
-                        ],
+                        "mut_ex_args": [(True, UUID_OR_NAME)],
                     },
                 )
             ],
@@ -268,15 +259,11 @@ BIND_SUBCMDS_ENCRYPTION = [
                     "Pool Identifier",
                     {
                         "description": "Choose one option to specify the pool to bind",
-                        "mut_ex_args": [
-                            (True, UUID_OR_NAME),
-                        ],
+                        "mut_ex_args": [(True, UUID_OR_NAME)],
                     },
                 )
             ],
-            "args": [
-                ("keydesc", {"help": "key description"}),
-            ],
+            "args": [("keydesc", {"help": "key description"})],
             "func": BindActions.bind_keyring,
         },
     ),
@@ -294,9 +281,7 @@ REBIND_SUBCMDS_ENCRYPTION = [
                     "Pool Identifier",
                     {
                         "description": "Choose one option to specify the pool to rebind",
-                        "mut_ex_args": [
-                            (True, UUID_OR_NAME),
-                        ],
+                        "mut_ex_args": [(True, UUID_OR_NAME)],
                     },
                 )
             ],
@@ -311,7 +296,7 @@ REBIND_SUBCMDS_ENCRYPTION = [
                         ),
                         "type": ensure_nat,
                     },
-                ),
+                )
             ],
             "func": RebindActions.rebind_clevis,
         },
@@ -328,9 +313,7 @@ REBIND_SUBCMDS_ENCRYPTION = [
                     "Pool Identifier",
                     {
                         "description": "Choose one option to specify the pool to rebind",
-                        "mut_ex_args": [
-                            (True, UUID_OR_NAME),
-                        ],
+                        "mut_ex_args": [(True, UUID_OR_NAME)],
                     },
                 )
             ],
@@ -375,9 +358,7 @@ ENCRYPTION_SUBCMDS = [
                     "Pool Identifier",
                     {
                         "description": "Choose one option to specify the pool",
-                        "mut_ex_args": [
-                            (True, UUID_OR_NAME),
-                        ],
+                        "mut_ex_args": [(True, UUID_OR_NAME)],
                     },
                 ),
                 (
@@ -408,9 +389,7 @@ ENCRYPTION_SUBCMDS = [
                     "Pool Identifier",
                     {
                         "description": "Choose one option to specify the pool",
-                        "mut_ex_args": [
-                            (True, UUID_OR_NAME),
-                        ],
+                        "mut_ex_args": [(True, UUID_OR_NAME)],
                     },
                 )
             ],
@@ -427,9 +406,7 @@ ENCRYPTION_SUBCMDS = [
                     "Pool Identifier",
                     {
                         "description": "Choose one option to specify the pool",
-                        "mut_ex_args": [
-                            (True, UUID_OR_NAME),
-                        ],
+                        "mut_ex_args": [(True, UUID_OR_NAME)],
                     },
                 )
             ],
@@ -462,9 +439,7 @@ ENCRYPTION_SUBCMDS = [
                     "Pool Identifier",
                     {
                         "description": "Choose one option to specify the pool to unbind",
-                        "mut_ex_args": [
-                            (True, UUID_OR_NAME),
-                        ],
+                        "mut_ex_args": [(True, UUID_OR_NAME)],
                     },
                 )
             ],

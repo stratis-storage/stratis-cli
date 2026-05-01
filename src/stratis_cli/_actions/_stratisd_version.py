@@ -15,7 +15,6 @@
 Check version of stratisd
 """
 
-# isort: THIRDPARTY
 from packaging.specifiers import SpecifierSet
 from packaging.version import Version
 
@@ -31,8 +30,7 @@ def check_stratisd_version():
 
     :raises StratisCliStratisdVersionError
     """
-    # pylint: disable=import-outside-toplevel
-    from ._data import Manager0
+    from ._data import Manager0  # noqa: PLC0415
 
     version_spec = SpecifierSet(f">={MINIMUM_STRATISD_VERSION}") & SpecifierSet(
         f"<{MAXIMUM_STRATISD_VERSION}"

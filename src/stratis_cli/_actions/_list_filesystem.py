@@ -15,16 +15,13 @@
 Filesystem listing.
 """
 
-# isort: STDLIB
 from abc import ABC, abstractmethod
 from typing import Any, Callable, Dict, List
 
-# isort: THIRDPARTY
 from dateutil import parser as date_parser
 from dbus import ObjectPath, String
 from justbytes import Range
 
-# isort: FIRSTPARTY
 from dbus_client_gen import DbusClientMissingPropertyError
 
 from ._connection import get_object
@@ -38,16 +35,19 @@ from ._formatting import (
 from ._utils import SizeTriple
 
 
-def list_filesystems(
-    uuid_formatter: Callable, *, pool_name=None, fs_id=None
-):  # pylint: disable=too-many-locals
+def list_filesystems(uuid_formatter: Callable, *, pool_name=None, fs_id=None):
     """
     List the specified information about filesystems.
     """
     assert fs_id is None or pool_name is not None
 
-    # pylint: disable=import-outside-toplevel
-    from ._data import MOFilesystem, MOPool, ObjectManager, filesystems, pools
+    from ._data import (  # noqa: PLC0415
+        MOFilesystem,
+        MOPool,
+        ObjectManager,
+        filesystems,
+        pools,
+    )
 
     proxy = get_object(TOP_OBJECT)
     managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -81,21 +81,17 @@ def list_filesystems(
 
     if fs_id is None:
         klass = Table(
-            uuid_formatter,
-            filesystems_with_props,
-            pool_object_path_to_pool_name,
+            uuid_formatter, filesystems_with_props, pool_object_path_to_pool_name
         )
     else:
         klass = Detail(
-            uuid_formatter,
-            filesystems_with_props,
-            pool_object_path_to_pool_name,
+            uuid_formatter, filesystems_with_props, pool_object_path_to_pool_name
         )
 
     klass.display()
 
 
-class ListFilesystem(ABC):  # pylint: disable=too-few-public-methods
+class ListFilesystem(ABC):
     """
     Handle listing a filesystem or filesystems.
     """
@@ -190,7 +186,7 @@ class ListFilesystem(ABC):  # pylint: disable=too-few-public-methods
             return TABLE_UNKNOWN_STRING
 
 
-class Table(ListFilesystem):  # pylint: disable=too-few-public-methods
+class Table(ListFilesystem):
     """
     List filesystems using table format.
     """
@@ -234,19 +230,13 @@ class Table(ListFilesystem):  # pylint: disable=too-few-public-methods
         ]
 
         print_table(
-            [
-                "Pool",
-                "Filesystem",
-                f"{TOTAL_USED_FREE} / Limit",
-                "Device",
-                "UUID",
-            ],
+            ["Pool", "Filesystem", f"{TOTAL_USED_FREE} / Limit", "Device", "UUID"],
             sorted(tables, key=lambda entry: (entry[0], entry[1])),
             ["<", "<", "<", "<", "<"],
         )
 
 
-class Detail(ListFilesystem):  # pylint: disable=too-few-public-methods
+class Detail(ListFilesystem):
     """
     Do a detailed listing of filesystems.
     """

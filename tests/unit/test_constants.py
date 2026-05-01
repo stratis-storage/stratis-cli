@@ -15,11 +15,9 @@
 Test 'constants'.
 """
 
-# isort: STDLIB
 import os
 import unittest
 
-# isort: LOCAL
 from stratis_cli._actions._utils import PoolFeature
 from stratis_cli._alerts import PoolAlert
 from stratis_cli._constants import FilesystemId, IdType
@@ -94,17 +92,12 @@ class PoolFeatureTestCase(unittest.TestCase):
         if bool(int(os.environ.get("STRATIS_STRICT_POOL_FEATURES", "0"))):
 
             def test_func(val):
-                self.assertIsNone(
-                    PoolFeature._missing_(val)  # pylint: disable=protected-access
-                )
+                self.assertIsNone(PoolFeature._missing_(val))
 
         else:
 
             def test_func(val):
-                self.assertEqual(
-                    PoolFeature._missing_(val),  # pylint: disable=protected-access
-                    PoolFeature.UNRECOGNIZED,
-                )
+                self.assertEqual(PoolFeature._missing_(val), PoolFeature.UNRECOGNIZED)
 
         for val in [1, 0.347, ["a"], {"b": 32}, lambda x: 32]:
             with self.subTest(val=val):

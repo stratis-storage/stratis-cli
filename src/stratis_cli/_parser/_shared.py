@@ -15,13 +15,11 @@
 Shared parser operations.
 """
 
-# isort: STDLIB
 import argparse
 import copy
 import re
 from uuid import UUID
 
-# isort: THIRDPARTY
 from justbytes import B, GiB, KiB, MiB, PiB, Range, TiB
 
 from .._constants import Clevis
@@ -127,7 +125,7 @@ def ensure_nat(arg):
     return result
 
 
-class MoveNotice:  # pylint: disable=too-few-public-methods
+class MoveNotice:
     """
     Constructs a move notice, for printing.
     """
@@ -157,33 +155,18 @@ class MoveNotice:  # pylint: disable=too-few-public-methods
 
 
 UUID_OR_NAME = [
-    (
-        "--name",
-        {
-            "help": "name",
-        },
-    ),
-    (
-        "--uuid",
-        {
-            "type": UUID,
-            "help": "UUID",
-        },
-    ),
+    ("--name", {"help": "name"}),
+    ("--uuid", {"type": UUID, "help": "UUID"}),
 ]
 
 KEYFILE_PATH_OR_STDIN = [
-    (
-        "--keyfile-path",
-        {"help": "Path to a key file containing a key"},
-    ),
+    ("--keyfile-path", {"help": "Path to a key file containing a key"}),
     (
         "--capture-key",
         {
             "action": "store_true",
             "help": (
-                "Read key from stdin with no terminal echo or userspace "
-                "buffer storage"
+                "Read key from stdin with no terminal echo or userspace buffer storage"
             ),
         },
     ),
@@ -197,16 +180,11 @@ TRUST_URL_OR_THUMBPRINT = [
             "help": "Omit verification of tang server credentials",
         },
     ),
-    (
-        "--thumbprint",
-        {
-            "help": "Thumbprint of tang server at specified URL",
-        },
-    ),
+    ("--thumbprint", {"help": "Thumbprint of tang server at specified URL"}),
 ]
 
 
-class ClevisEncryptionOptions:  # pylint: disable=too-few-public-methods
+class ClevisEncryptionOptions:
     """
     Gathers and verifies encryption options.
     """
@@ -276,12 +254,7 @@ class ClevisEncryptionOptions:  # pylint: disable=too-few-public-methods
 
 
 CLEVIS_AND_KERNEL = [
-    (
-        "--key-desc",
-        {
-            "help": ("Key description of key in kernel keyring"),
-        },
-    ),
+    ("--key-desc", {"help": ("Key description of key in kernel keyring")}),
     (
         "--clevis",
         {
@@ -292,9 +265,7 @@ CLEVIS_AND_KERNEL = [
     ),
     (
         "--tang-url",
-        {
-            "help": "URL of Clevis tang server (--clevis=[tang|nbde] must be set)",
-        },
+        {"help": "URL of Clevis tang server (--clevis=[tang|nbde] must be set)"},
     ),
 ]
 

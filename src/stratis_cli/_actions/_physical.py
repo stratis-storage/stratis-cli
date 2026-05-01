@@ -15,14 +15,11 @@
 Miscellaneous physical actions.
 """
 
-# isort: STDLIB
 from argparse import Namespace
 from typing import Any
 
-# isort: THIRDPARTY
 from justbytes import Range
 
-# isort: FIRSTPARTY
 from dbus_client_gen import DbusClientMissingPropertyError
 
 from .._stratisd_constants import BlockDevTiers
@@ -41,16 +38,13 @@ class PhysicalActions:
     Actions on the physical aspects of a pool.
     """
 
-    # pylint: disable=too-few-public-methods
-
     @staticmethod
-    def list_devices(namespace: Namespace):  # pylint: disable=too-many-locals
+    def list_devices(namespace: Namespace):
         """
         List devices. If a pool is specified in the namespace, list devices
         for that pool. Otherwise, list all devices for all pools.
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import MODev, MOPool, ObjectManager, devs, pools
+        from ._data import MODev, MOPool, ObjectManager, devs, pools  # noqa: PLC0415
 
         # This method is invoked as the default for "stratis blockdev";
         # the namespace may not have a pool_name field.

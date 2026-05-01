@@ -15,10 +15,8 @@
 Test 'extend-data'.
 """
 
-# isort: STDLIB
 from uuid import UUID, uuid4
 
-# isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
 from stratis_cli._actions._connection import get_object
 from stratis_cli._actions._constants import TOP_OBJECT

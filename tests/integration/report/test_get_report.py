@@ -15,11 +15,9 @@
 Test 'stratis report'.
 """
 
-# isort: STDLIB
 import os
 import unittest
 
-# isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
 from stratis_cli._stratisd_constants import ReportKey
 

@@ -15,7 +15,6 @@
 Miscellaneous whole pool encryption actions.
 """
 
-# isort: STDLIB
 import json
 from argparse import Namespace
 
@@ -47,8 +46,7 @@ class CryptActions:
         if not namespace.in_place:
             raise StratisCliInPlaceNotSpecified()
 
-        # pylint: disable=import-outside-toplevel
-        from ._data import MOPool, ObjectManager, Pool, pools
+        from ._data import MOPool, ObjectManager, Pool, pools  # noqa: PLC0415
 
         pool_id = PoolId.from_parser_namespace(namespace)
         assert pool_id is not None
@@ -108,8 +106,7 @@ class CryptActions:
         if not namespace.in_place:
             raise StratisCliInPlaceNotSpecified()
 
-        # pylint: disable=import-outside-toplevel
-        from ._data import MOPool, ObjectManager, Pool, pools
+        from ._data import MOPool, ObjectManager, Pool, pools  # noqa: PLC0415
 
         pool_id = PoolId.from_parser_namespace(namespace)
         assert pool_id is not None
@@ -128,9 +125,7 @@ class CryptActions:
             raise StratisCliNoChangeError("encryption off", pool_id)
 
         (changed, return_code, message) = Pool.Methods.DecryptPool(
-            get_object(pool_object_path),
-            {},
-            timeout=10,
+            get_object(pool_object_path), {}, timeout=10
         )
 
         if return_code != StratisdErrors.OK:  # pragma: no cover
@@ -152,8 +147,7 @@ class CryptActions:
         if not namespace.in_place:
             raise StratisCliInPlaceNotSpecified()
 
-        # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, Pool, pools
+        from ._data import ObjectManager, Pool, pools  # noqa: PLC0415
 
         pool_id = PoolId.from_parser_namespace(namespace)
         assert pool_id is not None
@@ -169,9 +163,7 @@ class CryptActions:
         )
 
         (changed, return_code, message) = Pool.Methods.ReencryptPool(
-            get_object(pool_object_path),
-            {},
-            timeout=10,
+            get_object(pool_object_path), {}, timeout=10
         )
 
         if return_code != StratisdErrors.OK:

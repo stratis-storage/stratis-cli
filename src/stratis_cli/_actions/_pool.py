@@ -15,7 +15,6 @@
 Pool actions.
 """
 
-# isort: STDLIB
 import json
 import os
 from argparse import Namespace
@@ -24,12 +23,10 @@ from itertools import tee
 from typing import Dict, Generator, List, Sequence
 from uuid import UUID
 
-# isort: THIRDPARTY
 from dbus import Dictionary
 from dbus.proxies import ProxyObject
 from justbytes import Range
 
-# isort: FIRSTPARTY
 from dbus_python_client_gen import DPClientMarshallingError
 
 from .._alerts import PoolAlert
@@ -69,8 +66,7 @@ def _generate_pools_to_blockdevs(
     :returns: a map of pool names to sets of strings containing blockdevs they own
     :rtype: dict of str * frozenset of str
     """
-    # pylint: disable=import-outside-toplevel
-    from ._data import MODev, MOPool, devs, pools
+    from ._data import MODev, MOPool, devs, pools  # noqa: PLC0415
 
     pool_map = dict(
         (path, str(MOPool(info).Name()))
@@ -169,7 +165,7 @@ class PoolActions:
     """
 
     @staticmethod
-    def create_pool(namespace: Namespace):  # pylint: disable=too-many-locals
+    def create_pool(namespace: Namespace):
         """
         Create a stratis pool.
 
@@ -177,8 +173,7 @@ class PoolActions:
         :raises StratisCliIncoherenceError:
         :raises StratisCliNameConflictError:
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import Manager, ObjectManager, Pool, pools
+        from ._data import Manager, ObjectManager, Pool, pools  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -204,35 +199,33 @@ class PoolActions:
         )
 
         try:
-            (
-                (changed, (pool_object_path, _)),
-                return_code,
-                message,
-            ) = Manager.Methods.CreatePool(
-                proxy,
-                {
-                    "name": pool_name,
-                    "devices": blockdevs,
-                    "key_desc": (
-                        []
-                        if namespace.key_desc is None
-                        else [((False, 0), namespace.key_desc)]
-                    ),
-                    "clevis_info": (
-                        []
-                        if namespace.clevis is None
-                        else [
-                            (
-                                (False, 0),
-                                namespace.clevis.pin,
-                                json.dumps(namespace.clevis.config),
-                            )
-                        ]
-                    ),
-                    "journal_size": journal_size,
-                    "tag_spec": tag_spec,
-                    "allocate_superblock": allocate_superblock,
-                },
+            ((changed, (pool_object_path, _)), return_code, message) = (
+                Manager.Methods.CreatePool(
+                    proxy,
+                    {
+                        "name": pool_name,
+                        "devices": blockdevs,
+                        "key_desc": (
+                            []
+                            if namespace.key_desc is None
+                            else [((False, 0), namespace.key_desc)]
+                        ),
+                        "clevis_info": (
+                            []
+                            if namespace.clevis is None
+                            else [
+                                (
+                                    (False, 0),
+                                    namespace.clevis.pin,
+                                    json.dumps(namespace.clevis.config),
+                                )
+                            ]
+                        ),
+                        "journal_size": journal_size,
+                        "tag_spec": tag_spec,
+                        "allocate_superblock": allocate_superblock,
+                    },
+                )
             )
         except DPClientMarshallingError as err:
             u64max = 0xFFFFFFFFFFFFFFFF
@@ -266,8 +259,7 @@ class PoolActions:
         :raises StratisCliIncoherenceError:
         :raises StratisCliEngineError:
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import Manager
+        from ._data import Manager  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
 
@@ -292,8 +284,7 @@ class PoolActions:
         :raises StratisCliIncoherenceError:
         :raises StratisCliEngineError:
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import Manager
+        from ._data import Manager  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
 
@@ -370,15 +361,21 @@ class PoolActions:
             raise StratisCliNoChangeError("start", pool_id)
 
     @staticmethod
-    def init_cache(namespace: Namespace):  # pylint: disable=too-many-locals
+    def init_cache(namespace: Namespace):
         """
         Initialize the cache of an existing stratis pool.
 
         :raises StratisCliEngineError:
         :raises StratisCliIncoherenceError:
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import MODev, MOPool, ObjectManager, Pool, devs, pools
+        from ._data import (  # noqa: PLC0415
+            MODev,
+            MOPool,
+            ObjectManager,
+            Pool,
+            devs,
+            pools,
+        )
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -457,8 +454,7 @@ class PoolActions:
         :raises StratisCliEngineError:
         :raises StratisCliIncoherenceError:
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import Manager, ObjectManager, pools
+        from ._data import Manager, ObjectManager, pools  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -495,8 +491,7 @@ class PoolActions:
         :raises StratisCliEngineError:
         :raises StratisCliNoChangeError:
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import ObjectManager, Pool, pools
+        from ._data import ObjectManager, Pool, pools  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -517,7 +512,7 @@ class PoolActions:
             raise StratisCliNoChangeError("rename", namespace.new)
 
     @staticmethod
-    def add_data_devices(namespace: Namespace):  # pylint: disable=too-many-locals
+    def add_data_devices(namespace: Namespace):
         """
         Add specified data devices to a pool.
 
@@ -527,8 +522,7 @@ class PoolActions:
         :raises StratisCliInUseSameTierError:
         :raises StratisCliPartialChangeError:
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import MODev, ObjectManager, Pool, devs, pools
+        from ._data import MODev, ObjectManager, Pool, devs, pools  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -572,7 +566,7 @@ class PoolActions:
             )
 
     @staticmethod
-    def add_cache_devices(namespace: Namespace):  # pylint: disable=too-many-locals
+    def add_cache_devices(namespace: Namespace):
         """
         Add specified cache devices to a pool.
 
@@ -582,8 +576,7 @@ class PoolActions:
         :raises StratisCliInUseSameTierError:
         :raises StratisCliPartialChangeError:
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import MODev, ObjectManager, Pool, devs, pools
+        from ._data import MODev, ObjectManager, Pool, devs, pools  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -627,7 +620,7 @@ class PoolActions:
             )
 
     @staticmethod
-    def extend_data(namespace: Namespace):  # pylint: disable=too-many-locals
+    def extend_data(namespace: Namespace):
         """
         Extend the pool making use of the additional space offered by component
         devices. Exit immediately if something unexpected happens.
@@ -636,8 +629,7 @@ class PoolActions:
         :raises StratisCliEngineError:
         :raises StratisCliIncoherenceError:
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import MODev, ObjectManager, Pool, devs, pools
+        from ._data import MODev, ObjectManager, Pool, devs, pools  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -756,8 +748,7 @@ class PoolActions:
         """
         Set the filesystem limit.
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import MOPool, ObjectManager, Pool, pools
+        from ._data import MOPool, ObjectManager, Pool, pools  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -779,8 +770,7 @@ class PoolActions:
         """
         Set the overprovisioning mode.
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import MOPool, ObjectManager, Pool, pools
+        from ._data import MOPool, ObjectManager, Pool, pools  # noqa: PLC0415
 
         decision = bool(namespace.decision)
 

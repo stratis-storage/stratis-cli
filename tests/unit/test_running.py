@@ -15,16 +15,11 @@
 Test 'long_running_operation'.
 """
 
-# isort: STDLIB
 import unittest
 
-# isort: THIRDPARTY
 import dbus
 
-# isort: FIRSTPARTY
 from dbus_python_client_gen import DPClientInvocationError, DPClientMethodCallContext
-
-# isort: LOCAL
 from stratis_cli._actions._utils import long_running_operation
 
 

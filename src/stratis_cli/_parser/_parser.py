@@ -15,7 +15,6 @@
 Top level parser for Stratis CLI.
 """
 
-# isort: STDLIB
 import argparse
 import sys
 
@@ -48,10 +47,8 @@ def gen_subparsers(parser, command_line):
     yield (parser, command_line)
     for action in (
         action
-        for action in parser._actions  # pylint: disable=protected-access
-        if isinstance(
-            action, argparse._SubParsersAction  # pylint: disable=protected-access
-        )
+        for action in parser._actions
+        if isinstance(action, argparse._SubParsersAction)
     ):
         for name, subparser in sorted(action.choices.items(), key=lambda x: x[0]):
             # if name is an alias then in it is not the name used in prog
@@ -162,7 +159,7 @@ DAEMON_SUBCMDS = [
             "help": "version of stratisd daemon",
             "func": StratisActions.list_stratisd_version,
         },
-    ),
+    )
 ]
 
 ROOT_SUBCOMMANDS = [
@@ -227,10 +224,7 @@ ROOT_SUBCOMMANDS = [
     ),
     (
         "debug",
-        {
-            "help": "Commands for debugging operations.",
-            "subcmds": TOP_DEBUG_SUBCMDS,
-        },
+        {"help": "Commands for debugging operations.", "subcmds": TOP_DEBUG_SUBCMDS},
     ),
     ("daemon", {"help": "Stratis daemon information", "subcmds": DAEMON_SUBCMDS}),
 ]

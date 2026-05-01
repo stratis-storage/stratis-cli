@@ -14,7 +14,7 @@
 """
 General constants.
 """
-# isort: THIRDPARTY
+
 from packaging.version import Version
 
 SERVICE = "org.storage.stratis3"

@@ -43,7 +43,7 @@ class StratisCliNoDeviceSizeChangeError(StratisCliUserError):
     space on data devices, but there isn't any.
     """
 
-    def __init__(self):  # pylint: disable=super-init-not-called
+    def __init__(self):
         """
         Initializer.
         """
@@ -75,7 +75,6 @@ class StratisCliResourceNotFoundError(StratisCliUserError):
         :param str command: the executed command
         :param str resource: the target resource
         """
-        # pylint: disable=super-init-not-called
         self.command = command
         self.resource = resource
 
@@ -106,7 +105,6 @@ class StratisCliPartialChangeError(StratisCliUserError):
 
         Precondition: unchanged_resources != frozenset()
         """
-        # pylint: disable=super-init-not-called
         self.command = command
         self.changed_resources = changed_resources
         self.unchanged_resources = unchanged_resources
@@ -164,7 +162,6 @@ class StratisCliNameConflictError(StratisCliUserError):
         :param str object_type: the type of the object, pool, filesystem, etc.
         :param str name: the conflicting name
         """
-        # pylint: disable=super-init-not-called
         self.object_type = object_type
         self.name = name
 
@@ -214,7 +211,6 @@ class StratisCliInUseOtherTierError(StratisCliInUseError):
         Precondition: pools_to_blockdevs != {}
         Precondition: all frozenset of str in pools_to_blockdevs have at least one item
         """
-        # pylint: disable=super-init-not-called
         self.pools_to_blockdevs = pools_to_blockdevs
         self.added_as = added_as
 
@@ -268,7 +264,6 @@ class StratisCliInUseSameTierError(StratisCliInUseError):
         Precondition: pools_to_blockdevs != {}
         Precondition: all frozenset of str in pools_to_blockdevs have at least one item
         """
-        # pylint: disable=super-init-not-called
         self.pools_to_blockdevs = pools_to_blockdevs
         self.added_as = added_as
 
@@ -307,7 +302,6 @@ class StratisCliKeyfileNotFoundError(StratisCliUserError):
 
         :param str keyfile_path: the unfound path
         """
-        # pylint: disable=super-init-not-called
         self.keyfile_path = keyfile_path
 
     def __str__(self):
@@ -325,7 +319,6 @@ class StratisCliUnknownInterfaceError(StratisCliRuntimeError):
 
         :param str interface_name: the unexpected interface name
         """
-        # pylint: disable=super-init-not-called
         self._interface_name = interface_name
 
     def __str__(self):
@@ -344,7 +337,6 @@ class StratisCliEngineError(StratisCliRuntimeError):
         :param rc int: the error code returned by the engine
         :param str message: whatever message accompanied the error code
         """
-        # pylint: disable=super-init-not-called
         try:
             self.error_code = StratisdErrors(rc)
         except ValueError:
@@ -370,7 +362,6 @@ class StratisCliActionError(StratisCliRuntimeError):
         :type command_line_args: list of str
         :param Namespace namespace: the namespace constructed by the parser
         """
-        # pylint: disable=super-init-not-called
         self.command_line_args = command_line_args
         self.namespace = namespace
 
@@ -406,7 +397,6 @@ class StratisCliStratisdVersionError(StratisCliRuntimeError):
         :param tuple minimum_version: the minimum version required
         :param tuple maximum_version: the maximum version allowed
         """
-        # pylint: disable=super-init-not-called
         self.actual_version = actual_version
         self.minimum_version = minimum_version
         self.maximum_version = maximum_version

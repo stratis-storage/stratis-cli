@@ -14,13 +14,10 @@
 """
 Test 'debug'.
 """
-# isort: STDLIB
+
 from uuid import uuid4
 
-# isort: FIRSTPARTY
 from dbus_client_gen import DbusClientUniqueResultError
-
-# isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
 
 from .._misc import RUNNER, TEST_RUNNER, SimTestCase, device_name_list
@@ -55,11 +52,13 @@ class DebugTestCase(SimTestCase):
         Test good uuid
         """
 
-        # isort: LOCAL
-        # pylint: disable=import-outside-toplevel
-        from stratis_cli._actions._connection import get_object
-        from stratis_cli._actions._constants import TOP_OBJECT
-        from stratis_cli._actions._data import MODev, ObjectManager, devs
+        from stratis_cli._actions._connection import get_object  # noqa: PLC0415
+        from stratis_cli._actions._constants import TOP_OBJECT  # noqa: PLC0415
+        from stratis_cli._actions._data import (  # noqa: PLC0415
+            MODev,
+            ObjectManager,
+            devs,
+        )
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})

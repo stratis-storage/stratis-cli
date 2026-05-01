@@ -15,15 +15,11 @@
 Test 'list'.
 """
 
-# isort: STDLIB
 from unittest.mock import patch
 from uuid import uuid4
 from xml.etree import ElementTree
 
-# isort: FIRSTPARTY
 from dbus_client_gen import DbusClientMissingPropertyError, DbusClientUniqueResultError
-
-# isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
 from stratis_cli._actions._connection import get_object
 from stratis_cli._actions._constants import TOP_OBJECT
@@ -126,9 +122,7 @@ class List2TestCase(SimTestCase):
         """
         Test detailed list view for a specific uuid.
         """
-        # pylint: disable=import-outside-toplevel
-        # isort: LOCAL
-        from stratis_cli._actions._data import MOPool
+        from stratis_cli._actions._data import MOPool  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
 
@@ -346,14 +340,9 @@ class List6TestCase(SimTestCase):
         """
         Verify no exception thrown if any of pool properties are dropped.
         """
-        # isort: LOCAL
-        import stratis_cli  # pylint: disable=import-outside-toplevel
-        from stratis_cli import _actions  # pylint: disable=import-outside-toplevel
-
-        # pylint: disable=import-outside-toplevel,protected-access
-        from stratis_cli._actions._introspect import (
-            SPECS,
-        )
+        import stratis_cli  # noqa: PLC0415
+        from stratis_cli import _actions  # noqa: PLC0415
+        from stratis_cli._actions._introspect import SPECS  # noqa: PLC0415
 
         pool_spec = SPECS[_actions._constants.POOL_INTERFACE]
         spec = ElementTree.fromstring(pool_spec)
@@ -362,7 +351,6 @@ class List6TestCase(SimTestCase):
             prop.attrib["name"] for prop in spec.findall("./property")
         ]:
             with patch.object(
-                # pylint: disable=protected-access
                 stratis_cli._actions._data.MOPool,  # pyright: ignore
                 property_name,
                 autospec=True,
@@ -373,10 +361,7 @@ class List6TestCase(SimTestCase):
                 ),
             ):
                 for options in [[], [f"--name={self._POOLNAME}"]]:
-                    with self.subTest(
-                        property_name=property_name,
-                        options=options,
-                    ):
+                    with self.subTest(property_name=property_name, options=options):
                         TEST_RUNNER(self._MENU + options)
 
 
@@ -410,14 +395,9 @@ class List7TestCase(SimTestCase):
         """
         Verify no exception thrown if any of pool properties are dropped.
         """
-        # isort: LOCAL
-        import stratis_cli  # pylint: disable=import-outside-toplevel
-        from stratis_cli import _actions  # pylint: disable=import-outside-toplevel
-
-        # pylint: disable=import-outside-toplevel,protected-access
-        from stratis_cli._actions._introspect import (
-            SPECS,
-        )
+        import stratis_cli  # noqa: PLC0415
+        from stratis_cli import _actions  # noqa: PLC0415
+        from stratis_cli._actions._introspect import SPECS  # noqa: PLC0415
 
         pool_spec = SPECS[_actions._constants.POOL_INTERFACE]
         spec = ElementTree.fromstring(pool_spec)
@@ -426,7 +406,6 @@ class List7TestCase(SimTestCase):
             prop.attrib["name"] for prop in spec.findall("./property")
         ]:
             with patch.object(
-                # pylint: disable=protected-access
                 stratis_cli._actions._data.MOPool,  # pyright: ignore
                 property_name,
                 autospec=True,
@@ -437,8 +416,5 @@ class List7TestCase(SimTestCase):
                 ),
             ):
                 for options in [[], [f"--name={self._POOLNAME}"]]:
-                    with self.subTest(
-                        property_name=property_name,
-                        options=options,
-                    ):
+                    with self.subTest(property_name=property_name, options=options):
                         TEST_RUNNER(self._MENU + options)

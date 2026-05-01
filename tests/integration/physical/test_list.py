@@ -15,14 +15,10 @@
 Test 'list'.
 """
 
-# isort: STDLIB
 from unittest.mock import patch
 from xml.etree import ElementTree
 
-# isort: FIRSTPARTY
 from dbus_client_gen import DbusClientMissingPropertyError, DbusClientUniqueResultError
-
-# isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
 
 from .._misc import RUNNER, TEST_RUNNER, SimTestCase, device_name_list
@@ -123,14 +119,9 @@ class List3TestCase(SimTestCase):
         """
         Verify no exception thrown if any of device properties are dropped.
         """
-        # isort: LOCAL
-        import stratis_cli  # pylint: disable=import-outside-toplevel
-        from stratis_cli import _actions  # pylint: disable=import-outside-toplevel
-
-        # pylint: disable=import-outside-toplevel,protected-access
-        from stratis_cli._actions._introspect import (
-            SPECS,
-        )
+        import stratis_cli  # noqa: PLC0415
+        from stratis_cli import _actions  # noqa: PLC0415
+        from stratis_cli._actions._introspect import SPECS  # noqa: PLC0415
 
         blockdev_spec = SPECS[_actions._constants.BLOCKDEV_INTERFACE]
         spec = ElementTree.fromstring(blockdev_spec)
@@ -141,7 +132,6 @@ class List3TestCase(SimTestCase):
             if prop.attrib["name"] != "Pool"
         ]:
             with patch.object(
-                # pylint: disable=protected-access
                 stratis_cli._actions._data.MODev,  # pyright: ignore
                 property_name,
                 autospec=True,
@@ -151,7 +141,5 @@ class List3TestCase(SimTestCase):
                     property_name,
                 ),
             ):
-                with self.subTest(
-                    property_name=property_name,
-                ):
+                with self.subTest(property_name=property_name):
                     TEST_RUNNER(self._MENU + [self._POOLNAME])

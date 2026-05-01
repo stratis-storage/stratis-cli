@@ -15,7 +15,6 @@
 Test 'bind'.
 """
 
-# isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
 from stratis_cli._errors import StratisCliEngineError, StratisCliNoChangeError
 
@@ -24,6 +23,7 @@ from .._misc import RUNNER, TEST_RUNNER, SimTestCase, device_name_list
 
 _ERROR = StratisCliErrorCodes.ERROR
 _DEVICE_STRATEGY = device_name_list(1, 1)
+_MAX_LUKS_TOKEN_SLOTS_ALLOWED_TO_BE_USED = 14
 
 
 class BindTestCase(SimTestCase):
@@ -56,22 +56,14 @@ class BindTestCase(SimTestCase):
         """
         Binding when unencrypted and trusting URL should return an error.
         """
-        command_line = self._MENU + [
-            "nbde",
-            self._POOLNAME,
-            "URL",
-            "--trust-url",
-        ]
+        command_line = self._MENU + ["nbde", self._POOLNAME, "URL", "--trust-url"]
         self.check_error(StratisCliEngineError, command_line, _ERROR)
 
     def test_bind_when_unencrypted_tpm(self):
         """
         Binding when unencrypted with tpm should return an error.
         """
-        command_line = self._MENU + [
-            "tpm2",
-            self._POOLNAME,
-        ]
+        command_line = self._MENU + ["tpm2", self._POOLNAME]
         self.check_error(StratisCliEngineError, command_line, _ERROR)
 
     def test_bind_when_unencrypted_keyring(self):
@@ -119,10 +111,7 @@ class BindTestCase2(SimTestCase):
         Binding when encrypted and bound with Clevis should not raise a no
         change error when token slot is not specified.
         """
-        command_line = self._MENU + [
-            "tpm2",
-            self._POOLNAME,
-        ]
+        command_line = self._MENU + ["tpm2", self._POOLNAME]
         RUNNER(command_line)
         TEST_RUNNER(command_line)
 
@@ -130,11 +119,7 @@ class BindTestCase2(SimTestCase):
         """
         Binding when encrypted already should raise a no change error.
         """
-        command_line = self._MENU + [
-            "keyring",
-            self._POOLNAME,
-            self._KEY_DESC,
-        ]
+        command_line = self._MENU + ["keyring", self._POOLNAME, self._KEY_DESC]
         self.check_error(StratisCliNoChangeError, command_line, _ERROR)
 
 
@@ -173,11 +158,7 @@ class BindTestCase3(SimTestCase):
         """
         Binding with keyring when already bound with clevis should succeed.
         """
-        command_line = self._MENU + [
-            "keyring",
-            self._POOLNAME,
-            self._KEY_DESC,
-        ]
+        command_line = self._MENU + ["keyring", self._POOLNAME, self._KEY_DESC]
         TEST_RUNNER(command_line)
 
     def test_maxxing_out_slots(self):
@@ -185,7 +166,7 @@ class BindTestCase3(SimTestCase):
         Run out of token slots to bind to.
         """
 
-        for index in range(15):
+        for index in range(_MAX_LUKS_TOKEN_SLOTS_ALLOWED_TO_BE_USED + 1):
             key_desc = f"key-{index}"
             with RandomKeyTmpFile() as fname:
                 command_line = [
@@ -199,7 +180,7 @@ class BindTestCase3(SimTestCase):
                 RUNNER(command_line)
 
             command_line = self._MENU + ["keyring", self._POOLNAME, key_desc]
-            if index < 14:
+            if index < _MAX_LUKS_TOKEN_SLOTS_ALLOWED_TO_BE_USED:
                 RUNNER(command_line)
             else:
                 self.check_error(StratisCliEngineError, command_line, _ERROR)

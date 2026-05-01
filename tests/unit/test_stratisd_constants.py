@@ -15,10 +15,8 @@
 Test 'stratisd_constants'.
 """
 
-# isort: STDLIB
 import unittest
 
-# isort: LOCAL
 from stratis_cli._alerts import PoolMaintenanceAlert
 from stratis_cli._stratisd_constants import PoolActionAvailability
 

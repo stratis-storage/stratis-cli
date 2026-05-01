@@ -15,14 +15,11 @@
 Test formatting.
 """
 
-# isort: STDLIB
 import io
 import unittest
 
-# isort: THIRDPARTY
 from wcwidth import wcswidth
 
-# isort: LOCAL
 from stratis_cli._actions._formatting import print_table
 
 

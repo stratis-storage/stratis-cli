@@ -14,15 +14,13 @@
 """
 Facilities for managing and reporting errors.
 """
-# isort: STDLIB
+
 import os
 import sys
 from typing import List, Optional
 
-# isort: THIRDPARTY
 import dbus
 
-# isort: FIRSTPARTY
 from dbus_client_gen import (
     DbusClientMissingPropertyError,
     DbusClientMissingSearchPropertiesError,
@@ -87,9 +85,7 @@ def _interface_name_to_common_name(interface_name: str) -> str:
     raise StratisCliUnknownInterfaceError(interface_name)  # pragma: no cover
 
 
-def _interpret_errors_0(
-    error: dbus.exceptions.DBusException,
-) -> Optional[str]:
+def _interpret_errors_0(error: dbus.exceptions.DBusException) -> Optional[str]:
     """
     Handle match on SCAE .*  DBE
       where:
@@ -124,9 +120,7 @@ def _interpret_errors_0(
         "org.freedesktop.DBus.Error.ServiceUnknown",
     ):
         try:
-            # pylint: disable=import-outside-toplevel
-            # isort: THIRDPARTY
-            import psutil
+            import psutil  # noqa: PLC0415
 
             for proc in psutil.process_iter():
                 try:
@@ -149,9 +143,7 @@ def _interpret_errors_0(
     return None  # pragma: no cover
 
 
-def _interpret_errors_1(  # pylint: disable=too-many-return-statements, too-many-branches
-    errors: List[BaseException],
-) -> Optional[str]:
+def _interpret_errors_1(errors: List[BaseException]) -> Optional[str]:  # noqa: PLR0911,PLR0912
     """
     Interpret the subchain of errors after the first error.
 
@@ -176,8 +168,7 @@ def _interpret_errors_1(  # pylint: disable=too-many-return-statements, too-many
     # is an error producing a property and that property, even although
     # part of the official API, is missing from the GetManagedObjects result.
     if isinstance(
-        error,
-        (DbusClientMissingSearchPropertiesError, DbusClientMissingPropertyError),
+        error, (DbusClientMissingSearchPropertiesError, DbusClientMissingPropertyError)
     ):  # pragma: no cover
         if len(errors) > 1:
             maybe_key_error = errors[1]
@@ -253,9 +244,7 @@ def _interpret_errors_1(  # pylint: disable=too-many-return-statements, too-many
     return None  # pragma: no cover
 
 
-def _interpret_errors_2(  # pylint: disable=too-many-return-statements
-    errors: List[BaseException],
-) -> Optional[str]:
+def _interpret_errors_2(errors: List[BaseException]) -> Optional[str]:  # noqa: PLR0911
     """
     Interpret the error when it is known that the first error is a
     DPClientInvocationError
@@ -300,7 +289,6 @@ def _interpret_errors_2(  # pylint: disable=too-many-return-statements
                 )
 
             if dbus_name == "org.freedesktop.DBus.Error.Failed":
-
                 # We do not test this error, as the only known way to cause it
                 # is to spam the daemon with a succession of mutating commands
                 # from separate processes. The circumstances that cause this
@@ -378,7 +366,6 @@ def _interpret_errors(errors: List[BaseException]) -> Optional[str]:
     # This indicates that an exception has occurred while an explanation was
     # being constructed. This would be hard to cause, since the code is
     # written in order to make that impossible.
-    # pylint: disable=broad-except
     except Exception:  # pragma: no cover
         return None
 

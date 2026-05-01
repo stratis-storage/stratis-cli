@@ -32,7 +32,6 @@ jobs:
           # MANDATORY CHECKS USING CURRENT DEVELOPMENT INTERPRETER
           - dependencies: >
               libatomic
-              pylint
               python3-dateutil
               python3-dbus-client-gen
               python3-dbus-python-client-gen
@@ -41,13 +40,10 @@ jobs:
               python3-psutil
               python3-setuptools
               python3-wcwidth
-            task: >
-              PATH=${PATH}:/github/home/.local/bin PYTHONPATH=./src
-              make -f Makefile lint
-          - dependencies: black python3-isort
-            task:
-              PATH=${PATH}:/github/home/.local/bin PYTHONPATH=./src
-              make -f Makefile fmt-ci
+              ruff
+            task: PATH=${PATH}:/github/home/.local/bin make -f Makefile lint
+          - dependencies: ruff
+            task: PATH=${PATH}:/github/home/.local/bin make -f Makefile fmt-ci
     runs-on: ubuntu-latest
     container:
       image: quay.io/fedora/fedora:43  # CURRENT DEVELOPMENT ENVIRONMENT

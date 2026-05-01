@@ -16,7 +16,6 @@
 Miscellaneous functions.
 """
 
-# isort: STDLIB
 import errno
 import json
 import os
@@ -28,13 +27,11 @@ from functools import wraps
 from typing import Any, Callable, Generator, Sequence, Tuple
 from uuid import UUID
 
-# isort: THIRDPARTY
 from dbus import Dictionary, Struct
 from dbus.exceptions import DBusException
 from dbus.proxies import ProxyObject
 from justbytes import Range
 
-# isort: FIRSTPARTY
 from dbus_python_client_gen import DPClientInvocationError, DPClientMethodCallContext
 
 from .._errors import (
@@ -52,7 +49,7 @@ except ValueError:  # pragma: no cover
     _STRICT_POOL_FEATURES = False
 
 
-class EncryptionInfo:  # pylint: disable=too-few-public-methods
+class EncryptionInfo:
     """
     Generic information about a single encryption method.
     """
@@ -78,7 +75,7 @@ class EncryptionInfo:  # pylint: disable=too-few-public-methods
         return not hasattr(self, "error")
 
 
-class EncryptionInfoClevis(EncryptionInfo):  # pylint: disable=too-few-public-methods
+class EncryptionInfoClevis(EncryptionInfo):
     """
     Encryption info for Clevis
     """
@@ -94,9 +91,7 @@ class EncryptionInfoClevis(EncryptionInfo):  # pylint: disable=too-few-public-me
                 self.value = ClevisInfo(str(pin), json.loads(str(config)))
 
 
-class EncryptionInfoKeyDescription(
-    EncryptionInfo
-):  # pylint: disable=too-few-public-methods
+class EncryptionInfoKeyDescription(EncryptionInfo):
     """
     Encryption info for kernel keyring
     """
@@ -112,7 +107,7 @@ class EncryptionInfoKeyDescription(
                 self.value = str(value)
 
 
-class Device:  # pylint: disable=too-few-public-methods
+class Device:
     """
     A representation of a device in a stopped pool.
     """
@@ -148,7 +143,7 @@ class PoolFeature(Enum):
         return PoolFeature.UNRECOGNIZED
 
 
-class StoppedPool:  # pylint: disable=too-few-public-methods
+class StoppedPool:
     """
     A representation of a single stopped pool.
     """
@@ -215,7 +210,7 @@ def get_pass(prompt: str) -> str:
                 "Warning: this device is not a TTY so the password may be echoed",
                 file=sys.stderr,
             )
-    except Exception:  # pylint: disable=broad-exception-caught
+    except Exception:
         pass
 
     password = None
@@ -274,8 +269,7 @@ def fetch_stopped_pools_property(proxy: ProxyObject) -> Dictionary:
     :raises StratisCliEngineError:
     """
 
-    # pylint: disable=import-outside-toplevel
-    from ._data import Manager
+    from ._data import Manager  # noqa: PLC0415
 
     return Manager.Properties.StoppedPools.Get(proxy)
 

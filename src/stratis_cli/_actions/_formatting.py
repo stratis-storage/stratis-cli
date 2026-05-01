@@ -15,12 +15,10 @@
 Formatting for tables.
 """
 
-# isort: STDLIB
 import sys
 from typing import Any, Callable, List, Optional
 from uuid import UUID
 
-# isort: THIRDPARTY
 from dbus import Struct
 from wcwidth import wcswidth
 

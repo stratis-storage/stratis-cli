@@ -15,10 +15,7 @@
 Test 'cancel-revert'.
 """
 
-# isort: FIRSTPARTY
 from dbus_python_client_gen import DPClientInvocationError
-
-# isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
 from stratis_cli._errors import StratisCliNoPropertyChangeError
 
@@ -46,12 +43,7 @@ class FsCancelRevertTestCase(SimTestCase):
         command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
         RUNNER(command_line)
 
-        command_line = [
-            "filesystem",
-            "create",
-            self._POOLNAME,
-            self._FSNAME,
-        ]
+        command_line = ["filesystem", "create", self._POOLNAME, self._FSNAME]
         RUNNER(command_line)
 
         command_line = [

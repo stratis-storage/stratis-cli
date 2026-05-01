@@ -14,7 +14,7 @@
 """
 Test 'explain'.
 """
-# isort: LOCAL
+
 from stratis_cli._alerts import PoolAlert
 
 from .._misc import TEST_RUNNER, SimTestCase, device_name_list

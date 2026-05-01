@@ -15,23 +15,15 @@
 Pool actions.
 """
 
-# isort: STDLIB
 import json
 import os
 from abc import ABC, abstractmethod
-from typing import (
-    Any,
-    Callable,
-    Iterable,
-    Mapping,
-)
+from typing import Any, Callable, Iterable, Mapping
 from uuid import UUID
 
-# isort: THIRDPARTY
 from dateutil import parser as date_parser
 from justbytes import Range
 
-# isort: FIRSTPARTY
 from dbus_client_gen import DbusClientMissingPropertyError
 
 from .._alerts import (
@@ -95,7 +87,7 @@ def _non_existent_or_inconsistent_to_str(
     return interp(inner_value)
 
 
-class TokenSlotInfo:  # pylint: disable=too-few-public-methods
+class TokenSlotInfo:
     """
     Just a class to merge info about two different ways of occupying LUKS
     token slots into one, so that the two different ways can be sorted by
@@ -135,7 +127,7 @@ class TokenSlotInfo:  # pylint: disable=too-few-public-methods
         )
 
 
-class DeviceSizeChangedAlerts:  # pylint: disable=too-few-public-methods
+class DeviceSizeChangedAlerts:
     """
     Calculate alerts for changed devices; requires searching among devices.
     """
@@ -146,8 +138,7 @@ class DeviceSizeChangedAlerts:  # pylint: disable=too-few-public-methods
         """
         Initializer.
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import MODev
+        from ._data import MODev  # noqa: PLC0415
 
         (increased, decreased) = (set(), set())
         for _, info in devs_to_search:
@@ -200,7 +191,7 @@ def list_pools(
             klass = StoppedTable(uuid_formatter)
         else:
             klass = StoppedDetail(uuid_formatter, selection)
-    else:
+    else:  # noqa: PLR5501
         if selection is None:
             klass = DefaultTable(uuid_formatter)
         else:
@@ -222,7 +213,7 @@ def _clevis_to_str(clevis_info: ClevisInfo) -> str:  # pragma: no cover
     return f"{clevis_info.pin}   {config_string}"
 
 
-class ListPool(ABC):  # pylint:disable=too-few-public-methods
+class ListPool(ABC):
     """
     Handle listing a pool or pools.
     """
@@ -356,7 +347,7 @@ class Default(ListPool):
             return TABLE_UNKNOWN_STRING
 
 
-class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
+class DefaultDetail(Default):
     """
     List one pool with a detail view.
     """
@@ -371,9 +362,9 @@ class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
         super().__init__(uuid_formatter)
         self.selection = selection
 
-    def _print_detail_view(
+    def _print_detail_view(  # noqa: PLR0912,PLR0915
         self, pool_object_path: str, mopool: Any, alerts: DeviceSizeChangedAlerts
-    ):  # pylint: disable=too-many-locals,too-many-statements,too-many-branches
+    ):
         """
         Print the detailed view for a single pool.
 
@@ -439,9 +430,9 @@ class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
             try:
                 reencrypted = get_property(
                     mopool.LastReencryptedTimestamp(),
-                    lambda t: date_parser.isoparse(t)
-                    .astimezone()
-                    .strftime("%b %d %Y %H:%M"),
+                    lambda t: (
+                        date_parser.isoparse(t).astimezone().strftime("%b %d %Y %H:%M")
+                    ),
                     "Never",
                 )
             except DbusClientMissingPropertyError:
@@ -466,7 +457,6 @@ class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
                     clevis_info_str = TABLE_UNKNOWN_STRING
                 print(f"    Clevis Configuration: {clevis_info_str}")
             elif metadata_version is MetadataVersion.V2:
-
                 try:
                     free_str = get_property(
                         mopool.FreeTokenSlots(),
@@ -532,8 +522,7 @@ class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
         """
         List a single pool in detail.
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import MOPool, ObjectManager, devs, pools
+        from ._data import MOPool, ObjectManager, devs, pools  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
 
@@ -552,7 +541,7 @@ class DefaultDetail(Default):  # pylint: disable=too-few-public-methods
         self._print_detail_view(pool_object_path, MOPool(mopool), alerts)
 
 
-class DefaultTable(Default):  # pylint: disable=too-few-public-methods
+class DefaultTable(Default):
     """
     List several pools with a table view.
     """
@@ -561,8 +550,7 @@ class DefaultTable(Default):  # pylint: disable=too-few-public-methods
         """
         List pools in table view.
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import MOPool, ObjectManager, devs, pools
+        from ._data import MOPool, ObjectManager, devs, pools  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
 
@@ -680,19 +668,13 @@ class DefaultTable(Default):  # pylint: disable=too-few-public-methods
         ]
 
         print_table(
-            [
-                "Name",
-                TOTAL_USED_FREE,
-                "Properties",
-                "UUID",
-                "Alerts",
-            ],
+            ["Name", TOTAL_USED_FREE, "Properties", "UUID", "Alerts"],
             sorted(tables, key=lambda entry: entry[0]),
             ["<", ">", ">", ">", "<"],
         )
 
 
-class Stopped(ListPool):  # pylint: disable=too-few-public-methods
+class Stopped(ListPool):
     """
     Support for listing stopped pools.
     """
@@ -718,7 +700,7 @@ class Stopped(ListPool):  # pylint: disable=too-few-public-methods
         return "<MIXED>" if maybe_value is None else str(maybe_value)
 
 
-class StoppedDetail(Stopped):  # pylint: disable=too-few-public-methods
+class StoppedDetail(Stopped):
     """
     Detailed view of one stopped pool.
     """
@@ -762,8 +744,7 @@ class StoppedDetail(Stopped):  # pylint: disable=too-few-public-methods
                 print(f"    Key Description: {key_description_str}")
 
                 clevis_info_str = _non_existent_or_inconsistent_to_str(
-                    clevis_info,
-                    interp=_clevis_to_str,
+                    clevis_info, interp=_clevis_to_str
                 )
                 print(f"    Clevis Configuration: {clevis_info_str}")
 
@@ -777,11 +758,11 @@ class StoppedDetail(Stopped):  # pylint: disable=too-few-public-methods
                 print(
                     "    Allows Unlock via a Key in Kernel Keyring or "
                     "a User-Entered Passphrase: "
-                    f'{"Yes" if PoolFeature.KEY_DESCRIPTION_PRESENT in pool.features else "No"}'
+                    f"{'Yes' if PoolFeature.KEY_DESCRIPTION_PRESENT in pool.features else 'No'}"
                 )
                 print(
                     "    Allows Unattended Unlock via Clevis: "
-                    f'{"Yes" if PoolFeature.CLEVIS_PRESENT in pool.features else "No"}'
+                    f"{'Yes' if PoolFeature.CLEVIS_PRESENT in pool.features else 'No'}"
                 )
             else:
                 print("Encryption Enabled: No")
@@ -819,7 +800,7 @@ class StoppedDetail(Stopped):  # pylint: disable=too-few-public-methods
         self._print_detail_view(pool_uuid, StoppedPool(pool))
 
 
-class StoppedTable(Stopped):  # pylint: disable=too-few-public-methods
+class StoppedTable(Stopped):
     """
     Table view of one or many stopped pools.
     """
@@ -856,8 +837,7 @@ class StoppedTable(Stopped):  # pylint: disable=too-few-public-methods
                 return "<UNENCRYPTED>"
 
             return _non_existent_or_inconsistent_to_str(
-                value,
-                interp=lambda _: "present",
+                value, interp=lambda _: "present"
             )  # pragma: no cover
 
         def key_description_str(

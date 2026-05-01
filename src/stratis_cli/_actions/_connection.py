@@ -15,7 +15,6 @@
 Low-level interactions with the D-Bus.
 """
 
-# isort: THIRDPARTY
 import dbus
 
 from ._constants import SERVICE
@@ -25,8 +24,6 @@ class Bus:
     """
     Our bus.
     """
-
-    # pylint: disable=too-few-public-methods
 
     _BUS = None
 

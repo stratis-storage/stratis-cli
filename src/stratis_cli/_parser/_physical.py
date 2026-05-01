@@ -23,15 +23,7 @@ PHYSICAL_SUBCMDS = [
         "list",
         {
             "help": "List information about blockdevs in the pool",
-            "args": [
-                (
-                    "pool_name",
-                    {
-                        "nargs": "?",
-                        "help": "Pool name",
-                    },
-                )
-            ],
+            "args": [("pool_name", {"nargs": "?", "help": "Pool name"})],
             "func": PhysicalActions.list_devices,
         },
     ),

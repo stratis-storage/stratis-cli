@@ -15,14 +15,12 @@
 Miscellaneous top-level actions.
 """
 
-# isort: STDLIB
 import json
 import os
 import sys
 from argparse import Namespace
 from typing import Tuple
 
-# isort: THIRDPARTY
 from dbus import Array, Dictionary, String, Struct, UInt16
 from dbus.proxies import ProxyObject
 
@@ -48,8 +46,7 @@ def _fetch_keylist(proxy: ProxyObject) -> Array:
     :rtype: list of str
     :raises StratisCliEngineError:
     """
-    # pylint: disable=import-outside-toplevel
-    from ._data import Manager
+    from ._data import Manager  # noqa: PLC0415
 
     (keys, return_code, message) = Manager.Methods.ListKeys(proxy, {})
     if return_code != StratisdErrors.OK:  # pragma: no cover
@@ -76,12 +73,10 @@ def _add_update_key(
 
     fd_argument, fd_to_close = get_passphrase_fd(keyfile_path=keyfile_path)
 
-    # pylint: disable=import-outside-toplevel
-    from ._data import Manager
+    from ._data import Manager  # noqa: PLC0415
 
     add_ret = Manager.Methods.SetKey(
-        proxy,
-        {"key_desc": key_desc, "key_fd": fd_argument},
+        proxy, {"key_desc": key_desc, "key_fd": fd_argument}
     )
 
     os.close(fd_to_close)
@@ -102,9 +97,8 @@ class TopActions:
         :raises StratisCliEngineError:
         """
 
-        # pylint: disable=import-outside-toplevel
         if namespace.report_name is ReportKey.MANAGED_OBJECTS:
-            from ._data import ObjectManager
+            from ._data import ObjectManager  # noqa: PLC0415
 
             dbus_report: Dictionary = ObjectManager.Methods.GetManagedObjects(
                 get_object(TOP_OBJECT), {}
@@ -120,14 +114,14 @@ class TopActions:
 
         else:
             if namespace.report_name is ReportKey.ENGINE_STATE:
-                from ._data import Manager
+                from ._data import Manager  # noqa: PLC0415
 
                 (json_report, return_code, message) = Manager.Methods.EngineStateReport(
                     get_object(TOP_OBJECT), {}
                 )
 
             else:
-                from ._data import Report
+                from ._data import Report  # noqa: PLC0415
 
                 (json_report, return_code, message) = Report.Methods.GetReport(
                     get_object(TOP_OBJECT), {"name": str(namespace.report_name)}
@@ -239,8 +233,7 @@ class TopActions:
         :raises StratisCliNoChangeError:
         :raises StratisCliIncoherenceError:
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import Manager
+        from ._data import Manager  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
 

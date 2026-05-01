@@ -15,13 +15,9 @@
 Test 'add'.
 """
 
-# isort: STDLIB
 from unittest.mock import patch
 
-# isort: FIRSTPARTY
 from dbus_client_gen import DbusClientUniqueResultError
-
-# isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
 from stratis_cli._errors import (
     StratisCliEngineError,
@@ -93,12 +89,7 @@ class AddDataTestCase1(SimTestCase):
         """
         Test that no assertion is thrown if path arguments are relative.
         """
-        command_line = self._MENU + [
-            self._POOLNAME,
-            "../dev",
-            "./fake",
-            "/abc",
-        ]
+        command_line = self._MENU + [self._POOLNAME, "../dev", "./fake", "/abc"]
         TEST_RUNNER(command_line)
 
     def test_add_data(self):
@@ -126,11 +117,9 @@ class AddDataTestCase1(SimTestCase):
         There is 1 target resource that would not change.
         """
         command_line = self._MENU + [self._POOLNAME] + self._DEVICES
-        # isort: LOCAL
-        import stratis_cli  # pylint: disable=import-outside-toplevel
+        import stratis_cli  # noqa: PLC0415
 
         with patch.object(
-            # pylint: disable=protected-access
             stratis_cli._actions._pool,  # pyright: ignore
             "_check_same_tier",
             autospec=True,
@@ -164,20 +153,16 @@ class AddDataTestCase1(SimTestCase):
             ["--propagate", "pool", "init-cache"] + [self._POOLNAME] + devices
         )
         RUNNER(command_line)
-        # isort: LOCAL
-        import stratis_cli  # pylint: disable=import-outside-toplevel
+        import stratis_cli  # noqa: PLC0415
 
         with patch.object(
-            # pylint: disable=protected-access
             stratis_cli._actions._pool,  # pyright: ignore
             "_check_opposite_tier",
             autospec=True,
             return_value=None,
         ):
             self.check_error(
-                StratisCliEngineError,
-                self._MENU + [self._POOLNAME] + devices,
-                _ERROR,
+                StratisCliEngineError, self._MENU + [self._POOLNAME] + devices, _ERROR
             )
 
     def test_add_data_cache_2(self):
@@ -256,12 +241,7 @@ class AddCacheTestCase1(SimTestCase):
         """
         Test that no assertion is thrown if path arguments are relative.
         """
-        command_line = self._MENU + [
-            self._POOLNAME,
-            "../dev",
-            "./fake",
-            "/abc",
-        ]
+        command_line = self._MENU + [self._POOLNAME, "../dev", "./fake", "/abc"]
         TEST_RUNNER(command_line)
 
     def test_add_cache_again(self):
@@ -287,11 +267,9 @@ class AddCacheTestCase1(SimTestCase):
         command_line = self._MENU + [self._POOLNAME] + devices
         RUNNER(command_line)
 
-        # isort: LOCAL
-        import stratis_cli  # pylint: disable=import-outside-toplevel
+        import stratis_cli  # noqa: PLC0415
 
         with patch.object(
-            # pylint: disable=protected-access
             stratis_cli._actions._pool,  # pyright: ignore
             "_check_same_tier",
             autospec=True,
@@ -313,11 +291,9 @@ class AddCacheTestCase1(SimTestCase):
         an exception.
         """
         command_line = self._MENU + [self._POOLNAME] + self._DEVICES
-        # isort: LOCAL
-        import stratis_cli  # pylint: disable=import-outside-toplevel
+        import stratis_cli  # noqa: PLC0415
 
         with patch.object(
-            # pylint: disable=protected-access
             stratis_cli._actions._pool,  # pyright: ignore
             "_check_opposite_tier",
             autospec=True,

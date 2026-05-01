@@ -14,13 +14,10 @@
 """
 Test 'debug'.
 """
-# isort: STDLIB
+
 from uuid import uuid4
 
-# isort: FIRSTPARTY
 from dbus_client_gen import DbusClientUniqueResultError
-
-# isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
 
 from .._misc import RUNNER, TEST_RUNNER, SimTestCase, device_name_list
@@ -53,22 +50,14 @@ class DebugTestCase(SimTestCase):
         """
         Test bad name.
         """
-        command_line = self._MENU + [
-            "get-object-path",
-            "--name",
-            "noone",
-        ]
+        command_line = self._MENU + ["get-object-path", "--name", "noone"]
         self.check_error(DbusClientUniqueResultError, command_line, _ERROR)
 
     def test_lookup_name(self):
         """
         Test good name lookup.
         """
-        command_line = self._MENU + [
-            "get-object-path",
-            "--name",
-            self._POOLNAME,
-        ]
+        command_line = self._MENU + ["get-object-path", "--name", self._POOLNAME]
         TEST_RUNNER(command_line)
 
 

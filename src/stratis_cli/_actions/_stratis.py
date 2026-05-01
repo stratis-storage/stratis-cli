@@ -15,14 +15,13 @@
 Miscellaneous actions about stratis.
 """
 
-# isort: STDLIB
 from argparse import Namespace
 
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 
 
-class StratisActions:  # pylint: disable=too-few-public-methods
+class StratisActions:
     """
     Stratis actions.
     """
@@ -32,7 +31,6 @@ class StratisActions:  # pylint: disable=too-few-public-methods
         """
         List the stratisd version.
         """
-        # pylint: disable=import-outside-toplevel
-        from ._data import Manager
+        from ._data import Manager  # noqa: PLC0415
 
         print(f"{Manager.Properties.Version.Get(get_object(TOP_OBJECT))}")

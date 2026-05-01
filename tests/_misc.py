@@ -15,7 +15,6 @@
 Miscellaneous methods to support testing.
 """
 
-# isort: STDLIB
 import os
 import random
 import signal
@@ -27,10 +26,8 @@ import unittest
 from io import StringIO
 from uuid import UUID
 
-# isort: THIRDPARTY
 import psutil
 
-# isort: LOCAL
 from stratis_cli import StratisCliErrorCodes, run
 from stratis_cli._actions._connection import get_object
 from stratis_cli._actions._constants import TOP_OBJECT
@@ -104,7 +101,6 @@ class _Service:
     Handle starting and stopping the stratisd daemon.
     """
 
-    # pylint: disable=consider-using-with
     def setup(self):
         """
         Start the stratisd daemon with the simulator.
@@ -115,13 +111,11 @@ class _Service:
             raise RuntimeError(
                 "STRATISD environment variable must be set to absolute path of stratisd executable"
             ) from err
-        self._stratisd = (  # pylint: disable=attribute-defined-outside-init
-            subprocess.Popen(
-                [os.path.join(stratisd_var), "--sim"],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True,
-            )
+        self._stratisd = subprocess.Popen(
+            [os.path.join(stratisd_var), "--sim"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
         )
         time.sleep(1)
 
@@ -183,7 +177,7 @@ class RunTestCase(unittest.TestCase):
             expected_cause,
             msg=(
                 "All causes: "
-                f'{", ".join((str(e) for e in list(get_errors(exception))))}'
+                f"{', '.join((str(e) for e in list(get_errors(exception))))}"
             ),
         )
 
@@ -351,9 +345,7 @@ def get_pool(proxy, pool_name):
     :rtype: str * dict
     :raise DbusClientUniqueError:
     """
-    # pylint: disable=import-outside-toplevel
-    # isort: LOCAL
-    from stratis_cli._actions._data import ObjectManager, pools
+    from stratis_cli._actions._data import ObjectManager, pools  # noqa: PLC0415
 
     managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
     return next(
@@ -369,9 +361,7 @@ def get_pool_blockdevs(proxy, pool_name):
     """
     pool_object_path, _ = get_pool(proxy, pool_name)
 
-    # pylint: disable=import-outside-toplevel
-    # isort: LOCAL
-    from stratis_cli._actions._data import MODev, ObjectManager, devs
+    from stratis_cli._actions._data import MODev, ObjectManager, devs  # noqa: PLC0415
 
     managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
     return (
@@ -393,9 +383,7 @@ def stop_pool(pool_name):
     :raises: RuntimeError
     """
 
-    # pylint: disable=import-outside-toplevel
-    # isort: LOCAL
-    from stratis_cli._actions._data import Manager
+    from stratis_cli._actions._data import Manager  # noqa: PLC0415
 
     proxy = get_object(TOP_OBJECT)
 

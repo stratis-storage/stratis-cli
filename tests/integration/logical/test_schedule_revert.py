@@ -15,10 +15,7 @@
 Test 'schedule-revert'.
 """
 
-# isort: FIRSTPARTY
 from dbus_python_client_gen import DPClientInvocationError
-
-# isort: LOCAL
 from stratis_cli import StratisCliErrorCodes
 from stratis_cli._errors import StratisCliNoPropertyChangeError
 
@@ -46,12 +43,7 @@ class FsScheduleRevertTestCase(SimTestCase):
         command_line = ["pool", "create", self._POOLNAME] + _DEVICE_STRATEGY()
         RUNNER(command_line)
 
-        command_line = [
-            "filesystem",
-            "create",
-            self._POOLNAME,
-            self._FSNAME,
-        ]
+        command_line = ["filesystem", "create", self._POOLNAME, self._FSNAME]
         RUNNER(command_line)
 
         command_line = [
@@ -67,10 +59,7 @@ class FsScheduleRevertTestCase(SimTestCase):
         """
         Scheduling a revert twice should fail.
         """
-        command_line = self._MENU + [
-            self._POOLNAME,
-            self._SNAPNAME,
-        ]
+        command_line = self._MENU + [self._POOLNAME, self._SNAPNAME]
         RUNNER(command_line)
         self.check_error(StratisCliNoPropertyChangeError, command_line, _ERROR)
 
@@ -85,8 +74,5 @@ class FsScheduleRevertTestCase(SimTestCase):
         """
         Scheduling a revert on a filesystem without an origin should fail.
         """
-        command_line = self._MENU + [
-            self._POOLNAME,
-            self._FSNAME,
-        ]
+        command_line = self._MENU + [self._POOLNAME, self._FSNAME]
         self.check_error(DPClientInvocationError, command_line, _ERROR)

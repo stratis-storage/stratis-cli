@@ -1,26 +1,22 @@
-ISORT_MODULES = setup.py bin/stratis src tests
-
 UNITTEST_OPTS = --verbose
-
-PYLINT_DISABLE = --disable=fixme
 
 .PHONY: lint
 lint:
-	pylint setup.py ${PYLINT_DISABLE}
-	pylint bin/stratis ${PYLINT_DISABLE}
-	pylint src/stratis_cli --disable=duplicate-code ${PYLINT_DISABLE} --ignore=_introspect.py
-	pylint tests --disable=duplicate-code ${PYLINT_DISABLE}
+	ruff check bin/stratis
+	ruff check
 	pyright
 
 .PHONY: fmt
 fmt:
-	isort ${ISORT_MODULES}
-	black ./bin/stratis .
+	ruff check --fix --select I bin/stratis
+	ruff check --fix --select I
+	ruff format
 
 .PHONY: fmt-ci
 fmt-ci:
-	isort --diff --check-only ${ISORT_MODULES}
-	black ./bin/stratis . --check
+	ruff check --select I bin/stratis
+	ruff check --select I
+	ruff format --check
 
 .PHONY: check-typos
 check-typos:

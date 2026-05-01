@@ -15,10 +15,8 @@
 Test 'errors'.
 """
 
-# isort: STDLIB
 import unittest
 
-# isort: LOCAL
 from stratis_cli._errors import StratisCliEngineError
 
 
