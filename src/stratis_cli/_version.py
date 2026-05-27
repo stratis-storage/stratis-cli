@@ -17,5 +17,5 @@ Version information.
 .. moduleauthor::  mulhern  <amulhern@redhat.com>
 """
 
-__version_info__ = (3, 9, 0)
+__version_info__ = (3, 9, 1)
 __version__ = ".".join(str(x) for x in __version_info__)
