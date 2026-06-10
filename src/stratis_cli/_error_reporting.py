@@ -266,7 +266,7 @@ def _interpret_errors_2(errors: List[BaseException]) -> Optional[str]:  # noqa: 
 
             if dbus_name == "org.freedesktop.zbus.Error" and isinstance(
                 context, DPClientSetPropertyContext
-            ):
+            ):  # pragma: no cover
                 return (
                     f"stratisd failed to perform the operation that you "
                     f"requested, because it could not set the D-Bus "
@@ -310,6 +310,15 @@ def _interpret_errors_2(errors: List[BaseException]) -> Optional[str]:  # noqa: 
                         "to a transient inconsistency in the D-Bus interface "
                         "and the command will succeed if run again. The D-Bus "
                         f"service sent the following message: {dbus_message}."
+                    )
+
+                if isinstance(context, DPClientSetPropertyContext):  # pragma: no cover
+                    return (
+                        f"stratisd failed to perform the operation that you "
+                        f"requested, because it could not set the D-Bus "
+                        f'property "{context.property_name}" belonging to '
+                        f'interface "{error.interface_name}" to "{context.value}". '
+                        f"It returned the following error: {dbus_message}."
                     )
 
                 if isinstance(context, DPClientGetPropertyContext):  # pragma: no cover
