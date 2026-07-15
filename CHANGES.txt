@@ -1,6 +1,6 @@
 stratis-cli 3.9.1
 =================
-Required stratisd version: 3.9.0
+Required stratisd version: 3.9.2
 
 Recommended development environment: Fedora 43
 
