@@ -1,3 +1,18 @@
+stratis-cli 3.9.1
+=================
+Required stratisd version: 3.9.2
+
+Recommended development environment: Fedora 43
+
+- Remove match for org.freedesktop.zbus.Error:
+  https://github.com/stratis-storage/stratis-cli/pull/1284
+
+- Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/1283
+  https://github.com/stratis-storage/stratis-cli/pull/1282
+  https://github.com/stratis-storage/stratis-cli/pull/1275
+
+
 stratis-cli 3.9.0
 =================
 Required stratisd version: 3.9.0
