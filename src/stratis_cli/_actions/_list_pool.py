@@ -515,8 +515,16 @@ class DefaultDetail(Default):
             allocated_size = Range(mopool.AllocatedSize())
         except DbusClientMissingPropertyError:
             allocated_size = None
+
         print(f"    Allocated: {size_str(allocated_size)}")
         print(f"    Used: {size_str(size_triple.used())}")
+
+        try:
+            metadata_used = Range(mopool.MetadataUsed())
+        except DbusClientMissingPropertyError:
+            metadata_used = None
+
+        print(f"    Metadata: {size_str(metadata_used)}")
 
     def display(self):
         """
