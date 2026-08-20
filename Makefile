@@ -22,6 +22,10 @@ fmt-ci:
 check-typos:
 	typos
 
+.PHONY: fix-typos
+fix-typos:
+	typos -w
+
 PYREVERSE_OPTS = --output=pdf
 .PHONY: view
 view:

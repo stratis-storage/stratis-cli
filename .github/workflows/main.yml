@@ -68,29 +68,6 @@ jobs:
       - name: Run test
         run: ${{ matrix.task }}
 
-  check-typos:
-    runs-on: ubuntu-latest
-    container:
-      image: quay.io/fedora/fedora:43  # CURRENT DEVELOPMENT ENVIRONMENT
-    steps:
-      - name: Install dependencies
-        run: >
-          dnf install -y
-          clang
-          glibc-static
-          make
-      - uses: actions/checkout@v6
-        with:
-          persist-credentials: false
-      - uses: actions-rust-lang/setup-rust-toolchain@v1
-        with:
-          components: cargo
-      - uses: baptiste0928/cargo-install@v3
-        with:
-          crate: typos-cli
-      - name: Run test
-        run: make -f Makefile check-typos
-
   test-runs:
     strategy:
       matrix:
@@ -255,3 +232,8 @@ jobs:
       - name: Run coverage report
         run: make -f Makefile coverage-report
         working-directory: stratis-cli
+
+  general_checks:
+    uses: stratis-storage/github-actions/.github/workflows/reusable_general.yml@master
+    with:
+      fedora-container-image-number: 43  # CURRENT DEVELOPMENT ENVIRONMENT
