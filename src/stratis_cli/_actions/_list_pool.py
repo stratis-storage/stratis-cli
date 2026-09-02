@@ -18,10 +18,10 @@ Pool actions.
 import json
 import os
 from abc import ABC, abstractmethod
+from datetime import datetime
 from typing import Any, Callable, Iterable, Mapping
 from uuid import UUID
 
-from dateutil import parser as date_parser
 from justbytes import Range
 
 from dbus_client_gen import DbusClientMissingPropertyError
@@ -431,7 +431,9 @@ class DefaultDetail(Default):
                 reencrypted = get_property(
                     mopool.LastReencryptedTimestamp(),
                     lambda t: (
-                        date_parser.isoparse(t).astimezone().strftime("%b %d %Y %H:%M")
+                        datetime.fromisoformat(t)
+                        .astimezone()
+                        .strftime("%b %d %Y %H:%M")
                     ),
                     "Never",
                 )
