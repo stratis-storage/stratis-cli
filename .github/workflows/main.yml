@@ -49,7 +49,7 @@ jobs:
             task: PATH=${PATH}:/github/home/.local/bin make -f Makefile fmt-ci
     runs-on: ubuntu-latest
     container:
-      image: quay.io/fedora/fedora:43  # CURRENT DEVELOPMENT ENVIRONMENT
+      image: quay.io/fedora/fedora:44  # CURRENT DEVELOPMENT ENVIRONMENT
     steps:
       - uses: actions/checkout@v6
         with:
@@ -76,7 +76,7 @@ jobs:
           - python: "3.12"  # LOWEST SUPPORTED PYTHON TOOLCHAIN
     runs-on: ubuntu-latest
     container:
-      image: quay.io/fedora/fedora:43  # CURRENT DEVELOPMENT ENVIRONMENT
+      image: quay.io/fedora/fedora:44  # CURRENT DEVELOPMENT ENVIRONMENT
       options: --privileged --userns=host --ipc=host -v /run/dbus/system_bus_socket:/run/dbus/system_bus_socket:ro -v /usr/share/dbus-1:/usr/share/dbus-1
     steps:
       - name: Install python prerequisites
@@ -156,7 +156,7 @@ jobs:
     needs: test-runs
     runs-on: ubuntu-latest
     container:
-      image: quay.io/fedora/fedora:43  # CURRENT DEVELOPMENT ENVIRONMENT
+      image: quay.io/fedora/fedora:44  # CURRENT DEVELOPMENT ENVIRONMENT
       options: --privileged --userns=host --ipc=host -v /run/dbus/system_bus_socket:/run/dbus/system_bus_socket:ro -v /usr/share/dbus-1:/usr/share/dbus-1
     steps:
       - uses: actions/checkout@v6
@@ -230,4 +230,4 @@ jobs:
   general_checks:
     uses: stratis-storage/github-actions/.github/workflows/reusable_general.yml@master
     with:
-      fedora-container-image-number: 43  # CURRENT DEVELOPMENT ENVIRONMENT
+      fedora-container-image-number: 44  # CURRENT DEVELOPMENT ENVIRONMENT
