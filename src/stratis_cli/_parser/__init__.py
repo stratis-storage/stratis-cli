@@ -15,4 +15,4 @@
 Top level of CLI.
 """
 
-from ._parser import gen_parser
+from ._parser import gen_parser as gen_parser
