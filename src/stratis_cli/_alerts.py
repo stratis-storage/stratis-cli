@@ -16,7 +16,7 @@ Error codes
 """
 
 from enum import Enum, IntEnum
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union, assert_never
 
 
 class Level(Enum):
@@ -62,7 +62,7 @@ class PoolMaintenanceAlert(IntEnum):
                 "any maintenance operations."
             )
 
-        assert False, "impossible code reached"  # pragma: no cover
+        assert_never(self)  # pragma: no cover
 
     def summarize(self) -> str:
         """
@@ -74,7 +74,7 @@ class PoolMaintenanceAlert(IntEnum):
         if self is PoolMaintenanceAlert.NO_POOL_CHANGES:
             return "Pool maintenance operations not possible"
 
-        assert False, "impossible code reached"  # pragma: no cover
+        assert_never(self)  # pragma: no cover
 
 
 class PoolAllocSpaceAlert(IntEnum):
@@ -98,7 +98,7 @@ class PoolAllocSpaceAlert(IntEnum):
                 "to the pool."
             )
 
-        assert False, "impossible code reached"  # pragma: no cover
+        assert_never(self)  # pragma: no cover
 
     def summarize(self) -> str:
         """
@@ -107,7 +107,7 @@ class PoolAllocSpaceAlert(IntEnum):
         if self is PoolAllocSpaceAlert.NO_ALLOC_SPACE:
             return "All devices fully allocated"
 
-        assert False, "impossible code reached"  # pragma: no cover
+        assert_never(self)  # pragma: no cover
 
 
 class PoolDeviceSizeChangeAlert(IntEnum):
@@ -126,7 +126,7 @@ class PoolDeviceSizeChangeAlert(IntEnum):
         if self is PoolDeviceSizeChangeAlert.DEVICE_SIZE_DECREASED:
             return f"{Level.WARNING}DS{str(self.value).zfill(3)}"
 
-        assert False, "impossible code reached"  # pragma: no cover
+        assert_never(self)  # pragma: no cover
 
     def explain(self) -> str:
         """
@@ -144,7 +144,7 @@ class PoolDeviceSizeChangeAlert(IntEnum):
                 "decreased in size."
             )
 
-        assert False, "impossible code reached"  # pragma: no cover
+        assert_never(self)  # pragma: no cover
 
     def summarize(self) -> str:
         """
@@ -156,7 +156,7 @@ class PoolDeviceSizeChangeAlert(IntEnum):
         if self is PoolDeviceSizeChangeAlert.DEVICE_SIZE_DECREASED:
             return "A device in this pool has decreased in size."
 
-        assert False, "impossible code reached"  # pragma: no cover
+        assert_never(self)  # pragma: no cover
 
 
 class PoolEncryptionAlert(IntEnum):
@@ -188,7 +188,7 @@ class PoolEncryptionAlert(IntEnum):
                 "encryption layer needs to be modified."
             )
 
-        assert False, "impossible code reached"  # pragma: no cover
+        assert_never(self)  # pragma: no cover
 
     def summarize(self) -> str:
         """
@@ -199,7 +199,7 @@ class PoolEncryptionAlert(IntEnum):
         if self is PoolEncryptionAlert.VOLUME_KEY_STATUS_UNKNOWN:
             return "Volume key status unknown"
 
-        assert False, "impossible code reached"  # pragma: no cover
+        assert_never(self)  # pragma: no cover
 
 
 CLASSES = [
