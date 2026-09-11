@@ -35,7 +35,6 @@ jobs:
           # MANDATORY CHECKS USING CURRENT DEVELOPMENT INTERPRETER
           - dependencies: >
               libatomic
-              python3-dateutil
               python3-dbus-client-gen
               python3-dbus-python-client-gen
               python3-justbytes
@@ -112,7 +111,6 @@ jobs:
           python3-dbus-client-gen
           python3-dbus-python-client-gen
           python3-justbytes
-          python3-dateutil
           python3-packaging
           python3-psutil
           python3-wcwidth
@@ -179,7 +177,6 @@ jobs:
           python3-dbus-client-gen
           python3-dbus-python-client-gen
           python3-justbytes
-          python3-dateutil
           python3-packaging
           python3-psutil
           python3-wcwidth
