@@ -136,7 +136,7 @@ def print_table(
         )
         cell_widths.append(row_widths)
 
-    for row, row_widths in zip(row_entries, cell_widths):
+    for row, row_widths in zip(row_entries, cell_widths, strict=True):
         _print_row(file, row, row_widths, column_widths, alignment)
         print(file=file)
 
