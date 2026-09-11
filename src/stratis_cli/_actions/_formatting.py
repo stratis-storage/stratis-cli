@@ -16,7 +16,7 @@ Formatting for tables.
 """
 
 import sys
-from typing import Any, Callable, List, Optional
+from typing import Any, Callable, Optional
 from uuid import UUID
 
 from dbus import Struct
@@ -71,10 +71,10 @@ def _get_column_len(column_width: int, entry_len: int, entry_width: int) -> int:
 
 def _print_row(
     file: Any,
-    row: Any,
-    row_widths: List[int],
-    column_widths: List[int],
-    column_alignments: List[str],
+    row: tuple[str, ...],
+    row_widths: tuple[int, ...],
+    column_widths: tuple[int, ...],
+    column_alignments: tuple[str, ...],
 ):
     """
     Print a single row in a table. The row might be the header row, or
@@ -99,9 +99,9 @@ def _print_row(
 
 
 def print_table(
-    column_headings: List[str],
-    row_entries: List[Any],
-    alignment: List[str],
+    column_headings: tuple[str, ...],
+    row_entries: list[tuple[str, ...]],
+    alignment: tuple[str, ...],
     file=sys.stdout,
 ):
     """
@@ -124,18 +124,17 @@ def print_table(
                   all(wcswidth(i) != -1 for row in rows for item in row)
                   (i.e., no items to be printed contain unprintable characters)
     """
-    column_widths = [0] * len(column_headings)
+    column_widths = (0,) * len(column_headings)
     cell_widths = []
 
-    # Column header isn't different than any other row, insert into rows.
     row_entries.insert(0, column_headings)
 
-    for row_index, row in enumerate(row_entries):
-        cell_widths.append([])
-        for column_index, cell in enumerate(row):
-            cell_width = wcswidth(cell)
-            cell_widths[row_index].append(cell_width)
-            column_widths[column_index] = max(column_widths[column_index], cell_width)
+    for row in row_entries:
+        row_widths = tuple(wcswidth(cell) for cell in row)
+        column_widths = tuple(
+            max(cw, rw) for cw, rw in zip(column_widths, row_widths, strict=True)
+        )
+        cell_widths.append(row_widths)
 
     for row, row_widths in zip(row_entries, cell_widths):
         _print_row(file, row, row_widths, column_widths, alignment)

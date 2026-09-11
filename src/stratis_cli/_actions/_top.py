@@ -265,8 +265,8 @@ class TopActions:
         """
         proxy = get_object(TOP_OBJECT)
 
-        key_list = [[key_desc] for key_desc in _fetch_keylist(proxy)]
+        key_list = [(key_desc,) for key_desc in _fetch_keylist(proxy)]
 
         print_table(
-            ["Key Description"], sorted(key_list, key=lambda entry: entry[0]), ["<"]
+            ("Key Description",), sorted(key_list, key=lambda entry: entry[0]), ("<",)
         )

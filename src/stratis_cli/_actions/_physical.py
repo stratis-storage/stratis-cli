@@ -160,17 +160,17 @@ class PhysicalActions:
                 return TABLE_UNKNOWN_STRING
 
         tables = [
-            [
+            (
                 pool_name_str(modev),
                 paths_str(modev),
                 size_str(modev),
                 tier_str(modev),
                 uuid_str(modev),
-            ]
+            )
             for modev in modevs
         ]
         print_table(
-            ["Pool Name", "Device Node", "Physical Size", "Tier", "UUID"],
+            ("Pool Name", "Device Node", "Physical Size", "Tier", "UUID"),
             sorted(tables, key=lambda entry: (entry[0], entry[1])),
-            ["<", "<", ">", ">", "<"],
+            ("<", "<", ">", ">", "<"),
         )

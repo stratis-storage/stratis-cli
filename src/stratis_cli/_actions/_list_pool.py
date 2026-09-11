@@ -670,9 +670,9 @@ class DefaultTable(Default):
         ]
 
         print_table(
-            ["Name", TOTAL_USED_FREE, "Properties", "UUID", "Alerts"],
+            ("Name", TOTAL_USED_FREE, "Properties", "UUID", "Alerts"),
             sorted(tables, key=lambda entry: entry[0]),
-            ["<", ">", ">", ">", "<"],
+            ("<", ">", ">", ">", "<"),
         )
 
 
@@ -885,7 +885,7 @@ class StoppedTable(Stopped):
         ]
 
         print_table(
-            ["Name", "Version", "UUID", "# Devices", "Key Description", "Clevis"],
+            ("Name", "Version", "UUID", "# Devices", "Key Description", "Clevis"),
             sorted(tables, key=lambda entry: entry[0]),
-            ["<", ">", "<", ">", "<", "<"],
+            ("<", ">", "<", ">", "<", "<"),
         )
