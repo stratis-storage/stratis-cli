@@ -230,9 +230,9 @@ class Table(ListFilesystem):
         ]
 
         print_table(
-            ["Pool", "Filesystem", f"{TOTAL_USED_FREE} / Limit", "Device", "UUID"],
+            ("Pool", "Filesystem", f"{TOTAL_USED_FREE} / Limit", "Device", "UUID"),
             sorted(tables, key=lambda entry: (entry[0], entry[1])),
-            ["<", "<", "<", "<", "<"],
+            ("<", "<", "<", "<", "<"),
         )
 
 
