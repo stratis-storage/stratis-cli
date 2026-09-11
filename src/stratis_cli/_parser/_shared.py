@@ -18,6 +18,7 @@ Shared parser operations.
 import argparse
 import copy
 import re
+from typing import assert_never
 from uuid import UUID
 
 from justbytes import B, GiB, KiB, MiB, PiB, Range, TiB
@@ -62,7 +63,7 @@ def _unit_map(unit_specifier):
         return TiB
     if unit_specifier == "PiB":
         return PiB
-    assert False, f'Unknown unit specifier "{unit_specifier}"'
+    assert_never(unit_specifier)
 
 
 def parse_range(values):
