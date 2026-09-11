@@ -120,7 +120,7 @@ def _add_abs_path_assertion(klass, method_name, key):
     :param str method_name: the name of the method
     :param str key: the key at which the paths can be found in the arguments
     """
-    method_class = getattr(klass, "Methods")
+    method_class = klass.Methods
     orig_method = getattr(method_class, method_name)
 
     def new_method(proxy, args):
