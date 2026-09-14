@@ -1,3 +1,21 @@
+stratis-cli 3.10.0
+==================
+Required stratisd version: 3.10.0
+
+Recommended development environment: Fedora 44
+
+- Require stratisd 3.10.0:
+  https://github.com/stratis-storage/stratis-cli/pull/1287
+
+- Use stdlib datetime module to parse D-Bus dates:
+  https://github.com/stratis-storage/stratis-cli/pull/1291
+
+- Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/1292
+  https://github.com/stratis-storage/stratis-cli/pull/1290
+  https://github.com/stratis-storage/stratis-cli/pull/1289
+
+
 stratis-cli 3.9.1
 =================
 Required stratisd version: 3.9.2
