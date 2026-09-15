@@ -620,6 +620,47 @@ class PoolActions:
             )
 
     @staticmethod
+    def remove_cache(namespace: Namespace):
+        """
+        Remove the cache from this pool.
+
+        :raises StratisCliEngineError:
+        :raises StratisCliIncoherenceError:
+        :raises StratisCliNoChangeError:
+        """
+        from ._data import MOPool, ObjectManager, Pool, pools  # noqa: PLC0415
+
+        pool_id = PoolId.from_parser_namespace(namespace)
+        assert pool_id is not None
+
+        proxy = get_object(TOP_OBJECT)
+        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
+
+        (pool_object_path, pool_info) = next(
+            pools(props=pool_id.managed_objects_key())
+            .require_unique_match(True)
+            .search(managed_objects)
+        )
+
+        if not bool(MOPool(pool_info).HasCache()):
+            raise StratisCliNoChangeError("remove-cache", "cache")
+
+        ((removed, devs_removed), return_code, message) = Pool.Methods.RemoveCache(
+            get_object(pool_object_path), {}
+        )
+
+        if return_code != StratisdErrors.OK:  # pragma: no cover
+            raise StratisCliEngineError(return_code, message)
+
+        if not removed:  # pragma: no cover
+            raise StratisCliIncoherenceError(
+                (
+                    f"Expected to remove the cache from {pool_id} but "
+                    "stratisd reports that it did not remove the cache."
+                )
+            )
+
+    @staticmethod
     def extend_data(namespace: Namespace):
         """
         Extend the pool making use of the additional space offered by component
