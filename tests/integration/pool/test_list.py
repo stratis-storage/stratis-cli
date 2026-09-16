@@ -364,6 +364,34 @@ class List6TestCase(SimTestCase):
                     with self.subTest(property_name=property_name, options=options):
                         TEST_RUNNER(self._MENU + options)
 
+    def test_dropping_dev_properties(self):
+        """
+        Verify no exception thrown if any of device properties are dropped.
+        """
+        import stratis_cli  # noqa: PLC0415
+        from stratis_cli import _actions  # noqa: PLC0415
+        from stratis_cli._actions._introspect import SPECS  # noqa: PLC0415
+
+        dev_spec = SPECS[_actions._constants.BLOCKDEV_INTERFACE]
+        spec = ElementTree.fromstring(dev_spec)
+
+        for property_name in [
+            prop.attrib["name"] for prop in spec.findall("./property")
+        ]:
+            with patch.object(
+                stratis_cli._actions._data.MODev,  # pyright: ignore
+                property_name,
+                autospec=True,
+                side_effect=DbusClientMissingPropertyError(
+                    "oops",
+                    stratis_cli._actions._constants.BLOCKDEV_INTERFACE,  # pyright: ignore
+                    property_name,
+                ),
+            ):
+                for options in [[], [f"--name={self._POOLNAME}"]]:
+                    with self.subTest(property_name=property_name, options=options):
+                        TEST_RUNNER(self._MENU + options)
+
 
 class List7TestCase(SimTestCase):
     """
