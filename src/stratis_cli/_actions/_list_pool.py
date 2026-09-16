@@ -140,17 +140,20 @@ class DeviceSizeChangedAlerts:
         """
         from ._data import MODev  # noqa: PLC0415
 
-        (increased, decreased) = (set(), set())
+        (increased, decreased, unknown) = (set(), set(), set())
         for _, info in devs_to_search:
             modev = MODev(info)
-            size = Range(modev.TotalPhysicalSize())
-            observed_size = get_property(modev.NewPhysicalSize(), Range, size)
-            if observed_size > size:  # pragma: no cover
-                increased.add(modev.Pool())
-            if observed_size < size:  # pragma: no cover
-                decreased.add(modev.Pool())
+            try:
+                size = Range(modev.TotalPhysicalSize())
+                observed_size = get_property(modev.NewPhysicalSize(), Range, size)
+                if observed_size > size:  # pragma: no cover
+                    increased.add(modev.Pool())
+                elif observed_size < size:  # pragma: no cover
+                    decreased.add(modev.Pool())
+            except DbusClientMissingPropertyError:
+                unknown.add(modev.Pool())
 
-        (self.increased, self.decreased) = (increased, decreased)
+        (self.increased, self.decreased, self.unknown) = (increased, decreased, unknown)
 
     def alert_codes(self, pool_object_path: str) -> list[PoolDeviceSizeChangeAlert]:
         """
@@ -159,18 +162,14 @@ class DeviceSizeChangedAlerts:
         :param pool_object_path: the pool object path
         :returns: the codes
         """
-        if (
-            pool_object_path in self.increased and pool_object_path in self.decreased
-        ):  # pragma: no cover
-            return [
-                PoolDeviceSizeChangeAlert.DEVICE_SIZE_INCREASED,
-                PoolDeviceSizeChangeAlert.DEVICE_SIZE_DECREASED,
-            ]
+        alerts = []
         if pool_object_path in self.increased:  # pragma: no cover
-            return [PoolDeviceSizeChangeAlert.DEVICE_SIZE_INCREASED]
+            alerts.append(PoolDeviceSizeChangeAlert.DEVICE_SIZE_INCREASED)
         if pool_object_path in self.decreased:  # pragma: no cover
-            return [PoolDeviceSizeChangeAlert.DEVICE_SIZE_DECREASED]
-        return []
+            alerts.append(PoolDeviceSizeChangeAlert.DEVICE_SIZE_DECREASED)
+        if pool_object_path in self.unknown:
+            alerts.append(PoolDeviceSizeChangeAlert.DEVICE_SIZE_CHANGE_UNKNOWN)
+        return alerts
 
 
 def list_pools(

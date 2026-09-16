@@ -118,12 +118,16 @@ class PoolDeviceSizeChangeAlert(IntEnum):
 
     DEVICE_SIZE_INCREASED = 1
     DEVICE_SIZE_DECREASED = 2
+    DEVICE_SIZE_CHANGE_UNKNOWN = 3
 
     def __str__(self) -> str:
         if self is PoolDeviceSizeChangeAlert.DEVICE_SIZE_INCREASED:
             return f"{Level.INFO}DS{str(self.value).zfill(3)}"
 
-        if self is PoolDeviceSizeChangeAlert.DEVICE_SIZE_DECREASED:
+        if self in (
+            PoolDeviceSizeChangeAlert.DEVICE_SIZE_DECREASED,
+            PoolDeviceSizeChangeAlert.DEVICE_SIZE_CHANGE_UNKNOWN,
+        ):
             return f"{Level.WARNING}DS{str(self.value).zfill(3)}"
 
         assert_never(self)  # pragma: no cover
@@ -144,6 +148,12 @@ class PoolDeviceSizeChangeAlert(IntEnum):
                 "decreased in size."
             )
 
+        if self is PoolDeviceSizeChangeAlert.DEVICE_SIZE_CHANGE_UNKNOWN:
+            return (
+                "At least one device belonging to this pool does not have "
+                "complete size information."
+            )
+
         assert_never(self)  # pragma: no cover
 
     def summarize(self) -> str:
@@ -155,6 +165,9 @@ class PoolDeviceSizeChangeAlert(IntEnum):
 
         if self is PoolDeviceSizeChangeAlert.DEVICE_SIZE_DECREASED:
             return "A device in this pool has decreased in size."
+
+        if self is PoolDeviceSizeChangeAlert.DEVICE_SIZE_CHANGE_UNKNOWN:
+            return "A device in this pool has an unknown size."
 
         assert_never(self)  # pragma: no cover
 
