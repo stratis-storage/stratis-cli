@@ -1,6 +1,55 @@
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "stratis-cli"
+authors = [{name = "Anne Mulhern", email = "amulhern@redhat.com"}]
+description = "Stratis CLI"
+license = "Apache-2.0"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: System :: Filesystems",
+    "Topic :: System :: Systems Administration",
+]
+requires-python = ">=3.12"
+dependencies = [
+    "dbus-client-gen>=0.4",
+    "dbus-python-client-gen>=0.8.4",
+    "justbytes>=0.14",
+    "packaging",
+    "psutil",
+    "wcwidth",
+]
+dynamic = ["version"]
+
+[project.readme]
+file = "README.rst"
+content-type = "text/x-rst"
+
+[project.urls]
+Homepage = "https://github.com/stratis-storage/stratis-cli"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = [
+    "stratis_cli",
+    "stratis_cli._parser",
+    "stratis_cli._actions",
+]
+script-files = ["bin/stratis"]
+platforms = ["Linux"]
+include-package-data = false
+
+[tool.setuptools.dynamic]
+version = {attr = "stratis_cli._version.__version__"}
 
 [tool.pyright]
 include = ["src", "tests", "bin"]

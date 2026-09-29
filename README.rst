@@ -19,25 +19,17 @@ processing and displaying the results.
 
 Installing
 ----------
-You can install ``stratis-cli`` directly from the ``stratis-cli`` project
-repo.
+You can install ``stratis-cli`` using your distribution's package manager.
 
-``stratis-cli`` has a number of dependencies that may not already be
-installed. You may choose to allow the setup script to install any missing
-dependencies from PyPi, or you may prefer to install the dependencies using
-your distribution's package manager. All ``stratis-cli``'s direct
-dependencies are listed in ``stratis-cli``'s setup.py file, in the
-``install_requires`` field. If you choose to install the dependencies
-using your installation's package manager, you should do so before you
-run the setup.py script.
+You can install ``stratis-cli`` from PyPI or from the ``stratis-cli``
+project repo using ``pip``.
 
-Finally, run the setup.py script as::
-
-   > python setup.py install
+``stratis-cli`` in-development releases are available for Fedora via Copr at
+the ``packit/stratis-storage-stratis-cli-master-copr_commit`` Copr repo.
 
 Running
 -------
-After installing, running requires invoking the script, as::
+Running requires invoking the ``stratis`` command, as::
 
    > stratis --help
 
@@ -45,20 +37,14 @@ or::
 
    > stratis --version
 
-To run without installing, check out the source, change to the top
-directory and set the ``PYTHONPATH`` environment variable to include
-library dependencies. For example (if using bash shell)::
-
-   > export PYTHONPATH="src:../dbus-client-gen/src:../dbus-python-client-gen/src:../into-dbus-python/src:../dbus-signature-pyparsing/src"
-   > ./bin/stratis --help
-
-Since ``stratis`` uses stratisd's API, most operations will fail
-unless you are also running the `Stratis daemon <https://github.com/stratis-storage/stratisd>`_.
+Most ``stratis`` commands will fail unless you are also running the
+`Stratis daemon <https://github.com/stratis-storage/stratisd>`_ and have
+root permissions.
 
 Testing
 -------
 Various testing modalities are used to verify various properties of
-``stratis``.  Please consult the README files in the ``tests`` subdirectory
+``stratis``.  Please consult the README file in the ``tests`` subdirectory
 for further information.
 
 The project has, and will continue to maintain, 100% code coverage.
