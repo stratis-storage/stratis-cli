@@ -14,10 +14,12 @@ actions:
     - "sh -c 'python3 ../distro/release_management/create_artifacts.py ../distro/ --pre-release --specfile-path=../distro/stratis-cli.spec stratis-cli'"
   fix-spec-file:
     - "echo 'skipping automatic fix-spec-file actions'"
-  get-current-version:
-    - "python3 setup.py --version"
+  get-current-version: |
+      python3 -c 'v = {}; exec(open("src/stratis_cli/_version.py").read(), v); print(v["__version__"])'
 
 srpm_build_deps:
+  - python3-build
+  - python3-giturlparse
   - python3-pip
   - git
   - python3-semantic_version
