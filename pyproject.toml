@@ -38,15 +38,12 @@ content-type = "text/x-rst"
 Homepage = "https://github.com/stratis-storage/stratis-cli"
 
 [tool.setuptools]
-package-dir = {"" = "src"}
-packages = [
-    "stratis_cli",
-    "stratis_cli._parser",
-    "stratis_cli._actions",
-]
 script-files = ["bin/stratis"]
 platforms = ["Linux"]
 include-package-data = false
+
+[tool.setuptools.packages.find]
+where = ["src"]
 
 [tool.setuptools.dynamic]
 version = {attr = "stratis_cli._version.__version__"}
