@@ -16,7 +16,11 @@ Error codes
 """
 
 from enum import Enum, IntEnum
-from typing import Dict, List, Optional, Union, assert_never
+from typing import Any, Dict, List, Optional, Union, assert_never
+
+from dbus_client_gen import DbusClientMissingPropertyError
+
+from ._stratisd_constants import MetadataVersion
 
 
 class Level(Enum):
@@ -215,6 +219,31 @@ class PoolEncryptionAlert(IntEnum):
         assert_never(self)  # pragma: no cover
 
 
+class PoolActionAvailability(IntEnum):
+    """
+    What category of interactions a pool is enabled for.
+    """
+
+    fully_operational = 0
+    no_ipc_requests = 1
+    no_pool_changes = 2
+
+    def pool_maintenance_alerts(self) -> list[PoolMaintenanceAlert]:
+        """
+        Return the list of PoolMaintenanceAlerts for this availability.
+
+        :rtype: list of PoolMaintenanceAlert
+        """
+        codes = []
+        if self >= PoolActionAvailability.no_ipc_requests:
+            codes.append(PoolMaintenanceAlert.NO_IPC_REQUESTS)
+
+        if self >= PoolActionAvailability.no_pool_changes:
+            codes.append(PoolMaintenanceAlert.NO_POOL_CHANGES)
+
+        return codes
+
+
 CLASSES = [
     PoolAllocSpaceAlert,
     PoolDeviceSizeChangeAlert,
@@ -263,3 +292,60 @@ class PoolAlert:
         """
 
         return PoolAlert.CODE_MAP.get(code)
+
+
+def _volume_key_loaded(mopool: Any) -> tuple[bool, bool | str]:
+    """
+    The string result is an error message indicating that the volume key
+    state is unknown.
+    """
+    result = mopool.VolumeKeyLoaded()
+    if isinstance(result, int):
+        return (True, bool(result))
+    return (False, str(result))  # pragma: no cover
+
+
+def alert_codes(
+    mopool: Any, metadata_version: MetadataVersion | None
+) -> list[PoolEncryptionAlert | PoolAllocSpaceAlert | PoolMaintenanceAlert]:
+    """
+    Return alert code objects for a pool. If some D-Bus properties are
+    missing, the information related to those D-Bus properties is simply
+    omitted.
+
+    :param mopool: object to access pool properties
+
+    :returns: list of alerts obtainable from GetManagedObjects properties
+    """
+    try:
+        action_availability = PoolActionAvailability[str(mopool.AvailableActions())]
+        availability_alerts = action_availability.pool_maintenance_alerts()
+
+    except DbusClientMissingPropertyError:
+        availability_alerts = []
+
+    try:
+        no_alloc_space_alerts = (
+            [PoolAllocSpaceAlert.NO_ALLOC_SPACE] if mopool.NoAllocSpace() else []
+        )
+    except DbusClientMissingPropertyError:
+        no_alloc_space_alerts = []
+
+    try:
+        (vkl_is_bool, volume_key_loaded) = _volume_key_loaded(mopool)
+        encrypted = bool(mopool.Encrypted())
+        pool_encryption_alerts: list[PoolEncryptionAlert] = (
+            [PoolEncryptionAlert.VOLUME_KEY_NOT_LOADED]
+            if metadata_version is MetadataVersion.V2
+            and encrypted
+            and vkl_is_bool
+            and not volume_key_loaded
+            else []
+        ) + (
+            [PoolEncryptionAlert.VOLUME_KEY_STATUS_UNKNOWN]
+            if metadata_version is MetadataVersion.V2 and encrypted and not vkl_is_bool
+            else []
+        )
+    except DbusClientMissingPropertyError:
+        pool_encryption_alerts = [PoolEncryptionAlert.VOLUME_KEY_STATUS_UNKNOWN]
+    return availability_alerts + no_alloc_space_alerts + pool_encryption_alerts

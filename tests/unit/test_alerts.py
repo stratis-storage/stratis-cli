@@ -12,13 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """
-Test 'stratisd_constants'.
+Test 'alerts'.
 """
 
 import unittest
 
-from stratis_cli._alerts import PoolMaintenanceAlert
-from stratis_cli._stratisd_constants import PoolActionAvailability
+from stratis_cli._alerts import PoolActionAvailability, PoolMaintenanceAlert
 
 
 class PoolActionAvailabilityTestCase(unittest.TestCase):
