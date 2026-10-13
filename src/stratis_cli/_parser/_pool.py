@@ -549,7 +549,10 @@ POOL_SUBCMDS = [
             "args": [
                 (
                     "code",
-                    {"choices": PoolAlert.code_strs(), "help": "Alert code to explain"},
+                    {
+                        "choices": sorted(PoolAlert.code_strs()),
+                        "help": "Alert code to explain",
+                    },
                 )
             ],
             "func": PoolActions.explain_code,
