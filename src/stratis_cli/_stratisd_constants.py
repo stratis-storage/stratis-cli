@@ -16,9 +16,7 @@ Stratisd error classes.
 """
 
 from enum import Enum, IntEnum
-from typing import Any, List, Mapping
-
-from ._alerts import PoolMaintenanceAlert
+from typing import Any, Mapping
 
 
 class StratisdErrors(IntEnum):
@@ -60,31 +58,6 @@ class ReportKey(Enum):
 
     def __str__(self):
         return self.value
-
-
-class PoolActionAvailability(IntEnum):
-    """
-    What category of interactions a pool is enabled for.
-    """
-
-    fully_operational = 0
-    no_ipc_requests = 1
-    no_pool_changes = 2
-
-    def pool_maintenance_alerts(self) -> List[PoolMaintenanceAlert]:
-        """
-        Return the list of PoolMaintenanceAlerts for this availability.
-
-        :rtype: list of PoolMaintenanceAlert
-        """
-        codes = []
-        if self >= PoolActionAvailability.no_ipc_requests:
-            codes.append(PoolMaintenanceAlert.NO_IPC_REQUESTS)
-
-        if self >= PoolActionAvailability.no_pool_changes:
-            codes.append(PoolMaintenanceAlert.NO_POOL_CHANGES)
-
-        return codes
 
 
 class MetadataVersion(Enum):
