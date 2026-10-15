@@ -137,6 +137,13 @@ def _interpret_errors_0(error: dbus.exceptions.DBusException) -> Optional[str]:
         except ImportError:  # pragma: no cover
             return "Most likely there is no stratisd process running."
 
+    if dbus_name == "org.freedesktop.DBus.Error.FileNotFound":  # pragma: no cover
+        return (
+            "Most likely the D-Bus is not available. If that is the case, "
+            "then it is likely that the stratis-min CLI is what you should "
+            "be using to send commands to stratisd."
+        )
+
     # The goal is to have an explanation for every type of D-Bus error that
     # is encountered. If there is none, then this will rapidly be fixed, so it
     # will be unnecessary to maintain coverage for this branch.
