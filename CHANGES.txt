@@ -1,3 +1,39 @@
+stratis-cli 3.10.0
+==================
+Required stratisd version: 3.10.0
+
+Recommended development environment: Fedora 44
+
+- Add MetadataUsed field to pool detail listing:
+  https://github.com/stratis-storage/stratis-cli/pull/1288
+
+- Use pyproject.toml exclusively for package metadata:
+  https://github.com/stratis-storage/stratis-cli/pull/1300
+  https://github.com/stratis-storage/stratis-cli/pull/1299
+
+- Add pool remove-cache subcommand:
+  https://github.com/stratis-storage/stratis-cli/pull/1293
+
+- Catch missing property exception when checking size change:
+  https://github.com/stratis-storage/stratis-cli/pull/1298
+
+- Require stratisd 3.10.0:
+  https://github.com/stratis-storage/stratis-cli/pull/1287
+
+- Use stdlib datetime module to parse D-Bus dates:
+  https://github.com/stratis-storage/stratis-cli/pull/1297
+  https://github.com/stratis-storage/stratis-cli/pull/1291
+
+- Tidies and Maintenance:
+  https://github.com/stratis-storage/stratis-cli/pull/1301
+  https://github.com/stratis-storage/stratis-cli/pull/1296
+  https://github.com/stratis-storage/stratis-cli/pull/1295
+  https://github.com/stratis-storage/stratis-cli/pull/1294
+  https://github.com/stratis-storage/stratis-cli/pull/1292
+  https://github.com/stratis-storage/stratis-cli/pull/1290
+  https://github.com/stratis-storage/stratis-cli/pull/1289
+
+
 stratis-cli 3.9.1
 =================
 Required stratisd version: 3.9.2
