@@ -4,7 +4,7 @@ name: stratis-cli CI
 on:
   push:
     branches:
-      - master
+      - patch-3.9.1
     paths-ignore:
       - 'CHANGES.txt'
       - '**/README.rst'
@@ -13,7 +13,7 @@ on:
       - '.packit.yaml'
   pull_request:
     branches:
-      - master
+      - patch-3.9.1
     paths-ignore:
       - 'CHANGES.txt'
       - '**/README.rst'
