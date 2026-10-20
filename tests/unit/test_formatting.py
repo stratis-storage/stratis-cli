@@ -33,42 +33,42 @@ class FormattingTestCase1(unittest.TestCase):
         self.output = io.StringIO()
 
         self.table = [
-            ["Pool Na\u030ame", "Na\u030ame", "Used", "Created", "Device", "UUID"],
-            [
+            ("Pool Na\u030ame", "Na\u030ame", "Used", "Created", "Device", "UUID"),
+            (
                 "unicode",
                 "e",
                 "546 MiB",
                 "Feb 07 2019 15:33",
                 "/stratis/unicode/e",
                 "3bf22806a6df4660aa527d646209595f",
-            ],
-            [
+            ),
+            (
                 "unicode",
                 "☺",
                 "546 MiB",
                 "Feb 07 2019 15:33",
                 "/stratis/unicode/☺",
                 "17101e39e72e423c90d8be5cb37c055b",
-            ],
-            [
+            ),
+            (
                 "unicodé",
                 "é",
                 "546 MiB",
                 "Feb 07 2019 15:33",
                 "/stratis/unicodé/é",
                 "0c2caf641dde41beb40bed6911f75c74",
-            ],
-            [
+            ),
+            (
                 "unicodé",
                 "漢字",
                 "546 MiB",
                 "Feb 07 2019 15:33",
                 "/stratis/unicodé/漢字",
                 "4ecacb15fb64453191d7da731c5f1601",
-            ],
+            ),
         ]
         print_table(
-            self.table[0], self.table[1:], ["<", "<", "<", "<", "<", "<"], self.output
+            self.table[0], self.table[1:], ("<", "<", "<", "<", "<", "<"), self.output
         )
 
     def test_contains_equally_long_rows(self):

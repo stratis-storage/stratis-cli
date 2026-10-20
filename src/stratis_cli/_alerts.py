@@ -16,7 +16,11 @@ Error codes
 """
 
 from enum import Enum, IntEnum
-from typing import Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union, assert_never
+
+from dbus_client_gen import DbusClientMissingPropertyError
+
+from ._stratisd_constants import MetadataVersion
 
 
 class Level(Enum):
@@ -62,7 +66,7 @@ class PoolMaintenanceAlert(IntEnum):
                 "any maintenance operations."
             )
 
-        assert False, "impossible code reached"  # pragma: no cover
+        assert_never(self)  # pragma: no cover
 
     def summarize(self) -> str:
         """
@@ -74,7 +78,7 @@ class PoolMaintenanceAlert(IntEnum):
         if self is PoolMaintenanceAlert.NO_POOL_CHANGES:
             return "Pool maintenance operations not possible"
 
-        assert False, "impossible code reached"  # pragma: no cover
+        assert_never(self)  # pragma: no cover
 
 
 class PoolAllocSpaceAlert(IntEnum):
@@ -98,7 +102,7 @@ class PoolAllocSpaceAlert(IntEnum):
                 "to the pool."
             )
 
-        assert False, "impossible code reached"  # pragma: no cover
+        assert_never(self)  # pragma: no cover
 
     def summarize(self) -> str:
         """
@@ -107,7 +111,7 @@ class PoolAllocSpaceAlert(IntEnum):
         if self is PoolAllocSpaceAlert.NO_ALLOC_SPACE:
             return "All devices fully allocated"
 
-        assert False, "impossible code reached"  # pragma: no cover
+        assert_never(self)  # pragma: no cover
 
 
 class PoolDeviceSizeChangeAlert(IntEnum):
@@ -118,15 +122,19 @@ class PoolDeviceSizeChangeAlert(IntEnum):
 
     DEVICE_SIZE_INCREASED = 1
     DEVICE_SIZE_DECREASED = 2
+    DEVICE_SIZE_CHANGE_UNKNOWN = 3
 
     def __str__(self) -> str:
         if self is PoolDeviceSizeChangeAlert.DEVICE_SIZE_INCREASED:
             return f"{Level.INFO}DS{str(self.value).zfill(3)}"
 
-        if self is PoolDeviceSizeChangeAlert.DEVICE_SIZE_DECREASED:
+        if self in (
+            PoolDeviceSizeChangeAlert.DEVICE_SIZE_DECREASED,
+            PoolDeviceSizeChangeAlert.DEVICE_SIZE_CHANGE_UNKNOWN,
+        ):
             return f"{Level.WARNING}DS{str(self.value).zfill(3)}"
 
-        assert False, "impossible code reached"  # pragma: no cover
+        assert_never(self)  # pragma: no cover
 
     def explain(self) -> str:
         """
@@ -144,7 +152,13 @@ class PoolDeviceSizeChangeAlert(IntEnum):
                 "decreased in size."
             )
 
-        assert False, "impossible code reached"  # pragma: no cover
+        if self is PoolDeviceSizeChangeAlert.DEVICE_SIZE_CHANGE_UNKNOWN:
+            return (
+                "At least one device belonging to this pool does not have "
+                "complete size information."
+            )
+
+        assert_never(self)  # pragma: no cover
 
     def summarize(self) -> str:
         """
@@ -156,7 +170,10 @@ class PoolDeviceSizeChangeAlert(IntEnum):
         if self is PoolDeviceSizeChangeAlert.DEVICE_SIZE_DECREASED:
             return "A device in this pool has decreased in size."
 
-        assert False, "impossible code reached"  # pragma: no cover
+        if self is PoolDeviceSizeChangeAlert.DEVICE_SIZE_CHANGE_UNKNOWN:
+            return "A device in this pool has an unknown size."
+
+        assert_never(self)  # pragma: no cover
 
 
 class PoolEncryptionAlert(IntEnum):
@@ -188,7 +205,7 @@ class PoolEncryptionAlert(IntEnum):
                 "encryption layer needs to be modified."
             )
 
-        assert False, "impossible code reached"  # pragma: no cover
+        assert_never(self)  # pragma: no cover
 
     def summarize(self) -> str:
         """
@@ -199,7 +216,32 @@ class PoolEncryptionAlert(IntEnum):
         if self is PoolEncryptionAlert.VOLUME_KEY_STATUS_UNKNOWN:
             return "Volume key status unknown"
 
-        assert False, "impossible code reached"  # pragma: no cover
+        assert_never(self)  # pragma: no cover
+
+
+class PoolActionAvailability(IntEnum):
+    """
+    What category of interactions a pool is enabled for.
+    """
+
+    fully_operational = 0
+    no_ipc_requests = 1
+    no_pool_changes = 2
+
+    def pool_maintenance_alerts(self) -> list[PoolMaintenanceAlert]:
+        """
+        Return the list of PoolMaintenanceAlerts for this availability.
+
+        :rtype: list of PoolMaintenanceAlert
+        """
+        codes = []
+        if self >= PoolActionAvailability.no_ipc_requests:
+            codes.append(PoolMaintenanceAlert.NO_IPC_REQUESTS)
+
+        if self >= PoolActionAvailability.no_pool_changes:
+            codes.append(PoolMaintenanceAlert.NO_POOL_CHANGES)
+
+        return codes
 
 
 CLASSES = [
@@ -250,3 +292,60 @@ class PoolAlert:
         """
 
         return PoolAlert.CODE_MAP.get(code)
+
+
+def _volume_key_loaded(mopool: Any) -> tuple[bool, bool | str]:
+    """
+    The string result is an error message indicating that the volume key
+    state is unknown.
+    """
+    result = mopool.VolumeKeyLoaded()
+    if isinstance(result, int):
+        return (True, bool(result))
+    return (False, str(result))  # pragma: no cover
+
+
+def alert_codes(
+    mopool: Any, metadata_version: MetadataVersion | None
+) -> list[PoolEncryptionAlert | PoolAllocSpaceAlert | PoolMaintenanceAlert]:
+    """
+    Return alert code objects for a pool. If some D-Bus properties are
+    missing, the information related to those D-Bus properties is simply
+    omitted.
+
+    :param mopool: object to access pool properties
+
+    :returns: list of alerts obtainable from GetManagedObjects properties
+    """
+    try:
+        action_availability = PoolActionAvailability[str(mopool.AvailableActions())]
+        availability_alerts = action_availability.pool_maintenance_alerts()
+
+    except DbusClientMissingPropertyError:
+        availability_alerts = []
+
+    try:
+        no_alloc_space_alerts = (
+            [PoolAllocSpaceAlert.NO_ALLOC_SPACE] if mopool.NoAllocSpace() else []
+        )
+    except DbusClientMissingPropertyError:
+        no_alloc_space_alerts = []
+
+    try:
+        (vkl_is_bool, volume_key_loaded) = _volume_key_loaded(mopool)
+        encrypted = bool(mopool.Encrypted())
+        pool_encryption_alerts: list[PoolEncryptionAlert] = (
+            [PoolEncryptionAlert.VOLUME_KEY_NOT_LOADED]
+            if metadata_version is MetadataVersion.V2
+            and encrypted
+            and vkl_is_bool
+            and not volume_key_loaded
+            else []
+        ) + (
+            [PoolEncryptionAlert.VOLUME_KEY_STATUS_UNKNOWN]
+            if metadata_version is MetadataVersion.V2 and encrypted and not vkl_is_bool
+            else []
+        )
+    except DbusClientMissingPropertyError:
+        pool_encryption_alerts = [PoolEncryptionAlert.VOLUME_KEY_STATUS_UNKNOWN]
+    return availability_alerts + no_alloc_space_alerts + pool_encryption_alerts

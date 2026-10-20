@@ -16,9 +16,9 @@ Filesystem listing.
 """
 
 from abc import ABC, abstractmethod
+from datetime import datetime
 from typing import Any, Callable, Dict, List
 
-from dateutil import parser as date_parser
 from dbus import ObjectPath, String
 from justbytes import Range
 
@@ -230,9 +230,9 @@ class Table(ListFilesystem):
         ]
 
         print_table(
-            ["Pool", "Filesystem", f"{TOTAL_USED_FREE} / Limit", "Device", "UUID"],
+            ("Pool", "Filesystem", f"{TOTAL_USED_FREE} / Limit", "Device", "UUID"),
             sorted(tables, key=lambda entry: (entry[0], entry[1])),
-            ["<", "<", "<", "<", "<"],
+            ("<", "<", "<", "<", "<"),
         )
 
 
@@ -258,7 +258,7 @@ class Detail(ListFilesystem):
 
         try:
             created = (
-                date_parser.isoparse(fs.Created())
+                datetime.fromisoformat(fs.Created())
                 .astimezone()
                 .strftime("%b %d %Y %H:%M")
             )

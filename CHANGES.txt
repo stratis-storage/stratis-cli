@@ -1,3 +1,32 @@
+stratis-cli 3.9.2
+=================
+Required stratisd version: 3.9.2
+
+Recommended development environment: Fedora 44
+
+* Cherry-picked commits:
+  * Use shared action to check for typos and yaml lints
+  * Invoke composite action to override toolchain with MSRV
+  * Use stdlib datetime module to parse D-Bus dates
+  * Increase CURRENT DEVELOPMENT ENVIRONMENT to 44
+  * Add PyFlakes linter to ruff linter emulations
+  * Refine print_table parameter type annotations
+  * Remove python3-dateutil requirement in GitHub workflows
+  * Add bugbear linter to ruff linter emulations
+  * Use assert_never instead of assert for unreachable code
+  * Catch missing property exception when checking size change
+  * Use pyproject.toml exclusively for package metadata
+  * Use more modern way to tell tools where packages are
+  * Add commit check to CI
+  * Sort the list of pool alert codes in parser help
+  * Move some pool alert functions to the alerts module
+  * Add an error message in case the D-Bus is not present
+
+* New commits:
+  * Run CI against patch branch
+  * Run tests against stratisd 3.9.3
+
+
 stratis-cli 3.9.1
 =================
 Required stratisd version: 3.9.2

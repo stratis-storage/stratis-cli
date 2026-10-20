@@ -4,7 +4,7 @@ name: stratis-cli CI
 on:
   push:
     branches:
-      - master
+      - patch-3.9.1
     paths-ignore:
       - 'CHANGES.txt'
       - '**/README.rst'
@@ -13,7 +13,7 @@ on:
       - '.packit.yaml'
   pull_request:
     branches:
-      - master
+      - patch-3.9.1
     paths-ignore:
       - 'CHANGES.txt'
       - '**/README.rst'
@@ -35,7 +35,6 @@ jobs:
           # MANDATORY CHECKS USING CURRENT DEVELOPMENT INTERPRETER
           - dependencies: >
               libatomic
-              python3-dateutil
               python3-dbus-client-gen
               python3-dbus-python-client-gen
               python3-justbytes
@@ -49,7 +48,7 @@ jobs:
             task: PATH=${PATH}:/github/home/.local/bin make -f Makefile fmt-ci
     runs-on: ubuntu-latest
     container:
-      image: quay.io/fedora/fedora:43  # CURRENT DEVELOPMENT ENVIRONMENT
+      image: quay.io/fedora/fedora:44  # CURRENT DEVELOPMENT ENVIRONMENT
     steps:
       - uses: actions/checkout@v6
         with:
@@ -68,29 +67,6 @@ jobs:
       - name: Run test
         run: ${{ matrix.task }}
 
-  check-typos:
-    runs-on: ubuntu-latest
-    container:
-      image: quay.io/fedora/fedora:43  # CURRENT DEVELOPMENT ENVIRONMENT
-    steps:
-      - name: Install dependencies
-        run: >
-          dnf install -y
-          clang
-          glibc-static
-          make
-      - uses: actions/checkout@v6
-        with:
-          persist-credentials: false
-      - uses: actions-rust-lang/setup-rust-toolchain@v1
-        with:
-          components: cargo
-      - uses: baptiste0928/cargo-install@v3
-        with:
-          crate: typos-cli
-      - name: Run test
-        run: make -f Makefile check-typos
-
   test-runs:
     strategy:
       matrix:
@@ -99,7 +75,7 @@ jobs:
           - python: "3.12"  # LOWEST SUPPORTED PYTHON TOOLCHAIN
     runs-on: ubuntu-latest
     container:
-      image: quay.io/fedora/fedora:43  # CURRENT DEVELOPMENT ENVIRONMENT
+      image: quay.io/fedora/fedora:44  # CURRENT DEVELOPMENT ENVIRONMENT
       options: --privileged --userns=host --ipc=host -v /run/dbus/system_bus_socket:/run/dbus/system_bus_socket:ro -v /usr/share/dbus-1:/usr/share/dbus-1
     steps:
       - name: Install python prerequisites
@@ -129,35 +105,32 @@ jobs:
           dbus-devel
           git
           glibc-static
+          jq
           libblkid-devel
           make
           python3-dbus-client-gen
           python3-dbus-python-client-gen
           python3-justbytes
-          python3-dateutil
           python3-packaging
           python3-psutil
           python3-wcwidth
           systemd-devel
-          toml-cli
       - uses: stratis-storage/github-actions/github-modify@HEAD
         with:
           repo: stratisd
+          default_branch: stratisd-v3.9.3
       - name: Print head commit
         run: git log --oneline -1
-        working-directory: stratisd
-      - name: Get package MSRV
-        id: msrv
-        run: |
-          MSRV=$(toml get --toml-path Cargo.toml "workspace.package.rust-version")
-          echo "MSRV=$MSRV" >> "$GITHUB_OUTPUT"
         working-directory: stratisd
       - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           components: cargo
-          toolchain: ${{ steps.msrv.outputs.MSRV }}
       - name: Overwrite stratisd dependencies as necessary
         uses: stratis-storage/github-actions/stratisd-modify@HEAD
+        with:
+          working-directory: stratisd
+      - name: Set toolchain to MSRV
+        uses: stratis-storage/github-actions/set-rust-toolchain@HEAD
         with:
           working-directory: stratisd
       - name: Build stratisd
@@ -182,7 +155,7 @@ jobs:
     needs: test-runs
     runs-on: ubuntu-latest
     container:
-      image: quay.io/fedora/fedora:43  # CURRENT DEVELOPMENT ENVIRONMENT
+      image: quay.io/fedora/fedora:44  # CURRENT DEVELOPMENT ENVIRONMENT
       options: --privileged --userns=host --ipc=host -v /run/dbus/system_bus_socket:/run/dbus/system_bus_socket:ro -v /usr/share/dbus-1:/usr/share/dbus-1
     steps:
       - uses: actions/checkout@v6
@@ -198,36 +171,33 @@ jobs:
           dbus-devel
           git
           glibc-static
+          jq
           libblkid-devel
           make
           python3-coverage
           python3-dbus-client-gen
           python3-dbus-python-client-gen
           python3-justbytes
-          python3-dateutil
           python3-packaging
           python3-psutil
           python3-wcwidth
           systemd-devel
-          toml-cli
       - uses: stratis-storage/github-actions/github-modify@HEAD
         with:
           repo: stratisd
+          default_branch: stratisd-v3.9.3
       - name: Print head commit
         run: git log --oneline -1
-        working-directory: stratisd
-      - name: Get package MSRV
-        id: msrv
-        run: |
-          MSRV=$(toml get --toml-path Cargo.toml "workspace.package.rust-version")
-          echo "MSRV=$MSRV" >> "$GITHUB_OUTPUT"
         working-directory: stratisd
       - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           components: cargo
-          toolchain: ${{ steps.msrv.outputs.MSRV }}
       - name: Overwrite stratisd dependencies as necessary
         uses: stratis-storage/github-actions/stratisd-modify@HEAD
+        with:
+          working-directory: stratisd
+      - name: Set toolchain to MSRV
+        uses: stratis-storage/github-actions/set-rust-toolchain@HEAD
         with:
           working-directory: stratisd
       - name: Build stratisd
@@ -255,3 +225,13 @@ jobs:
       - name: Run coverage report
         run: make -f Makefile coverage-report
         working-directory: stratis-cli
+
+  general_checks:
+    uses: stratis-storage/github-actions/.github/workflows/reusable_general.yml@master
+    with:
+      fedora-container-image-number: 44  # CURRENT DEVELOPMENT ENVIRONMENT
+
+  commit-checks:
+    uses: stratis-storage/github-actions/.github/workflows/commits.yml@master
+    with:
+      fedora-container-image-number: 44  # CURRENT DEVELOPMENT ENVIRONMENT

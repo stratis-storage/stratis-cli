@@ -18,23 +18,18 @@ Pool actions.
 import json
 import os
 from abc import ABC, abstractmethod
+from datetime import datetime
 from typing import Any, Callable, Iterable, Mapping
 from uuid import UUID
 
-from dateutil import parser as date_parser
 from justbytes import Range
 
 from dbus_client_gen import DbusClientMissingPropertyError
 
-from .._alerts import (
-    PoolAllocSpaceAlert,
-    PoolDeviceSizeChangeAlert,
-    PoolEncryptionAlert,
-    PoolMaintenanceAlert,
-)
+from .._alerts import PoolActionAvailability, PoolDeviceSizeChangeAlert, alert_codes
 from .._constants import PoolId
 from .._errors import StratisCliResourceNotFoundError
-from .._stratisd_constants import ClevisInfo, MetadataVersion, PoolActionAvailability
+from .._stratisd_constants import ClevisInfo, MetadataVersion
 from ._connection import get_object
 from ._constants import TOP_OBJECT
 from ._formatting import (
@@ -140,17 +135,20 @@ class DeviceSizeChangedAlerts:
         """
         from ._data import MODev  # noqa: PLC0415
 
-        (increased, decreased) = (set(), set())
+        (increased, decreased, unknown) = (set(), set(), set())
         for _, info in devs_to_search:
             modev = MODev(info)
-            size = Range(modev.TotalPhysicalSize())
-            observed_size = get_property(modev.NewPhysicalSize(), Range, size)
-            if observed_size > size:  # pragma: no cover
-                increased.add(modev.Pool())
-            if observed_size < size:  # pragma: no cover
-                decreased.add(modev.Pool())
+            try:
+                size = Range(modev.TotalPhysicalSize())
+                observed_size = get_property(modev.NewPhysicalSize(), Range, size)
+                if observed_size > size:  # pragma: no cover
+                    increased.add(modev.Pool())
+                elif observed_size < size:  # pragma: no cover
+                    decreased.add(modev.Pool())
+            except DbusClientMissingPropertyError:
+                unknown.add(modev.Pool())
 
-        (self.increased, self.decreased) = (increased, decreased)
+        (self.increased, self.decreased, self.unknown) = (increased, decreased, unknown)
 
     def alert_codes(self, pool_object_path: str) -> list[PoolDeviceSizeChangeAlert]:
         """
@@ -159,18 +157,14 @@ class DeviceSizeChangedAlerts:
         :param pool_object_path: the pool object path
         :returns: the codes
         """
-        if (
-            pool_object_path in self.increased and pool_object_path in self.decreased
-        ):  # pragma: no cover
-            return [
-                PoolDeviceSizeChangeAlert.DEVICE_SIZE_INCREASED,
-                PoolDeviceSizeChangeAlert.DEVICE_SIZE_DECREASED,
-            ]
+        alerts = []
         if pool_object_path in self.increased:  # pragma: no cover
-            return [PoolDeviceSizeChangeAlert.DEVICE_SIZE_INCREASED]
+            alerts.append(PoolDeviceSizeChangeAlert.DEVICE_SIZE_INCREASED)
         if pool_object_path in self.decreased:  # pragma: no cover
-            return [PoolDeviceSizeChangeAlert.DEVICE_SIZE_DECREASED]
-        return []
+            alerts.append(PoolDeviceSizeChangeAlert.DEVICE_SIZE_DECREASED)
+        if pool_object_path in self.unknown:
+            alerts.append(PoolDeviceSizeChangeAlert.DEVICE_SIZE_CHANGE_UNKNOWN)
+        return alerts
 
 
 def list_pools(
@@ -250,67 +244,6 @@ class Default(ListPool):
             return None
 
     @staticmethod
-    def _volume_key_loaded(mopool: Any) -> tuple[bool, bool | str]:
-        """
-        The string result is an error message indicating that the volume key
-        state is unknown.
-        """
-        result = mopool.VolumeKeyLoaded()
-        if isinstance(result, int):
-            return (True, bool(result))
-        return (False, str(result))  # pragma: no cover
-
-    @staticmethod
-    def alert_codes(
-        mopool: Any,
-    ) -> list[PoolEncryptionAlert | PoolAllocSpaceAlert | PoolMaintenanceAlert]:
-        """
-        Return alert code objects for a pool. If some D-Bus properties are
-        missing, the information related to those D-Bus properties is simply
-        omitted.
-
-        :param mopool: object to access pool properties
-
-        :returns: list of alerts obtainable from GetManagedObjects properties
-        """
-        try:
-            action_availability = PoolActionAvailability[str(mopool.AvailableActions())]
-            availability_alerts = action_availability.pool_maintenance_alerts()
-
-        except DbusClientMissingPropertyError:
-            availability_alerts = []
-
-        try:
-            no_alloc_space_alerts = (
-                [PoolAllocSpaceAlert.NO_ALLOC_SPACE] if mopool.NoAllocSpace() else []
-            )
-        except DbusClientMissingPropertyError:
-            no_alloc_space_alerts = []
-
-        metadata_version = Default.metadata_version(mopool)
-
-        try:
-            (vkl_is_bool, volume_key_loaded) = Default._volume_key_loaded(mopool)
-            encrypted = bool(mopool.Encrypted())
-            pool_encryption_alerts: list[PoolEncryptionAlert] = (
-                [PoolEncryptionAlert.VOLUME_KEY_NOT_LOADED]
-                if metadata_version is MetadataVersion.V2
-                and encrypted
-                and vkl_is_bool
-                and not volume_key_loaded
-                else []
-            ) + (
-                [PoolEncryptionAlert.VOLUME_KEY_STATUS_UNKNOWN]
-                if metadata_version is MetadataVersion.V2
-                and encrypted
-                and not vkl_is_bool
-                else []
-            )
-        except DbusClientMissingPropertyError:
-            pool_encryption_alerts = [PoolEncryptionAlert.VOLUME_KEY_STATUS_UNKNOWN]
-        return availability_alerts + no_alloc_space_alerts + pool_encryption_alerts
-
-    @staticmethod
     def size_triple(mopool: Any) -> SizeTriple:
         """
         Calculate SizeTriple from size information.
@@ -376,16 +309,17 @@ class DefaultDetail(Default):
         print(f"UUID: {self.uuid_str(mopool)}")
         print(f"Name: {Default.name_str(mopool)}")
 
+        metadata_version = Default.metadata_version(mopool)
+
         alert_summary = sorted(
             f"{code}: {code.summarize()}"
             for code in alerts.alert_codes(pool_object_path)
-            + Default.alert_codes(mopool)
+            + alert_codes(mopool, metadata_version)
         )
         print(f"Alerts: {len(alert_summary)}")
         for line in alert_summary:
             print(f"     {line}")
 
-        metadata_version = Default.metadata_version(mopool)
         metadata_version_str = (
             metadata_version if metadata_version is not None else TABLE_UNKNOWN_STRING
         )
@@ -431,7 +365,9 @@ class DefaultDetail(Default):
                 reencrypted = get_property(
                     mopool.LastReencryptedTimestamp(),
                     lambda t: (
-                        date_parser.isoparse(t).astimezone().strftime("%b %d %Y %H:%M")
+                        datetime.fromisoformat(t)
+                        .astimezone()
+                        .strftime("%b %d %Y %H:%M")
                     ),
                     "Never",
                 )
@@ -646,11 +582,12 @@ class DefaultTable(Default):
         ]
 
         def alerts_str(mopool: Any, pool_object_path: str) -> str:
+            metadata_version = Default.metadata_version(mopool)
             return ", ".join(
                 sorted(
                     str(code)
                     for code in (
-                        Default.alert_codes(mopool)
+                        alert_codes(mopool, metadata_version)
                         + alerts.alert_codes(pool_object_path)
                     )
                 )
@@ -668,9 +605,9 @@ class DefaultTable(Default):
         ]
 
         print_table(
-            ["Name", TOTAL_USED_FREE, "Properties", "UUID", "Alerts"],
+            ("Name", TOTAL_USED_FREE, "Properties", "UUID", "Alerts"),
             sorted(tables, key=lambda entry: entry[0]),
-            ["<", ">", ">", ">", "<"],
+            ("<", ">", ">", ">", "<"),
         )
 
 
@@ -883,7 +820,7 @@ class StoppedTable(Stopped):
         ]
 
         print_table(
-            ["Name", "Version", "UUID", "# Devices", "Key Description", "Clevis"],
+            ("Name", "Version", "UUID", "# Devices", "Key Description", "Clevis"),
             sorted(tables, key=lambda entry: entry[0]),
-            ["<", ">", "<", ">", "<", "<"],
+            ("<", ">", "<", ">", "<", "<"),
         )
