@@ -54,11 +54,7 @@ class DebugTestCase(SimTestCase):
 
         from stratis_cli._actions._connection import get_object  # noqa: PLC0415
         from stratis_cli._actions._constants import TOP_OBJECT  # noqa: PLC0415
-        from stratis_cli._actions._data import (  # noqa: PLC0415
-            MODev,
-            ObjectManager,
-            devs,
-        )
+        from stratis_cli._actions._data import MODev, ObjectManager, devs  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})

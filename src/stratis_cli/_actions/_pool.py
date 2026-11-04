@@ -368,14 +368,7 @@ class PoolActions:
         :raises StratisCliEngineError:
         :raises StratisCliIncoherenceError:
         """
-        from ._data import (  # noqa: PLC0415
-            MODev,
-            MOPool,
-            ObjectManager,
-            Pool,
-            devs,
-            pools,
-        )
+        from ._data import MODev, MOPool, ObjectManager, Pool, devs, pools  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
