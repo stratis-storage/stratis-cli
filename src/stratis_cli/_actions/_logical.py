@@ -49,13 +49,7 @@ class LogicalActions:
         :raises StratisCliPartialChangeError:
         """
 
-        from ._data import (  # noqa: PLC0415
-            MOFilesystem,
-            ObjectManager,
-            Pool,
-            filesystems,
-            pools,
-        )
+        from ._data import MOFilesystem, ObjectManager, Pool, filesystems, pools  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -149,13 +143,7 @@ class LogicalActions:
         :raises StratisCliPartialChangeError:
         """
 
-        from ._data import (  # noqa: PLC0415
-            MOFilesystem,
-            ObjectManager,
-            Pool,
-            filesystems,
-            pools,
-        )
+        from ._data import MOFilesystem, ObjectManager, Pool, filesystems, pools  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -249,12 +237,7 @@ class LogicalActions:
         :raises StratisCliEngineError:
         :raises StratisCliNoChangeError:
         """
-        from ._data import (  # noqa: PLC0415
-            Filesystem,
-            ObjectManager,
-            filesystems,
-            pools,
-        )
+        from ._data import Filesystem, ObjectManager, filesystems, pools  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -284,13 +267,7 @@ class LogicalActions:
         """
         Set an upper limit on the size of the filesystem.
         """
-        from ._data import (  # noqa: PLC0415
-            Filesystem,
-            MOFilesystem,
-            ObjectManager,
-            filesystems,
-            pools,
-        )
+        from ._data import Filesystem, MOFilesystem, ObjectManager, filesystems, pools  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -327,13 +304,7 @@ class LogicalActions:
         """
         Unset upper limit on the size of the filesystem.
         """
-        from ._data import (  # noqa: PLC0415
-            Filesystem,
-            MOFilesystem,
-            ObjectManager,
-            filesystems,
-            pools,
-        )
+        from ._data import Filesystem, MOFilesystem, ObjectManager, filesystems, pools  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -360,13 +331,7 @@ class LogicalActions:
         """
         Schedule reverting a snapshot into its origin.
         """
-        from ._data import (  # noqa: PLC0415
-            Filesystem,
-            MOFilesystem,
-            ObjectManager,
-            filesystems,
-            pools,
-        )
+        from ._data import Filesystem, MOFilesystem, ObjectManager, filesystems, pools  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
@@ -397,13 +362,7 @@ class LogicalActions:
         """
         Cancel reverting a snapshot into its origin.
         """
-        from ._data import (  # noqa: PLC0415
-            Filesystem,
-            MOFilesystem,
-            ObjectManager,
-            filesystems,
-            pools,
-        )
+        from ._data import Filesystem, MOFilesystem, ObjectManager, filesystems, pools  # noqa: PLC0415
 
         proxy = get_object(TOP_OBJECT)
         managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})

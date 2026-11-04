@@ -41,13 +41,7 @@ def list_filesystems(uuid_formatter: Callable, *, pool_name=None, fs_id=None):
     """
     assert fs_id is None or pool_name is not None
 
-    from ._data import (  # noqa: PLC0415
-        MOFilesystem,
-        MOPool,
-        ObjectManager,
-        filesystems,
-        pools,
-    )
+    from ._data import MOFilesystem, MOPool, ObjectManager, filesystems, pools  # noqa: PLC0415
 
     proxy = get_object(TOP_OBJECT)
     managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
