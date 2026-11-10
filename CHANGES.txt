@@ -1,4 +1,4 @@
-stratis-cli 3.9.0
+stratis-cli 3.9.2
 ==================
 Required stratisd version: 3.9.2
 
