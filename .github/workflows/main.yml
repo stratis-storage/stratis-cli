@@ -139,6 +139,7 @@ jobs:
       - uses: stratis-storage/github-actions/github-modify@HEAD
         with:
           repo: stratisd
+          default_branch: stratisd-v3.9.4
       - name: Print head commit
         run: git log --oneline -1
         working-directory: stratisd
@@ -205,6 +206,7 @@ jobs:
       - uses: stratis-storage/github-actions/github-modify@HEAD
         with:
           repo: stratisd
+          default_branch: stratisd-v3.9.4
       - name: Print head commit
         run: git log --oneline -1
         working-directory: stratisd
