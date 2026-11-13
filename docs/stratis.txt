@@ -76,6 +76,8 @@ pool init-cache <pool_name> <blockdev> [<blockdev>..]::
 	 drives, such as SSDs, are used for this purpose.
 pool add-cache <pool_name> <blockdev> [<blockdev>..]::
 	 Add one or more blockdevs to an existing pool with an initialized cache.
+pool remove-cache <(--uuid <uuid> |--name <name>)>::
+     Remove a pool's cache.
 pool extend-data <pool_name> [--device-uuid <uuid>]::
      Increase the pool's data capacity with additional storage space offered by
      its component data devices through, e.g., expansion of a component RAID
