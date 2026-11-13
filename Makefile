@@ -74,4 +74,4 @@ yamllint:
 
 .PHONY: package
 package:
-	(umask 0022; python3 -m build --no-isolation; python3 -m twine check --strict ./dist/*)
+	(umask 0022; python3 -m build --no-isolation && python3 -m twine check --strict ./dist/*)
