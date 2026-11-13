@@ -1,3 +1,21 @@
+stratis-cli 3.9.3
+=================
+Required stratisd version: 3.9.2
+
+Recommended development environment: Fedora 44
+
+! Indicates a PR that was reverted.
+
+! Restart 3.10.0:
+  https://github.com/stratis-storage/stratis-cli/pull/1308
+
+- Fix typo in changelog:
+  https://github.com/stratis-storage/stratis-cli/pull/1309
+
+- Require setuptools version no greater than 69:
+  https://github.com/stratis-storage/stratis-cli/pull/1310
+
+
 stratis-cli 3.9.2
 ==================
 Required stratisd version: 3.9.2
