@@ -410,6 +410,13 @@ Space Usage: Used::
 	The space on the devices that is in use. Used space can be reclaimed.
 	For example, destroying a Stratis filesystem will reduce this value.
 
+Space Usage: Metadata::
+        The space on the devices that is set aside for metadata use. This
+        metadata includes Stratis metadata, and other block layer metadata,
+        such as that used to manage encryption of a pool or device. It does
+        not include filesystem metadata, which is considered part of user
+        data.
+
 FIELDS for stratis pool list [(--uuid <uuid> |--name <name>)] --stopped
 
 UUID::
