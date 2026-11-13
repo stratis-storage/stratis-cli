@@ -1,12 +1,12 @@
 [build-system]
-requires = ["setuptools>=77"]
+requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "stratis-cli"
 authors = [{name = "Anne Mulhern", email = "amulhern@redhat.com"}]
 description = "Stratis CLI"
-license = "Apache-2.0"
+license = {file = "LICENSE"}
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
