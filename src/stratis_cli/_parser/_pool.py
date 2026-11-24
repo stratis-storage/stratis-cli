@@ -427,6 +427,22 @@ POOL_SUBCMDS = [
         },
     ),
     (
+        "remove-cache",
+        {
+            "help": "Remove an active pool's cache",
+            "func": PoolActions.remove_cache,
+            "groups": [
+                (
+                    "Pool Identifier",
+                    {
+                        "description": ("Choose one option to specify the pool"),
+                        "mut_ex_args": [(True, UUID_OR_NAME)],
+                    },
+                )
+            ],
+        },
+    ),
+    (
         "extend-data",
         {
             "help": (
