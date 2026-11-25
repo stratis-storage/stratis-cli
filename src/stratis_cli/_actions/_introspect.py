@@ -228,6 +228,17 @@ SPECS = {
       <arg name="return_code" type="q" direction="out" />
       <arg name="return_string" type="s" direction="out" />
     </method>
+    <method name="Migrate">
+      <arg name="devices" type="as" direction="in" />
+      <arg name="key_descs" type="a((bu)s)" direction="in" />
+      <arg name="clevis_infos" type="a((bu)ss)" direction="in" />
+      <arg name="journal_size" type="(bt)" direction="in" />
+      <arg name="tag_spec" type="(bs)" direction="in" />
+      <arg name="allocate_superblock" type="(bb)" direction="in" />
+      <arg name="results" type="(bao)" direction="out" />
+      <arg name="return_code" type="q" direction="out" />
+      <arg name="return_string" type="s" direction="out" />
+    </method>
     <method name="RebindClevis">
       <arg name="token_slot" type="(bu)" direction="in" />
       <arg name="results" type="b" direction="out" />
