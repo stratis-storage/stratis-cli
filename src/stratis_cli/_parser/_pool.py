@@ -19,30 +19,21 @@ import copy
 from argparse import SUPPRESS, ArgumentParser, Namespace
 from uuid import UUID
 
-from justbytes import MiB, Range
-
 from .._actions import BindActions, PoolActions
 from .._alerts import PoolAlert
-from .._constants import (
-    EncryptionMethod,
-    IntegrityOption,
-    IntegrityTagSpec,
-    UnlockMethod,
-    YesOrNo,
-)
+from .._constants import EncryptionMethod, IntegrityOption, UnlockMethod, YesOrNo
 from ._debug import POOL_DEBUG_SUBCMDS
 from ._encryption import BIND_SUBCMDS, ENCRYPTION_SUBCMDS, REBIND_SUBCMDS
 from ._shared import (
     CLEVIS_AND_KERNEL,
+    INTEGRITY_ARGS,
     KEYFILE_PATH_OR_STDIN,
     TRUST_URL_OR_THUMBPRINT,
     UUID_OR_NAME,
     ClevisEncryptionOptions,
-    DefaultAction,
     MoveNotice,
     RejectAction,
     ensure_nat,
-    parse_range,
 )
 
 
@@ -129,65 +120,7 @@ POOL_SUBCMDS = [
                             "Optional parameters for configuring integrity "
                             "metadata pre-allocation"
                         ),
-                        "args": [
-                            (
-                                "--integrity",
-                                {
-                                    "help": (
-                                        "Integrity options for this pool. If "
-                                        f'"{IntegrityOption.NO}" no space will '
-                                        "be allocated for integrity metadata "
-                                        "and it will never be possible to turn "
-                                        "on integrity functionality for this "
-                                        "pool. "
-                                        f'If "{IntegrityOption.PRE_ALLOCATE}" '
-                                        "then space will be allocated for "
-                                        "integrity metadata and it will be "
-                                        "possible to switch on integrity "
-                                        "functionality in future. The default "
-                                        'is "%(default)s".'
-                                    ),
-                                    "choices": list(IntegrityOption),
-                                    "default": IntegrityOption.PRE_ALLOCATE,
-                                    "type": IntegrityOption,
-                                },
-                            ),
-                            (
-                                "--journal-size",
-                                {
-                                    "help": (
-                                        "Size of integrity device's journal. "
-                                        "Each block is written to this journal "
-                                        "before being written to its address. "
-                                        "The default is %(default)s."
-                                    ),
-                                    "action": DefaultAction,
-                                    "default": Range(128, MiB),
-                                    "type": parse_range,
-                                },
-                            ),
-                            (
-                                "--tag-spec",
-                                {
-                                    "help": (
-                                        "Integrity tag specification defining "
-                                        "the size of the tag used to store a "
-                                        "checksum or other value for each "
-                                        "block on a device. All size "
-                                        "specifications are in bits. The "
-                                        "default is %(default)s."
-                                    ),
-                                    "action": DefaultAction,
-                                    "default": IntegrityTagSpec.B512,
-                                    "choices": [
-                                        x
-                                        for x in list(IntegrityTagSpec)
-                                        if x is not IntegrityTagSpec.B0
-                                    ],
-                                    "type": IntegrityTagSpec,
-                                },
-                            ),
-                        ],
+                        "args": INTEGRITY_ARGS,
                     },
                 ),
             ],
@@ -219,6 +152,63 @@ POOL_SUBCMDS = [
                 ),
             ],
             "func": PoolActions.create_pool,
+        },
+    ),
+    (
+        "migrate",
+        {
+            "help": "Migrate a pool",
+            "groups": [
+                (
+                    "Pool Identifier",
+                    {
+                        "description": (
+                            "Choose one option to specify the pool to migrate"
+                        ),
+                        "mut_ex_args": [(True, UUID_OR_NAME)],
+                    },
+                ),
+                (
+                    "Encryption",
+                    {
+                        "description": "Arguments controlling migration with encryption",
+                        "args": CLEVIS_AND_KERNEL,
+                    },
+                ),
+                (
+                    "Tang Server Verification (only if --tang-url option is set)",
+                    {
+                        "description": "Choose one option",
+                        "mut_ex_args": [(False, TRUST_URL_OR_THUMBPRINT)],
+                    },
+                ),
+                (
+                    "Integrity",
+                    {
+                        "description": (
+                            "Optional parameters for configuring integrity "
+                            "metadata pre-allocation"
+                        ),
+                        "args": INTEGRITY_ARGS,
+                    },
+                ),
+            ],
+            "args": [
+                (
+                    "--post-parser",
+                    {
+                        "action": RejectAction,
+                        "default": CreateOptions,
+                        "help": SUPPRESS,
+                        "nargs": "?",
+                    },
+                ),
+                (
+                    "blockdevs",
+                    {"help": "Migrate the pool using these block devs", "nargs": "+"},
+                ),
+            ],
+            "func": PoolActions.migrate_pool,
         },
     ),
     (
