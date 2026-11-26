@@ -20,7 +20,7 @@ import os
 from argparse import Namespace
 from collections import defaultdict
 from itertools import tee
-from typing import Dict, Generator, List, Sequence
+from typing import Dict, Generator, List, NoReturn, Sequence
 from uuid import UUID
 
 from dbus import Dictionary
@@ -159,6 +159,48 @@ def _check_same_tier(
         raise StratisCliInUseSameTierError(owned_by_other_pools, this_tier)
 
 
+def try_blame_journal_size(
+    journal_size: tuple, err: DPClientMarshallingError
+) -> NoReturn:
+    """
+    Check if journal size exceeds u64 max and raise appropriate error.
+
+    :param journal_size: the journal size tuple to check
+    :param err: the DPClientMarshallingError that was caught
+    :raises StratisCliInvalidCommandLineOptionValue: if journal size too large
+    :raises DPClientMarshallingError: re-raises the original error
+    """
+    (_, journal_size_value) = journal_size
+    u64max = 0xFFFFFFFFFFFFFFFF
+    if journal_size_value > u64max:
+        raise StratisCliInvalidCommandLineOptionValue(
+            "--journal-size value is too large; it must be no greater "
+            f"than {u64max} bytes."
+        ) from err
+    raise err  # pragma: no cover
+
+
+def pre_allocations_from_namespace(
+    namespace: Namespace,
+) -> tuple[tuple[bool, int], tuple[bool, IntegrityTagSpec], tuple[bool, bool]]:
+    """
+    Extract integrity pre-allocation parameters from namespace.
+
+    :param namespace: parsed command-line arguments
+    :returns: tuple of (journal_size, tag_spec, allocate_superblock)
+    :rtype: tuple[tuple[bool, int], tuple[bool, IntegrityTagSpec], tuple[bool, bool]]
+    """
+    return (
+        ((True, 0), (True, IntegrityTagSpec.B0), (True, False))
+        if namespace.integrity.integrity is IntegrityOption.NO
+        else (
+            (True, namespace.integrity.journal_size.magnitude.numerator),
+            (True, namespace.integrity.tag_spec),
+            (True, True),
+        )
+    )
+
+
 class PoolActions:
     """
     Pool actions.
@@ -188,14 +230,8 @@ class PoolActions:
 
         _check_same_tier(pool_name, managed_objects, blockdevs, BlockDevTiers.DATA)
 
-        (journal_size, tag_spec, allocate_superblock) = (
-            ((True, 0), (True, IntegrityTagSpec.B0), (True, False))
-            if namespace.integrity.integrity is IntegrityOption.NO
-            else (
-                (True, namespace.integrity.journal_size.magnitude.numerator),
-                (True, namespace.integrity.tag_spec),
-                (True, True),
-            )
+        (journal_size, tag_spec, allocate_superblock) = pre_allocations_from_namespace(
+            namespace
         )
 
         try:
@@ -228,13 +264,7 @@ class PoolActions:
                 )
             )
         except DPClientMarshallingError as err:
-            u64max = 0xFFFFFFFFFFFFFFFF
-            if journal_size[1] > u64max:
-                raise StratisCliInvalidCommandLineOptionValue(
-                    "--journal-size value is too large; it must be no greater "
-                    f"than {u64max} bytes."
-                ) from err
-            raise err  # pragma: no cover
+            try_blame_journal_size(journal_size, err)
 
         if return_code != StratisdErrors.OK:
             raise StratisCliEngineError(return_code, message)
@@ -250,6 +280,76 @@ class PoolActions:
 
         if namespace.no_overprovision:
             Pool.Properties.Overprovisioning.Set(get_object(pool_object_path), False)
+
+    @staticmethod
+    def migrate_pool(namespace: Namespace):
+        """
+        Migrate a stratis pool.
+
+        :raises StratisCliEngineError:
+        :raises StratisCliIncoherenceError:
+        :raises StratisCliInUseOtherTierError:
+        :raises StratisCliInUseSameTierError:
+        :raises StratisCliPartialChangeError:
+        """
+        from ._data import ObjectManager, Pool, pools  # noqa: PLC0415
+
+        pool_id = PoolId.from_parser_namespace(namespace)
+        assert pool_id is not None
+
+        proxy = get_object(TOP_OBJECT)
+        managed_objects = ObjectManager.Methods.GetManagedObjects(proxy, {})
+        blockdevs = frozenset([os.path.abspath(p) for p in namespace.blockdevs])
+
+        (pool_object_path, _) = next(
+            pools(props=pool_id.managed_objects_key())
+            .require_unique_match(True)
+            .search(managed_objects)
+        )
+
+        (journal_size, tag_spec, allocate_superblock) = pre_allocations_from_namespace(
+            namespace
+        )
+
+        try:
+            ((changed, _), return_code, message) = Pool.Methods.Migrate(
+                get_object(pool_object_path),
+                {
+                    "devices": blockdevs,
+                    "key_descs": (
+                        []
+                        if namespace.key_desc is None
+                        else [((False, 0), namespace.key_desc)]
+                    ),
+                    "clevis_infos": (
+                        []
+                        if namespace.clevis is None
+                        else [
+                            (
+                                (False, 0),
+                                namespace.clevis.pin,
+                                json.dumps(namespace.clevis.config),
+                            )
+                        ]
+                    ),
+                    "journal_size": journal_size,
+                    "tag_spec": tag_spec,
+                    "allocate_superblock": allocate_superblock,
+                },
+            )
+        except DPClientMarshallingError as err:
+            try_blame_journal_size(journal_size, err)
+
+        if return_code != StratisdErrors.OK:
+            raise StratisCliEngineError(return_code, message)
+
+        if not changed:  # pragma: no cover
+            raise StratisCliIncoherenceError(
+                (
+                    f"Expected to migrate the specified pool {pool_id} but "
+                    "stratisd reports that it did not actually migrate the pool."
+                )
+            )
 
     @staticmethod
     def stop_pool(namespace: Namespace):

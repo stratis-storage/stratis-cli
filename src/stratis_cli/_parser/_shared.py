@@ -23,7 +23,7 @@ from uuid import UUID
 
 from justbytes import B, GiB, KiB, MiB, PiB, Range, TiB
 
-from .._constants import Clevis
+from .._constants import Clevis, IntegrityOption, IntegrityTagSpec
 from .._stratisd_constants import ClevisInfo
 
 CLEVIS_KEY_TANG_TRUST_URL = "stratis:tang:trust_url"
@@ -282,4 +282,62 @@ IN_PLACE = [
             ),
         },
     )
+]
+
+INTEGRITY_ARGS = [
+    (
+        "--integrity",
+        {
+            "help": (
+                "Integrity options for this pool. If "
+                f'"{IntegrityOption.NO}" no space will '
+                "be allocated for integrity metadata "
+                "and it will never be possible to turn "
+                "on integrity functionality for this "
+                "pool. "
+                f'If "{IntegrityOption.PRE_ALLOCATE}" '
+                "then space will be allocated for "
+                "integrity metadata and it will be "
+                "possible to switch on integrity "
+                "functionality in future. The default "
+                'is "%(default)s".'
+            ),
+            "choices": list(IntegrityOption),
+            "default": IntegrityOption.PRE_ALLOCATE,
+            "type": IntegrityOption,
+        },
+    ),
+    (
+        "--journal-size",
+        {
+            "help": (
+                "Size of integrity device's journal. "
+                "Each block is written to this journal "
+                "before being written to its address. "
+                "The default is %(default)s."
+            ),
+            "action": DefaultAction,
+            "default": Range(128, MiB),
+            "type": parse_range,
+        },
+    ),
+    (
+        "--tag-spec",
+        {
+            "help": (
+                "Integrity tag specification defining "
+                "the size of the tag used to store a "
+                "checksum or other value for each "
+                "block on a device. All size "
+                "specifications are in bits. The "
+                "default is %(default)s."
+            ),
+            "action": DefaultAction,
+            "default": IntegrityTagSpec.B512,
+            "choices": [
+                x for x in list(IntegrityTagSpec) if x is not IntegrityTagSpec.B0
+            ],
+            "type": IntegrityTagSpec,
+        },
+    ),
 ]
